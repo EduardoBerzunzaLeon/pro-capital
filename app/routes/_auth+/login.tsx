@@ -72,7 +72,7 @@ export default function Signup() {
   const [isVisible, setIsVisible] = React.useState(false);
   const actionData = useActionData<typeof action>();
   const navigation = useNavigation();
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const [form, fields] = useForm({
     lastResult: actionData,
@@ -98,22 +98,22 @@ export default function Signup() {
         <div className="flip-card__inner bg-content1 border-4 border-primary border-solid rounded-full">
           <div className="flip-card-front">
             <Image
-                alt="Woman listing to music"
+                alt="logo pro-capital"
                 className="object-cover"
-                height={200}
+                height={150}
                 src={logo}
-                width={200}
+                width={150}
             />
           </div>
           <div className="flip-card-back bg-content1  rounded-full p-1">
-            <h1 className="text-3xl text-default font-extrabold">SEDUC</h1> 
+            <h1 className="text-3xl text-default font-extrabold">PRO CAPITAL</h1> 
             <Divider className="bg-primary w-2/4"  />
-            <p className="text-default font-semibold">GOBIERNO DEL ESTADO DE CAMPECHE</p>
+            <p className="text-default font-semibold">FINANCIANDO TUS SUEÑOS</p>
           </div>
         </div>
       </div>
 
-      <h4 className="font-bold text-large mt-2">Sistema de Productos de Nómina</h4>
+      <h4 className="font-bold text-large mt-2">Sistema de Captura y Cobranza</h4>
       <Divider className="my-4 bg-primary "  />
     </CardHeader>
     <CardBody className="overflow-visible py-2 flex gap-4">
@@ -122,14 +122,15 @@ export default function Signup() {
       id={form.id}
       onSubmit={form.onSubmit}
       noValidate
+      className="flex flex-col gap-4"
     >
     <Input
           type="email"
-          label="Email"
+          label="Usuario"
           name={fields.email.name}
           key={fields.email.key}
           variant="bordered"
-          placeholder="you@example.com"
+          placeholder="Ingresa tu usuario"
           labelPlacement="outside"
           autoComplete="off"
           isInvalid={!!fields.email.errors}
@@ -144,7 +145,7 @@ export default function Signup() {
       name={fields.password.name}
       key={fields.password.key}
       variant="bordered"
-      placeholder="Enter your password"
+      placeholder="Ingresa tu contraseña"
       labelPlacement="outside"
       autoComplete="off"
       // startContent={
@@ -165,12 +166,13 @@ export default function Signup() {
       <Button 
         color='default'
         variant="ghost"
-        // onClick={() => navigate('../', { state: { logged: true }})}
+        onClick={() => navigate('../', { state: { logged: true }})}
         type="submit"
+        className="w-full"
         // isLoading
         // className='bg-gradient-to-tr from-pink-500 to-yellow-500'
       >
-           {navigation.state === "submitting" ? "Loading..." : "Login"}
+           {navigation.state === "submitting" ? "Loading..." : "Iniciar Sesión"}
       </Button>
       </Form>  
     </CardBody>

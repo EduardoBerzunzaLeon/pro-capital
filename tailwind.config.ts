@@ -73,27 +73,23 @@ export default {
             },
           },
           colors: {
-            background: "#1f060c", // or DEFAULT
+            background: "#1E3378", // or DEFAULT
             foreground: "#ECEDEE", // or 50 to 900 DEFAULT
             content1: "#131316",
+            content2: "#051039",
             default: {
               DEFAULT: '#54565a',
             },
             primary: {
               //... 50 to 900
               foreground: "#131316",
-              DEFAULT: "#A02040",
+              DEFAULT: "#2A4288",
             },
             // secondary: {
             //   //... 50 to 900
             //   foreground: "#FFFFFF",
             //   DEFAULT: "#0e566c",
             // },
-            danger: {
-              //... 50 to 900
-              foreground: "#FFFFFF",
-              DEFAULT: "#dc2626",
-            },
           },
         },
       },
