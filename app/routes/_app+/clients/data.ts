@@ -27,6 +27,12 @@ const columns = [
     {name: "Liquidado", uid: "liquidado"},
     {name: "Renovado", uid: "renovado"},
   ];
+
+  
+  export const renovateOptions = [
+    {name: "Con derecho", uid: "canRenovate"},
+    {name: "Sin derecho", uid: "cantRenovate"},
+  ];
   
 
 export type ColumnSort = 

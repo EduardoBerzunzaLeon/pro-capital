@@ -1,6 +1,7 @@
 import { getLocalTimeZone, today } from "@internationalized/date";
-import {Card, CardHeader, CardBody, Divider, Avatar, Chip, Button, Input, Textarea, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Calendar, useDisclosure, Modal, ModalContent, ModalBody, ModalFooter, ModalHeader, DatePicker} from "@nextui-org/react";
+import {Card, CardHeader, CardBody, Divider, Avatar, Chip, Button, Input, Textarea, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Calendar, useDisclosure, Modal, ModalContent, ModalBody, ModalFooter, ModalHeader, DatePicker, Popover, PopoverContent, PopoverTrigger, Select, SelectItem, User} from "@nextui-org/react";
 import { FaPlus } from "react-icons/fa";
+import ExcelExport from "~/components/utils/ExcelExport";
 
 export default function Client() {
 
@@ -14,17 +15,133 @@ export default function Client() {
           size="md" 
           src="https://nextui.org/avatars/avatar-1.png"
         />
-        <div className="flex flex-row items-center justify-between w-full">
+        <div className="flex flex-row flex-wrap gap-2 items-center justify-between w-full">
         <div className="flex flex-col gap-1">
           <p className="text-md">Fatima Pacheco Bernes</p>
           <Chip color="danger" size="sm" variant="bordered">Vencido</Chip>
         </div>
+        <div className="flex gap-2">
+        <Popover 
+          placement="top" 
+          showArrow
+          className='red-dark bg-content1 text-foreground'
+          radius="none"
+          backdrop='opaque'
+        >
+          <PopoverTrigger>
+            <Button 
+              variant='ghost' 
+              size='md'
+              color='primary'
+            >Renovar</Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-[240px]">
+            <div className="px-1 py-2">
+            <User
+              description='BELE930829TS5'
+              name='Fatima Pachecho Bernes'
+            >
+              Fatima Pachecho Bernes
+            </User>
+            <p className='uppercase'>Renovacion</p>
+            <Divider className='mt-2'/>
+            <div className="flex flex-col gap-2 w-full">
+              <Input 
+                type='number'
+                isRequired
+                labelPlacement="outside" 
+                label="Importe de prestamo" 
+                size="sm" 
+                variant="bordered" 
+                startContent={
+                  <div className="pointer-events-none flex items-center">
+                    <span className="text-default-400 text-small">$</span>
+                  </div>
+                }
+              />
+              <DatePicker 
+                isRequired
+                size='sm'
+                label="Fecha de inicio" 
+                variant="bordered"
+                labelPlacement="outside" 
+              />
+              <Select
+                labelPlacement="outside"
+                label="Semana Perdonada"
+                placeholder="Seleccione la semana"
+                className="max-w-xs"
+                variant='bordered'
+              >
+                  <SelectItem key="primera">
+                    Primera Semana
+                  </SelectItem>
+                  <SelectItem key="ultima">
+                    Ultima Semana
+                  </SelectItem>
+              </Select>
+              <Input 
+                isRequired
+                labelPlacement="outside" 
+                label="Descuento semanal" 
+                size="sm" 
+                variant="bordered" 
+                type='number'
+                startContent={
+                  <div className="pointer-events-none flex items-center">
+                    <span className="text-default-400 text-small">$</span>
+                  </div>
+                }
+              />
+              
+              <Input 
+                isDisabled
+                labelPlacement="outside" 
+                label="Deuda faltante" 
+                defaultValue="300"
+                size="sm" 
+                variant="bordered" 
+                type='number'
+                startContent={
+                  <div className="pointer-events-none flex items-center">
+                    <span className="text-default-400 text-small">$</span>
+                  </div>
+                }
+              />
+              
+              <Input 
+                isDisabled
+                labelPlacement="outside" 
+                label="Importe Real" 
+                size="sm" 
+                variant="bordered" 
+                defaultValue='3200'
+                type='number'
+                startContent={
+                  <div className="pointer-events-none flex items-center">
+                    <span className="text-default-400 text-small">$</span>
+                  </div>
+                }
+              />
+
+            <Button 
+              variant='ghost' 
+              size='sm'
+              color='primary'
+              className='mt-2'
+            >Renovar</Button>
+            </div>
+            </div>
+          </PopoverContent>
+        </Popover>
         <Button 
           variant="ghost" 
-          color="success"
+          color="secondary"
           endContent={<FaPlus />}
           onPress={onOpen}
         >Agregar Pago</Button>
+        </div>
+
         </div>
       </CardHeader>
       <Divider/>
@@ -42,6 +159,7 @@ export default function Client() {
             <Input
               isReadOnly
               key='telefono'
+              variant="bordered"
               defaultValue="9811754107"
               labelPlacement="outside"
               label='Teléfono'
@@ -157,6 +275,15 @@ export default function Client() {
             <>
               <ModalHeader className="flex flex-col gap-1">Agregar Pago</ModalHeader>
               <ModalBody>
+                <Input 
+                  isRequired
+                  type='number'
+                  label="Folio" 
+                  labelPlacement="outside" 
+                  variant="bordered" 
+                  className="min-w-max"
+                  placeholder="Escribir el folio"
+                />
                 <Input
                   isRequired
                   type="number"
@@ -204,7 +331,9 @@ export default function Client() {
           )}
         </ModalContent>
       </Modal>
-
+      <div className='mb-2'>
+          <ExcelExport  data={[]} fileName='test2'/>
+      </div>
         <Table aria-label="Tabla de cobros">
           <TableHeader>
             <TableColumn>IMPORTE</TableColumn>

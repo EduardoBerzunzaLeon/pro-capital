@@ -24,14 +24,16 @@ import {
   Select,
   SelectItem,
   DatePicker,
+  Slider,
 } from "@nextui-org/react";
 import { FaPlus , FaSearch, FaChevronDown  } from "react-icons/fa";
-import { FaEllipsisVertical } from "react-icons/fa6";
-import {columns, users, statusOptions, Client, Columns,ColumnSort, SortColumn, Status, StatusColors} from "./data";
+import { FaEllipsisVertical, FaFilterCircleXmark } from "react-icons/fa6";
+import {columns, users, statusOptions, Client, Columns,ColumnSort, SortColumn, Status, StatusColors, renovateOptions} from "./data";
 import {capitalize} from "./utils";
 import { ClientOnly } from "remix-utils/client-only";
 import { DateValue } from "@internationalized/date";
 import { useOutlet, useNavigate } from "@remix-run/react";
+import ExcelExport from '../../../components/utils/ExcelExport';
 
 
 const statusColorMap: Record<Status, StatusColors> = {
@@ -49,9 +51,9 @@ export default function ClientsPage() {
   const [filterValueAval, setFilterValueAval] = React.useState("");
   const [filterValueLocalidad, setFilterValueLocalidad] = React.useState("");
   const [filterDate, setFilterDate] = React.useState<RangeValue<DateValue> | null>(null);
+  const [statusFilter, setStatusFilter] = React.useState("all");
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState(new Set(INITIAL_VISIBLE_COLUMNS));
-  const [statusFilter, setStatusFilter] = React.useState("all");
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [sortDescriptor, setSortDescriptor] = React.useState<SortColumn>({
     column: "name",
@@ -60,6 +62,7 @@ export default function ClientsPage() {
   const [page, setPage] = React.useState(1);
   const outlet = useOutlet();
   
+  console.log(selectedKeys);
   const hasSearchFilter = Boolean(filterValue);
   const hasSearchFilterAval = Boolean(filterValueAval);
   const hasSearchFilterLocalidad = Boolean(filterValueLocalidad);
@@ -131,8 +134,7 @@ export default function ClientsPage() {
   }, [sortDescriptor, items]);
 
   const renderCell = React.useCallback((user: Client, columnKey: Columns) => {
-    
-    console.log('rerender');
+  
     const cellValue = user[columnKey as ColumnSort];
 
     switch (columnKey) {
@@ -396,6 +398,43 @@ export default function ClientsPage() {
             onClear={() => onClearLocalidad()}
             onValueChange={onSearchChangeLocalidad}
           />
+          <Input
+            isClearable
+            className="w-full md:max-w-[30%] grow"
+            placeholder="buscar por grupo..."
+            startContent={<FaSearch />}
+            value={filterValueLocalidad}
+            onClear={() => onClearLocalidad()}
+            onValueChange={onSearchChangeLocalidad}
+          />
+          <Input
+            isClearable
+            className="w-full md:max-w-[30%] grow"
+            placeholder="buscar por Folio..."
+            startContent={<FaSearch />}
+            value={filterValueLocalidad}
+            onClear={() => onClearLocalidad()}
+            onValueChange={onSearchChangeLocalidad}
+          />
+          
+          <Slider 
+            label="Rango del importe de la deuda"
+            step={50} 
+            minValue={0} 
+            maxValue={4500} 
+            defaultValue={[0, 4500]} 
+            formatOptions={{style: "currency", currency: "USD"}}
+            className="w-full md:max-w-[30%] grow"
+            endContent={
+              <Button
+                isIconOnly
+                radius="full"
+                variant="light"
+              >
+                <FaSearch />
+              </Button>
+            }
+          />
           <div className="flex gap-3 flex-wrap w-full items-end">
           <DateRangePicker
               label="Rango de la Fecha de cobro"
@@ -418,6 +457,29 @@ export default function ClientsPage() {
                 Limpiar
               </Button>}
             />
+
+          <DateRangePicker
+              label="Rango de la Fecha de alta"
+              className='w-full md:max-w-[40%]'
+              value={filterDate}
+              onChange={setFilterDate}
+              
+              labelPlacement='outside'
+              CalendarBottomContent={
+              <Button 
+                className="mb-2 ml-2"
+                size="sm" 
+                aria-label="delete_filter_date"
+                variant="ghost"
+                color='primary'
+                onClick={() => {
+                  setFilterDate(null)
+                }}
+              >
+                Limpiar
+              </Button>}
+            />
+            
             
             <Dropdown>
               <DropdownTrigger className="sm:flex">
@@ -443,6 +505,29 @@ export default function ClientsPage() {
             <Dropdown>
               <DropdownTrigger className="sm:flex">
                 <Button endContent={<FaChevronDown  className="text-small" />} variant="flat">
+                  Renovación
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu
+                disallowEmptySelection
+                aria-label="Table Columns"
+                closeOnSelect={false}
+                selectedKeys={statusFilter}
+                selectionMode="multiple"
+                onSelectionChange={setStatusFilter}
+              >
+                {renovateOptions.map((renovate) => (
+                  <DropdownItem key={renovate.uid} className="capitalize">
+                    {capitalize(renovate.name)}
+                  </DropdownItem>
+                ))}
+              </DropdownMenu>
+            </Dropdown>
+            <Dropdown
+              className='overflow-y-scroll max-h-96'
+            >
+              <DropdownTrigger className="sm:flex">
+                <Button endContent={<FaChevronDown  className="text-small" />} variant="flat">
                   Columnas
                 </Button>
               </DropdownTrigger>
@@ -463,11 +548,26 @@ export default function ClientsPage() {
             </Dropdown>
             <Button 
               variant="ghost" 
-              color="success" 
+              color="danger" 
+              endContent={<FaFilterCircleXmark />}
+              onClick={() => {
+                setFilterValue('')
+                setFilterValueAval('')
+                setFilterValueLocalidad('')
+                setFilterDate(null)
+                setStatusFilter('all')
+              }}
+            >
+              Limpiar Filtros
+            </Button>
+            <Button 
+              variant="ghost" 
+              color="secondary" 
               endContent={<FaPlus />}
             >
               Agregar Nuevo
             </Button>
+            <ExcelExport data={filteredItems} fileName='test'/>
           </div>
         </div>
         <div className="flex justify-between items-center">
