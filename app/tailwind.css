@@ -22,24 +22,13 @@
       transform: translate(-50%, -50%);
       z-index: 101;
     }
-      
-      /* .privacy-screen {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: #A02040;
-        z-index: 100;
-      } */
 }
 
 @layer components  {
 
     .card_light {
-        transition: .7s all !important;
-        overflow: hidden;
-        position: relative;
+      position: relative;
+      transition: 1s scale ;
     }
 
     .card_light::before{
@@ -52,18 +41,19 @@
         height: 60rem;
         transition: .7s all;
       }
+
     .card_light:hover{
-        /* border: 1px solid #ffffff44; */
         box-shadow: 0 7px 50px 10px #000000aa;
-        transform: scale(1.015);
+        /* transform: scale(1.015); */
         filter: brightness(1.3);
-    }
+      }
 
     .card_light:hover::before{
         filter: brightness(.5);
         top: -100%;
         left: 200%;
       }
+
   }
 
   
