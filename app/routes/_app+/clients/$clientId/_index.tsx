@@ -1,7 +1,9 @@
 import { getLocalTimeZone, today } from "@internationalized/date";
-import {Card, CardHeader, CardBody, Divider, Avatar, Chip, Button, Input, Textarea, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Calendar, useDisclosure, Modal, ModalContent, ModalBody, ModalFooter, ModalHeader, DatePicker, Popover, PopoverContent, PopoverTrigger, Select, SelectItem, User} from "@nextui-org/react";
-import { FaPlus } from "react-icons/fa";
+import {Card, CardHeader, CardBody, Divider, Avatar, Chip, Button, Input, Textarea, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Calendar, useDisclosure, Modal, ModalContent, ModalBody, ModalFooter, ModalHeader, DatePicker, Popover, PopoverContent, PopoverTrigger, Select, SelectItem, User, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger} from "@nextui-org/react";
+import { FaChevronDown, FaPlus } from "react-icons/fa";
 import ExcelExport from "~/components/utils/ExcelExport";
+import { groupOptions, statusOptions } from "../data";
+import { capitalize } from "../utils";
 
 export default function Client() {
 
@@ -284,6 +286,14 @@ export default function Client() {
                   className="min-w-max"
                   placeholder="Escribir el folio"
                 />
+                <Input 
+                  isRequired
+                  label="Grupo" 
+                  labelPlacement="outside" 
+                  variant="bordered" 
+                  className="min-w-max"
+                  placeholder="Escribir el grupo"
+                />
                 <Input
                   isRequired
                   type="number"
@@ -331,8 +341,27 @@ export default function Client() {
           )}
         </ModalContent>
       </Modal>
-      <div className='mb-2'>
+      <div className='mb-2 flex w-full justify-between items-center'>
           <ExcelExport  data={[]} fileName='test2'/>
+          <Dropdown>
+              <DropdownTrigger className="sm:flex">
+                <Button endContent={<FaChevronDown  className="text-small" />} variant="flat">
+                  Créditos
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu
+                disallowEmptySelection
+                aria-label="Table Columns"
+                closeOnSelect={false}
+                selectionMode="multiple"
+              >
+                {groupOptions.map((group) => (
+                  <DropdownItem key={group.uid} className="capitalize">
+                    {capitalize(group.name)}
+                  </DropdownItem>
+                ))}
+              </DropdownMenu>
+            </Dropdown>
       </div>
         <Table aria-label="Tabla de cobros">
           <TableHeader>
@@ -340,6 +369,8 @@ export default function Client() {
             <TableColumn>FECHA</TableColumn>
             <TableColumn>AGENTE</TableColumn>
             <TableColumn>ESTATUS</TableColumn>
+            <TableColumn>GRUPO</TableColumn>
+            <TableColumn>FOLIO</TableColumn>
             <TableColumn>OBSERVACIONES</TableColumn>
           </TableHeader>
           <TableBody>
@@ -348,6 +379,8 @@ export default function Client() {
               <TableCell>2024-05-09</TableCell>
               <TableCell>Carlos Berzunza</TableCell>
               <TableCell><Chip color="success" size="sm" variant="bordered">Pagado</Chip></TableCell>
+              <TableCell>Grupo 77</TableCell>
+              <TableCell>11980</TableCell>
               <TableCell></TableCell>
             </TableRow>
             <TableRow key="2">
@@ -355,6 +388,8 @@ export default function Client() {
               <TableCell>2024-05-16</TableCell>
               <TableCell>Eduardo Ruiz</TableCell>
               <TableCell><Chip color="warning" size="sm" variant="bordered">Pago Incompleto</Chip></TableCell>
+              <TableCell>Grupo 77</TableCell>
+              <TableCell>11980</TableCell>
               <TableCell>A la señora no le pagaron su tanda</TableCell>
             </TableRow>
             <TableRow key="3">
@@ -362,6 +397,8 @@ export default function Client() {
               <TableCell>2024-05-23</TableCell>
               <TableCell>Joaquin Mendoza</TableCell>
               <TableCell><Chip color="danger" size="sm" variant="bordered">No pago</Chip></TableCell>
+              <TableCell>Grupo 77</TableCell>
+              <TableCell>11980</TableCell>
               <TableCell>Me tiro cerveza y me insulto</TableCell>
             </TableRow>
           </TableBody>

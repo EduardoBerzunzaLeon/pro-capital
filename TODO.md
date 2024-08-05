@@ -26,6 +26,7 @@
     1.- Agregar Opcion de renovado - done
     2.- Agregar button de excel de pagos - done
     3.- Agregar el campo de folio en "agregar pago" - done
+    4.- Agregar el campo de grupo en "agregar pago" - done
 
 
 

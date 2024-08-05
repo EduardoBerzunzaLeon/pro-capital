@@ -27,6 +27,14 @@ const columns = [
     {name: "Liquidado", uid: "liquidado"},
     {name: "Renovado", uid: "renovado"},
   ];
+  
+  export const groupOptions = [
+    {name: "Grupo 13", uid: "activo"},
+    {name: "Grupo 34", uid: "vencido"},
+    {name: "Grupo 56", uid: "liquidado"},
+    {name: "Grupo 77", uid: "renovado"},
+    {name: "Todos", uid: "all"},
+  ];
 
   
   export const renovateOptions = [

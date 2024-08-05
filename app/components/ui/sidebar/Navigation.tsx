@@ -54,7 +54,7 @@ const items = [
   },
   {
     icon: <FaRoute />,
-    text: "Regiones",
+    text: "Rutas",
     to: "/region",
     id: 7
   },
