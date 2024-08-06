@@ -1,6 +1,5 @@
-import React from "react";
-import { MetaFunction , ActionFunction, ActionFunctionArgs } from "@remix-run/node";
-import { Form, useActionData, useNavigate, useNavigation , json } from "@remix-run/react";
+import React, { useEffect } from "react";
+import { Form, json, useActionData, useNavigation } from "@remix-run/react";
 
 import { useForm } from '@conform-to/react';
 import { parseWithZod } from '@conform-to/zod';
@@ -13,26 +12,52 @@ import { FaEye , FaEyeSlash  } from "react-icons/fa6";
 import logo from '../../../img/icon_logo.png';
 import { loginAction } from "~/application/login/loginAction";
 import { z } from "zod";
+import { toast } from "react-toastify";
+import { LoaderFunction } from "@remix-run/node";
+import { authenticator } from "~/.server/session";
 
-
-
-// import { getSession } from "~/auth/session";
 const schema = z.object({
-    email: z.string(),
-    password: z.string(),
+    userName: z.string({
+      invalid_type_error: "Usuario invalido",
+      required_error: "Requerido",
+    }),
+    password: z.string({
+      invalid_type_error: "Contraseña invalida",
+      required_error: "Requerido",
+    }),
+});
+
+export const loader: LoaderFunction = async ({ request }) => {
+
+  await authenticator.isAuthenticated(request, {
+    successRedirect : "/"
   });
+
+  // const session = await sessionStorage?.getSession(
+  //   request.headers.get("Cookie")
+  // );
+
+  // const error = session.get("sessionErrorKey");
+  return json('hi');
+};
   
 export default function LoginPage() {
   const [isVisible, setIsVisible] = React.useState(false);
   const actionData = useActionData<typeof loginAction>();
   const navigation = useNavigation();
-//   const navigate = useNavigate();
+
+  useEffect(() => {
+    if(actionData?.error) {
+      console.log(actionData?.error);
+      toast.error('errorcito');
+    }
+  }, [actionData])
+  
 
   const [form, fields] = useForm({
     lastResult: actionData,
     onValidate({ formData }) {
       const validate = parseWithZod(formData, { schema });
-      console.log({validate});
       return validate;
     },
     shouldValidate: 'onSubmit',
@@ -40,6 +65,7 @@ export default function LoginPage() {
   }); 
 
   const toggleVisibility = () => setIsVisible(!isVisible);
+  const isSubmitting =  navigation.state === "submitting";
 
   return (
     <Card 
@@ -77,32 +103,28 @@ export default function LoginPage() {
       className="flex flex-col gap-4"
     >
     <Input
-          type="email"
-          label="Usuario"
-          name={fields.email.name}
-          key={fields.email.key}
-          variant="bordered"
-          placeholder="Ingresa tu usuario"
-          labelPlacement="outside"
-          autoComplete="off"
-          isInvalid={!!fields.email.errors}
-          color={fields.email.errors ? "danger" : "default"}
-          errorMessage={fields.email.errors}
-          // startContent={
-          //   <IoMdMail  className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
-          // }
-        />
+      label="Usuario"
+      name={fields.userName.name}
+      key={fields.userName.key}
+      variant="bordered"
+      placeholder="Ingresa tu usuario"
+      labelPlacement="outside"
+      autoComplete="off"
+      isInvalid={!!fields.userName.errors}
+      color={fields.userName.errors ? "danger" : "default"}
+      errorMessage={fields.userName.errors}
+    />
     <Input
       label="Password"
       name={fields.password.name}
       key={fields.password.key}
+      isInvalid={!!fields.password.errors}
+      color={fields.password.errors ? "danger" : "default"}
+      errorMessage={fields.password.errors}
       variant="bordered"
       placeholder="Ingresa tu contraseña"
       labelPlacement="outside"
       autoComplete="off"
-      // startContent={
-      //   <FaKey  className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
-      // }
       endContent={
         <button className="focus:outline-none" type="button" onClick={toggleVisibility}>
           {isVisible ? (
@@ -118,13 +140,11 @@ export default function LoginPage() {
       <Button 
         color='default'
         variant="ghost"
-        // onClick={() => navigate('../', { state: { logged: true }})}
         type="submit"
         className="w-full"
-        // isLoading
-        // className='bg-gradient-to-tr from-pink-500 to-yellow-500'
+        isLoading={isSubmitting}
       >
-           {navigation.state === "submitting" ? "Loading..." : "Iniciar Sesión"}
+        {isSubmitting ? "Verificando..." : "Iniciar Sesión"}
       </Button>
       </Form>  
     </CardBody>

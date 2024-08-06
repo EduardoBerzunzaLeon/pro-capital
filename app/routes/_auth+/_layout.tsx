@@ -1,9 +1,17 @@
+// import { LoaderFunction  } from "@remix-run/node";
 import { Outlet } from "@remix-run/react";
 import { motion } from "framer-motion";
-
+// import { authenticator } from "~/.server/session";
 import { LogginStart } from "~/components/ui";
 
+// export const loader: LoaderFunction = async ({ request }) => {
+//   return await authenticator.isAuthenticated(request, {
+//     successRedirect: './'
+//   });
+// };
+
 export default function Signup() {
+
   return (
     <>
       <div className="h-screen grid place-items-center bg-background" >
@@ -15,7 +23,7 @@ export default function Signup() {
           <Outlet />
         </motion.div>
       </div>
-      <LogginStart text='Bienvenido de nuevo, Eduardo Berzunza' />
+      <LogginStart text='Bienvenido de nuevo' />
     </>
   );
 }

@@ -7,10 +7,14 @@ import {
 } from "@remix-run/react";
 import {NextUIProvider} from "@nextui-org/react";
 
+
 import type { LinksFunction } from "@remix-run/node";
-import stylesheet from "~/tailwind.css?url";
 import { AnimatePresence, motion } from "framer-motion";
 import { useLocation, useOutlet } from 'react-router-dom';
+
+import { Bounce, ToastContainer } from 'react-toastify';
+import  "react-toastify/dist/ReactToastify.css";
+import stylesheet from "~/tailwind.css?url";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
@@ -29,7 +33,9 @@ export default function App() {
         <Links />
       </head>
       <body className='overflow-x-hidden'>
+
         <NextUIProvider navigate={navigate}>
+
           <div className='red-dark text-foreground bg-content1 w-screen max-h-max min-h-screen'>
             <AnimatePresence mode="wait" initial={false}>
                 <motion.main key={useLocation().pathname}>
@@ -40,6 +46,19 @@ export default function App() {
           <ScrollRestoration />
           <Scripts />
         </NextUIProvider>
+        <ToastContainer 
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="dark"
+          transition={Bounce}
+        />
       </body>
     </html>
   );
