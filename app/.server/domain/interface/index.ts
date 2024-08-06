@@ -1,0 +1,1 @@
+export type { AuthRepositoryI } from './AuthRepository.interface';

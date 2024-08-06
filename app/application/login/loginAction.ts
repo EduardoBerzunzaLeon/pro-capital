@@ -1,16 +1,17 @@
 import { parseWithZod } from "@conform-to/zod";
-import { ActionFunctionArgs } from "@remix-run/node";
+import { ActionFunction, ActionFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/react";
 import { z } from "zod";
-import { getSession } from "~/auth/session";
+import { Repository } from "~/.server/adapter/repository";
+// import { getSession } from "~/auth/session";
 
 const schema = z.object({
-  email: z.string().email(),
+  email: z.string(),
   password: z.string(),
 });
 
-export async function action({ request }: ActionFunctionArgs ) {
-  const session = await getSession(request.headers.get("Cookie"));
+export const loginAction: ActionFunction =  async ({ request }: ActionFunctionArgs ) => {
+  // const session = await getSession(request.headers.get("Cookie"));
   const body = await request.formData();
   const submission = parseWithZod(body, { schema });
 
@@ -18,14 +19,22 @@ export async function action({ request }: ActionFunctionArgs ) {
     return json(submission.reply());
   }
 
-  const email = body.get("email");
-  const password = body.get("password");
+  const email = body.get("email")?.toString() || undefined;
+  const password = body.get("password")?.toString() || undefined;
   const payload = {
-    email,
+    userName: email,
     password,
   };
 
-  return json(submission.reply());
+  // return json(submission.reply());
+
+
+//   const { Repository } =  await import('~/.server/adapter/repository');
+  const user = await Repository.auth.login(payload.userName, payload.password);
+  // const user  = await db.user.findFirst({where: { userName: payload.userName , password: payload.password}});
+
+  console.log({user});
+  return json({...payload});
   // const api = new Api();
   // try {
   //   const response = await api.loginUser(payload);

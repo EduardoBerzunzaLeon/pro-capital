@@ -28,7 +28,7 @@
 
     .card_light {
       position: relative;
-      transition: 1s scale ;
+      transition: .7s all !important;
     }
 
     .card_light::before{
@@ -44,7 +44,7 @@
 
     .card_light:hover{
         box-shadow: 0 7px 50px 10px #000000aa;
-        /* transform: scale(1.015); */
+        transform: scale(1.015);
         filter: brightness(1.3);
       }
 
@@ -105,7 +105,6 @@
         flex-flow: column wrap;
         transform: rotateY(180deg);
         z-index: 1;
-        
       }
 
 }

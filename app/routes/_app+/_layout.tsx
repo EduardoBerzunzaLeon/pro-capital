@@ -1,7 +1,7 @@
 import { Breadcrumbs, BreadcrumbItem } from "@nextui-org/react";
 import { Outlet, useLocation, useNavigationType} from "@remix-run/react";
-import { motion } from "framer-motion";
 import { FaHome, FaUser, FaUsers } from "react-icons/fa";
+import { LogginEnd } from "~/components/ui";
 import Navbar from "~/components/ui/navbar/Narbar";
 import SideBar from "~/components/ui/sidebar/SideBar";
 
@@ -28,37 +28,12 @@ export default function Dashboard() {
         <section className="w-11/12 flex flex-col items-center justify-start m-auto pt-5 pb-2">
           <Outlet />  
         </section>
-      { (location?.state?.logged && navigationType === 'PUSH') &&
+      { 
         (
-          <> 
-          <motion.div
-            initial={{ scale: 100 }}
-            animate={{ 
-              opacity: 0,
-              scale: [ 100, 100, 100, 0 ],
-              transition: {
-                duration: 1.3, delay: .5
-              }
-            }}
-            className="privacy-screen"
-            >
-            {/* <motion.h2>Welcome Back Eduardo Berzunza</motion.h2>  */}
-            </motion.div> 
-            <motion.h2
-              className='text-lg text-center privacy-text'
-              initial={{ opacity: 1 }}
-              animate={{ 
-                opacity: 0,
-                transition: {
-                  duration: .5
-                }
-               }}
-            >Welcome Back Eduardo Berzunza</motion.h2> 
-          </>
-
-        )
+          location?.state?.logged 
+          && navigationType === 'PUSH'
+        ) && ( <LogginEnd text='Bienvenido de nuevo, Eduardo Berzunza' /> )
       }
-
     </>
   )
 }

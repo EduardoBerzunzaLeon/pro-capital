@@ -14,14 +14,11 @@ datasource db {
 }
 
 model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
-}
-
-model Todo {
   id Int @id @default(autoincrement())
-  title String
-  content String?
-  done Boolean @default(false)
+  email String @unique
+  name String
+  lastNameFirst String
+  lastNameLast String?
+  userName String
+  password String
 }
