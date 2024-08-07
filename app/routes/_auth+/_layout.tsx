@@ -1,7 +1,7 @@
 import { LoaderFunction } from "@remix-run/node";
 import { MetaFunction, Outlet } from "@remix-run/react";
 import { motion } from "framer-motion";
-import { authenticator } from "~/.server/session";
+import { authenticator } from "~/.server/services/auth.service";
 import { LogginStart } from "~/components/ui";
 
 export const loader: LoaderFunction = async ({ request }) => {

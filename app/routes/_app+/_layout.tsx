@@ -1,10 +1,9 @@
 import { Breadcrumbs, BreadcrumbItem } from "@nextui-org/react";
-import { LoaderFunction } from "@remix-run/node";
-import { Outlet, useLocation} from "@remix-run/react";
+import { Outlet, useLocation, useNavigationType} from "@remix-run/react";
 import { type MetaFunction } from "@remix-run/node";
 import { FaHome, FaUser, FaUsers } from "react-icons/fa";
-import { authenticator } from "~/.server/session";
 import { LogginEnd } from "~/components/ui";
+import { dashboardLoader } from "~/application/dashboard/dashboard.loader";
 import Navbar from "~/components/ui/navbar/Narbar";
 import SideBar from "~/components/ui/sidebar/SideBar";
 
@@ -12,15 +11,15 @@ export const meta: MetaFunction = () => {
   return [{ title: "Dashboard" }];
 };
 
+// export const action: ActionFunction = async ({ request }) => {
+//   console.log('asdsa')
+//   return await authenticator.logout(request, { redirectTo: "/login" });
+// };
 
-export const loader: LoaderFunction = async ({ request }) => {
-  return await authenticator.isAuthenticated(request, {
-    failureRedirect: "/login",
-  });
-};
 
 export default function Dashboard() {
   const location = useLocation();
+  const navigationType = useNavigationType();
 
   return (
     <>
@@ -43,9 +42,13 @@ export default function Dashboard() {
         </section>
       { 
         ( 
-          location?.state?._isRedirect
-        ) && ( <LogginEnd text='Bienvenido de nuevo, Eduardo Berzunza' /> )
+          navigationType === 'PUSH' && location?.state?._isRedirect
+        ) && 
+          ( <LogginEnd text='Bienvenido de nuevo, Eduardo Berzunza' /> )
       }
     </>
   )
 }
+
+
+export { dashboardLoader as loader };

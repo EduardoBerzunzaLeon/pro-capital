@@ -1,22 +1,19 @@
 import { User } from "~/.server/domain/entity";
 import type { AuthRepositoryI } from "~/.server/domain/interface";
-import { db } from "~/utils/db.server";
-import bcrypt from 'bcryptjs';
+import { ServerError } from "~/.server/errors";
+import { db } from "../../db";
 
 export function AuthRepository(): AuthRepositoryI {
-    async function login(userName?: string, password?: string) {
-
-        if(!userName || !password ) throw new Error('Incomplete data login');
+    async function findByUserName(userName: string) {
 
         const userDb = await db.user.findUnique({ where: { userName }});
     
-        if (!userDb || !( await bcrypt.compare(password, userDb.password))) {
-            throw new Error('Credencials Incorrect');
+        if (!userDb) {
+            throw ServerError.badRequest('Credenciales Incorrectas');
         }
     
-        const user = new User(userDb);
-        return user;
+        return new User(userDb);
     }
 
-    return { login };
+    return { findByUserName };
 } 

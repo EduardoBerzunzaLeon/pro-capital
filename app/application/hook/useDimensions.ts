@@ -14,7 +14,7 @@ export const useDimensions = (ref: React.MutableRefObject<null | Dimensions> ) =
         dimensions.current.width = ref.current.offsetWidth;
         dimensions.current.height = ref.current.offsetHeight;
     }
-    
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return dimensions.current;

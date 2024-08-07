@@ -1,3 +1,5 @@
+import { useLocation, useOutlet } from 'react-router-dom';
+import type { LinksFunction } from "@remix-run/node";
 import {
   Links,
   Meta,
@@ -6,26 +8,19 @@ import {
   useNavigate,
 } from "@remix-run/react";
 import {NextUIProvider} from "@nextui-org/react";
-
-
-import type { LinksFunction, LoaderFunction } from "@remix-run/node";
 import { AnimatePresence, motion } from "framer-motion";
-import { useLocation, useOutlet } from 'react-router-dom';
-
 import { Bounce, ToastContainer } from 'react-toastify';
+
+import { rootLoader } from "./application/root/root.loader";
+
 import  "react-toastify/dist/ReactToastify.css";
 import stylesheet from "~/tailwind.css?url";
-import { authenticator } from "./.server/session";
-import { json } from '@remix-run/node';
+import { rootAction } from './application/root/root.action';
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
 ];
 
-export const loader: LoaderFunction = async ({ request }) => {
-  const user = await authenticator.isAuthenticated(request);
-  return json({ user });
-};
 
 export default function App() {
   const outlet = useOutlet();
@@ -70,3 +65,5 @@ export default function App() {
     </html>
   );
 }
+
+export { rootLoader as loader, rootAction as action };

@@ -1,10 +1,10 @@
 // import { Link } from "@remix-run/react";
 import { motion, useCycle } from "framer-motion";
 import { useRef } from "react";
-import { useDimensions } from "~/hook/use-dimensions";
 import "./styles.css";
 import { Navigation } from "./Navigation";
 import { MenuToggle } from "./MenuToggle";
+import { useDimensions } from "~/application";
 
 const sidebar = {
   open: (height = 1000) => ({

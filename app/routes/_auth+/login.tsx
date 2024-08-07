@@ -1,25 +1,15 @@
 import React, { useEffect } from "react";
-import { Form, json, useActionData, useLoaderData, useNavigation } from "@remix-run/react";
+import { Form, useActionData, useNavigation } from "@remix-run/react";
 import { useForm } from '@conform-to/react';
 import { parseWithZod } from '@conform-to/zod';
 import { Card, CardHeader, CardBody, Input, Image, Button, Divider } from "@nextui-org/react";
 import { FaEye , FaEyeSlash  } from "react-icons/fa6";
-import { z } from "zod";
 import { toast } from "react-toastify";
 
 import logo from '../../../img/icon_logo.png';
-import { loginAction } from "~/application/login/loginAction";
+import { loginAction } from "~/application/login/login.action";
+import { loginSchema } from "~/schemas";
 
-const schema = z.object({
-    userName: z.string({
-      invalid_type_error: "Usuario invalido",
-      required_error: "Requerido",
-    }),
-    password: z.string({
-      invalid_type_error: "Contraseña invalida",
-      required_error: "Requerido",
-    }),
-});
 
 export default function LoginPage() {
   const [isVisible, setIsVisible] = React.useState(false);
@@ -35,9 +25,9 @@ export default function LoginPage() {
 
   const [form, fields] = useForm({
     onValidate({ formData }) {
-      const validate = parseWithZod(formData, { schema });
-      return validate;
+      return parseWithZod(formData, { schema: loginSchema });
     },
+    lastResult: actionData?.status === 'error' ? actionData : undefined,
     shouldValidate: 'onSubmit',
     shouldRevalidate: 'onInput',
   }); 
