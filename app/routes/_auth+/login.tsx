@@ -1,20 +1,14 @@
 import React, { useEffect } from "react";
-import { Form, json, useActionData, useNavigation } from "@remix-run/react";
-
+import { Form, json, useActionData, useLoaderData, useNavigation } from "@remix-run/react";
 import { useForm } from '@conform-to/react';
 import { parseWithZod } from '@conform-to/zod';
-
 import { Card, CardHeader, CardBody, Input, Image, Button, Divider } from "@nextui-org/react";
-
-
 import { FaEye , FaEyeSlash  } from "react-icons/fa6";
+import { z } from "zod";
+import { toast } from "react-toastify";
 
 import logo from '../../../img/icon_logo.png';
 import { loginAction } from "~/application/login/loginAction";
-import { z } from "zod";
-import { toast } from "react-toastify";
-import { LoaderFunction } from "@remix-run/node";
-import { authenticator } from "~/.server/session";
 
 const schema = z.object({
     userName: z.string({
@@ -27,35 +21,19 @@ const schema = z.object({
     }),
 });
 
-export const loader: LoaderFunction = async ({ request }) => {
-
-  await authenticator.isAuthenticated(request, {
-    successRedirect : "/"
-  });
-
-  // const session = await sessionStorage?.getSession(
-  //   request.headers.get("Cookie")
-  // );
-
-  // const error = session.get("sessionErrorKey");
-  return json('hi');
-};
-  
 export default function LoginPage() {
   const [isVisible, setIsVisible] = React.useState(false);
   const actionData = useActionData<typeof loginAction>();
   const navigation = useNavigation();
 
   useEffect(() => {
-    if(actionData?.error) {
-      console.log(actionData?.error);
-      toast.error('errorcito');
+    if(actionData?.error && actionData) {
+      toast.error(actionData?.error);
     }
   }, [actionData])
   
 
   const [form, fields] = useForm({
-    lastResult: actionData,
     onValidate({ formData }) {
       const validate = parseWithZod(formData, { schema });
       return validate;
@@ -110,6 +88,7 @@ export default function LoginPage() {
       placeholder="Ingresa tu usuario"
       labelPlacement="outside"
       autoComplete="off"
+      defaultValue="eduardo.berzunza"
       isInvalid={!!fields.userName.errors}
       color={fields.userName.errors ? "danger" : "default"}
       errorMessage={fields.userName.errors}
@@ -121,6 +100,7 @@ export default function LoginPage() {
       isInvalid={!!fields.password.errors}
       color={fields.password.errors ? "danger" : "default"}
       errorMessage={fields.password.errors}
+      defaultValue="123456"
       variant="bordered"
       placeholder="Ingresa tu contraseña"
       labelPlacement="outside"

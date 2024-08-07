@@ -8,17 +8,24 @@ import {
 import {NextUIProvider} from "@nextui-org/react";
 
 
-import type { LinksFunction } from "@remix-run/node";
+import type { LinksFunction, LoaderFunction } from "@remix-run/node";
 import { AnimatePresence, motion } from "framer-motion";
 import { useLocation, useOutlet } from 'react-router-dom';
 
 import { Bounce, ToastContainer } from 'react-toastify';
 import  "react-toastify/dist/ReactToastify.css";
 import stylesheet from "~/tailwind.css?url";
+import { authenticator } from "./.server/session";
+import { json } from '@remix-run/node';
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
 ];
+
+export const loader: LoaderFunction = async ({ request }) => {
+  const user = await authenticator.isAuthenticated(request);
+  return json({ user });
+};
 
 export default function App() {
   const outlet = useOutlet();

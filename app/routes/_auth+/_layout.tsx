@@ -1,16 +1,20 @@
-// import { LoaderFunction  } from "@remix-run/node";
-import { Outlet } from "@remix-run/react";
+import { LoaderFunction } from "@remix-run/node";
+import { MetaFunction, Outlet } from "@remix-run/react";
 import { motion } from "framer-motion";
-// import { authenticator } from "~/.server/session";
+import { authenticator } from "~/.server/session";
 import { LogginStart } from "~/components/ui";
 
-// export const loader: LoaderFunction = async ({ request }) => {
-//   return await authenticator.isAuthenticated(request, {
-//     successRedirect: './'
-//   });
-// };
+export const loader: LoaderFunction = async ({ request }) => {
+  return await authenticator.isAuthenticated(request, {
+    successRedirect: './'
+  });
+};
 
-export default function Signup() {
+export const meta: MetaFunction = () => {
+  return [{ title: "Auth Pages" }];
+};
+
+export default function AuthPage() {
 
   return (
     <>
@@ -23,7 +27,7 @@ export default function Signup() {
           <Outlet />
         </motion.div>
       </div>
-      <LogginStart text='Bienvenido de nuevo' />
+      <LogginStart/>
     </>
   );
 }

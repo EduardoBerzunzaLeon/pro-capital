@@ -33,3 +33,7 @@
 # Agregar estatus renovado - done
 
 - Cambiar la libreria de excel file-saver tiene vulnerabilidades
+
+
+# Opciones de ampliacion
+    - Controlar Ataque CSRF: https://github.com/sergiodxa/remix-utils#csrf

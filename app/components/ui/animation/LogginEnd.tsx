@@ -1,11 +1,9 @@
 import { motion } from 'framer-motion';
 import { FC } from 'react';
 
-
 interface Props {
     text: string
 }
-
 
 export const LogginEnd: FC<Props> = ({ text }) => {
   return (
@@ -16,7 +14,7 @@ export const LogginEnd: FC<Props> = ({ text }) => {
             opacity: 0,
             scale: [ 100, 100, 100, 0 ],
             transition: {
-                duration: 1.3, delay: .5
+                duration: 2.2, delay: 1.8
             }
         }}
         className="privacy-screen"
@@ -24,11 +22,11 @@ export const LogginEnd: FC<Props> = ({ text }) => {
         </motion.div> 
         <motion.h2
             className='text-lg text-center privacy-text'
-            initial={{ opacity: 1 }}
+            initial={{ opacity: 0 }}
             animate={{ 
-                opacity: 0,
+                opacity: [ 0, 0, 1, 1, 0],
                 transition: {
-                    duration: .5
+                    duration: 2
                 }
             }}
         >{ text }</motion.h2> 

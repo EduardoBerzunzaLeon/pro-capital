@@ -16,7 +16,7 @@ if (!sessionSecret) {
 // export const { getSession, commitSession, destroySession } = sessionStorage;
 
 
-const storage = createCookieSessionStorage({
+export const storage = createCookieSessionStorage({
   cookie: {
     name: 'procapital-session',
     secure: process.env.NODE_ENV === 'production',
@@ -47,9 +47,19 @@ authenticator.use(
         if (typeof password !== 'string')
           throw new AuthorizationError('Bad Credentials: Password must be a string')
     
-      const user = await Repository.auth.login(username, password);
+        // try {
+          
+          const user = await Repository.auth.login(username, password);
+          return user;
+          
+        // } catch (error) {
+        //   if(error instanceof Error) {
+        //     throw new AuthorizationError(error.message);
+        //   }
+        //   throw new Response('Error en el servidor', { status: 500 });
+        // }
+
       // And return the user as the Authenticator expects it
-      return user;
     }),
     "user-pass"
   );
