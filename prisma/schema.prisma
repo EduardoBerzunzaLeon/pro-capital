@@ -13,12 +13,163 @@ datasource db {
   url      = env("POSTGRES_URL")
 }
 
+
+enum Sex {
+  MASCULINE
+  FEMENINE
+}
+
+enum Appointment {
+  AGENTE
+  CAPTURISTA
+  JEFE_DEPARTAMENTO
+  JEFE_RUTA
+}
+
+enum Type {
+  EMPLOYEE
+  LEADER
+  NORMAL
+}
+
 model User {
   id Int @id @default(autoincrement())
   email String   @unique
-  userName String   @unique
+  username String   @unique
   name String
   lastNameFirst String
-  lastNameLast String?
+  lastNameSecond String?
   password String
+  roleId Int
+  role Role @relation(fields: [roleId], references: [id])
+  address String
+  sex Sex
+  avatar String?
+  appointment Appointment
+  agentsRoutes Agent_Route[]
+}
+
+model Role {
+  id Int @id @default(autoincrement())
+  role String @unique
+  users User[]
+  permissions Permission[]
+}
+
+model Module {
+  id Int @id @default(autoincrement())
+  name String
+  isActive Boolean
+  permissions Permission[]
+}
+
+model Permission {
+  id Int @id @default(autoincrement())
+  name String
+  description String
+  module Module @relation(fields: [moduleId], references: [id])
+  moduleId Int
+  roles Role[]
+}
+
+model Route {
+  id Int @id @default(autoincrement())
+  name String @unique
+  isActive Boolean
+  agentsRoutes Agent_Route[]
+  folders Folder[]
+}
+
+model Agent_Route {
+  id Int @id @default(autoincrement())
+  userId Int
+  routeId Int
+  route Route @relation(fields: [routeId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+  assignAt DateTime @default(now())
+}
+
+model Municipality {
+  id Int @id @default(autoincrement())
+  name String @unique
+  towns Town[]
+}
+
+model Town {
+  id Int @id @default(autoincrement())
+  name String @unique
+  municipalityId Int 
+  municipality Municipality @relation(fields: [municipalityId], references: [id])
+  folder Folder[]
+  clients Client[]
+  avals Aval[]
+}
+
+model Folder {
+ id Int @id @default(autoincrement())
+ name String @unique
+ townId Int
+ town Town @relation(fields: [townId], references: [id])
+ routeId Int
+ route Route @relation(fields: [routeId], references: [id])
+ groups Group[]
+}
+
+
+model Group {
+ id Int @id @default(autoincrement())
+ name Int 
+ folderId Int
+ folder Folder @relation(fields: [folderId], references: [id])
+ clients Client[]
+}
+
+model Client {
+  id Int @id @default(autoincrement())
+  name String
+  lastNameFirst String
+  lastNameSecond String?
+  address String
+  reference String
+  curp String
+  guarantee String
+  type Type @default(NORMAL)
+  townId Int
+  town Town @relation(fields: [townId], references: [id])
+  groupId Int
+  group Group @relation(fields: [groupId], references: [id])
+}
+
+
+model Aval {
+  id Int @id @default(autoincrement())
+  name String
+  lastNameFirst String
+  lastNameSecond String?
+  address String
+  reference String
+  curp String
+  guarantee String
+  townId Int
+  town Town @relation(fields: [townId], references: [id])
+}
+
+model Credit {
+  id Int @id @default(autoincrement())
+  avalId Int
+  clientId Int
+  groupId Int
+  amount Int
+  captureAt DateTime @default(now())
+  creditAt DateTime
+  canRenovate Boolean @default(false)
+  nextPayment DateTime
+  lastPayment DateTime 
+  currentDebt Int
+  status Status @default(ACTIVE)
+}
+
+enum Status {
+  ACTIVE
+  LIQUIDAR
 }
