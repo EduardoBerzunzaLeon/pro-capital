@@ -15,8 +15,8 @@ datasource db {
 
 
 enum Sex {
-  MASCULINE
-  FEMENINE
+  MASCULINO
+  FEMENINO
 }
 
 enum Appointment {
@@ -27,9 +27,24 @@ enum Appointment {
 }
 
 enum Type {
-  EMPLOYEE
-  LEADER
+  EMPLEADO
+  LIDER
   NORMAL
+}
+
+enum Status {
+  ACTIVO
+  VENCIDO
+  LIQUIDADO
+  RENOVADO
+}
+
+enum PaymentStatus {
+  PAGO
+  PAGO_INCOMPLETO
+  NO_PAGO
+  ADELANTO
+  LIQUIDO
 }
 
 model User {
@@ -40,13 +55,15 @@ model User {
   lastNameFirst String
   lastNameSecond String?
   password String
+  isActive Boolean @default(true)
   roleId Int
   role Role @relation(fields: [roleId], references: [id])
   address String
   sex Sex
   avatar String?
   appointment Appointment
-  agentsRoutes Agent_Route[]
+  agentsRoutes AgentRoute[]
+  payment_detail PaymentDetail[]
 }
 
 model Role {
@@ -76,11 +93,11 @@ model Route {
   id Int @id @default(autoincrement())
   name String @unique
   isActive Boolean
-  agentsRoutes Agent_Route[]
+  agentsRoutes AgentRoute[]
   folders Folder[]
 }
 
-model Agent_Route {
+model AgentRoute {
   id Int @id @default(autoincrement())
   userId Int
   routeId Int
@@ -122,6 +139,8 @@ model Group {
  folderId Int
  folder Folder @relation(fields: [folderId], references: [id])
  clients Client[]
+ credit Credit[]
+ @@unique([name, folderId])
 }
 
 model Client {
@@ -131,13 +150,14 @@ model Client {
   lastNameSecond String?
   address String
   reference String
-  curp String
+  curp String @unique
   guarantee String
   type Type @default(NORMAL)
   townId Int
-  town Town @relation(fields: [townId], references: [id])
+  lastTown Town @relation(fields: [townId], references: [id])
   groupId Int
-  group Group @relation(fields: [groupId], references: [id])
+  lastGroup Group @relation(fields: [groupId], references: [id])
+  credit Credit[]
 }
 
 
@@ -148,28 +168,45 @@ model Aval {
   lastNameSecond String?
   address String
   reference String
-  curp String
+  curp String @unique
   guarantee String
   townId Int
-  town Town @relation(fields: [townId], references: [id])
+  lastTown Town @relation(fields: [townId], references: [id])
+  credit Credit[]
 }
 
 model Credit {
   id Int @id @default(autoincrement())
   avalId Int
+  aval Aval @relation(fields: [avalId], references: [id])
   clientId Int
+  client Client @relation(fields: [clientId], references: [id])
   groupId Int
-  amount Int
+  group Group @relation(fields: [groupId], references: [id])
+  amount Decimal @db.Decimal(6,2)
+  paymentAmount Decimal @db.Decimal(5,2)
   captureAt DateTime @default(now())
   creditAt DateTime
   canRenovate Boolean @default(false)
   nextPayment DateTime
   lastPayment DateTime 
-  currentDebt Int
-  status Status @default(ACTIVE)
+  currentDebt Decimal @db.Decimal(6,2)
+  status Status @default(ACTIVO)
+  payment_detail PaymentDetail[]
+  @@unique([clientId, groupId])
 }
 
-enum Status {
-  ACTIVE
-  LIQUIDAR
+model PaymentDetail {
+  id Int @id @default(autoincrement())
+  creditId Int
+  credit Credit @relation(fields: [creditId], references: [id])
+  paymentAmount Decimal @db.Decimal(6,2)
+  paymentDate DateTime
+  captureAt DateTime @default(now())
+  agentId Int
+  agent User @relation(fields: [agentId], references: [id])
+  folio Int?
+  notes String?
+  status PaymentStatus
 }
+
