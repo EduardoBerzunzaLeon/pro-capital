@@ -15,7 +15,6 @@ import { rootLoader } from "./application/root/root.loader";
 
 import  "react-toastify/dist/ReactToastify.css";
 import stylesheet from "~/tailwind.css?url";
-import { rootAction } from './application/root/root.action';
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
@@ -66,4 +65,4 @@ export default function App() {
   );
 }
 
-export { rootLoader as loader, rootAction as action };
+export { rootLoader as loader };

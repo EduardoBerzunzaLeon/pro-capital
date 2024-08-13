@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { Form, useActionData, useNavigation } from "@remix-run/react";
 import { useForm } from '@conform-to/react';
 import { parseWithZod } from '@conform-to/zod';
@@ -9,19 +9,28 @@ import { toast } from "react-toastify";
 import logo from '../../../img/icon_logo.png';
 import { loginAction } from "~/application/login/login.action";
 import { loginSchema } from "~/schemas";
+import { usePresence } from "framer-motion";
 
 
 export default function LoginPage() {
   const [isVisible, setIsVisible] = React.useState(false);
   const actionData = useActionData<typeof loginAction>();
   const navigation = useNavigation();
+  const [isPresent, safeToRemove ] = usePresence();
 
   useEffect(() => {
     if(actionData?.error && actionData) {
       toast.error(actionData?.error);
     }
-  }, [actionData])
-  
+  }, [actionData]);
+
+  const isSubmitting = useMemo(() => {
+    if(!isPresent)  {
+      safeToRemove();
+      return true;
+    }
+    return (navigation.state === "submitting" || navigation.state === "loading");
+ }, [isPresent, navigation.state, safeToRemove])
 
   const [form, fields] = useForm({
     onValidate({ formData }) {
@@ -33,7 +42,6 @@ export default function LoginPage() {
   }); 
 
   const toggleVisibility = () => setIsVisible(!isVisible);
-  const isSubmitting =  navigation.state === "submitting";
 
   return (
     <Card 
@@ -123,3 +131,4 @@ export default function LoginPage() {
 }
 
 export { loginAction as action };
+

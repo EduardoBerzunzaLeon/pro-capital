@@ -24,11 +24,11 @@ export default function Navbar() {
     if(key === 'logout') {
       return submit({ key }, {
          method: 'POST', 
-         relative: "route",
+         action:'logout'
       }); 
     }
 
-    console.log({key: 'SETTINGS NOT IMPLEMENTATION'}); 
+    console.log({key: 'SETTINGS NOT IMPLEMENTATED'}); 
   }
 
   

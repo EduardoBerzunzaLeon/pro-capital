@@ -157,6 +157,7 @@ model Client {
   reference String
   curp String @unique
   guarantee String
+  phoneNumber String?
   type Type @default(NORMAL)
   credit Credit[]
   isDeceased Boolean @default(false)
@@ -185,6 +186,7 @@ model Aval {
   reference String
   curp String @unique
   guarantee String
+  phoneNumber String?
   credit Credit[]
 }
 
