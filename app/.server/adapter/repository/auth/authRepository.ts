@@ -6,7 +6,7 @@ import { db } from "../../db";
 export function AuthRepository(): AuthRepositoryI {
     async function findByUserName(userName: string) {
 
-        const userDb = await db.user.findUnique({ where: { userName }});
+        const userDb = await db.user.findUnique({ where: { username: userName }});
     
         if (!userDb) {
             throw ServerError.badRequest('Credenciales Incorrectas');

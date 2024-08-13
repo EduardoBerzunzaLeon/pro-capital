@@ -658,9 +658,6 @@ export default function ClientsPage() {
          </TableBody>
        </Table>
          }
-          
-      
-     
       </>
       }
     </ClientOnly>
