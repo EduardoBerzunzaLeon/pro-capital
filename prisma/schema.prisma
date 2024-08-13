@@ -20,10 +20,14 @@ enum Sex {
 }
 
 enum Appointment {
-  AGENTE
+  ASESOR
   CAPTURISTA
-  JEFE_DEPARTAMENTO
-  JEFE_RUTA
+  JEFE_CAPTURA
+  TITULAR_RUTA
+  SUPERVISOR
+  GERENCIA
+  SUBGERENTE
+  DIRECTOR
 }
 
 enum Type {
@@ -37,6 +41,7 @@ enum Status {
   VENCIDO
   LIQUIDADO
   RENOVADO
+  FALLECIDO
 }
 
 enum PaymentStatus {
@@ -45,6 +50,7 @@ enum PaymentStatus {
   NO_PAGO
   ADELANTO
   LIQUIDO
+  GARANTIA
 }
 
 model User {
@@ -92,7 +98,7 @@ model Permission {
 model Route {
   id Int @id @default(autoincrement())
   name String @unique
-  isActive Boolean
+  isActive Boolean @default(true)
   agentsRoutes AgentRoute[]
   folders Folder[]
 }
@@ -118,8 +124,6 @@ model Town {
   municipalityId Int 
   municipality Municipality @relation(fields: [municipalityId], references: [id])
   folder Folder[]
-  clients Client[]
-  avals Aval[]
 }
 
 model Folder {
@@ -130,6 +134,8 @@ model Folder {
  routeId Int
  route Route @relation(fields: [routeId], references: [id])
  groups Group[]
+ leader Leader?
+ credits Credit[]
 }
 
 
@@ -138,7 +144,6 @@ model Group {
  name Int 
  folderId Int
  folder Folder @relation(fields: [folderId], references: [id])
- clients Client[]
  credit Credit[]
  @@unique([name, folderId])
 }
@@ -153,11 +158,21 @@ model Client {
   curp String @unique
   guarantee String
   type Type @default(NORMAL)
-  townId Int
-  lastTown Town @relation(fields: [townId], references: [id])
-  groupId Int
-  lastGroup Group @relation(fields: [groupId], references: [id])
   credit Credit[]
+  isDeceased Boolean @default(false)
+}
+
+model Leader {
+  id Int @id @default(autoincrement())
+  name String
+  lastNameFirst String
+  lastNameSecond String?
+  address String
+  birthday DateTime
+  anniversaryDate DateTime
+  unsubscribeDate DateTime
+  folderId Int @unique
+  folder Folder @relation(fields: [folderId], references: [id])
 }
 
 
@@ -170,8 +185,6 @@ model Aval {
   reference String
   curp String @unique
   guarantee String
-  townId Int
-  lastTown Town @relation(fields: [townId], references: [id])
   credit Credit[]
 }
 
@@ -183,6 +196,8 @@ model Credit {
   client Client @relation(fields: [clientId], references: [id])
   groupId Int
   group Group @relation(fields: [groupId], references: [id])
+  folderId Int
+  folder Folder @relation(fields: [folderId], references: [id])
   amount Decimal @db.Decimal(6,2)
   paymentAmount Decimal @db.Decimal(5,2)
   captureAt DateTime @default(now())
@@ -193,20 +208,21 @@ model Credit {
   currentDebt Decimal @db.Decimal(6,2)
   status Status @default(ACTIVO)
   payment_detail PaymentDetail[]
-  @@unique([clientId, groupId])
+  @@unique([clientId, groupId, folderId])
 }
 
 model PaymentDetail {
   id Int @id @default(autoincrement())
   creditId Int
   credit Credit @relation(fields: [creditId], references: [id])
+  agent User @relation(fields: [agentId], references: [id])
   paymentAmount Decimal @db.Decimal(6,2)
   paymentDate DateTime
   captureAt DateTime @default(now())
   agentId Int
-  agent User @relation(fields: [agentId], references: [id])
   folio Int?
   notes String?
   status PaymentStatus
+  isGuarentee Boolean @default(false)
 }
 

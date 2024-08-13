@@ -53,9 +53,10 @@ export const municipalities = [
     { name: 'calkini' },
     { name: 'chetumal' },
     { name: 'maxcanu' },
+    { name: 'champoton' },
 ]
 
-export const tows = [
+export const towns = [
     { name: 'carrillo puerto', municipality: 'champoton' },
     { name: 'sihochac', municipality: 'champoton' },
     { name: 'champoton', municipality: 'champoton' },
@@ -95,24 +96,52 @@ export const folders = [
 
 export const groups = [
     {
-        name: '10',
+        name: 10,
         folder: 'maxcanu 1'
     },
     {
-        name: '1',
+        name: 1,
         folder: 'champoton 1'
     },
     {
-        name: '2',
+        name: 2,
         folder: 'champoton 1'
     },
     {
-        name: '3',
+        name: 3,
         folder: 'champoton 1'
     },
 ]
 
-export const users = [
+type Sex = 'MASCULINO' | 'FEMENINO';
+type Appointment = 
+'ASESOR'|
+'CAPTURISTA'|
+'JEFE_CAPTURA'|
+'TITULAR_RUTA'|
+'SUPERVISOR'|
+'GERENCIA'|
+'SUBGERENTE'|
+'DIRECTOR';
+type Types = 'EMPLEADO' | 'LIDER' | 'NORMAL';
+  
+
+interface User {
+    email: string, 
+    name: string,
+    lastNameFirst: string,
+    lastNameSecond: string,
+    username: string,
+    password: string,
+    isActive: boolean,
+    role: string,
+    address: string,
+    sex: Sex,
+    avatar?: string,
+    appointment: Appointment
+}
+
+export const users: User[] = [
     {
         email: 'eduardo.berzunza@gmail.com',
         name: 'eduardo jesús',
@@ -125,13 +154,13 @@ export const users = [
         address: 'fraccionamiento la riviera',
         sex: 'MASCULINO',
         avatar: '',
-        appointment: 'Sistemas',
+        appointment: 'SUPERVISOR',
     },
     {
         email: 'carlos.berzunza@gmail.com',
         name: 'carlos agustin',
         lastNameFirst: 'berzunza',
-        lastNameLast: 'león',
+        lastNameSecond: 'león',
         username: 'carlos.berzunza',
         password: '123456',
         isActive: true,
@@ -139,47 +168,51 @@ export const users = [
         address: 'colonial jardines',
         sex: 'MASCULINO',
         avatar: '',
-        appointment: 'Agente',
+        appointment: 'ASESOR',
     },
 ]
 
+interface Client {
+    name: string,
+    lastNameFirst: string,
+    lastNameSecond: string,
+    address: string,
+    reference: string,
+    curp: string,
+    type: Types,
+    guarantee: string
+}
 
-export const clients = [
+export const clients: Client[] = [
     {
         name: 'fatima',
         lastNameFirst: 'pacheco',
-        lastNameLast: 'bernes',
+        lastNameSecond: 'bernes',
         address: 'fraccionamiento la riviera',
         reference: 'casa blanca de dos pisos',
         curp: 'FATM290893MCCNRD01',
         guarantee: 'television de 30 in',
         type: 'NORMAL',
-        lastTown: 'champoton 1',
-        lastGroup: '2'
     },
     {
         name: 'maria',
         lastNameFirst: 'berzunza',
-        lastNameLast: 'leon',
+        lastNameSecond: 'leon',
         address: 'calle 2 col san joaquin',
         reference: 'a lado del pollo pollon',
         curp: 'JATM290893MCCNRD01',
         guarantee: 'television de 30 in',
         type: 'LIDER',
-        lastTown: 'champoton 1',
-        lastGroup: '2'
     },
     {
         name: 'carlos',
         lastNameFirst: 'berzunza',
-        lastNameLast: 'leon',
+        lastNameSecond: 'leon',
         address: 'col jardines',
         reference: 'casa blanca de dos pisos',
         curp: 'BELC290893MCCNRD01',
         guarantee: 'television de 30 in',
         type: 'EMPLEADO',
-        lastTown: 'maxcanu 1',
-        lastGroup: '10'
     },
 ]
 
@@ -189,50 +222,106 @@ export const avals = [
     {
         name: 'fatima',
         lastNameFirst: 'bernes',
-        lastNameLast: 'hermoxa',
+        lastNameSecond: 'hermoxa',
         address: 'col bosque real',
         reference: 'atras de refaccionaria leon',
         curp: 'FATN290893MCCNRD01',
         guarantee: 'television de 30 in',
-        lastTown: 'champoton 1',
     },
     {
         name: 'patricia',
         lastNameFirst: 'valencia',
-        lastNameLast: 'ortiz',
+        lastNameSecond: 'ortiz',
         address: 'col bosque real',
         reference: 'acostado de ecomoda',
         curp: 'PVOR290893MCCNRD01',
         guarantee: 'television de 30 in',
-        lastTown: 'maxcanu 1',
     },
 ]
 
-export const credits = [
+type Status = 'ACTIVO' |
+'VENCIDO' |
+'LIQUIDADO' |
+'RENOVADO' |
+'FALLECIDO';
+
+type PaymentStatus =
+'PAGO' |
+'PAGO_INCOMPLETO' |
+'NO_PAGO' |
+'ADELANTO' |
+'LIQUIDO' |
+'GARANTIA';
+
+interface Credit {
+    aval: string,
+    client: string,
+    group: number,
+    folder: string,
+    amount: number,
+    paymentAmount: number,
+    captureAt: string,
+    creditAt: string,
+    canRenovate: boolean,
+    nextPayment: string,
+    lastPayment: string,
+    currentDebt: number
+    status: Status
+}
+
+export const credits: Credit[] = [
     {
         aval: 'FATN290893MCCNRD01',
         client: 'FATM290893MCCNRD01',
-        group: '2',
+        group: 2,
+        folder: 'champoton 1',
         amount: 1500,
         paymentAmount: 150,
-        captureAt: Date.now(),
-        creditAt: Date.now(),
+        captureAt:  new Date(2024, 6, 1).toISOString(),
+        creditAt:  new Date(2024, 6, 1).toISOString(),
         canRenovate: false,
-        nextPayment: Date.now(),
-        lastPayment: Date.now(),
+        nextPayment:  new Date(2024, 6, 1).toISOString(),
+        lastPayment:  new Date(2024, 6, 1).toISOString(),
         currentDebt: 1200,
         status: 'ACTIVO',
     }
 ]
 
-export const paymentDetail = [
+interface PaymentDetail {
+    client: string;
+    folder: string,
+    group: number,
+    paymentAmount: number,
+    paymentDate: string,
+    captureAt: string,
+    agendt: string,
+    notes: string,
+    status: PaymentStatus
+}
+
+export const paymentDetail: PaymentDetail[] = [
     {
-        credit: 'FATM290893MCCNRD01_champoton-1_2',
+        client: 'FATM290893MCCNRD01',
+        folder: 'champoton 1',
+        group: 2,
         paymentAmount: 300,
-        paymentDate: Date.now(),
-        captureAt: Date.now(),
-        agendt: 'eduardo.berzunza',
+        paymentDate: new Date(2024, 6, 1).toISOString(),
+        captureAt: new Date(2024, 6, 1).toISOString(),
+        agendt: 'carlos.berzunza',
         notes: 'adelanto el pago, por que no estara la proxima semana',
         status: 'ADELANTO'
+    }
+]
+
+export const leaders = [
+    {
+        name: 'maria juana',
+        lastNameFirst: 'valencia',
+        lastNameSecond:'pech',
+        address: 'my casita linda',
+        birthday: new Date(2024, 6, 1).toISOString(),
+        anniversaryDate: new Date(2024, 6, 1).toISOString(),
+        unsubscribeDate: new Date(2024, 6, 1).toISOString(),
+        folder: 'champoton 1'
     }
 ]

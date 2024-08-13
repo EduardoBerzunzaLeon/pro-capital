@@ -6,6 +6,7 @@ import { LogginEnd } from "~/components/ui";
 import { dashboardLoader } from "~/application/dashboard/dashboard.loader";
 import Navbar from "~/components/ui/navbar/Narbar";
 import SideBar from "~/components/ui/sidebar/SideBar";
+import { useOptionalUser } from "~/application";
 
 export const meta: MetaFunction = () => {
   return [{ title: "Dashboard" }];
@@ -20,6 +21,8 @@ export const meta: MetaFunction = () => {
 export default function Dashboard() {
   const location = useLocation();
   const navigationType = useNavigationType();
+
+  const user = useOptionalUser();
 
   return (
     <>
@@ -44,7 +47,7 @@ export default function Dashboard() {
         ( 
           navigationType === 'PUSH' && location?.state?._isRedirect
         ) && 
-          ( <LogginEnd text='Bienvenido de nuevo, Eduardo Berzunza' /> )
+          ( <LogginEnd text={`Bienvenido de nuevo, ${user?.name.toUpperCase()}`} /> )
       }
     </>
   )
