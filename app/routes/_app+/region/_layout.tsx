@@ -1,24 +1,12 @@
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Tooltip, Pagination } from "@nextui-org/react";
-import { LoaderFunction } from "@remix-run/node"
-import { useFetcher, useLoaderData, useNavigation, useSearchParams } from "@remix-run/react";
+import { ActionFunction, json } from '@remix-run/node';
+import {  useFetcher } from "@remix-run/react";
 import { Key, useCallback, useEffect, useState } from "react";
 import { FaEdit, FaTrashAlt } from "react-icons/fa";
+import { toast } from "react-toastify";
 import {  MunicipalityI } from "~/.server/domain/entity";
-import { Pagination as PaginationI } from "~/.server/domain/interface/MunicipalityRepository.interface";
+import { handlerError } from "~/.server/errors/handlerError";
 import { Service } from "~/.server/services";
-
-// export const loader: LoaderFunction = async (contextRemix) => {
-//   console.log(contextRemix);
-//   const url = new URL(contextRemix.request.url);
-//   const page = url.searchParams.get('pm') || 1;
-
-
-//   try {
-//     return await Service.municipality.findAll(Number(page));
-//   } catch (error) {
-//     return [];  
-//   }
-// }
 
 type Column = 'name' | 'id'  ;
 
@@ -27,32 +15,30 @@ const columns = [
   { key: 'name', label: 'NOMBRE' },
   { key: 'actions', label: 'ACTIONS'},
 ]
-// const fetcher = useFetcher();
-// const fetcherRef = useRef();
-// const [page, setPage] = useState(1);
 
-// // console.log({data: fetcher.data});
-// // const data = fetcher.load('/municipality');
-// useEffect(() => {
-//   fetcherRef.current = fetcher;
-// }, [fetcher]);
-
-// useEffect(() => {
-//   if(fetcherRef.current.state === 'idle') {
-//     fetcherRef.current.load("/municipality")
-//   }
-// }, []);
-
-// useEffect(() => {
-//   if(page) {
-//     fetcherRef.current.load(`/municipality?page=${page}`);
-//   }
-// }, [page, fetcherRef])
+export const action: ActionFunction = async({request}) => {
+  const formData = await request.formData();
+  const data = Object.fromEntries(formData);
+  try {
+    await Service.municipality.deleteOne(Number(data.id));
+    return json({status: 'success'}, 201);
+  } catch (error) {
+    return handlerError(error);
+    // return json({error: 'no data'});
+  }
+}
 
 export default function  RegionPage()  {
   const fetcher = useFetcher({ key: 'municipality' });
+  const fetcherDelete = useFetcher({ key: 'municipalityDelete' });
   const [isLoading, setIsLoading] = useState(true);
-  
+
+  useEffect(() => {
+    if(fetcherDelete.data?.error ) {
+      toast.error(fetcherDelete.data?.error);
+    }
+  }, [fetcherDelete.data]);
+
   useEffect(() => {
     fetcher.load(`/municipality/?pm=${1}`);
     setIsLoading(false);
@@ -66,7 +52,13 @@ export default function  RegionPage()  {
     fetcher.load(`/municipality/?lm=${a.target.value}`)
   }
 
-  // console.log(loader);
+  const handleDelete = (id: number) => {
+    fetcherDelete.submit({id}, {
+      method: 'POST', 
+      action:'/region'
+   })
+  }
+ 
   const renderCell = useCallback((municipality: MunicipalityI, columnKey: Key) => {
     if(columnKey === 'actions') {
       return (
@@ -78,7 +70,7 @@ export default function  RegionPage()  {
           </Tooltip>
           <Tooltip color="danger" content="Eliminar Municipio">
             <span className="text-lg text-danger cursor-pointer active:opacity-50">
-              <FaTrashAlt />
+              <FaTrashAlt onClick={() => handleDelete(municipality.id)} />
             </span>
           </Tooltip>
         </div>
@@ -88,7 +80,7 @@ export default function  RegionPage()  {
 
   }, [])
 
-  return (
+  return ( 
     <div>
 
     <Table 
@@ -101,7 +93,7 @@ export default function  RegionPage()  {
             showControls
             showShadow
             color="secondary"
-            page={fetcher?.data?.currentPage || 1}
+            page={fetcher?.data?.currentPage || 0}
             total={fetcher?.data?.pageCount}
             onChange={handlePagination}
           />
@@ -134,7 +126,7 @@ export default function  RegionPage()  {
           <TableRow key={municipality.id}>
             {(columnKey) => <TableCell>{renderCell(municipality, columnKey)}</TableCell>}
           </TableRow>
-        )}
+        )}  
       </TableBody>
     </Table>
 

@@ -5,6 +5,14 @@ import { ServerError } from "./ServerError";
 
 
 export const handlerError = (error: unknown) => {
+
+
+      if(error instanceof ServerError) {
+        const { message, status } = error;
+        console.log({message, status});
+        return json({ error: message, status });
+      }
+
       if(!(error instanceof AuthorizationError)) {
         return error
       }
