@@ -1,11 +1,11 @@
-interface UserI {
+export interface UserI {
     id: number,
     email: string,
     name: string,
     lastNameFirst: string,
-    userName: string,
+    username: string,
     password: string,
-    lastNameLast: string | null,
+    lastNameSecond: string | null,
 }
 
 export class User {
@@ -14,26 +14,26 @@ export class User {
     readonly email: string;
     readonly name: string;
     readonly lastNameFirst: string;
-    readonly userName: string;
+    readonly username: string;
     readonly password: string;
-    readonly lastNameLast?: string;
+    readonly lastNameSecond?: string;
 
     constructor({
         id,
         email,
         name,
         lastNameFirst,
-        userName,
+        username,
         password,
-        lastNameLast
+        lastNameSecond
     }: UserI){
         this.id = id;
         this.email = email;
         this.name = name;
         this.lastNameFirst = lastNameFirst;
-        this.userName = userName;
+        this.username = username;
         this.password = password;
-        this.lastNameLast = this.validateLastNameLast(lastNameLast);
+        this.lastNameSecond = this.validateLastNameLast(lastNameSecond);
     }
 
 

@@ -11,12 +11,12 @@ import {
 } from "@nextui-org/react";
 
 import logo from '../../../../img/icon_logo.png';
-import { useSubmit } from "@remix-run/react";
-import { useOptionalUser } from "~/application";
+import { useRouteLoaderData, useSubmit } from "@remix-run/react";
+import { User } from "~/.server/domain/entity";
 
 
 export default function Navbar() {
-  const user = useOptionalUser();
+  const { user } = useRouteLoaderData('root') as { user: User};
   const submit  = useSubmit();
   // const [action, setAction] = useState<string | number>('');
   const onActionChange = (key: string | number) => {
@@ -63,7 +63,7 @@ export default function Navbar() {
               as="button"
               className="transition-transform"
               color="secondary"
-              name={user?.userName}
+              name={user?.username}
               size="sm"
               src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
             />
@@ -79,7 +79,7 @@ export default function Navbar() {
               textValue="profile"
             >
               <p className="font-semibold">inicio de sesión</p>
-              <p className="font-semibold">{user?.userName}</p>
+              <p className="font-semibold">{user?.username}</p>
             </DropdownItem>
             <DropdownItem 
               key="settings"

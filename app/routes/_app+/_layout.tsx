@@ -1,12 +1,12 @@
 import { Breadcrumbs, BreadcrumbItem } from "@nextui-org/react";
-import { Outlet, useLocation, useNavigationType} from "@remix-run/react";
+import { Outlet, useLocation, useNavigationType, useRouteLoaderData} from "@remix-run/react";
 import { type MetaFunction } from "@remix-run/node";
 import { FaHome, FaUser, FaUsers } from "react-icons/fa";
 import { LogginEnd } from "~/components/ui";
 import { dashboardLoader } from "~/application/dashboard/dashboard.loader";
 import Navbar from "~/components/ui/navbar/Narbar";
 import SideBar from "~/components/ui/sidebar/SideBar";
-import { useOptionalUser } from "~/application";
+import { User } from "@prisma/client";
 
 export const meta: MetaFunction = () => {
   return [{ title: "Dashboard" }];
@@ -21,8 +21,7 @@ export const meta: MetaFunction = () => {
 export default function Dashboard() {
   const location = useLocation();
   const navigationType = useNavigationType();
-
-  const user = useOptionalUser();
+  const { user } = useRouteLoaderData('root') as { user: User};
 
   return (
     <>
