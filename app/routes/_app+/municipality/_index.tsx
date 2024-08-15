@@ -1,4 +1,5 @@
-import { LoaderFunction } from "@remix-run/node";
+import { ActionFunction, json, LoaderFunction } from "@remix-run/node";
+import { handlerError } from "~/.server/errors/handlerError";
 import { Service } from "~/.server/services";
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -13,4 +14,32 @@ export const loader: LoaderFunction = async ({ request }) => {
       return [];  
     }
     
+  }
+
+
+  export const action: ActionFunction = async({request}) => {
+    const formData = await request.formData();
+    const data = Object.fromEntries(formData);
+    try {
+      
+      if(data._action === 'update') {
+        await Service.municipality.updateOne(Number(data.id), data.name+'')
+      }
+
+      if(data._action === 'create') {
+          await Service.municipality.createOne(data.name+'');
+      }
+
+      return json({status: 'success'}, 201); 
+    } catch (error) {
+      console.log(error);
+      return handlerError(error);
+    }
+    // try {
+    //   await Service.municipality.deleteOne(Number(data.id));
+    //   return json({ status: 'success' }, 201);
+    // } catch (error) {
+    //   return handlerError(error);
+    //   // return json({error: 'no data'});
+    // }
   }

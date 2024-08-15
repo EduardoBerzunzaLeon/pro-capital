@@ -11,6 +11,7 @@ export interface Pagination {
 export interface MunicipalityRepositoryI {
     findAll: (page: number, limit: number) => Promise<Pagination>,
     findOne: (id: number) => Promise<MunicipalityI>,
+    createOne: (name: string) => Promise<MunicipalityI>,
     deleteOne: (id: number) => Promise<void>,
     updateOne: (id: number, name: string) => Promise<void>,
 }

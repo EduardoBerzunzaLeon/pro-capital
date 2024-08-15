@@ -87,10 +87,26 @@ export function MunicipalityRepository(): MunicipalityRepositoryI {
     }
 
 
+    async function createOne(name: string) {
+        const municipalityDb = await db.municipality.findUnique({ where: { name } });
+        if(municipalityDb) {
+            throw ServerError.badRequest(`El municipio con nombre: ${name} ya existe`);
+        }
+        
+        const newMunicipality = await db.municipality.create({ data: { name }} );
+        
+        if(!newMunicipality) {
+            throw ServerError.internalServer(`No se pudo crear el municipio ${name}, intentelo mas tarde`);
+        }
+
+        return Municipality.create(newMunicipality);
+    }
+
     return { 
         findAll,
         findOne,
         deleteOne,
-        updateOne
+        updateOne,
+        createOne
     };
 } 

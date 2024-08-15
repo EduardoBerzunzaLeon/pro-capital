@@ -16,9 +16,14 @@ export const updateOne = async (id: number, name: string) => {
     await Repository.municipality.updateOne(id, name);
 }
 
+export const createOne = async (name: string) => {
+    await Repository.municipality.createOne(name);
+}
+
 export default {
     findAll,
     findOne,
     deleteOne,
     updateOne,
+    createOne,
 }

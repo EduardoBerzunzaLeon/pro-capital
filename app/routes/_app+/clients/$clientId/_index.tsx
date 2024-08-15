@@ -2,7 +2,7 @@ import { getLocalTimeZone, today } from "@internationalized/date";
 import {Card, CardHeader, CardBody, Divider, Avatar, Chip, Button, Input, Textarea, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Calendar, useDisclosure, Modal, ModalContent, ModalBody, ModalFooter, ModalHeader, DatePicker, Popover, PopoverContent, PopoverTrigger, Select, SelectItem, User, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger} from "@nextui-org/react";
 import { FaChevronDown, FaPlus } from "react-icons/fa";
 import ExcelExport from "~/components/utils/ExcelExport";
-import { groupOptions, statusOptions } from "../data";
+import { groupOptions } from "../data";
 import { capitalize } from "../utils";
 
 export default function Client() {
