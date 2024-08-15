@@ -6,7 +6,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   
     const url = new URL(request.url);
     const page = url.searchParams.get('pm') || 1;
-    const limit = url.searchParams.get('lm') || 2;
+    const limit = url.searchParams.get('lm') || 5;
   
     try {
       return await Service.municipality.findAll(Number(page), Number(limit));
@@ -15,7 +15,6 @@ export const loader: LoaderFunction = async ({ request }) => {
     }
     
   }
-
 
   export const action: ActionFunction = async({request}) => {
     const formData = await request.formData();
@@ -30,10 +29,14 @@ export const loader: LoaderFunction = async ({ request }) => {
           await Service.municipality.createOne(data.name+'');
       }
 
+      if(data._action === 'delete') {
+        await Service.municipality.deleteOne(Number(data.id));
+      }
+
       return json({status: 'success'}, 201); 
     } catch (error) {
-      console.log(error);
-      return handlerError(error);
+      // return handlerError(error);
+      return  { error: 'ocurrio un error', id: Number(data.id) };
     }
     // try {
     //   await Service.municipality.deleteOne(Number(data.id));
