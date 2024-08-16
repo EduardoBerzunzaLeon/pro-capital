@@ -1,5 +1,8 @@
-import { ActionFunction, json, LoaderFunction } from "@remix-run/node";
-import { handlerError } from "~/.server/errors/handlerError";
+import { ActionFunction, LoaderFunction } from "@remix-run/node";
+import { MunicipalityI } from "~/.server/domain/entity";
+import { PaginationI } from "~/.server/domain/interface";
+import { handlerError } from "~/.server/reponses/handlerError";
+import { handlerSuccess } from "~/.server/reponses/handlerSuccess";
 import { Service } from "~/.server/services";
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -9,20 +12,23 @@ export const loader: LoaderFunction = async ({ request }) => {
     const limit = url.searchParams.get('lm') || 5;
   
     try {
-      return await Service.municipality.findAll(Number(page), Number(limit));
+      const data = await Service.municipality.findAll(Number(page), Number(limit));
+
+      return handlerSuccess<PaginationI<MunicipalityI>>(200, data);
     } catch (error) {
       return [];  
     }
     
-  }
+}
 
   export const action: ActionFunction = async({request}) => {
     const formData = await request.formData();
     const data = Object.fromEntries(formData);
+
     try {
       
       if(data._action === 'update') {
-        await Service.municipality.updateOne(Number(data.id), data.name+'')
+        await Service.municipality.updateOne(formData)
       }
 
       if(data._action === 'create') {
@@ -33,16 +39,10 @@ export const loader: LoaderFunction = async ({ request }) => {
         await Service.municipality.deleteOne(Number(data.id));
       }
 
-      return json({status: 'success', id: data?.id, name: data?.name }, 201); 
+      return handlerSuccess(201, { id: Number(data?.id), name: data?.name+'' });
+
     } catch (error) {
-      // return handlerError(error);
-      return  { error: 'ocurrio un error', id: Number(data.id) };
+      return handlerError(error, { ...data });
     }
-    // try {
-    //   await Service.municipality.deleteOne(Number(data.id));
-    //   return json({ status: 'success' }, 201);
-    // } catch (error) {
-    //   return handlerError(error);
-    //   // return json({error: 'no data'});
-    // }
   }
+

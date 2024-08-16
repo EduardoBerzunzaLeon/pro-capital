@@ -2,16 +2,18 @@ import { useFetcher } from "@remix-run/react";
 import { Action } from "./Action";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
-// import { useFetcherWithReset } from "~/application";
+import { MunicipalityI } from "~/.server/domain/entity";
+import { ActionPostMunicipality, HandlerSuccess } from "~/.server/reponses";
 
 interface Props {
-    idMunicipality: number
+    idMunicipality: number,
+    onOpenEdit: () => void
 }
 
-export function MunicipalityAction({ idMunicipality }: Props)  {
-    const fetcherDelete = useFetcher();
-    const fetcherGet = useFetcher({ key: 'getMunicipality' });
-    const isTheSame = Number(fetcherDelete?.data?.id) === idMunicipality;
+export function MunicipalityAction({ idMunicipality, onOpenEdit }: Props)  {
+    const fetcherDelete = useFetcher<HandlerSuccess<ActionPostMunicipality>>();
+    const fetcherGet = useFetcher<HandlerSuccess<MunicipalityI>>({ key: 'getMunicipality' });
+    const isTheSame = Number(fetcherDelete?.data?.serverData.id) === idMunicipality;
     const isLoading = fetcherDelete.state !== 'idle' 
         && isTheSame;
 
@@ -26,10 +28,9 @@ export function MunicipalityAction({ idMunicipality }: Props)  {
     }
 
     const handleUpdate = () => {
+        onOpenEdit();
         fetcherGet.load(`/municipality/${idMunicipality}`);
     }
-
-    console.log(fetcherDelete.state)
 
     useEffect(() => {
         if(fetcherDelete.data?.error && isTheSame && !isLoading ) {

@@ -19,9 +19,7 @@ export function MunicipalityRepository(): MunicipalityRepositoryI {
         const pageCount = Math.ceil(total / limit);
         const nextPage = page < pageCount ? page + 1: null;
 
-        console.log(municipalitiesDb);
-
-        if (municipalitiesDb.length === 0  && total === 0) {
+        if (total === 0) {
             throw ServerError.notFound('No se encontraron municipios');
         }
     

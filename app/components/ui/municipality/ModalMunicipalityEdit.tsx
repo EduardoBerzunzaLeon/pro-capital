@@ -2,24 +2,21 @@ import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input
 import { useFetcher } from "@remix-run/react";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
+import { MunicipalityI } from "~/.server/domain/entity";
+import { HandlerSuccess, ActionPostMunicipality } from "~/.server/reponses";
 
 interface Props {
-    id: number;
-    name: string;
     isOpen: boolean;
     onOpenChange: (isOpen: boolean) => void
-    fetcherState: string;
 }
 
-export function ModalMunicipalityEdit({ 
-        id, 
-        name, 
-        fetcherState, 
+export function ModalMunicipalityEdit({
         isOpen, 
         onOpenChange 
     }: Props) {
     
-    const fetcher = useFetcher();
+    const fetcher = useFetcher<HandlerSuccess<ActionPostMunicipality>>();
+    const fetcherGet = useFetcher<HandlerSuccess<MunicipalityI>>({ key: 'getMunicipality' });
 
     useEffect(() => {
         
@@ -45,17 +42,17 @@ export function ModalMunicipalityEdit({
           {(onClose) => (
             <>
               {
-                 fetcherState === 'idle' ||  fetcher.state === 'loading' ?
+                 fetcherGet.state === 'idle' ||  fetcher.state === 'loading' ?
                    (
                     <>
                     <fetcher.Form method='POST' action="/municipality">
                         <ModalHeader className="flex flex-col gap-1">
-                            Actualizar Municipio de {name}
+                            Actualizar Municipio de {fetcherGet.data?.serverData.name}
                         </ModalHeader>
                         <ModalBody>
                             <input 
                                 name='id'
-                                defaultValue={id}
+                                defaultValue={fetcherGet.data?.serverData.id}
                                 type="hidden"
                             />
                             <Input
@@ -63,7 +60,7 @@ export function ModalMunicipalityEdit({
                                 placeholder="Ingresa el Municipio"
                                 variant="bordered"
                                 name='name'
-                                defaultValue={name}
+                                defaultValue={fetcherGet.data?.serverData.name}
                                 endContent={
                                     fetcher.state !== 'idle' && (
                                         <Spinner color="default"/>
@@ -82,8 +79,11 @@ export function ModalMunicipalityEdit({
                     </fetcher.Form>
                     </>
                   )
-                  : <p>Cargando los datos</p>
-                       
+                  : (<ModalBody>
+                    <Spinner 
+                      label="Cargando datos del Municipio"
+                    />
+                  </ModalBody>)
               }
               
             </>

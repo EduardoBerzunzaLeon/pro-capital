@@ -5,7 +5,7 @@ import { Key, useCallback, useEffect, useState } from "react";
 import { FaEdit, FaPlus, FaTrashAlt } from "react-icons/fa";
 import { toast } from "react-toastify";
 import {  MunicipalityI } from "~/.server/domain/entity";
-import { handlerError } from "~/.server/errors/handlerError";
+import { handlerError } from "~/.server/reponses/handlerError";
 import { Service } from "~/.server/services";
 
 type Column = 'name' | 'id'  ;

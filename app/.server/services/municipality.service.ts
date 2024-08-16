@@ -1,4 +1,7 @@
+import { municipalitySchema } from "~/schemas";
 import { Repository } from "../adapter/repository"
+import { parseWithZod } from "@conform-to/zod";
+import { ValidationConformError } from "../errors";
 
 export const findAll = async (page: number = 1, limit: number = 2 ) => {
     return await Repository.municipality.findAll(page, limit);
@@ -12,7 +15,14 @@ export const deleteOne = async (id: number) => {
     await Repository.municipality.deleteOne(id);
 }
 
-export const updateOne = async (id: number, name: string) => {
+export const updateOne = async (form: FormData) => {
+    const submission = parseWithZod(form, { schema: municipalitySchema });
+
+    if(submission.status !== 'success') {
+        throw new ValidationConformError('Error en los campos', submission.reply());
+    }
+
+    const { id, name } = submission.value;
     await Repository.municipality.updateOne(id, name);
 }
 

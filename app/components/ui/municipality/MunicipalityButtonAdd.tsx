@@ -1,22 +1,21 @@
 import { useEffect } from "react";
 
 import { useFetcher} from "@remix-run/react";
-import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@nextui-org/react";
+import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Spinner, useDisclosure } from "@nextui-org/react";
 import { FaPlus } from "react-icons/fa";
 import { toast } from "react-toastify";
-
+import { HandlerSuccess, ActionPostMunicipality } from "~/.server/reponses";
 
 
 export function MunicipalityButtonAdd() {
     const { isOpen, onOpenChange, onOpen, onClose } = useDisclosure();
-    const fetcher = useFetcher({ key: 'municipalityCreate' });
+    const fetcher = useFetcher<HandlerSuccess<ActionPostMunicipality>>({ key: 'municipalityCreate' });
 
     const handleOpen = () => {
         onOpen();
     }
 
     useEffect(() => {
-        console.log(fetcher)
         if(fetcher.data?.error && isOpen && fetcher.state === 'idle') {
           toast.error(fetcher.data?.error, {
             toastId: 'addMunicipality'
@@ -28,7 +27,7 @@ export function MunicipalityButtonAdd() {
           onClose();
         }
     
-    
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       }, [fetcher, fetcher.data, fetcher.state]);
 
  
@@ -62,6 +61,9 @@ export function MunicipalityButtonAdd() {
                                     placeholder="Ingresa el Municipio"
                                     variant="bordered"
                                     name='name'
+                                    endContent={fetcher.state !== 'idle' && (
+                                        <Spinner />
+                                    )}
                                 />
                             </ModalBody>
                             <ModalFooter>
