@@ -2,6 +2,7 @@ import { useFetcher } from "@remix-run/react";
 import { Action } from "./Action";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
+// import { useFetcherWithReset } from "~/application";
 
 interface Props {
     idMunicipality: number
@@ -9,6 +10,7 @@ interface Props {
 
 export function MunicipalityAction({ idMunicipality }: Props)  {
     const fetcherDelete = useFetcher();
+    const fetcherGet = useFetcher({ key: 'getMunicipality' });
     const isTheSame = Number(fetcherDelete?.data?.id) === idMunicipality;
     const isLoading = fetcherDelete.state !== 'idle' 
         && isTheSame;
@@ -22,22 +24,23 @@ export function MunicipalityAction({ idMunicipality }: Props)  {
           action:'/municipality',
        })
     }
-    
-    useEffect(() => {
-        if(fetcherDelete.data?.error && isTheSame && !isLoading) {
-          toast.error(fetcherDelete.data?.error);
-        }
-        
-        if(fetcherDelete.data?.status === 'success' && isTheSame) {
-          toast.success('El municipio se borro correctamente');
-        }
-    
-    }, [fetcherDelete.data, isTheSame, isLoading]);
 
+    const handleUpdate = () => {
+        fetcherGet.load(`/municipality/${idMunicipality}`);
+    }
+
+    console.log(fetcherDelete.state)
+
+    useEffect(() => {
+        if(fetcherDelete.data?.error && isTheSame && !isLoading ) {
+            toast.error(fetcherDelete.data?.error);
+        }
+    }, [fetcherDelete.data, isLoading, isTheSame]);
+    
     return (
         <Action 
             ariaLabel="Municipalities"
-            onUpdate={() => console.log('update')}
+            onUpdate={handleUpdate}
             onDelete={handleDelete}
             isLoading={isLoading}
         />

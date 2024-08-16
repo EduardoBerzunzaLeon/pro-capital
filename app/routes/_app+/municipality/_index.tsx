@@ -33,7 +33,7 @@ export const loader: LoaderFunction = async ({ request }) => {
         await Service.municipality.deleteOne(Number(data.id));
       }
 
-      return json({status: 'success'}, 201); 
+      return json({status: 'success', id: data?.id, name: data?.name }, 201); 
     } catch (error) {
       // return handlerError(error);
       return  { error: 'ocurrio un error', id: Number(data.id) };

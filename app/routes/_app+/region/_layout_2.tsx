@@ -36,7 +36,6 @@ export default function  RegionPage()  {
   const fetcherUpdate = useFetcher({ key: 'municipalityUpdate' });
   const fetcherCreate = useFetcher({ key: 'municipalityCreate' });
 
-  console.log(fetcherCreate.data);
   const [isLoading, setIsLoading] = useState(true);
   const {isOpen, onOpen, onOpenChange} = useDisclosure();
   const {
@@ -131,7 +130,6 @@ export default function  RegionPage()  {
       )
     } 
     return municipality[(columnKey as Column)];
-
   }, [])
 
   return ( 
@@ -209,13 +207,6 @@ export default function  RegionPage()  {
                        Actualizar Municipio de {fetcherGet.data?.municipality.name}
                     </ModalHeader>
                     <ModalBody>
-                      {/* <Input 
-                        label="ID"
-                        name='id'
-                        value={fetcherGet.data?.municipality.id}
-                        variant="bordered"
-                        readOnly
-                      /> */}
                       <input 
                        name='id'
                        defaultValue={fetcherGet.data?.municipality.id}
@@ -278,8 +269,6 @@ export default function  RegionPage()  {
                       </Button>
                     </ModalFooter>
                     </fetcherCreate.Form>
-              
-              
             </>
           )}
         </ModalContent>
