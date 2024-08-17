@@ -2,15 +2,17 @@ import { db } from "../../db";
 import { ServerError } from "~/.server/errors";
 import { MunicipalityRepositoryI } from "~/.server/domain/interface";
 import { Municipality } from "~/.server/domain/entity";
+import { PaginationProps } from "../pagination/pagination.interface";
 
 export function MunicipalityRepository(): MunicipalityRepositoryI {
-    async function findAll(page: number, limit: number) {
+    async function findAll({ page, limit, column, direction }: PaginationProps) {
 
+        const directionBy = direction === 'ascending' ? 'asc' : 'desc';
         const municipalitiesDb = await db.municipality.findMany(
             { 
                 skip: (page - 1) * limit, 
                 take: limit,  
-                orderBy: { name: 'asc' }
+                orderBy: { [column]: directionBy }
             },
         );
     

@@ -1,32 +1,30 @@
-import { municipalitySchema } from "~/schemas";
+import { municipalityDeleteSchema, municipalitySchema } from "~/schemas";
 import { Repository } from "../adapter/repository"
-import { parseWithZod } from "@conform-to/zod";
-import { ValidationConformError } from "../errors";
+import { validationConform } from "./validation.service";
+import { municipalityCreateSchema } from "~/schemas/municipalitySchema";
+import { PaginationProps } from "../adapter/repository/pagination/pagination.interface";
 
-export const findAll = async (page: number = 1, limit: number = 2 ) => {
-    return await Repository.municipality.findAll(page, limit);
+
+export const findAll = async (props: PaginationProps) => {
+    return await Repository.municipality.findAll({...props});
 }
 
 export const findOne = async (id: number) => {
     return await Repository.municipality.findOne(id);
 }
 
-export const deleteOne = async (id: number) => {
+export const deleteOne = async (form: FormData) => {
+    const { id } = validationConform(form, municipalityDeleteSchema);
     await Repository.municipality.deleteOne(id);
 }
 
 export const updateOne = async (form: FormData) => {
-    const submission = parseWithZod(form, { schema: municipalitySchema });
-
-    if(submission.status !== 'success') {
-        throw new ValidationConformError('Error en los campos', submission.reply());
-    }
-
-    const { id, name } = submission.value;
+    const { id, name } = validationConform(form, municipalitySchema);
     await Repository.municipality.updateOne(id, name);
 }
 
-export const createOne = async (name: string) => {
+export const createOne = async (form: FormData) => {
+    const { name } = validationConform(form, municipalityCreateSchema);
     await Repository.municipality.createOne(name);
 }
 

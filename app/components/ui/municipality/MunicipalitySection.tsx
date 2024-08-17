@@ -1,5 +1,5 @@
 import { ChangeEvent, Key, useCallback, useEffect, useState} from "react";
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Spinner, useDisclosure } from "@nextui-org/react";
+import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Spinner, useDisclosure, SortDescriptor } from "@nextui-org/react";
 import { useFetcher } from "@remix-run/react";
 import { MunicipalityI } from "~/.server/domain/entity";
 import { PaginationI } from "~/.server/domain/interface";
@@ -14,7 +14,7 @@ type Column = 'name' | 'id';
 
 const columns = [
   { key: 'id', label: 'ID' },
-  { key: 'name', label: 'NOMBRE' },
+  { key: 'name', label: 'NOMBRE',  sortable: true },
   { key: 'actions', label: 'ACTIONS'},
 ]
 
@@ -23,6 +23,10 @@ export  function MunicipalitySection() {
     const { isOpen, onOpenChange, onOpen } = useDisclosure();
     const [ limit, setLimit ] = useState(5);
     const [ page, setPage ] = useState(1);
+    const [ sortDescriptor, setSortDescriptor ] = useState<SortDescriptor>({
+        column: "name",
+        direction: "ascending",
+      });
 
     const loadingState = state === 'loading' || !data 
         ? "loading" 
@@ -40,9 +44,9 @@ export  function MunicipalitySection() {
     }, [data])
 
     useEffect(() => {
-        load(`/municipality/?lm=${limit}&pm=${page}`)
+        load(`/municipality/?lm=${limit}&pm=${page}&cm=${sortDescriptor.column}&dm=${sortDescriptor.direction}`)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [limit, page]);
+    }, [limit, page, sortDescriptor]);
 
 
     const handlePagination = (page: number) => {
@@ -58,7 +62,7 @@ export  function MunicipalitySection() {
           return (<MunicipalityAction onOpenEdit={onOpen} idMunicipality={municipality.id}/>)
         } 
 
-        return municipality[(columnKey as Column)];
+        return <span className="capitalize">{municipality[(columnKey as Column)]}</span>;
       // eslint-disable-next-line react-hooks/exhaustive-deps
       }, [])
 
@@ -70,6 +74,9 @@ export  function MunicipalitySection() {
             />
           <Table 
             aria-label="Municipalities table"
+            onSortChange={setSortDescriptor}
+            // topContentPlacement="outside"
+            sortDescriptor={sortDescriptor}
             bottomContent={
                 <div className="flex w-full justify-center">
                     <Pagination 
@@ -91,7 +98,12 @@ export  function MunicipalitySection() {
           >
             <TableHeader>
                 {columns.map((column) =>
-                    <TableColumn key={column.key}>{column.label}</TableColumn>
+                    <TableColumn 
+                        key={column.key} 
+                        allowsSorting={column.sortable}
+                        allowsResizing
+                        align={column.key === "actions" ? "center" : "start"}
+                    >{column.label}</TableColumn>
                 )}
             </TableHeader>
             <TableBody 

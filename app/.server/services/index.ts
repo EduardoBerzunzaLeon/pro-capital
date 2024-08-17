@@ -1,10 +1,12 @@
 import authService from "./auth.service";
 import municipalityService from "./municipality.service";
+import validationService from "./validation.service";
 
 function buildService() {
     return {
         auth: { ...authService },
-        municipality: {...municipalityService }
+        municipality: {...municipalityService },
+        validation: { ...validationService },
     }
 }
 
