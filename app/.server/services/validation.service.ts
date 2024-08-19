@@ -2,6 +2,7 @@ import { parseWithZod } from "@conform-to/zod";
 import { Schema } from "zod";
 import { ValidationConformError } from "../errors";
 import { Intent } from "@conform-to/react";
+import { Generic } from "../interfaces";
 
 
 export const validationConform = (
@@ -16,6 +17,11 @@ export const validationConform = (
     }
 
     return submission.value;
+}
+
+
+export const validationZod = (data: Generic, schema: Schema) => {
+    return schema.parse(data);    
 }
 
 export default  {

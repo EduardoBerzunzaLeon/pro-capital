@@ -168,6 +168,7 @@ model Leader {
   name String
   lastNameFirst String
   lastNameSecond String?
+  curp String
   address String
   birthday DateTime
   anniversaryDate DateTime

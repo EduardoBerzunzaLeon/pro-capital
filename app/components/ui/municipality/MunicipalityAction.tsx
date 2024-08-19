@@ -23,7 +23,7 @@ export function MunicipalityAction({ idMunicipality, onOpenEdit }: Props)  {
             _action: 'delete'
         }, {
           method: 'POST', 
-          action:'/municipality',
+          action:`/municipality/${idMunicipality}`,
        })
     }
 

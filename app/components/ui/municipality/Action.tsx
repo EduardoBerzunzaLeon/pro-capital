@@ -20,9 +20,9 @@ const dropdowns = {
 
 export function Action ({ ariaLabel, onView, onUpdate, onDelete, isLoading }: Props) {
 
-    const canView = onView !== undefined;
-    const canUpdate = onUpdate !== undefined;
-    const canDelete = onDelete !== undefined;
+    const canView = !!onView;
+    const canUpdate = !!onUpdate;
+    const canDelete = !!onDelete;
 
     const handleAction = (key: Key) => {
 

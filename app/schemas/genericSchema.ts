@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const id = z.number({
+export const id = z.coerce.number({
     required_error: "ID es requerido",
     invalid_type_error: "ID debe ser un número",
 })
@@ -13,7 +13,17 @@ export const name = z.string({
     required_error: "Requerido",
 }).trim()
 .toLowerCase()
+.min(2, 'El nombre debe tener minimo dos letras')
 .refine(
     (value) => /^[a-zA-Z]+[-'s]?[a-zA-Z ]+$/.test(value ?? ""), 
     'El nombre solo debe tener caracteres del alfabeto'
 )
+
+
+export const idSchema = z.object({ id });
+export const nameSchema = z.object({ name });
+
+export default {
+    idSchema,
+    nameSchema
+}

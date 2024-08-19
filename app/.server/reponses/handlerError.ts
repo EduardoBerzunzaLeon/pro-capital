@@ -3,10 +3,10 @@ import { ValidationConformError } from "../errors/ValidationConformError";
 import { json } from "@remix-run/node";
 import { ServerError } from "../errors/ServerError";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { GenericUnknown } from "../interfaces";
+import { ZodError } from "zod";
 
-const handlerConform = (error: ValidationConformError, serverData: {
-  [x: string]: unknown;
-}) => {
+const handlerConform = (error: ValidationConformError, serverData: GenericUnknown) => {
   const errors =  error.submission.error;
   const defaultMessage = 'Ocurrio un error al momento de validar los campos';
   if(!errors) {
@@ -18,7 +18,12 @@ const handlerConform = (error: ValidationConformError, serverData: {
   return { error: errorMessage[0], status: 400, serverData };
 }
 
-export const handlerError = (error: unknown, data?: Record<string, unknown>) => {
+const handlerZod = (error: ZodError, serverData: GenericUnknown) => {
+  console.log(error.message);
+  return { error: error.message, status: 400, serverData};
+}
+
+export const handlerError = (error: unknown, data?: GenericUnknown) => {
 
       const serverData = { ...data };
 
@@ -37,6 +42,10 @@ export const handlerError = (error: unknown, data?: Record<string, unknown>) => 
 
       if(error instanceof ValidationConformError) {
         return json(handlerConform(error, serverData));
+      }
+
+      if(error instanceof ZodError) {
+        return json(handlerZod(error, serverData));
       }
 
       if(!(error instanceof AuthorizationError)) {

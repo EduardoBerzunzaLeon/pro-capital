@@ -33,21 +33,10 @@ export const loader: LoaderFunction = async ({ request }) => {
     const data = Object.fromEntries(formData);
 
     try {
-      
-      if(data._action === 'update') {
-        await Service.municipality.updateOne(formData)
-      }
-
       if(data._action === 'create') {
           await Service.municipality.createOne(formData);
       }
-
-      if(data._action === 'delete') {
-        await Service.municipality.deleteOne(formData);
-      }
-
       return handlerSuccess(201, { id: Number(data?.id), name: data?.name+'' });
-
     } catch (error) {
       return handlerError(error, { ...data });
     }

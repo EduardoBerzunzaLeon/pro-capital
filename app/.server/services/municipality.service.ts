@@ -1,30 +1,32 @@
-import { municipalityDeleteSchema, municipalitySchema } from "~/schemas";
+import {  idSchema, nameSchema } from "~/schemas";
 import { Repository } from "../adapter/repository"
-import { validationConform } from "./validation.service";
-import { municipalityCreateSchema } from "~/schemas/municipalitySchema";
+import { validationConform, validationZod } from "./validation.service";
 import { PaginationProps } from "../adapter/repository/pagination/pagination.interface";
+import { RequestDataGeneric, RequestId } from "../interfaces";
 
 
 export const findAll = async (props: PaginationProps) => {
     return await Repository.municipality.findAll({...props});
 }
 
-export const findOne = async (id: number) => {
-    return await Repository.municipality.findOne(id);
+export const findOne = async (id: RequestId) => {
+    const { id: municipalityId } = validationZod({ id }, idSchema);
+    return await Repository.municipality.findOne(municipalityId);
 }
 
-export const deleteOne = async (form: FormData) => {
-    const { id } = validationConform(form, municipalityDeleteSchema);
-    await Repository.municipality.deleteOne(id);
+export const deleteOne = async (id: RequestId) => {
+    const { id: municipalityId } = validationZod({ id }, idSchema);
+    await Repository.municipality.deleteOne(municipalityId);
 }
 
-export const updateOne = async (form: FormData) => {
-    const { id, name } = validationConform(form, municipalitySchema);
-    await Repository.municipality.updateOne(id, name);
+export const updateOne = async ({ id, form }: RequestDataGeneric) => {
+    const { name } = validationConform(form, nameSchema);
+    const { id: municipalityId } = validationZod({ id }, idSchema);
+    await Repository.municipality.updateOne(municipalityId, name);
 }
 
 export const createOne = async (form: FormData) => {
-    const { name } = validationConform(form, municipalityCreateSchema);
+    const { name } = validationConform(form, nameSchema);
     await Repository.municipality.createOne(name);
 }
 

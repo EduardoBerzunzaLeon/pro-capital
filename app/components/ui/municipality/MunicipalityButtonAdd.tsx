@@ -5,11 +5,22 @@ import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader
 import { FaPlus } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { HandlerSuccess, ActionPostMunicipality } from "~/.server/reponses";
+import { nameSchema } from "~/schemas";
+import { useForm } from "@conform-to/react";
+import { parseWithZod } from "@conform-to/zod";
 
 
 export function MunicipalityButtonAdd() {
     const { isOpen, onOpenChange, onOpen, onClose } = useDisclosure();
     const fetcher = useFetcher<HandlerSuccess<ActionPostMunicipality>>({ key: 'municipalityCreate' });
+
+    const [form, fields] = useForm({
+        onValidate({ formData }) {
+          return parseWithZod(formData, { schema: nameSchema });
+        },
+        shouldValidate: 'onSubmit',
+        shouldRevalidate: 'onInput',
+    }); 
 
     const handleOpen = () => {
         onOpen();
@@ -51,7 +62,12 @@ export function MunicipalityButtonAdd() {
                 <ModalContent>
                 {(onClose) => (
                     <>
-                        <fetcher.Form method='POST' action="/municipality">
+                        <fetcher.Form 
+                            method='POST' 
+                            action="/municipality"
+                            onSubmit={form.onSubmit}
+                            id={form.id}
+                        >
                             <ModalHeader className="flex flex-col gap-1">
                             Agregar Municipio
                             </ModalHeader>
@@ -60,7 +76,12 @@ export function MunicipalityButtonAdd() {
                                     label="Nombre"
                                     placeholder="Ingresa el Municipio"
                                     variant="bordered"
-                                    name='name'
+                                    labelPlacement="outside"
+                                    name={fields.name.name}
+                                    key={fields.name.key}
+                                    isInvalid={!!fields.name.errors}
+                                    color={fields.name.errors ? "danger" : "default"}
+                                    errorMessage={fields.name.errors}
                                     endContent={fetcher.state !== 'idle' && (
                                         <Spinner />
                                     )}

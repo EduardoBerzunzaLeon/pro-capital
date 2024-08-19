@@ -1,2 +1,2 @@
+export { nameSchema, idSchema } from './genericSchema';
 export { loginSchema } from './authSchema';
-export { municipalityDeleteSchema, municipalitySchema } from './municipalitySchema';

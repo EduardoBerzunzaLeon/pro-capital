@@ -38,7 +38,7 @@ export  function MunicipalitySection() {
     
     useEffect(() => {
         if(data?.serverData.data.length === 0 && data?.serverData.total > 0){
-            load(`/municipality/?limit=${limit}&page=${page}`);
+            load(`/municipality/?limit=${limit}&page=${page}&dm=${sortDescriptor.direction}`);
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [data])

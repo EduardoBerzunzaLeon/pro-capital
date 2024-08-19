@@ -45,7 +45,7 @@ export function ModalMunicipalityEdit({
                  fetcherGet.state === 'idle' ||  fetcher.state === 'loading' ?
                    (
                     <>
-                    <fetcher.Form method='POST' action="/municipality">
+                    <fetcher.Form method='POST' action={`/municipality/${fetcherGet.data?.serverData.id}`}>
                         <ModalHeader className="flex flex-col gap-1">
                             Actualizar Municipio de {fetcherGet.data?.serverData.name}
                         </ModalHeader>
