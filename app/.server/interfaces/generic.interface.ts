@@ -7,3 +7,9 @@ export interface RequestDataGeneric  {
     form: FormData,
     id: RequestId
 }
+
+
+export interface Autocomplete {
+    value: number;
+    label: string;
+}

@@ -1,13 +1,12 @@
 import { db } from "../../db";
 import { ServerError } from "~/.server/errors";
-import { MunicipalityRepositoryI } from "~/.server/domain/interface";
+import { MunicipalityRepositoryI, PaginationProps } from "~/.server/domain/interface";
 import { Municipality } from "~/.server/domain/entity";
-import { PaginationProps } from "../pagination/pagination.interface";
 
 export function MunicipalityRepository(): MunicipalityRepositoryI {
 
+    // TODO: delete this method, just conserve while create a really autocomplete
     async function findByName(name: string)  {
-        console.log({name})
         const municipalitiesDb = await db.municipality.findMany({
             where: {
                 name: {
@@ -23,18 +22,26 @@ export function MunicipalityRepository(): MunicipalityRepositoryI {
         return municipalitiesDb.map(({id, name}) => ({value: id, label: name}))
     }
 
-    async function findAll({ page, limit, column, direction }: PaginationProps) {
+    async function findAll({ page, limit, column, direction, search }: PaginationProps) {
 
         const directionBy = direction === 'ascending' ? 'asc' : 'desc';
+        const searchValue = search !== '' ? {
+            where: {
+                name: {
+                    contains: search
+                }
+            }
+        } : null;
         const municipalitiesDb = await db.municipality.findMany(
             { 
+                ...searchValue,
                 skip: (page - 1) * limit, 
                 take: limit,  
                 orderBy: { [column]: directionBy }
             },
         );
     
-        const total = await db.municipality.count();
+        const total = await db.municipality.count({ ...searchValue });
 
         const pageCount = Math.ceil(total / limit);
         const nextPage = page < pageCount ? page + 1: null;

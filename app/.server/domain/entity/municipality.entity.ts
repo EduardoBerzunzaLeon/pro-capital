@@ -1,9 +1,10 @@
 import { ServerError } from "~/.server/errors";
+import { TownI } from "./town.entity";
 
 export interface MunicipalityI {
     id: number;
     name: string;
-    towns?: string[]; //TODO: add town interface
+    towns?: TownI[];
 }
 
 export class Municipality {
@@ -11,7 +12,7 @@ export class Municipality {
     private constructor(
         readonly id: number,
         readonly name: string,
-        readonly towns?: string[]
+        readonly towns?: TownI[]
     ){}
 
     static mapper(municipalities: Partial<MunicipalityI>[]) {

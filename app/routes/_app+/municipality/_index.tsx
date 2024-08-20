@@ -1,4 +1,4 @@
-import { ActionFunction, LoaderFunction } from "@remix-run/node";
+import { ActionFunction, json, LoaderFunction } from "@remix-run/node";
 import { MunicipalityI } from "~/.server/domain/entity";
 import { PaginationI } from "~/.server/domain/interface";
 import { handlerError } from "~/.server/reponses/handlerError";
@@ -7,31 +7,38 @@ import { Service } from "~/.server/services";
 
 export const loader: LoaderFunction = async ({ request }) => {
   
-  
   const url = new URL(request.url);
   const page = url.searchParams.get('pm') || 1;
   const limit = url.searchParams.get('lm') || 5;
   const column = url.searchParams.get('cm') || 'name';
   const direction = url.searchParams.get('dm') || 'ascending';
-  console.log({page});
+  const search = url.searchParams.get('sm') || '';
   
   try {
       const data = await Service.municipality.findAll({
         page: Number(page), 
         limit: Number(limit), 
         column, 
-        direction
+        direction,
+        search
       });
 
       return handlerSuccess<PaginationI<MunicipalityI>>(200, data);
     } catch (error) {
-      return [];  
+      return json({
+        error: 'no data',
+        serverData: { 
+          data: [], 
+          total: 0, 
+          currentPage: 0,
+          pageCount: 0
+        }
+      })  
     }
     
 }
 
   export const action: ActionFunction = async({request}) => {
-    console.log('action');
     const formData = await request.formData();
     const data = Object.fromEntries(formData);
 

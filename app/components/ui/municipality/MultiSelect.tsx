@@ -49,7 +49,7 @@ const animatedComponents = makeAnimated();
             closeMenuOnSelect={false}
             components={animatedComponents}
             loadingMessage={({ inputValue }) => `Buscando municipios con las letras "${inputValue}"`}
-            noOptionsMessage={({ inputValue }) => `No opciones`}
+            noOptionsMessage={() => `No opciones`}
         />
     )
   }

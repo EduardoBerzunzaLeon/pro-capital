@@ -5,3 +5,24 @@ export interface PaginationI<T> {
     currentPage: number;
     nextPage: number | null;
 }
+
+export interface PaginationProps  {
+    page: number,
+    limit: number,
+    column: string,
+    direction: string,
+    search: string
+}
+
+export interface Filter {
+    column: string,
+    value: string
+}
+
+export interface PaginationWithFilters {
+    page: number,
+    limit: number,
+    column: string,
+    direction: string,
+    search: Filter[]
+}

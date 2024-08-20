@@ -1,5 +1,5 @@
 import { ChangeEvent, Key, useCallback, useEffect, useState} from "react";
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Spinner, useDisclosure, SortDescriptor } from "@nextui-org/react";
+import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Spinner, useDisclosure, SortDescriptor, Input } from "@nextui-org/react";
 import { useFetcher } from "@remix-run/react";
 import { MunicipalityI } from "~/.server/domain/entity";
 import { PaginationI } from "~/.server/domain/interface";
@@ -9,7 +9,7 @@ import { MunicipalityAction } from "./MunicipalityAction";
 import { ModalMunicipalityEdit } from './ModalMunicipalityEdit';
 import { MunicipalityButtonAdd } from "./MunicipalityButtonAdd";
 import { HandlerSuccess } from "~/.server/reponses";
-import { MyComponent } from "./MultiSelect";
+import { FaSearch } from "react-icons/fa";
 
 type Column = 'name' | 'id';
 
@@ -24,6 +24,7 @@ export  function MunicipalitySection() {
     const { isOpen, onOpenChange, onOpen } = useDisclosure();
     const [ limit, setLimit ] = useState(5);
     const [ page, setPage ] = useState(1);
+    const [ search, setSearch ] = useState('');
     const [ sortDescriptor, setSortDescriptor ] = useState<SortDescriptor>({
         column: "name",
         direction: "ascending",
@@ -37,6 +38,7 @@ export  function MunicipalitySection() {
         load(`/municipality/?pm=${1}`);
     },[load]);
     
+    console.log({data: data?.serverData});
     useEffect(() => {
         if(data?.serverData.data.length === 0 && data?.serverData.total > 0){
             load(`/municipality/?limit=${limit}&page=${page}&dm=${sortDescriptor.direction}`);
@@ -45,9 +47,9 @@ export  function MunicipalitySection() {
     }, [data])
 
     useEffect(() => {
-        load(`/municipality/?lm=${limit}&pm=${page}&cm=${sortDescriptor.column}&dm=${sortDescriptor.direction}`)
+        load(`/municipality/?lm=${limit}&pm=${page}&cm=${sortDescriptor.column}&dm=${sortDescriptor.direction}&sm=${search}`)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [limit, page, sortDescriptor]);
+    }, [limit, page, sortDescriptor, search]);
 
 
     const handlePagination = (page: number) => {
@@ -56,6 +58,10 @@ export  function MunicipalitySection() {
 
     const handleRowPerPage = (e: ChangeEvent<HTMLSelectElement>) => {
         setLimit(Number(e.target.value))
+    }
+
+    const handlerClose = () => {
+        setSearch('');
     }
 
     const renderCell = useCallback((municipality: MunicipalityI, columnKey: Key) => {
@@ -69,7 +75,15 @@ export  function MunicipalitySection() {
 
     return (
         <div>
-            <MyComponent/>
+            <Input
+                isClearable
+                className="w-full sm:max-w-[44%]"
+                placeholder="Buscar por nombre"
+                startContent={<FaSearch />}
+                value={search}
+                onClear={handlerClose}
+                onValueChange={setSearch}
+            />
             <ModalMunicipalityEdit 
                 isOpen={isOpen}
                 onOpenChange={onOpenChange}

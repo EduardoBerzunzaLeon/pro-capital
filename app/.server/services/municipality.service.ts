@@ -1,8 +1,8 @@
 import {  idSchema, nameSchema } from "~/schemas";
 import { Repository } from "../adapter/repository"
 import { validationConform, validationZod } from "./validation.service";
-import { PaginationProps } from "../adapter/repository/pagination/pagination.interface";
 import { RequestDataGeneric, RequestId } from "../interfaces";
+import { PaginationProps } from "../domain/interface";
 
 
 export const findAll = async (props: PaginationProps) => {
