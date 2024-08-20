@@ -7,13 +7,15 @@ import { Service } from "~/.server/services";
 
 export const loader: LoaderFunction = async ({ request }) => {
   
-    const url = new URL(request.url);
-    const page = url.searchParams.get('pm') || 1;
-    const limit = url.searchParams.get('lm') || 5;
-    const column = url.searchParams.get('cm') || 'name';
-    const direction = url.searchParams.get('dm') || 'ascending';
   
-    try {
+  const url = new URL(request.url);
+  const page = url.searchParams.get('pm') || 1;
+  const limit = url.searchParams.get('lm') || 5;
+  const column = url.searchParams.get('cm') || 'name';
+  const direction = url.searchParams.get('dm') || 'ascending';
+  console.log({page});
+  
+  try {
       const data = await Service.municipality.findAll({
         page: Number(page), 
         limit: Number(limit), 
@@ -29,6 +31,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 }
 
   export const action: ActionFunction = async({request}) => {
+    console.log('action');
     const formData = await request.formData();
     const data = Object.fromEntries(formData);
 

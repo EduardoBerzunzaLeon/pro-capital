@@ -25,6 +25,8 @@ const handlerZod = (error: ZodError, serverData: GenericUnknown) => {
 
 export const handlerError = (error: unknown, data?: GenericUnknown) => {
 
+      console.log(error);
+
       const serverData = { ...data };
 
       if(error instanceof ServerError) {

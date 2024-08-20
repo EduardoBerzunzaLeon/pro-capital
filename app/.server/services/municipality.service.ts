@@ -14,6 +14,10 @@ export const findOne = async (id: RequestId) => {
     return await Repository.municipality.findOne(municipalityId);
 }
 
+export const findByName = async (name: string) => {
+    return await Repository.municipality.findByName(name);
+}
+
 export const deleteOne = async (id: RequestId) => {
     const { id: municipalityId } = validationZod({ id }, idSchema);
     await Repository.municipality.deleteOne(municipalityId);
@@ -36,4 +40,5 @@ export default {
     deleteOne,
     updateOne,
     createOne,
+    findByName
 }

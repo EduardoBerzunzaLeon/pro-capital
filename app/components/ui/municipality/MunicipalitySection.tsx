@@ -9,6 +9,7 @@ import { MunicipalityAction } from "./MunicipalityAction";
 import { ModalMunicipalityEdit } from './ModalMunicipalityEdit';
 import { MunicipalityButtonAdd } from "./MunicipalityButtonAdd";
 import { HandlerSuccess } from "~/.server/reponses";
+import { MyComponent } from "./MultiSelect";
 
 type Column = 'name' | 'id';
 
@@ -68,6 +69,7 @@ export  function MunicipalitySection() {
 
     return (
         <div>
+            <MyComponent/>
             <ModalMunicipalityEdit 
                 isOpen={isOpen}
                 onOpenChange={onOpenChange}

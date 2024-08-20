@@ -5,6 +5,24 @@ import { Municipality } from "~/.server/domain/entity";
 import { PaginationProps } from "../pagination/pagination.interface";
 
 export function MunicipalityRepository(): MunicipalityRepositoryI {
+
+    async function findByName(name: string)  {
+        console.log({name})
+        const municipalitiesDb = await db.municipality.findMany({
+            where: {
+                name: {
+                    contains: name
+                }
+            },
+            take: 10
+        });
+
+        if(municipalitiesDb.length === 0) {
+            return [];   
+        }
+        return municipalitiesDb.map(({id, name}) => ({value: id, label: name}))
+    }
+
     async function findAll({ page, limit, column, direction }: PaginationProps) {
 
         const directionBy = direction === 'ascending' ? 'asc' : 'desc';
@@ -109,6 +127,7 @@ export function MunicipalityRepository(): MunicipalityRepositoryI {
         findOne,
         deleteOne,
         updateOne,
-        createOne
+        createOne,
+        findByName
     };
 } 
