@@ -5,68 +5,87 @@ import { ServerError } from "~/.server/errors";
 import { Folder } from "~/.server/domain/entity";
 import { groups } from '../../../../../prisma/users';
 
-// type SortOrder = 'asc' | 'desc';
+type SortOrder = 'asc' | 'desc';
 
 export function FolderRepository() : FolderRepositoryI {
 
     async function findAll({ page, limit, column, direction, search }: PaginationWithFilters) {
 
-        // const directionBy: SortOrder = direction === 'ascending' ? 'asc' : 'desc';
+        const directionBy: SortOrder = direction === 'ascending' ? 'asc' : 'desc';
 
-        // const orderBy = column !== 'municipality' 
-        // ? { [column]: directionBy }
-        // : {
-        //     municipality: {
-        //       name: directionBy,
-        //     },
-        //   };
+        let orderBy = {};
 
-        //   let whereClause = null;
+        if(column === 'name')
+            orderBy = { [column]: directionBy };
+        if(column === 'town') {
+            orderBy = { town: { name: directionBy} }
+        }
+       
+        if(column === 'municipality') {
+            orderBy = { town: { municipality: {name: directionBy } }}
+        }
 
-        //   if(search.length > 0) {
-        //        whereClause = search.reduce((acc, { column, value }) => {
+          let whereClause = null;
+
+          if(search.length > 0) {
+               whereClause = search.reduce((acc, { column, value }) => {
   
-        //           if(value === '')
-        //               return acc;
+                  if(value === '')
+                      return acc;
   
-        //           if(column === 'municipality') {
-        //               const test = 'municipality.name';
-        //               const testArray = test.split('.');
+                  const testArray = column.split('.');
+                  
   
-        //               if(testArray.length > 1 ) {
-        //                   acc.where = {
-        //                       ...acc.where,
-        //                       [testArray[0]] : {
-        //                           [testArray[1]]: {
-        //                               contains: value
-        //                           }
-        //                       }
+                      if(testArray.length === 2 ) {
+                          acc.where = {
+                              ...acc.where,
+                              [testArray[0]] : {
+                                  [testArray[1]]: {
+                                      contains: value
+                                  }
+                              }
                               
-        //                   }
-        //               } 
+                          }
+                          return acc;
+                      } 
   
-        //               return acc;
-        //           }
   
-        //           acc.where = {
-        //               ...acc.where,
-        //               [column]: {
-        //                   contains: value
-        //               }
-        //           }
+                    if(testArray.length === 3) {
+                        acc.where = {
+                            ...acc.where,
+                            [testArray[0]] : {
+                                [testArray[1]]: {
+                                    [testArray[2]] :{
+                                        contains: value
+                                    }
+                                }
+                            }
+                            
+                        }
+                        return acc;
+                    } 
+
+               
+
+                  acc.where = {
+                      ...acc.where,
+                      [column]: {
+                          contains: value
+                      }
+                  }
   
-        //           return acc;
+                  return acc;
   
-        //       }, { where: {} });
-        //     }
+              }, { where: {} });
+            }
         
         console.log('inside');
 
         const foldersDb = await db.folder.findMany({
-            // ...whereClause,
+            ...whereClause,
             skip: (page - 1) * limit, 
             take: limit,  
-            // orderBy: orderBy,
+            orderBy: orderBy,
             select: {
                 id: true,
                 name: true,
@@ -96,7 +115,7 @@ export function FolderRepository() : FolderRepositoryI {
 
         
 
-        const total = await db.town.count();
+        const total = await db.folder.count();
 
         const pageCount = Math.ceil(total / limit);
         const nextPage = page < pageCount ? page + 1: null;

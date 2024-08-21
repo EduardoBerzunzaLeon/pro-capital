@@ -105,7 +105,33 @@ export function TownRepository(): TownRepositoryI {
     } 
     
     async function deleteOne(id: number) {
-        throw new Error('Not implemented');
+        const townDb = await db.town.findUnique({
+            where: { id },
+            select: {
+                name: true,
+                _count: {
+                    select: {
+                        folder: true
+                    }
+                }
+            }
+        });
+        
+        if(!townDb) {
+            throw ServerError.notFound(`No se encontro el municipio con ID: ${id}`);
+        }
+        
+        const townsCount = townDb._count.folder;
+        if(townsCount > 0) {
+            throw ServerError.badRequest(
+                `El municipio de ${townDb.name} tiene ${townsCount} localidades`
+            );
+        }
+
+        const townDeleted = await db.town.delete({ where: { id } });
+
+        if(!townDeleted) 
+            throw ServerError.internalServer(`No se pudo eliminar el municipio ${townDb.name}`);
     }
 
     async function updateOne(id: number, { name, municipalityId }: UpdateTownProps) {

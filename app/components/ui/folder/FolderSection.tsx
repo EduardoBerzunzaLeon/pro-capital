@@ -6,7 +6,7 @@ import { PaginationI } from "~/.server/domain/interface";
 import { HandlerSuccess } from "~/.server/reponses";
 import { Pagination, RowPerPage } from "..";
 import { FaSearch } from "react-icons/fa";
-import { FolderI } from "~/.server/domain/entity/folder.entity";
+import { Folder, FolderI } from "~/.server/domain/entity/folder.entity";
 
 type Column = 'name' | 'id';
 
@@ -21,7 +21,7 @@ const columns = [
 ]
 
 export function FolderSection() {
-    const { load, state, data, submit } = useFetcher<HandlerSuccess<PaginationI<FolderI>>>({ key: 'folder' });
+    const { load, state, data, submit } = useFetcher<HandlerSuccess<PaginationI<Folder>>>({ key: 'folder' });
 
     const [ limit, setLimit ] = useState(5);
     const [ page, setPage ] = useState(1);
@@ -32,13 +32,13 @@ export function FolderSection() {
         column: "name",
         direction: "ascending",
       });
+
+      console.log(sortDescriptor);
       
       const loadingState = state === 'loading' || !data 
       ? "loading" 
       : "idle";
 
-
-    console.log({dataFolder: data});
       useEffect(() => {
         load(`/folder/?pm=${1}`);
     },[load]);
@@ -46,7 +46,7 @@ export function FolderSection() {
     
     useEffect(() => {
       if(data?.serverData.data.length === 0 && data?.serverData.total > 0){
-          load(`/town/?limit=${limit}&page=${page}&dm=${sortDescriptor.direction}`);
+          load(`/folder/?limit=${limit}&page=${page}&dm=${sortDescriptor.direction}`);
       }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data])
@@ -55,7 +55,8 @@ export function FolderSection() {
       // load(`/town/?lm=${limit}&pm=${page}&cm=${sortDescriptor.column}&dm=${sortDescriptor.direction}&sm=${search}`)
       const data = [
           { column: 'name', value: search },
-          { column: 'municipality', value: searchMunicipality }
+          { column: 'town.name', value: searchTown },
+          { column: 'town.municipality.name', value: searchMunicipality },
       ];
 
       submit({
@@ -64,9 +65,9 @@ export function FolderSection() {
           cm: sortDescriptor.column as string,
           dm: sortDescriptor.direction as string,
           sm: JSON.stringify(data),
-      },{ action: '/town'} );
+      },{ action: '/folder'} );
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [limit, page, sortDescriptor, search, searchMunicipality]);
+  }, [limit, page, sortDescriptor, search, searchMunicipality, searchTown]);
   
   const handlePagination = (page: number) => {
     setPage(page);
@@ -84,16 +85,100 @@ const handlerCloseMunicipality = () => {
     setSearchMunicipality('');
 }
 
-const renderCell = useCallback((town: TownI, columnKey: Key) => {
+const handlerCloseTown = () => {
+    setSearchTown('');
+}
+
+const renderCell = useCallback((folder: Folder, columnKey: Key) => {
   if(columnKey === 'actions') {
   //   return (<MunicipalityAction onOpenEdit={onOpen} idMunicipality={municipality.id}/>)
       return <span>ACTIONS</span>
   } 
 
-  return <span className="capitalize">{town[(columnKey as any)]}</span>;
+  return <span className="capitalize">{folder[(columnKey as any)]}</span>;
 // eslint-disable-next-line react-hooks/exhaustive-deps
 }, [])
-    return (
-        <div>folderSection</div>
-    )
+return (
+  <div>
+  <Input
+      isClearable
+      className="w-full sm:max-w-[44%]"
+      placeholder="Buscar por nombre"
+      startContent={<FaSearch />}
+      value={search}
+      onClear={handlerClose}
+      onValueChange={setSearch}
+  />
+  <Input
+      isClearable
+      className="w-full sm:max-w-[44%]"
+      placeholder="Buscar por nombre de Localidad"
+      startContent={<FaSearch />}
+      value={searchTown}
+      onClear={handlerCloseTown}
+      onValueChange={setSearchTown}
+  />
+  <Input
+      isClearable
+      className="w-full sm:max-w-[44%]"
+      placeholder="Buscar por nombre de Municipio"
+      startContent={<FaSearch />}
+      value={searchMunicipality}
+      onClear={handlerCloseMunicipality}
+      onValueChange={setSearchMunicipality}
+  />
+  {/* <ModalMunicipalityEdit 
+      isOpen={isOpen}
+      onOpenChange={onOpenChange}
+  /> */}
+<Table 
+  aria-label="Municipalities table"
+  onSortChange={setSortDescriptor}
+  // topContentPlacement="outside"
+  sortDescriptor={sortDescriptor}
+  bottomContent={
+      <div className="flex w-full justify-center">
+          <Pagination 
+              pageCount={data?.serverData?.pageCount}
+              currentPage={data?.serverData?.currentPage}
+              onChange={handlePagination}
+          />
+      </div>
+  }
+  topContent={
+      <div className="flex justify-between items-center">
+          {/* <MunicipalityButtonAdd /> */}
+          <span className="text-default-400 text-small">Total {data?.serverData.total || 0 } Carpetas </span>
+          <RowPerPage 
+              onChange={handleRowPerPage}
+          />
+      </div>
+  }
+>
+  <TableHeader>
+      {columns.map((column) =>
+          <TableColumn 
+              key={column.key} 
+              allowsSorting={column.sortable}
+              allowsResizing
+              align={column.key === "actions" ? "center" : "start"}
+          >{column.label}</TableColumn>
+      )}
+  </TableHeader>
+  <TableBody 
+      emptyContent='No se encontraron Carpetas'
+      items={data?.serverData.data ?? []}
+      loadingContent={<Spinner />}
+      loadingState={loadingState}
+  >
+      {(item) => {
+          return (
+          <TableRow key={item?.id}>
+              {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
+          </TableRow>
+      )}}
+  </TableBody>
+</Table>
+</div>
+)
 }

@@ -12,23 +12,29 @@ export const loader: LoaderFunction = async ({ request }) => {
     const column = url.searchParams.get('cm') || 'name';
     const direction = url.searchParams.get('dm') || 'ascending';
     
-    // const searchData = url.searchParams.get('sm') || `[
+    const searchData = url.searchParams.get('sm');
     //   { column: 'name', value: ''},
     //   { column: 'municipality', value: ''},
     // ]`;
     
     try {
       // const searchParsed = JSON.parse(searchData);
-      console.log('inside');
+      const searchParsed = searchData 
+          ? JSON.parse(searchData) 
+          : [
+            { column: 'name', value: ''},
+            { column: 'town.name', value: ''},
+            { column: 'town.municipality.name', value: ''},
+          ]
+
+      console.log(searchParsed);
+      
       const data = await Service.folder.findAll({
         page: Number(page), 
         limit: Number(limit), 
         column, 
         direction,
-        search: [
-          { column: 'name', value: ''},
-          { column: 'municipality', value: ''},
-        ]
+        search: searchParsed
       });
       
       return handlerSuccess<PaginationI<FolderI>>(200, data);

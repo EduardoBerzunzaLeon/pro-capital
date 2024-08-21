@@ -1,4 +1,4 @@
-import { Input, SortDescriptor, Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react";
+import { Input, SortDescriptor, Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, useDisclosure } from "@nextui-org/react";
 import { useFetcher } from "@remix-run/react";
 import { ChangeEvent, Key, useCallback, useEffect, useState } from "react";
 import { TownI } from "~/.server/domain/entity";
@@ -6,6 +6,7 @@ import { PaginationI } from "~/.server/domain/interface";
 import { HandlerSuccess } from "~/.server/reponses";
 import { Pagination, RowPerPage } from "..";
 import { FaSearch } from "react-icons/fa";
+import { TownAction } from "./TownAction";
 
 type Column = 'name' | 'id';
 
@@ -18,7 +19,7 @@ const columns = [
 
 export function TownSection() {
     const { load, state, data, submit } = useFetcher<HandlerSuccess<PaginationI<TownI>>>({ key: 'towns' });
-
+    const { isOpen, onOpenChange, onOpen } = useDisclosure();
     const [ limit, setLimit ] = useState(5);
     const [ page, setPage ] = useState(1);
     const [ search, setSearch ] = useState('');
@@ -78,8 +79,8 @@ export function TownSection() {
 
     const renderCell = useCallback((town: TownI, columnKey: Key) => {
         if(columnKey === 'actions') {
-        //   return (<MunicipalityAction onOpenEdit={onOpen} idMunicipality={municipality.id}/>)
-            return <span>ACTIONS</span>
+          return (<TownAction onOpenEdit={onOpen} idTown={town.id}/>)
+            // return <span>ACTIONS</span>
         } 
 
         if(columnKey === 'municipality') {
