@@ -15,6 +15,7 @@
   "dependencies": {
     "@conform-to/react": "^1.1.5",
     "@conform-to/zod": "^1.1.5",
+    "@headlessui/react": "^2.1.2",
     "@internationalized/date": "^3.5.5",
     "@nextui-org/react": "^2.4.1",
     "@prisma/client": "^5.17.0",

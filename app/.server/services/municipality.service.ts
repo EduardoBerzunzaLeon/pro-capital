@@ -3,6 +3,7 @@ import { Repository } from "../adapter/repository"
 import { validationConform, validationZod } from "./validation.service";
 import { RequestDataGeneric, RequestId } from "../interfaces";
 import { PaginationProps } from "../domain/interface";
+import { alphabetSchema } from "~/schemas/genericSchema";
 
 
 export const findAll = async (props: PaginationProps) => {
@@ -15,6 +16,7 @@ export const findOne = async (id: RequestId) => {
 }
 
 export const findByName = async (name: string) => {
+    // const { name: municipalityName } = validationZod({ value: name }, alphabetSchema);
     return await Repository.municipality.findByName(name);
 }
 

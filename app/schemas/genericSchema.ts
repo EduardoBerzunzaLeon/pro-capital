@@ -19,9 +19,19 @@ export const name = z.string({
     'El nombre solo debe tener caracteres del alfabeto'
 )
 
+export const alphabet = z.string({
+    invalid_type_error: "Nombre invalido",
+    required_error: "Requerido",
+}).trim()
+.toLowerCase()
+.refine(
+    (value) => /^[a-zA-Z]+[-'s]?[a-zA-Z ]+$/.test(value ?? ""), 
+    'El nombre solo debe tener caracteres del alfabeto'
+)
 
 export const idSchema = z.object({ id });
 export const nameSchema = z.object({ name });
+export const alphabetSchema = z.object({ value: alphabet });
 
 export default {
     idSchema,

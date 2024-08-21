@@ -140,7 +140,7 @@ async function insertTowns(prisma: PrismaClient) {
 async function insertFolders(prisma: PrismaClient) {
 
   for (const folder of folders) {
-    const { name, town, route } = folder;
+    const { name, town, route, consecutive } = folder;
     const [routeDb, townDb] = await Promise.all([
       prisma.route.findFirst({ where: { name: route }}),
       prisma.town.findFirst({ where: { name: town }})
@@ -150,6 +150,7 @@ async function insertFolders(prisma: PrismaClient) {
       await prisma.folder.create({
         data: {
           name,
+          consecutive,
           town: {
             connect: { id: townDb.id }
           },

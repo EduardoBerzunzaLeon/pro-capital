@@ -79,7 +79,6 @@ export function FolderRepository() : FolderRepositoryI {
               }, { where: {} });
             }
         
-        console.log('inside');
 
         const foldersDb = await db.folder.findMany({
             ...whereClause,

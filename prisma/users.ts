@@ -68,28 +68,33 @@ export const towns = [
 
 export const folders = [
     { 
-        name: 'carrillo puerto 1',  
+        consecutive: 1,  
         town: 'carrillo puerto', 
+        name: 'carrillo puerto 1', 
         route: '1'
     },
     { 
-        name: 'sihochac 1',  
+        consecutive: 1,  
         town: 'sihochac', 
+        name: 'sihochac 1', 
         route: '1'
     },
     { 
-        name: 'champoton 1',  
+        consecutive: 1,  
+        town: 'champoton',
+        name: 'champoton 1', 
+        route: '1'
+    },
+    { 
+        consecutive: 2,  
         town: 'champoton', 
+        name: 'champoton 2', 
         route: '1'
     },
     { 
-        name: 'champoton 2',  
-        town: 'champoton', 
-        route: '1'
-    },
-    { 
-        name: 'maxcanu 1',  
+        consecutive: 1,  
         town: 'maxcanu', 
+        name: 'maxcanu 1', 
         route: '2'
     },
 ]

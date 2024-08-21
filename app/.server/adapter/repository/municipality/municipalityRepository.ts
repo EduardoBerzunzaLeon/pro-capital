@@ -16,10 +16,12 @@ export function MunicipalityRepository(): MunicipalityRepositoryI {
             take: 10
         });
 
+        console.log({municipalitiesDb});
+
         if(municipalitiesDb.length === 0) {
             return [];   
         }
-        return municipalitiesDb.map(({id, name}) => ({value: id, label: name}))
+        return municipalitiesDb.map(({id, name}) => ({ id, value: name }))
     }
 
     async function findAll({ page, limit, column, direction, search }: PaginationProps) {

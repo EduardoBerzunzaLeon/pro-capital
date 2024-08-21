@@ -7,6 +7,7 @@ import { HandlerSuccess } from "~/.server/reponses";
 import { Pagination, RowPerPage } from "..";
 import { FaSearch } from "react-icons/fa";
 import { TownAction } from "./TownAction";
+import { TownButtonAdd } from "./TownButtonAdd";
 
 type Column = 'name' | 'id';
 
@@ -134,7 +135,7 @@ export function TownSection() {
         }
         topContent={
             <div className="flex justify-between items-center">
-                {/* <MunicipalityButtonAdd /> */}
+                <TownButtonAdd />
                 <span className="text-default-400 text-small">Total {data?.serverData.total || 0 } municipios </span>
                 <RowPerPage 
                     onChange={handleRowPerPage}

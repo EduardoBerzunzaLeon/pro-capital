@@ -123,11 +123,12 @@ model Town {
   name String @unique
   municipalityId Int 
   municipality Municipality @relation(fields: [municipalityId], references: [id])
-  folder Folder[]
+  folders Folder[]
 }
 
 model Folder {
  id Int @id @default(autoincrement())
+ consecutive Int
  name String @unique
  townId Int
  town Town @relation(fields: [townId], references: [id])

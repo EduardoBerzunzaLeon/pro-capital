@@ -10,6 +10,6 @@ export interface RequestDataGeneric  {
 
 
 export interface Autocomplete {
-    value: number;
-    label: string;
+    id: number;
+    value: string;
 }
