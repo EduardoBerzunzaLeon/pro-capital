@@ -1,6 +1,7 @@
 import authService from "./auth.service";
 import municipalityService from "./municipality.service";
 import townService from "./town.service";
+import folderService from "./folder.service";
 import validationService from "./validation.service";
 
 function buildService() {
@@ -8,7 +9,8 @@ function buildService() {
         auth: { ...authService },
         municipality: {...municipalityService },
         validation: { ...validationService },
-        town: { ...townService }
+        town: { ...townService },
+        folder: { ...folderService },
     }
 }
 

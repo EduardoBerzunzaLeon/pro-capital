@@ -5,7 +5,7 @@ import { MunicipalityI } from "./municipality.entity";
 export interface TownI {
     id: number,
     name: string;
-    municipality?: MunicipalityI;
+    municipality?: Partial<MunicipalityI>;
     folders?:  string[]; //todo: add folders interface
 }
 
@@ -14,7 +14,7 @@ export class Town {
     private constructor(
         readonly id: number,
         readonly name: string,
-        readonly municipality?: MunicipalityI,
+        readonly municipality?: Partial<MunicipalityI>,
         readonly folders?: string[],
     ){}
 

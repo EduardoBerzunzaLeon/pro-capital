@@ -1,5 +1,5 @@
 
-import { PaginationProps, TownRepositoryI, UpdateTownProps } from "~/.server/domain/interface";
+import { TownRepositoryI, UpdateTownProps } from "~/.server/domain/interface";
 import { db } from "../../db";
 import { ServerError } from "~/.server/errors";
 import { Town } from "~/.server/domain/entity/town.entity";
@@ -36,11 +36,6 @@ export function TownRepository(): TownRepositoryI {
                     if(testArray.length > 1 ) {
                         acc.where = {
                             ...acc.where,
-                            // municipality: {
-                            //     name: {
-                            //         contains: value
-                            //     }
-                            // }
                             [testArray[0]] : {
                                 [testArray[1]]: {
                                     contains: value
@@ -81,9 +76,6 @@ export function TownRepository(): TownRepositoryI {
                 }
             }
         });
-
-        console.log(townsDb);
-
         const total = await db.town.count({...whereClause});
 
         const pageCount = Math.ceil(total / limit);
