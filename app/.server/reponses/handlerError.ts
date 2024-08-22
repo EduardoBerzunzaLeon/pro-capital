@@ -8,6 +8,8 @@ import { ZodError } from "zod";
 
 const handlerConform = (error: ValidationConformError, serverData: GenericUnknown) => {
   const errors =  error.submission.error;
+
+  console.log(errors);
   const defaultMessage = 'Ocurrio un error al momento de validar los campos';
   if(!errors) {
     return { error: defaultMessage, status: 400, serverData }
@@ -19,8 +21,8 @@ const handlerConform = (error: ValidationConformError, serverData: GenericUnknow
 }
 
 const handlerZod = (error: ZodError, serverData: GenericUnknown) => {
-  console.log(error.message);
-  return { error: error.message, status: 400, serverData};
+  console.log(error.errors[0].message);
+  return { error: error.errors[0].message, status: 400, serverData};
 }
 
 export const handlerError = (error: unknown, data?: GenericUnknown) => {
@@ -43,6 +45,7 @@ export const handlerError = (error: unknown, data?: GenericUnknown) => {
       }
 
       if(error instanceof ValidationConformError) {
+        
         return json(handlerConform(error, serverData));
       }
 

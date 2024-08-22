@@ -1,37 +1,25 @@
-// import { useEffect } from "react";
 
 import { useFetcher} from "@remix-run/react";
 import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Spinner, useDisclosure } from "@nextui-org/react";
-import { FaChevronDown, FaPlus  } from "react-icons/fa";
-// import { toast } from "react-toastify";
-// import { HandlerSuccess, ActionPostMunicipality } from "~/.server/reponses";
-// import { nameSchema } from "~/schemas";
-// import { useForm } from "@conform-to/react";
-// import { parseWithZod } from "@conform-to/zod";
-
-import { Combobox, ComboboxButton, ComboboxInput, ComboboxOption, ComboboxOptions } from '@headlessui/react'
-// import { CheckIcon, ChevronDownIcon } from '@heroicons/react/20/solid'
+import { FaPlus  } from "react-icons/fa";
+import { Combobox, ComboboxButton, ComboboxInput, ComboboxOption, ComboboxOptions, Field, Label } from '@headlessui/react'
 import { FaCheck } from "react-icons/fa6";
 import clsx from 'clsx'
 import { forwardRef, useEffect, useState } from 'react'
 import { Autocomplete } from "~/.server/interfaces";
-import {MyInput} from "./Test";
-// import { Autocomplete } from "~/.server/interfaces";
-// import { HandlerSuccess } from "~/.server/reponses";
-// Ref<HTMLInputElement> | undefined
+import { toast } from "react-toastify";
+import { HandlerSuccess } from "~/.server/reponses";
+import { RequestDataGeneric } from '../../../.server/interfaces/generic.interface';
+
 const MyCustomInput = forwardRef(function MyInputs(props, ref: React.ForwardedRef<HTMLInputElement | null>) {
-  console.log(ref);
-  return <input 
-    // {...props} 
-    onChange={props.onChange}
+    return <input 
+    {...props} 
     ref={ref} 
     placeholder="Ingresa el municipio"  
     className={clsx(
-              'w-full rounded-lg border-none bg-white/5 py-1.5 pr-8 pl-3 text-sm/6 text-white',
+              'w-full mt-1  rounded-lg border-none bg-white/5 py-1.5 pr-8 pl-3 text-sm/6 text-white',
               'focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25'
             )}
-    // baseRef={ref}
-    // value={props.value}
   />
 })
 
@@ -40,29 +28,18 @@ const MyCustomInput = forwardRef(function MyInputs(props, ref: React.ForwardedRe
 const compareAutocomplete = (a?: Autocomplete, b?: Autocomplete): boolean =>
   a?.id === b?.id;
 
+const initialValue = {id: 0, value: ''};
+
 export function TownButtonAdd() {
     const { isOpen, onOpenChange, onOpen, onClose } = useDisclosure();
-    const { submit, data, state } = useFetcher({ key: 'findMunicipalityAutocomplete' });
+    const { submit, data, state } = useFetcher<HandlerSuccess<Autocomplete[]>>({ key: 'findMunicipalityAutocomplete' });
+    const fetcher = useFetcher<HandlerSuccess<RequestDataGeneric>>({ key: 'createTown' });
     const [query, setQuery] = useState('');
-
-    // const [form, fields] = useForm({
-    //     onValidate({ formData }) {
-    //       return parseWithZod(formData, { schema: nameSchema });
-    //     },
-    //     shouldValidate: 'onSubmit',
-    //     shouldRevalidate: 'onInput',
-    // }); 
+    const [selected, setSelected] = useState<Autocomplete | undefined>({...initialValue});
 
     useEffect(() => {
-
-      // load(`/municipality/search/?data=${query}`)
         submit({ data: query }, { action: '/municipality/search' });
-
     }, [query, submit])
-
-    console.log({query, data, state})
-
-    const [selected, setSelected] = useState({id: 0, value: ''});
 
     const handleOpen = () => {
         onOpen();
@@ -70,27 +47,22 @@ export function TownButtonAdd() {
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       setQuery(event.target.value)
-        // submit({ data: event.target.value}, { action: '/municipality/search' });
     }
 
-    // const handleClick = () => {
-    //   submit({ data: query }, { action: '/municipality/search' });
-    // }
-
-    // useEffect(() => {
-    //     if(fetcher.data?.error && isOpen && fetcher.state === 'idle') {
-    //       toast.error(fetcher.data?.error, {
-    //         toastId: 'addMunicipality'
-    //       });
-    //     }
+    useEffect(() => {
+        if(fetcher.data?.error && isOpen && fetcher.state === 'idle') {
+          toast.error(fetcher.data?.error, {
+            toastId: 'addMunicipality'
+          });
+        }
         
-    //     if(fetcher.data?.status === 'success' && isOpen && fetcher.state === 'idle') {
-    //       toast.success('El municipio se creo correctamente');
-    //       onClose();
-    //     }
+        if(fetcher.data?.status === 'success' && isOpen && fetcher.state === 'idle') {
+          toast.success('La localidad se creo correctamente');
+          onClose();
+        }
     
-    //   // eslint-disable-next-line react-hooks/exhaustive-deps
-    //   }, [fetcher, fetcher.data, fetcher.state]);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, [fetcher, fetcher.data, fetcher.state]);
 
  
     return (
@@ -112,18 +84,22 @@ export function TownButtonAdd() {
             >
                 <ModalContent>
                 {(onClose) => (
-                    <>
+                    <fetcher.Form
+                      method='POST'
+                      action='/town'
+                    >
          
                             <ModalHeader className="flex flex-col gap-1">
                             Agregar Localidad
                             </ModalHeader>
                             <ModalBody> 
-                            {/* <div className="mx-auto h-screen w-52 pt-20"> */}
-      <Combobox 
+      <Field>
+                            <Label className='m-2'>Municipio</Label>
+      <Combobox
+        name='municipality' 
         value={selected} 
         onChange={(value) => {
-          console.log(value);
-          setSelected(value)
+          setSelected(value ?? undefined);
         }} 
         by={compareAutocomplete}
         onClose={() => {
@@ -132,23 +108,17 @@ export function TownButtonAdd() {
         }}
       >
         <div className="relative">
+        
           <ComboboxInput
-            // className={clsx(
-            //   'w-full rounded-lg border-none bg-white/5 py-1.5 pr-8 pl-3 text-sm/6 text-white',
-            //   'focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25'
-            // )}
             displayValue={(municipality) => {
-              return municipality?.value;
+              return (municipality as Autocomplete)?.value;
             }}
             onChange={handleChange}
-            // as={MyCustomInput}
-            as={MyInput}
-
+            as={MyCustomInput}
           />
            
           <ComboboxButton className="group absolute inset-y-0 right-0 px-2.5">
             { state !== 'idle' && <Spinner size='sm' />}
-            {/* <FaChevronDown className="size-4 fill-white/60 group-data-[hover]:fill-white" /> */}
           </ComboboxButton>
         </div>
                 {(state === 'idle') ?(
@@ -156,11 +126,11 @@ export function TownButtonAdd() {
                           anchor="bottom"
                           transition
                           className={clsx(
-                            'w-[var(--input-width)] rounded-xl border z-50  border-white/5 bg-current p-1 [--anchor-gap:var(--spacing-1)] empty:invisible',
+                            'capitalize w-[var(--input-width)] rounded-xl border z-50  border-white/5 bg-current p-1 [--anchor-gap:var(--spacing-1)] empty:invisible',
                             'transition duration-100 ease-in data-[leave]:data-[closed]:opacity-0'
                           )}
                           >
-                          {data?.data?.map((municipality) => (
+                          {data?.serverData?.map((municipality) => (
                             <ComboboxOption
                               key={municipality.id}
                               value={municipality}
@@ -174,17 +144,37 @@ export function TownButtonAdd() {
                 ): null}
        
       </Combobox>
+      </Field>
+
+                { (selected && selected.id > 0) && (<Input
+                  label="Localidad"
+                  name='name'
+                  // name={fields.userName.name}
+                  // key={fields.userName.key}
+                  variant="bordered"
+                  placeholder="Ingresa el nombre de la localidad"
+                  labelPlacement="outside"
+                  autoComplete="off"
+                />)}
+                
     {/* </div> */}
                             </ModalBody>
                             <ModalFooter>
                                 <Button color="danger" variant="flat" onPress={onClose}>
                                     Cerrar
                                 </Button>
-                                <Button color="primary" type='submit' name='_action' value='create'>
+                                <Button 
+                                  color="primary" 
+                                  type='submit' 
+                                  name='_action' 
+                                  value='create'
+                                  isDisabled={selected?.value.length === 0}
+                                  isLoading={fetcher.state !== 'idle'}
+                                >
                                     Crear
                                 </Button>
                             </ModalFooter>
-                    </>
+                    </fetcher.Form>
                 )}
                 </ModalContent>
             </Modal>

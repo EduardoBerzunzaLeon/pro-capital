@@ -4,6 +4,7 @@ import { db } from "../../db";
 import { ServerError } from "~/.server/errors";
 import { Town } from "~/.server/domain/entity/town.entity";
 import { PaginationWithFilters } from "~/.server/domain/interface/Pagination.interface";
+import { Repository } from "..";
 
 type SortOrder = 'asc' | 'desc';
 
@@ -76,6 +77,7 @@ export function TownRepository(): TownRepositoryI {
                 }
             }
         });
+
         const total = await db.town.count({...whereClause});
 
         const pageCount = Math.ceil(total / limit);
@@ -97,11 +99,43 @@ export function TownRepository(): TownRepositoryI {
     }
 
     async function findOne(id: number) {
-        throw new Error('Not implemented');
+        const town = await db.town.findUnique({ 
+            where: { id },
+            select: {
+                id: true,
+                name: true,
+                municipality: {
+                    select: {
+                        id: true,
+                        name: true,
+                    }
+                }
+            }
+        });
+
+        if(!town) throw ServerError.notFound('No se encontro la localidad');
+
+        return Town.create(town);
+
     } 
 
     async function createOne(name: string, municipalityId: number) {
-        throw new Error('Not implemented');
+
+        await Repository.municipality.findOne(municipalityId);
+
+        const town = await db.town.findUnique({ where: {name}});
+
+        if(town) {
+            throw ServerError.badRequest('La localidad ya existe');
+        }
+
+        const newTown = await db.town.create({ data:  { municipalityId, name}});
+
+        if(!newTown) {
+            throw ServerError.internalServer(`No se pudo crear la localidad ${name}, intentelo mas tarde`)
+        }
+
+        return Town.create(newTown);
     } 
     
     async function deleteOne(id: number) {
@@ -111,7 +145,7 @@ export function TownRepository(): TownRepositoryI {
                 name: true,
                 _count: {
                     select: {
-                        folder: true
+                        folders: true
                     }
                 }
             }
@@ -121,7 +155,7 @@ export function TownRepository(): TownRepositoryI {
             throw ServerError.notFound(`No se encontro el municipio con ID: ${id}`);
         }
         
-        const townsCount = townDb._count.folder;
+        const townsCount = townDb._count.folders;
         if(townsCount > 0) {
             throw ServerError.badRequest(
                 `El municipio de ${townDb.name} tiene ${townsCount} localidades`
@@ -135,7 +169,17 @@ export function TownRepository(): TownRepositoryI {
     }
 
     async function updateOne(id: number, { name, municipalityId }: UpdateTownProps) {
-        throw new Error('Not implemented');
+        const municipality = await db.municipality.findUnique({ where: { id: municipalityId }});
+
+        if(!municipality) throw ServerError.notFound('El municipio solicitado no existe');
+
+        const town = await db.town.update({
+            where: { id },
+            data: { name, municipalityId}
+        });
+
+        if(!town) throw ServerError.badRequest(`No se pudo actualizar la localidad con el nombre ${name}`);
+
     } 
     
     return {

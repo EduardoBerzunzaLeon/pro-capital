@@ -1,8 +1,14 @@
 import { Repository } from "~/.server/adapter/repository";
-import { RequestDataGeneric, RequestId } from "~/.server/interfaces";
-import { validationConform, validationZod } from "~/.server/services/validation.service";
-import {  idSchema, townSchema } from "~/schemas";
+import {  RequestId } from "~/.server/interfaces";
+import {  validationZod } from "~/.server/services/validation.service";
+import {  idSchema, townCreateSchema } from "~/schemas";
 import { PaginationWithFilters } from "../domain/interface/Pagination.interface";
+
+
+interface UpdateTownI {
+    name: string,
+    municipalityId: RequestId
+}
 
 
 export const findAll = async (props: PaginationWithFilters) => {
@@ -23,15 +29,21 @@ export const deleteOne = async (id: RequestId) => {
     await Repository.town.deleteOne(townId);
 }
 
-export const updateOne = async ({ id, form }: RequestDataGeneric) => {
-    const { name, municipalityId } = validationConform(form, townSchema);
+export const updateOne = async (id: RequestId, { name, municipalityId }: UpdateTownI) => {
+    const { municipalityId: mId, name: townName } = validationZod(
+        { municipalityId, name }, 
+        townCreateSchema
+    );
     const { id: townId } = validationZod({ id }, idSchema);
-    await Repository.town.updateOne(townId, { name, municipalityId });
+    await Repository.town.updateOne(townId, { name: townName, municipalityId: mId });
 }
 
-export const createOne = async (form: FormData) => {
-    const { name, municipalityId } = validationConform(form, townSchema);
-    await Repository.town.createOne(name, municipalityId);
+export const createOne = async (municipalityId: RequestId, name: string) => {
+    const { municipalityId: id, name: townName } = validationZod(
+        { municipalityId, name }, 
+        townCreateSchema
+    );
+    await Repository.town.createOne(townName, id);
 }
 
 export default {

@@ -8,6 +8,7 @@ import { Pagination, RowPerPage } from "..";
 import { FaSearch } from "react-icons/fa";
 import { TownAction } from "./TownAction";
 import { TownButtonAdd } from "./TownButtonAdd";
+import { ModalTownEdit } from "./ModalTownEdit";
 
 type Column = 'name' | 'id';
 
@@ -115,10 +116,10 @@ export function TownSection() {
             onClear={handlerCloseMunicipality}
             onValueChange={setSearchMunicipality}
         />
-        {/* <ModalMunicipalityEdit 
+        <ModalTownEdit 
             isOpen={isOpen}
             onOpenChange={onOpenChange}
-        /> */}
+        />
       <Table 
         aria-label="Municipalities table"
         onSortChange={setSortDescriptor}

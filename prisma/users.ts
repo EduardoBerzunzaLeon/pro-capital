@@ -327,6 +327,7 @@ export const leaders = [
         birthday: new Date(2024, 6, 1).toISOString(),
         anniversaryDate: new Date(2024, 6, 1).toISOString(),
         unsubscribeDate: new Date(2024, 6, 1).toISOString(),
-        folder: 'champoton 1'
+        folder: 'champoton 1',
+        curp: 'BELE9820389TS5'
     }
 ]

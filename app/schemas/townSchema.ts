@@ -1,4 +1,4 @@
 import { z } from "zod";
 import { id, name } from "./genericSchema";
 
-export const townSchema = z.object({ municipalityId: id, name});
+export const townCreateSchema = z.object({ municipalityId: id, name});

@@ -1,7 +1,7 @@
-import { json, LoaderFunction } from "@remix-run/node";
+import { ActionFunction, json, LoaderFunction } from "@remix-run/node";
 import { TownI } from "~/.server/domain/entity";
 import { PaginationI } from "~/.server/domain/interface";
-import { handlerSuccess } from "~/.server/reponses";
+import { handlerError, handlerSuccess } from "~/.server/reponses";
 import { Service } from "~/.server/services";
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -41,4 +41,27 @@ export const loader: LoaderFunction = async ({ request }) => {
         })  
       }
       
+  }
+
+
+
+  export const action: ActionFunction = async({ request }) => {
+
+    const formData = await request.formData();
+    const data = Object.fromEntries(formData);
+
+    // console.log({dataCreated: data});
+    const municipalityId = data['municipality[id]']+'';
+    const { name } = data;
+
+    try {
+      if(data._action === 'create') {
+          await Service.town.createOne(municipalityId, name+'');
+      }
+      return handlerSuccess(201, { id: Number(data?.id), name: data?.name+'' });
+    } catch (error) {
+      console.log(error);
+      return handlerError(error, { ...data });
+    }
+  
   }

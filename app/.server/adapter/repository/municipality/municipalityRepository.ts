@@ -15,9 +15,6 @@ export function MunicipalityRepository(): MunicipalityRepositoryI {
             },
             take: 10
         });
-
-        console.log({municipalitiesDb});
-
         if(municipalitiesDb.length === 0) {
             return [];   
         }
