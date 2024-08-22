@@ -32,7 +32,7 @@ const initialValue = {id: 0, value: ''};
 
 export function FolderButtonAdd() {
     const { isOpen, onOpenChange, onOpen, onClose } = useDisclosure();
-    const fetcherRoute = useFetcher<HandlerSuccess<Autocomplete[]>>({ key: 'findRouteAutocomplete' });
+    const fetcherNextConsecutive = useFetcher<HandlerSuccess<Autocomplete[]>>({ key: 'getNextConsecutiveFolder' });
     const { submit, data, state } = useFetcher<HandlerSuccess<Autocomplete[]>>({ key: 'findTownAutocomplete' });
     const fetcher = useFetcher<HandlerSuccess<RequestDataGeneric>>({ key: 'createFolder' });
     const [query, setQuery] = useState('');
@@ -94,10 +94,19 @@ export function FolderButtonAdd() {
                             Agregar Localidad
                             </ModalHeader>
                             <ModalBody> 
+                <Input
+                  label="Ruta"
+                  name='ruta'
+                  type='number'
+                  variant="bordered"
+                  placeholder="Ingresa el número de la Ruta"
+                  labelPlacement="outside"
+                  autoComplete="off"
+                />
       <Field>
-                            <Label className='m-2'>Municipio</Label>
+                            <Label className='m-2'>Localidad</Label>
       <Combobox
-        name='municipality' 
+        name='town' 
         value={selected} 
         onChange={(value) => {
           setSelected(value ?? undefined);
@@ -111,8 +120,8 @@ export function FolderButtonAdd() {
         <div className="relative">
         
           <ComboboxInput
-            displayValue={(municipality) => {
-              return (municipality as Autocomplete)?.value;
+            displayValue={(town) => {
+              return (town as Autocomplete)?.value;
             }}
             onChange={handleChange}
             as={MyCustomInput}
@@ -131,14 +140,14 @@ export function FolderButtonAdd() {
                             'transition duration-100 ease-in data-[leave]:data-[closed]:opacity-0'
                           )}
                           >
-                          {data?.serverData?.map((municipality) => (
+                          {data?.serverData?.map((town) => (
                             <ComboboxOption
-                              key={municipality.id}
-                              value={municipality}
+                              key={town.id}
+                              value={town}
                               className="group flex cursor-default items-center gap-2 rounded-lg py-1.5 px-3 select-none data-[focus]:bg-white/10"
                             >
                               <FaCheck className="invisible size-4 fill-white group-data-[selected]:visible" />
-                              <div className="text-sm/6 text-white">{municipality.value}</div>
+                              <div className="text-sm/6 text-white">{town.value}</div>
                             </ComboboxOption>
                           ))}
                           </ComboboxOptions>
@@ -150,8 +159,6 @@ export function FolderButtonAdd() {
                 { (selected && selected.id > 0) && (<Input
                   label="Localidad"
                   name='name'
-                  // name={fields.userName.name}
-                  // key={fields.userName.key}
                   variant="bordered"
                   placeholder="Ingresa el nombre de la localidad"
                   labelPlacement="outside"

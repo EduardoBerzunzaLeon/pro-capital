@@ -3,6 +3,7 @@ import { PaginationWithFilters } from "~/.server/domain/interface/Pagination.int
 import { db } from "../../db";
 import { ServerError } from "~/.server/errors";
 import { Folder } from "~/.server/domain/entity";
+import { folders } from '../../../../../prisma/users';
 
 type SortOrder = 'asc' | 'desc';
 
@@ -235,6 +236,29 @@ export function FolderRepository() : FolderRepositoryI {
 
     }
 
+    async function findNextConsecutive(townId: number) {
+
+        const data = await db.town.findUnique(
+            {
+            where: { id: townId },
+            select: {
+                name: true,
+                _count: {
+                    select: {
+                        folders: true
+                    }
+                },
+            }
+        })
+
+        if(!data) {
+            throw ServerError.badRequest('No se encontro la localidad');
+        }
+
+        return data._count.folders + 1;
+
+
+    }
 
     async function createOne({ consecutive, name, townId, routeId }: CreateFolderProps) {
 
