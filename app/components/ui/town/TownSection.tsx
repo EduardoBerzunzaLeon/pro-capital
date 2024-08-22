@@ -31,7 +31,7 @@ export function TownSection() {
         direction: "ascending",
       });
       
-      const loadingState = state === 'loading' || !data 
+      const loadingState = (state === 'loading' || state === 'submitting') || !data 
       ? "loading" 
       : "idle";
 

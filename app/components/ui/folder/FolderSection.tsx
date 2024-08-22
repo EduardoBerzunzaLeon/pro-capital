@@ -1,4 +1,4 @@
-import { Input, SortDescriptor, Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react";
+import { Input, SortDescriptor, Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, useDisclosure } from "@nextui-org/react";
 import { useFetcher } from "@remix-run/react";
 import { ChangeEvent, Key, useCallback, useEffect, useState } from "react";
 import { TownI } from "~/.server/domain/entity";
@@ -7,6 +7,7 @@ import { HandlerSuccess } from "~/.server/reponses";
 import { Pagination, RowPerPage } from "..";
 import { FaSearch } from "react-icons/fa";
 import { Folder, FolderI } from "~/.server/domain/entity/folder.entity";
+import { FolderAction } from "./FolderAction";
 
 type Column = 'name' | 'id';
 
@@ -22,7 +23,7 @@ const columns = [
 
 export function FolderSection() {
     const { load, state, data, submit } = useFetcher<HandlerSuccess<PaginationI<Folder>>>({ key: 'folder' });
-
+    const { isOpen, onOpenChange, onOpen } = useDisclosure();
     const [ limit, setLimit ] = useState(5);
     const [ page, setPage ] = useState(1);
     const [ search, setSearch ] = useState('');
@@ -32,10 +33,8 @@ export function FolderSection() {
         column: "name",
         direction: "ascending",
       });
-
-      console.log(sortDescriptor);
       
-      const loadingState = state === 'loading' || !data 
+      const loadingState = (state === 'loading' || state === 'submitting') || !data 
       ? "loading" 
       : "idle";
 
@@ -91,8 +90,7 @@ const handlerCloseTown = () => {
 
 const renderCell = useCallback((folder: Folder, columnKey: Key) => {
   if(columnKey === 'actions') {
-  //   return (<MunicipalityAction onOpenEdit={onOpen} idMunicipality={municipality.id}/>)
-      return <span>ACTIONS</span>
+        return (<FolderAction onOpenEdit={onOpen} idFolder={folder.id}/>)
   } 
 
   return <span className="capitalize">{folder[(columnKey as any)]}</span>;

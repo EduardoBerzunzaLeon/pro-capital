@@ -3,9 +3,16 @@ import { PaginationWithFilters } from "~/.server/domain/interface/Pagination.int
 import { db } from "../../db";
 import { ServerError } from "~/.server/errors";
 import { Folder } from "~/.server/domain/entity";
-import { groups } from '../../../../../prisma/users';
 
 type SortOrder = 'asc' | 'desc';
+
+interface CreateFolderProps { 
+    consecutive: number, 
+    name: string, 
+    townId: number, 
+    routeId: number
+}
+
 
 export function FolderRepository() : FolderRepositoryI {
 
@@ -112,9 +119,7 @@ export function FolderRepository() : FolderRepositoryI {
             }
         });
 
-        
-
-        const total = await db.folder.count();
+        const total = await db.folder.count({...whereClause});
 
         const pageCount = Math.ceil(total / limit);
         const nextPage = page < pageCount ? page + 1: null;
@@ -133,7 +138,137 @@ export function FolderRepository() : FolderRepositoryI {
         }
     }
 
+    async function findOne(id: number) {
+
+        const folder = await db.folder.findUnique({ 
+            where: {id},
+            select: {
+                id: true,
+                name: true,
+                consecutive: true,
+                route: {
+                    select: {
+                        name: true,
+                        id: true,
+                    }
+                }
+            }
+        });
+
+        if(!folder) throw ServerError.notFound('No se encontro la carpeta');
+
+        // TODO: change the mapper, it needs add id in route, municipality, leader
+        return folder;
+    }
+
+    async function updateOne(id:number, routeId: number) {
+        await findOne(id);
+
+        const folder = await db.folder.update({
+            where: { id },
+            data: { routeId }
+        });
+
+        if(!folder) {
+            throw ServerError.badRequest(`No se pudo actualizar carpeta`);
+        }
+    }
+
+    async function deleteOne(id: number) {
+        const folderDb = await db.folder.findUnique({
+            where: { id },
+            select: {
+                name: true,
+                _count: {
+                    select: {
+                        groups: true
+                    }
+                },
+                groups: {
+                    select: {
+                        id: true,
+                        _count: {
+                            select: {
+                                credit: true
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        if(!folderDb) {
+            throw ServerError.notFound('No se encontro la carpeta');
+        }
+
+        if(folderDb._count.groups > 0) {
+            let hasCredit = false;
+    
+            for (let index = 0; index < folderDb.groups.length; index++) {
+                if(folderDb.groups[index]._count.credit) {
+                    hasCredit = true;
+                    break;
+                }
+            }
+    
+            if(hasCredit) {
+                throw ServerError.badRequest(`La carpeta ${folderDb.name} tiene creditos asignados a uno o varios grupos`);
+            }
+    
+            const groupsId = folderDb.groups.map(({id}) => id);
+    
+            const groupsDeleted = await db.group.deleteMany({
+                where: { id: {
+                    in: groupsId
+                }}
+            });
+    
+            if(groupsDeleted.count < 0) {
+                throw ServerError.internalServer('Ocurrio un error, no se pudo eliminar los grupos de la carpeta')
+            }
+        }
+
+        const folderDeleted = await db.folder.delete({ where: { id }});
+
+        if(!folderDeleted) 
+            throw ServerError.internalServer('No se pudo eliminar la carpeta')
+
+    }
+
+
+    async function createOne({ consecutive, name, townId, routeId }: CreateFolderProps) {
+
+        const [town, route] = await Promise.all([
+            db.town.findUnique({ where: {id: townId }}),
+            db.route.findUnique({ where: { id: routeId }})
+        ]);
+
+        if(!town || !route) {
+            throw ServerError.badRequest('No existe la carpeta ni/o el municipio');
+        }
+
+        const newFolder = await db.folder.create({
+            data: { consecutive, name, routeId, townId }
+        });
+
+        if(!newFolder) 
+            throw ServerError.internalServer('No se pudo crear la carpeta');
+
+        const group = await db.group.create({
+            data: { name: 1, folderId: newFolder.id }
+        });
+
+        if(!group){
+            await db.folder.delete({ where: { id: newFolder.id }});
+            throw ServerError.internalServer(`No se pudo crear automaticamente el grupo de la carpeta ${newFolder.name}`)
+        }
+    }
+
     return {
-        findAll
+        findAll,
+        findOne,
+        updateOne,
+        deleteOne,
+        createOne
     }
 }

@@ -25,5 +25,6 @@ export const validationZod = (data: Generic, schema: Schema) => {
 }
 
 export default  {
-    validationConform
+    validationConform,
+    validationZod
 }

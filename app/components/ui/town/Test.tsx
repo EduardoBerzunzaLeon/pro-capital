@@ -51,6 +51,7 @@ export const MyInput = forwardRef((props, ref: React.ForwardedRef<HTMLInputEleme
     getDescriptionProps,
     getErrorMessageProps,
     getClearButtonProps,
+    
   } = useInput({
     ...props,
     // this is just for the example, the props bellow should be passed by the parent component

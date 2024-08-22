@@ -145,7 +145,7 @@ model Group {
  name Int 
  folderId Int
  folder Folder @relation(fields: [folderId], references: [id])
- credit Credit[]
+ credits Credit[]
  @@unique([name, folderId])
 }
 
@@ -160,7 +160,7 @@ model Client {
   guarantee String
   phoneNumber String?
   type Type @default(NORMAL)
-  credit Credit[]
+  credits Credit[]
   isDeceased Boolean @default(false)
 }
 
