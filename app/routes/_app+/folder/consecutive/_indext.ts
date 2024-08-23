@@ -5,13 +5,16 @@ import { Service } from "~/.server/services";
 export const loader: LoaderFunction = async ({ request }) => {
   
     const url = new URL(request.url);
-    const townId = url.searchParams.get('id') || 0;
+    const townId = url.searchParams.get('id') || '0';
 
     try {
       
-      const data = await Service.folder.findNextConsecutive(townId);
+      const consecutive = await Service.folder.findNextConsecutive(townId);
       
-      return handlerSuccess<number>(200, data);
+      return handlerSuccess<{
+        consecutive: number,
+        townId: number
+      }>(200, { consecutive, townId: parseInt(townId)});
       } catch (error) {
         return handlerError(error);
       }

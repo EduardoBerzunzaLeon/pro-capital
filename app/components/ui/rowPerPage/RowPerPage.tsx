@@ -9,7 +9,7 @@ export function RowPerPage({ onChange }: Props) {
         <label className="flex items-center text-default-400 text-small">
             Filas por Página
             <select
-                className="red-dark text-foreground bg-content1 outline-none text-small"
+                className="red-dark text-foreground bg-content1 outline-none text-small pl-4"
                 onChange={onChange}
             >
                 <option value="5">5</option>

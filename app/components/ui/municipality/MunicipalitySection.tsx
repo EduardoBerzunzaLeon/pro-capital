@@ -38,7 +38,6 @@ export  function MunicipalitySection() {
         load(`/municipality/?pm=${1}`);
     },[load]);
     
-    console.log({data: data?.serverData});
     useEffect(() => {
         if(data?.serverData.data.length === 0 && data?.serverData.total > 0){
             load(`/municipality/?limit=${limit}&page=${page}&dm=${sortDescriptor.direction}`);
@@ -74,10 +73,10 @@ export  function MunicipalitySection() {
       }, [])
 
     return (
-        <div>
+        <div className='w-full md:max-w-[48%]'>
             <Input
                 isClearable
-                className="w-full sm:max-w-[44%]"
+                className="w-full sm:max-w-[44%] mt-5 mb-3 "
                 placeholder="Buscar por nombre"
                 startContent={<FaSearch />}
                 value={search}
@@ -118,7 +117,7 @@ export  function MunicipalitySection() {
                         key={column.key} 
                         allowsSorting={column.sortable}
                         allowsResizing
-                        align={column.key === "actions" ? "center" : "start"}
+                        className={column.key === "actions" ? "text-center" : "text-start"}
                     >{column.label}</TableColumn>
                 )}
             </TableHeader>

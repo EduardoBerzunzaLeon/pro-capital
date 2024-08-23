@@ -6,13 +6,6 @@ import { Folder } from "~/.server/domain/entity";
 
 type SortOrder = 'asc' | 'desc';
 
-interface CreateFolderProps { 
-    consecutive: number, 
-    name: string, 
-    townId: number, 
-    routeId: number
-}
-
 
 export function FolderRepository() : FolderRepositoryI {
 
@@ -48,7 +41,7 @@ export function FolderRepository() : FolderRepositoryI {
                               ...acc.where,
                               [testArray[0]] : {
                                   [testArray[1]]: {
-                                      contains: value
+                                      contains: value.toLowerCase()
                                   }
                               }
                               
@@ -63,7 +56,7 @@ export function FolderRepository() : FolderRepositoryI {
                             [testArray[0]] : {
                                 [testArray[1]]: {
                                     [testArray[2]] :{
-                                        contains: value
+                                        contains: value.toLowerCase()
                                     }
                                 }
                             }
@@ -77,7 +70,7 @@ export function FolderRepository() : FolderRepositoryI {
                   acc.where = {
                       ...acc.where,
                       [column]: {
-                          contains: value
+                          contains: value.toLowerCase()
                       }
                   }
   
@@ -267,12 +260,12 @@ export function FolderRepository() : FolderRepositoryI {
         ]);
 
         if(!town || !route) {
-            throw ServerError.badRequest('No existe la carpeta ni/o el municipio');
+            throw ServerError.badRequest('No existe la ruta ni/o la localidad');
         }
 
         const currentConsecutive =  await findNextConsecutive(townId);
 
-        const nextConsecutive = currentConsecutive + 1
+        const nextConsecutive = currentConsecutive;
         const data = {
             consecutive: nextConsecutive,
             name: `${town.name} ${nextConsecutive}`,

@@ -97,7 +97,8 @@ export function TownSection() {
       }, [])
 
     return (
-        <div>
+        <div className='w-full md:max-w-[48%]'>
+             <div className='w-full flex gap-2 mt-5 mb-3 flex-wrap justify-between'>
         <Input
             isClearable
             className="w-full sm:max-w-[44%]"
@@ -116,6 +117,7 @@ export function TownSection() {
             onClear={handlerCloseMunicipality}
             onValueChange={setSearchMunicipality}
         />
+        </div>
         <ModalTownEdit 
             isOpen={isOpen}
             onOpenChange={onOpenChange}
@@ -137,7 +139,7 @@ export function TownSection() {
         topContent={
             <div className="flex justify-between items-center">
                 <TownButtonAdd />
-                <span className="text-default-400 text-small">Total {data?.serverData.total || 0 } municipios </span>
+                <span className="text-default-400 text-small">Total {data?.serverData.total || 0 } localidades </span>
                 <RowPerPage 
                     onChange={handleRowPerPage}
                 />
@@ -150,7 +152,7 @@ export function TownSection() {
                     key={column.key} 
                     allowsSorting={column.sortable}
                     allowsResizing
-                    align={column.key === "actions" ? "center" : "start"}
+                    className={column.key === "actions" ? "text-center" : "text-start"}
                 >{column.label}</TableColumn>
             )}
         </TableHeader>

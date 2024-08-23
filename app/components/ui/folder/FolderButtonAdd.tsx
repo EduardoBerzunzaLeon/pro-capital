@@ -1,11 +1,11 @@
 
 import { useFetcher} from "@remix-run/react";
-import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Spinner, useDisclosure } from "@nextui-org/react";
+import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem, Spinner, useDisclosure } from "@nextui-org/react";
 import { FaPlus  } from "react-icons/fa";
 import { Combobox, ComboboxButton, ComboboxInput, ComboboxOption, ComboboxOptions, Field, Label } from '@headlessui/react'
 import { FaCheck } from "react-icons/fa6";
 import clsx from 'clsx'
-import { forwardRef, useEffect, useState } from 'react'
+import { forwardRef, useEffect, useMemo, useState } from 'react'
 import { Autocomplete } from "~/.server/interfaces";
 import { toast } from "react-toastify";
 import { HandlerSuccess } from "~/.server/reponses";
@@ -15,7 +15,7 @@ const MyCustomInput = forwardRef(function MyInputs(props, ref: React.ForwardedRe
     return <input 
     {...props} 
     ref={ref} 
-    placeholder="Ingresa el municipio"  
+    placeholder="Ingresa la localidad"  
     className={clsx(
               'w-full mt-1  rounded-lg border-none bg-white/5 py-1.5 pr-8 pl-3 text-sm/6 text-white',
               'focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25'
@@ -23,7 +23,10 @@ const MyCustomInput = forwardRef(function MyInputs(props, ref: React.ForwardedRe
   />
 })
 
-
+export const routes = [
+  {key: "1", label: "Ruta 1"},
+  {key: "2", label: "Ruta 2"},
+];
 
 const compareAutocomplete = (a?: Autocomplete, b?: Autocomplete): boolean =>
   a?.id === b?.id;
@@ -32,24 +35,43 @@ const initialValue = {id: 0, value: ''};
 
 export function FolderButtonAdd() {
     const { isOpen, onOpenChange, onOpen, onClose } = useDisclosure();
-    const fetcherNextConsecutive = useFetcher<HandlerSuccess<number>>({ key: 'getNextConsecutiveFolder' });
+    const fetcherNextConsecutive = useFetcher<HandlerSuccess<{
+      consecutive: number,
+      townId: number
+    }>>({ key: 'getNextConsecutiveFolder' });
     const { submit, data, state } = useFetcher<HandlerSuccess<Autocomplete[]>>({ key: 'findTownAutocomplete' });
     const fetcher = useFetcher<HandlerSuccess<RequestDataGeneric>>({ key: 'createFolder' });
     const [query, setQuery] = useState('');
     const [selected, setSelected] = useState<Autocomplete | undefined>({...initialValue});
 
+    const isLoading = fetcherNextConsecutive.state !== 'idle' || fetcherNextConsecutive.data?.serverData?.townId !==  selected?.id;
+
     useEffect(() => {
-        submit({ data: query }, { action: '/municipality/search' });
+        submit({ data: query }, { action: '/town/search' });
     }, [query, submit])
 
+    const folderName = useMemo(() => {
+      if(!selected || selected?.id === 0) return 'No se ha asignado la localidad';
+
+      if(isLoading) return 'Creando nombre de la carpeta...';
+
+      if(!fetcherNextConsecutive.data || fetcherNextConsecutive.data.error) return 'No se ha podido crear la carpeta';
+
+      return selected?.value + ' ' + fetcherNextConsecutive?.data?.serverData.consecutive;
+
+    },[selected, fetcherNextConsecutive.data, isLoading])
+    
     useEffect(() => {
       if(selected && selected.id > 0) {
         fetcherNextConsecutive.submit({id: selected.id}, {action: '/folder/consecutive'});
       }
-    }, [fetcherNextConsecutive, selected])
+    }, [selected]);
+
+    console.log({selected, fetcherNext: fetcherNextConsecutive.state, submission: fetcherNextConsecutive.formData?.get('id') })
 
     const handleOpen = () => {
         onOpen();
+        setSelected({id: 0, value: ''});
     }
     
     
@@ -61,12 +83,12 @@ export function FolderButtonAdd() {
     useEffect(() => {
         if(fetcher.data?.error && isOpen && fetcher.state === 'idle') {
           toast.error(fetcher.data?.error, {
-            toastId: 'addMunicipality'
+            toastId: 'addFolder'
           });
         }
         
         if(fetcher.data?.status === 'success' && isOpen && fetcher.state === 'idle') {
-          toast.success('La localidad se creo correctamente');
+          toast.success('La carpeta se creo correctamente');
           onClose();
         }
     
@@ -80,9 +102,9 @@ export function FolderButtonAdd() {
                 variant="ghost" 
                 color="secondary" 
                 endContent={<FaPlus />}
-                onPress={handleOpen}
+                onClick={handleOpen}
             >
-                Agregar Localidad
+                Agregar Carpeta
             </Button>
             <Modal 
                 isOpen={isOpen} 
@@ -102,26 +124,27 @@ export function FolderButtonAdd() {
                             Agregar Localidad
                             </ModalHeader>
                             <ModalBody> 
-                <Input
-                  label="Ruta"
-                  name='route'
-                  type='number'
-                  variant="bordered"
-                  placeholder="Ingresa el número de la Ruta"
-                  labelPlacement="outside"
-                  autoComplete="off"
-                />
+              <Select
+                items={routes}
+                label="Ruta"
+                placeholder="Seleccione una ruta"
+                className="red-dark text-foreground bg-content1"
+                labelPlacement="outside"
+                variant="bordered"
+                name="route"
+              >
+                {(route) => <SelectItem key={route.key}>{route.label}</SelectItem>}
+              </Select>
       <Field>
                             <Label className='m-2'>Localidad</Label>
       <Combobox
         name='town' 
         value={selected} 
         onChange={(value) => {
-          setSelected(value ?? undefined);
+          setSelected(value ?? {id: 0, value: ''});
         }} 
         by={compareAutocomplete}
         onClose={() => {
-          console.log('data');
           setQuery('')
         }}
       >
@@ -163,15 +186,18 @@ export function FolderButtonAdd() {
        
       </Combobox>
                 </Field>
-                { ( fetcherNextConsecutive.data  && fetcherNextConsecutive.state === 'idle') && (<Input
+                { ( selected?.value ) && (<Input
                   label="Carpeta"
                   name='folder'
                   variant="bordered"
                   placeholder="Ingresa el nombre de la localidad"
                   labelPlacement="outside"
-                  defaultValue={selected?.value + ' ' + fetcherNextConsecutive.data.serverData}
+                  value={ folderName }
                   autoComplete="off"
                   isDisabled
+                  endContent={
+                    (isLoading) && <Spinner size='sm'/>
+                  }
                 />)}
                 
     {/* </div> */}

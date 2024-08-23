@@ -1,4 +1,4 @@
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input, Spinner } from "@nextui-org/react";
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input, Spinner, Select, SelectItem } from "@nextui-org/react";
 import { useFetcher } from "@remix-run/react";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
@@ -9,6 +9,11 @@ interface Props {
     isOpen: boolean;
     onOpenChange: (isOpen: boolean) => void
 }
+
+export const routes = [
+  {key: "1", label: "Ruta 1"},
+  {key: "2", label: "Ruta 2"},
+];
 
 export function ModalFolderEdit({
         isOpen, 
@@ -25,7 +30,7 @@ export function ModalFolderEdit({
         }
         
         if(fetcher.data?.status === 'success' ) {
-          toast.success('El municipio se actualizo correctamente');
+          toast.success('La carpeta se actualizo correctamente');
         }
 
       }, [fetcher.data]);
@@ -55,25 +60,32 @@ export function ModalFolderEdit({
                                 defaultValue={fetcherGet.data?.serverData.id}
                                 type="hidden"
                             />
-                            <Input
-                                label="Nombre"
+                          <Select
+                            items={routes}
+                            label="Ruta"
+                            placeholder="Seleccione una ruta"
+                            className="red-dark text-foreground bg-content1"
+                            labelPlacement="outside"
+                            variant="bordered"
+                            name="route"
+                            defaultSelectedKeys={[fetcherGet.data?.serverData.route.id+'']}
+                          >
+                            {(route) => <SelectItem key={route.key}>{route.label}</SelectItem>}
+                          </Select>
+                            {/* <Input
+                                label="Ruta"
                                 placeholder="Ingresa el numero de la ruta"
                                 variant="bordered"
                                 name='route'
                                 type='number'
                                 defaultValue={fetcherGet.data?.serverData.route.id}
-                                endContent={
-                                    fetcher.state !== 'idle' && (
-                                        <Spinner color="default"/>
-                                    )
-                                }
-                            />
+                            /> */}
                         </ModalBody>
                         <ModalFooter>
                             <Button color="danger" variant="flat" onPress={onClose}>
                                 Cerrar
                             </Button>
-                            <Button color="primary" type='submit' name='_action' value='update'>
+                            <Button color="primary" type='submit' name='_action' value='update' isLoading={fetcher.state !== 'idle'}>
                                 Actualizar
                             </Button>
                         </ModalFooter>
@@ -82,7 +94,7 @@ export function ModalFolderEdit({
                   )
                   : (<ModalBody>
                     <Spinner 
-                      label="Cargando datos del Municipio"
+                      label="Cargando datos de la carpeta"
                     />
                   </ModalBody>)
               }

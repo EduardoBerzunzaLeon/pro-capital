@@ -14,10 +14,8 @@ interface Props {
 export function TownAction({ idTown, onOpenEdit }: Props)  {
     const fetcherDelete = useFetcher<HandlerSuccess<Generic>>();
     const fetcherGet = useFetcher<HandlerSuccess<TownI>>({ key: 'getTown' });
-    const isTheSame = Number(fetcherDelete?.data?.serverData.id) === idTown;
-    const isLoading = fetcherDelete.state !== 'idle' 
-        && isTheSame;
-
+    const isDeleting = fetcherDelete.formData?.get("id") === idTown+'';
+    
     const handleDelete = () => {
         fetcherDelete.submit({
             id: idTown, 
@@ -34,17 +32,17 @@ export function TownAction({ idTown, onOpenEdit }: Props)  {
     }
 
     useEffect(() => {
-        if(fetcherDelete.data?.error && isTheSame && !isLoading ) {
+        if(fetcherDelete.data?.error && !isDeleting ) {
             toast.error(fetcherDelete.data?.error);
         }
-    }, [fetcherDelete.data, isLoading, isTheSame]);
+    }, [fetcherDelete.data, isDeleting]);
     
     return (
         <Action 
             ariaLabel="towns"
             onUpdate={handleUpdate}
             onDelete={handleDelete}
-            isLoading={isLoading}
+            isLoading={isDeleting}
         />
     )
 }

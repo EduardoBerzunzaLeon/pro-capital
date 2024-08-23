@@ -61,7 +61,7 @@ export function Action ({ ariaLabel, onView, onUpdate, onDelete, isLoading }: Pr
 
 
     return (
-        <div className="relative flex justify-end items-center gap-2">
+        <div className="relative flex justify-center items-center gap-2">
             {
                 isLoading ? (
                     <Spinner color="default"/>

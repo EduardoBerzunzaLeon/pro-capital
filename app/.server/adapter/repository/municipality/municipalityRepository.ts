@@ -27,7 +27,7 @@ export function MunicipalityRepository(): MunicipalityRepositoryI {
         const searchValue = search !== '' ? {
             where: {
                 name: {
-                    contains: search
+                    contains: search.toLowerCase()
                 }
             }
         } : null;

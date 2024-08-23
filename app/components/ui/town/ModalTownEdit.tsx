@@ -43,8 +43,6 @@ export function ModalTownEdit({
     const { submit, data, state } = useFetcher<HandlerSuccess<Autocomplete[]>>({ key: 'findMunicipalityAutocomplete' });
     const [query, setQuery] = useState('');
     const [selected, setSelected] = useState<Autocomplete | undefined>({id: -1, value: ''});
-      console.log({fetcherGet: fetcherGet.data});
-      console.log({fetcherUpdate: fetcher});
 
       useEffect(() => {
         if(fetcherGet?.data?.serverData?.municipality?.id) {

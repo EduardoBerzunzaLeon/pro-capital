@@ -43,6 +43,7 @@ export function TownButtonAdd() {
 
     const handleOpen = () => {
         onOpen();
+        setSelected({id: 0, value: ''});
     }
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {

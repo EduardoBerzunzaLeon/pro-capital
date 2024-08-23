@@ -1,20 +1,18 @@
 import { Input, SortDescriptor, Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, useDisclosure } from "@nextui-org/react";
 import { useFetcher } from "@remix-run/react";
 import { ChangeEvent, Key, useCallback, useEffect, useState } from "react";
-import { TownI } from "~/.server/domain/entity";
 import { PaginationI } from "~/.server/domain/interface";
 import { HandlerSuccess } from "~/.server/reponses";
 import { Pagination, RowPerPage } from "..";
 import { FaSearch } from "react-icons/fa";
-import { Folder, FolderI } from "~/.server/domain/entity/folder.entity";
+import { Folder } from "~/.server/domain/entity/folder.entity";
 import { FolderAction } from "./FolderAction";
 import { FolderButtonAdd } from "./FolderButtonAdd";
 import { ModalFolderEdit } from "./ModalFolderEdit";
 
-type Column = 'name' | 'id';
-
 const columns = [
   { key: 'id', label: 'ID' },
+  { key: 'route', label: 'RUTA' },
   { key: 'name', label: 'NOMBRE',  sortable: true },
   { key: 'leader', label: 'LIDER', },
   { key: 'municipality', label: 'MUNICIPIO', sortable: true },
@@ -100,33 +98,35 @@ const renderCell = useCallback((folder: Folder, columnKey: Key) => {
 }, [])
 return (
   <div>
-  <Input
-      isClearable
-      className="w-full sm:max-w-[44%]"
-      placeholder="Buscar por nombre"
-      startContent={<FaSearch />}
-      value={search}
-      onClear={handlerClose}
-      onValueChange={setSearch}
-  />
-  <Input
-      isClearable
-      className="w-full sm:max-w-[44%]"
-      placeholder="Buscar por nombre de Localidad"
-      startContent={<FaSearch />}
-      value={searchTown}
-      onClear={handlerCloseTown}
-      onValueChange={setSearchTown}
-  />
-  <Input
-      isClearable
-      className="w-full sm:max-w-[44%]"
-      placeholder="Buscar por nombre de Municipio"
-      startContent={<FaSearch />}
-      value={searchMunicipality}
-      onClear={handlerCloseMunicipality}
-      onValueChange={setSearchMunicipality}
-  />
+    <div className='w-full flex gap-2 mt-5 mb-3 flex-wrap justify-between'>
+        <Input
+            isClearable
+            className="w-full sm:max-w-[30%]"
+            placeholder="Buscar por nombre"
+            startContent={<FaSearch />}
+            value={search}
+            onClear={handlerClose}
+            onValueChange={setSearch}
+        />
+        <Input
+            isClearable
+           className="w-full sm:max-w-[30%]"
+            placeholder="Buscar por Localidad"
+            startContent={<FaSearch />}
+            value={searchTown}
+            onClear={handlerCloseTown}
+            onValueChange={setSearchTown}
+        />
+        <Input
+            isClearable
+            className="w-full sm:max-w-[30%]"
+            placeholder="Buscar por Municipio"
+            startContent={<FaSearch />}
+            value={searchMunicipality}
+            onClear={handlerCloseMunicipality}
+            onValueChange={setSearchMunicipality}
+        />
+    </div>
   <ModalFolderEdit 
       isOpen={isOpen}
       onOpenChange={onOpenChange}
@@ -161,7 +161,7 @@ return (
               key={column.key} 
               allowsSorting={column.sortable}
               allowsResizing
-              align={column.key === "actions" ? "center" : "start"}
+              className={column.key === "actions" ? "text-center" : "text-start"}
           >{column.label}</TableColumn>
       )}
   </TableHeader>

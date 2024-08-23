@@ -13,9 +13,7 @@ interface Props {
 export function FolderAction({ idFolder, onOpenEdit }: Props)  {
     const fetcherDelete = useFetcher<HandlerSuccess<Generic>>();
     const fetcherGet = useFetcher({ key: 'getFolder' });
-    const isTheSame = Number(fetcherDelete?.data?.serverData.id) === idFolder;
-    const isLoading = fetcherDelete.state !== 'idle' 
-        && isTheSame;
+    const isDeleting = fetcherDelete.formData?.get("id") === idFolder+'';
 
     const handleDelete = () => {
         fetcherDelete.submit({
@@ -33,17 +31,17 @@ export function FolderAction({ idFolder, onOpenEdit }: Props)  {
     }
 
     useEffect(() => {
-        if(fetcherDelete.data?.error && isTheSame && !isLoading ) {
+        if(fetcherDelete.data?.error && !isDeleting ) {
             toast.error(fetcherDelete.data?.error);
         }
-    }, [fetcherDelete.data, isLoading, isTheSame]);
+    }, [fetcherDelete.data, isDeleting]);
     
     return (
         <Action 
             ariaLabel="folders"
             onUpdate={handleUpdate}
             onDelete={handleDelete}
-            isLoading={isLoading}
+            isLoading={isDeleting}
         />
     )
 }

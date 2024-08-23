@@ -10,6 +10,21 @@ type SortOrder = 'asc' | 'desc';
 
 export function TownRepository(): TownRepositoryI {
 
+    async function findByName(name: string)  {
+        const townDb = await db.town.findMany({
+            where: {
+                name: {
+                    contains: name
+                }
+            },
+            take: 10
+        });
+        if(townDb.length === 0) {
+            return [];   
+        }
+        return townDb.map(({id, name}) => ({ id, value: name }))
+    }
+
     async function findAll({ page, limit, column, direction, search }: PaginationWithFilters) {
 
         const directionBy: SortOrder = direction === 'ascending' ? 'asc' : 'desc';
@@ -39,7 +54,7 @@ export function TownRepository(): TownRepositoryI {
                             ...acc.where,
                             [testArray[0]] : {
                                 [testArray[1]]: {
-                                    contains: value
+                                    contains: value.toLowerCase()
                                 }
                             }
                             
@@ -52,7 +67,7 @@ export function TownRepository(): TownRepositoryI {
                 acc.where = {
                     ...acc.where,
                     [column]: {
-                        contains: value
+                        contains: value.toLowerCase()
                     }
                 }
 
@@ -188,6 +203,7 @@ export function TownRepository(): TownRepositoryI {
         deleteOne,
         updateOne,
         createOne,
+        findByName
     }
 
 }
