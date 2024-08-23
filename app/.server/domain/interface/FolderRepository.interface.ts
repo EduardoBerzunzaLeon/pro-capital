@@ -19,8 +19,9 @@ export interface FolderRepositoryI {
     // TODO: refactorize any type
     findOne: (id: number) => Promise<any>,
     // findByName: (name: string) => Promise<Autocomplete[]>,
-    createOne: ({ consecutive, name, townId, routeId }: CreateFolderProps) => Promise<void>,
+    createOne: (townId: number, routeId: number) => Promise<void>,
     deleteOne: (id: number) => Promise<void>,
     updateOne: (id:number, routeId: number) => Promise<void>,
+    findNextConsecutive: (townId: number) => Promise<number>,
 }
 

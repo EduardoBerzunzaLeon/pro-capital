@@ -32,23 +32,25 @@ export const deleteOne = async (id: RequestId) => {
     return await Repository.folder.deleteOne(folderId);
 }
 
-export const createOne = async ({ consecutive, name, townId, routeId }: Partial<CreateFolderProps>) => {
+export const createOne = async (townId: RequestId, routeId: RequestId) => {
 
-    const data = validationZod({
-        consecutive,
-        name, 
-        townId,
-        routeId
-    }, folderCreateSchema);
+    const { id: townIdVal } = validationZod({ id: townId }, idSchema);
+    const { id: routeIdVal } = validationZod({ id: routeId }, idSchema);
 
-    return await Repository.folder.createOne({...data});
+    return await Repository.folder.createOne(townIdVal, routeIdVal);
 }
 
+
+export const findNextConsecutive = async (townId: RequestId) => {
+    const { id } = validationZod({ id: townId }, idSchema);
+    return await Repository.folder.findNextConsecutive(id);
+}
 
 export default {
     findAll,
     findOne,
     updateOne,
     deleteOne,
-    createOne
+    createOne,
+    findNextConsecutive
 }

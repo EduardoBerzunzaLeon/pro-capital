@@ -3,7 +3,6 @@ import { PaginationWithFilters } from "~/.server/domain/interface/Pagination.int
 import { db } from "../../db";
 import { ServerError } from "~/.server/errors";
 import { Folder } from "~/.server/domain/entity";
-import { folders } from '../../../../../prisma/users';
 
 type SortOrder = 'asc' | 'desc';
 
@@ -260,7 +259,7 @@ export function FolderRepository() : FolderRepositoryI {
 
     }
 
-    async function createOne({ consecutive, name, townId, routeId }: CreateFolderProps) {
+    async function createOne(townId: number, routeId: number) {
 
         const [town, route] = await Promise.all([
             db.town.findUnique({ where: {id: townId }}),
@@ -271,9 +270,17 @@ export function FolderRepository() : FolderRepositoryI {
             throw ServerError.badRequest('No existe la carpeta ni/o el municipio');
         }
 
-        const newFolder = await db.folder.create({
-            data: { consecutive, name, routeId, townId }
-        });
+        const currentConsecutive =  await findNextConsecutive(townId);
+
+        const nextConsecutive = currentConsecutive + 1
+        const data = {
+            consecutive: nextConsecutive,
+            name: `${town.name} ${nextConsecutive}`,
+            routeId,
+            townId
+        }
+
+        const newFolder = await db.folder.create({ data });
 
         if(!newFolder) 
             throw ServerError.internalServer('No se pudo crear la carpeta');
@@ -293,6 +300,7 @@ export function FolderRepository() : FolderRepositoryI {
         findOne,
         updateOne,
         deleteOne,
-        createOne
+        createOne,
+        findNextConsecutive
     }
 }

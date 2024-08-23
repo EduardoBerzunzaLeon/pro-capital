@@ -8,6 +8,8 @@ import { Pagination, RowPerPage } from "..";
 import { FaSearch } from "react-icons/fa";
 import { Folder, FolderI } from "~/.server/domain/entity/folder.entity";
 import { FolderAction } from "./FolderAction";
+import { FolderButtonAdd } from "./FolderButtonAdd";
+import { ModalFolderEdit } from "./ModalFolderEdit";
 
 type Column = 'name' | 'id';
 
@@ -125,10 +127,10 @@ return (
       onClear={handlerCloseMunicipality}
       onValueChange={setSearchMunicipality}
   />
-  {/* <ModalMunicipalityEdit 
+  <ModalFolderEdit 
       isOpen={isOpen}
       onOpenChange={onOpenChange}
-  /> */}
+  />
 <Table 
   aria-label="Municipalities table"
   onSortChange={setSortDescriptor}
@@ -145,7 +147,7 @@ return (
   }
   topContent={
       <div className="flex justify-between items-center">
-          {/* <MunicipalityButtonAdd /> */}
+          <FolderButtonAdd />
           <span className="text-default-400 text-small">Total {data?.serverData.total || 0 } Carpetas </span>
           <RowPerPage 
               onChange={handleRowPerPage}

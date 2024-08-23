@@ -1,7 +1,7 @@
-import { json, LoaderFunction } from "@remix-run/node";
+import { ActionFunction, json, LoaderFunction } from "@remix-run/node";
 import { FolderI } from "~/.server/domain/entity";
 import { PaginationI } from "~/.server/domain/interface";
-import { handlerSuccess } from "~/.server/reponses";
+import { handlerError, handlerSuccess } from "~/.server/reponses";
 import { Service } from "~/.server/services";
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -26,8 +26,6 @@ export const loader: LoaderFunction = async ({ request }) => {
             { column: 'town.name', value: ''},
             { column: 'town.municipality.name', value: ''},
           ]
-
-      console.log(searchParsed);
       
       const data = await Service.folder.findAll({
         page: Number(page), 
@@ -51,3 +49,21 @@ export const loader: LoaderFunction = async ({ request }) => {
       }
       
   }
+
+  export const action: ActionFunction = async({request}) => {
+    const formData = await request.formData();
+    const data = Object.fromEntries(formData);
+
+    const townId = data['town[id]']+'';
+    const { route } = data;
+
+    try {
+      if(data._action === 'create') {
+          await Service.folder.createOne(townId, route+'');
+      }
+      return handlerSuccess(201, { id: Number(data?.id), name: data?.name+'' });
+    } catch (error) {
+      return handlerError(error, { ...data });
+    }
+  }
+

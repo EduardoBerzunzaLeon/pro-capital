@@ -32,7 +32,7 @@ const initialValue = {id: 0, value: ''};
 
 export function FolderButtonAdd() {
     const { isOpen, onOpenChange, onOpen, onClose } = useDisclosure();
-    const fetcherNextConsecutive = useFetcher<HandlerSuccess<Autocomplete[]>>({ key: 'getNextConsecutiveFolder' });
+    const fetcherNextConsecutive = useFetcher<HandlerSuccess<number>>({ key: 'getNextConsecutiveFolder' });
     const { submit, data, state } = useFetcher<HandlerSuccess<Autocomplete[]>>({ key: 'findTownAutocomplete' });
     const fetcher = useFetcher<HandlerSuccess<RequestDataGeneric>>({ key: 'createFolder' });
     const [query, setQuery] = useState('');
@@ -42,9 +42,17 @@ export function FolderButtonAdd() {
         submit({ data: query }, { action: '/municipality/search' });
     }, [query, submit])
 
+    useEffect(() => {
+      if(selected && selected.id > 0) {
+        fetcherNextConsecutive.submit({id: selected.id}, {action: '/folder/consecutive'});
+      }
+    }, [fetcherNextConsecutive, selected])
+
     const handleOpen = () => {
         onOpen();
     }
+    
+    
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       setQuery(event.target.value)
@@ -87,7 +95,7 @@ export function FolderButtonAdd() {
                 {(onClose) => (
                     <fetcher.Form
                       method='POST'
-                      action='/town'
+                      action='/folder'
                     >
          
                             <ModalHeader className="flex flex-col gap-1">
@@ -96,7 +104,7 @@ export function FolderButtonAdd() {
                             <ModalBody> 
                 <Input
                   label="Ruta"
-                  name='ruta'
+                  name='route'
                   type='number'
                   variant="bordered"
                   placeholder="Ingresa el número de la Ruta"
@@ -154,15 +162,16 @@ export function FolderButtonAdd() {
                 ): null}
        
       </Combobox>
-      </Field>
-
-                { (selected && selected.id > 0) && (<Input
-                  label="Localidad"
-                  name='name'
+                </Field>
+                { ( fetcherNextConsecutive.data  && fetcherNextConsecutive.state === 'idle') && (<Input
+                  label="Carpeta"
+                  name='folder'
                   variant="bordered"
                   placeholder="Ingresa el nombre de la localidad"
                   labelPlacement="outside"
+                  defaultValue={selected?.value + ' ' + fetcherNextConsecutive.data.serverData}
                   autoComplete="off"
+                  isDisabled
                 />)}
                 
     {/* </div> */}

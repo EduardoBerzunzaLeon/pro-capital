@@ -24,7 +24,7 @@ export const action: ActionFunction = async({params, request}) => {
     try {
       
       if(data._action === 'update') {
-        const routeId = data['route[id]']+'';
+        const routeId = data['route']+'';
         await Service.folder.updateOne( id, routeId );
       }
 
