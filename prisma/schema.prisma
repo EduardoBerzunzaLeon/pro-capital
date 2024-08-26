@@ -189,7 +189,7 @@ model Aval {
   curp String @unique
   guarantee String
   phoneNumber String?
-  credit Credit[]
+  credits Credit[]
 }
 
 model Credit {

@@ -1,7 +1,8 @@
 // import { Autocomplete } from "~/.server/interfaces";
-import { Autocomplete } from "~/.server/interfaces";
-import { TownI } from "../entity/town.entity";
-import { PaginationI, PaginationWithFilters } from "./Pagination.interface";
+import { Generic } from "~/.server/interfaces";
+import { PaginationWithFilters } from "./Pagination.interface";
+import { Prisma } from "@prisma/client";
+import { GenericRepository, ResponseWithMetadata } from "~/.server/adapter/repository/base.repository.inteface";
 
 export interface UpdateTownProps {
     name: string,
@@ -9,13 +10,19 @@ export interface UpdateTownProps {
 }
 
 
-export interface TownRepositoryI {
-    findAll: (props: PaginationWithFilters) => Promise<PaginationI<TownI>>,
-    findOne: (id: number) => Promise<TownI>,
-    findByName: (name: string) => Promise<Autocomplete[]>,
-    // findByName: (name: string) => Promise<Autocomplete[]>,
-    createOne: (name: string, municipalityId: number) => Promise<TownI>,
-    deleteOne: (id: number) => Promise<void>,
-    updateOne: (id: number, { name, municipalityId }: UpdateTownProps) => Promise<void>,
+export interface FolderRepositoryI extends GenericRepository<
+    Prisma.TownDelegate, 
+    Prisma.TownWhereInput, 
+    Prisma.TownSelect,
+    Prisma.$TownPayload
+> {
+    findAll: (paginationData: PaginationWithFilters ) => Promise<ResponseWithMetadata>,
+    findAutocomplete: (name: string) => Promise<Generic | undefined>,
+    findOne: (id: number) => Promise<Generic | undefined>,
+    findIfExists: (name: string) => Promise<Generic | undefined>,
+    findIfHasFolders: (id: number) => Promise<Generic | undefined>,
+    updateOne: (id: number, data: UpdateTownProps) => Promise<Generic | undefined>,
+    deleteOne: (id: number) => Promise<Generic | undefined>
+    createOne: (name: string, municipalityId: number) => Promise<Generic | undefined>
 }
 

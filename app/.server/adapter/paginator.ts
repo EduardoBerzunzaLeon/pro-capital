@@ -9,7 +9,7 @@ export function apiPrismaFeatures({
     column, 
     direction, 
     search 
-}: PaginationProps) {
+}: PaginationWithFilters) {
 
 
     function convert(namesArray: string[], val: unknown) {
@@ -42,18 +42,16 @@ export function apiPrismaFeatures({
           const columnArray = column.split('.');
           const whereCondition = convert(columnArray, { contains: value.toLowerCase() });
 
-          // acc.where = {
-          //   ...acc.where,
-          //   ...whereCondition
-          // }
-          acc = {
-            ...acc,
-            ...whereCondition
+          for (const key in whereCondition) {
+            if (key in acc) {
+              acc[key] = { ...acc[key], ...whereCondition[key] };
+              return acc;
+            }
           }
 
-          return acc;
+          return { ...acc, ...whereCondition }
 
-        }, {});
+        }, {} as Generic);
 
         return whereClause;
 
@@ -74,7 +72,7 @@ export function apiPrismaFeatures({
         pageCount,
         total,
         nextPage,
-        page
+        currentPage: page
       }
     }
  

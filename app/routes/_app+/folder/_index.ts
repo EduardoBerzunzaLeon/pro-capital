@@ -1,8 +1,15 @@
 import { ActionFunction, json, LoaderFunction } from "@remix-run/node";
-import { FolderI } from "~/.server/domain/entity";
+import { Folder } from "~/.server/domain/entity";
 import { PaginationI } from "~/.server/domain/interface";
+import { Generic } from "~/.server/interfaces";
 import { handlerError, handlerSuccess } from "~/.server/reponses";
 import { Service } from "~/.server/services";
+
+const columnNames: Generic = {
+  town: 'town.name',
+  name: 'name',
+  municipality: 'town.municipality.name'
+}
 
 export const loader: LoaderFunction = async ({ request }) => {
   
@@ -11,14 +18,10 @@ export const loader: LoaderFunction = async ({ request }) => {
     const limit = url.searchParams.get('lm') || 5;
     const column = url.searchParams.get('cm') || 'name';
     const direction = url.searchParams.get('dm') || 'ascending';
-    
     const searchData = url.searchParams.get('sm');
-    //   { column: 'name', value: ''},
-    //   { column: 'municipality', value: ''},
-    // ]`;
     
     try {
-      // const searchParsed = JSON.parse(searchData);
+
       const searchParsed = searchData 
           ? JSON.parse(searchData) 
           : [
@@ -26,17 +29,18 @@ export const loader: LoaderFunction = async ({ request }) => {
             { column: 'town.name', value: ''},
             { column: 'town.municipality.name', value: ''},
           ]
-      
+          
       const data = await Service.folder.findAll({
         page: Number(page), 
         limit: Number(limit), 
-        column, 
+        column: columnNames[column] ?? 'name', 
         direction,
         search: searchParsed
       });
       
-      return handlerSuccess<PaginationI<FolderI>>(200, data);
+      return handlerSuccess<PaginationI<Folder>>(200, data);
       } catch (error) {
+        console.log(error);
         return json({
           error: 'no data',
           serverData: { 

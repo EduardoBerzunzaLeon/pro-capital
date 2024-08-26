@@ -3,16 +3,21 @@ import { Generic } from "~/.server/interfaces";
 import { BaseRepositoryI, FindManyProps, FindManyWithPaginatorProps } from "./base.repository.inteface";
 import { apiPrismaFeatures } from "../paginator";
 
-export function baseRepository<T extends Generic>(entity: T): BaseRepositoryI {
+export function baseRepository<
+    T extends Generic, 
+    P extends Generic, 
+    S,
+    D extends Generic
+>(entity: T): BaseRepositoryI<T, P, S, D> {
 
-    function prepareParams(searchParams: Generic, select?: Generic) {
-        const whereSection = { where: { ...searchParams } };
+    function prepareParams(searchParams: P, select?: S) {
+        const whereSection = { where: searchParams };
         return select 
-            ? { ...whereSection, select: {...select} }
+            ? { ...whereSection, select }
             : whereSection;
     }
 
-    async function findOne(searchParams: Generic, select?: Generic, isUnique: boolean = false) {
+    async function findOne(searchParams: P, select?: S, isUnique: boolean = false) {
         const params = prepareParams(searchParams, select);
         if(isUnique) {
             return await entity.findUnique(params);
@@ -20,27 +25,23 @@ export function baseRepository<T extends Generic>(entity: T): BaseRepositoryI {
         return await entity.findOne(params); 
     }
 
-    async function findManyPaginator({ searchParams, select, paginatonWithFilter }: FindManyWithPaginatorProps) {
+    async function findManyPaginator({ searchParams, select, paginatonWithFilter }: FindManyWithPaginatorProps<P,S>) {
         
-        const { 
-            orderBy, 
-            filter, 
-            paginate,
-            getMetadata
-         } = apiPrismaFeatures(paginatonWithFilter);
+        const apiPrisma = apiPrismaFeatures(paginatonWithFilter);
 
-        const search = searchParams ?? {};
-        
-        const params = filter 
-            ? prepareParams({ ...search, ...filter}, select)
-            : prepareParams(search, select);
+        const filter = apiPrisma.filter();
+        const orderBy = apiPrisma.orderBy();
+        const paginate = apiPrisma.paginate();
+        const whereAssign = Object.assign({}, searchParams, filter );
+        const params = prepareParams(whereAssign, select);
 
+        // console.log(whereAssign.town.municipality.name)
         const [data, total] = await Promise.all([
-            entity.findMany({...params, ...paginate, orderBy: orderBy }),
-            entity.count(params)
+            entity.findMany({...params, ...paginate, orderBy }),
+            entity.count({ where: whereAssign })
         ]);
 
-        const metadata =  getMetadata(total);
+        const metadata =  apiPrisma.getMetadata(total);
 
         return { 
             data, 
@@ -48,27 +49,27 @@ export function baseRepository<T extends Generic>(entity: T): BaseRepositoryI {
         }   
     }
     
-    async function findMany({ searchParams, select, take }: FindManyProps) {
+    async function findMany({ searchParams, select, take }: FindManyProps<P,S>) {
         const params =  prepareParams(searchParams, select);
         return await entity.findMany({ ...params, take: take ?? 10 });
     }
 
-    async function updateOne(searchParams: Generic, data: Generic) {
+    async function updateOne(searchParams: P, data: D) {
         return await entity.update({
             where: { ...searchParams },
             data: { ...data }
         });
     } 
 
-    async function deleteOne(searchParams: Generic) {
+    async function deleteOne(searchParams: P) {
         return await entity.delete({ where: { ...searchParams }});
     }
     
-    async function deleteMany(searchParams: Generic) {
+    async function deleteMany(searchParams: P) {
         return await entity.deleteMany({ where: { ...searchParams }});
     }
 
-    async function createOne(data: Generic) {
+    async function createOne(data: D) {
         return await entity.create({ data: { ...data }});
     }
 

@@ -1,35 +1,86 @@
-import { folderCreateSchema, idSchema } from "~/schemas";
+import { idSchema } from "~/schemas";
 import { Repository } from "../adapter/repository";
 import { PaginationWithFilters } from "../domain/interface/Pagination.interface";
 import { RequestId } from "../interfaces";
 import { validationZod } from "./validation.service";
-
-interface CreateFolderProps { 
-    consecutive: number, 
-    name: string, 
-    townId: RequestId, 
-    routeId: RequestId
-}
-
+import { Folder } from "../domain/entity";
+import { ServerError } from "../errors";
+import { db } from "../adapter";
 
 export const findAll = async (props: PaginationWithFilters) => {
-    return await Repository.folder.findAll({...props});
+
+    const { data, metadata } =  await Repository.folder.findAll({...props});
+
+    if(metadata.total === 0) {
+        throw ServerError.notFound('No se encontraron carpetas');
+    }
+    const dataMapped = Folder.mapper(data);
+    
+    return {
+        data: dataMapped,
+        ...metadata
+    }
 }
 
 export const findOne = async (id: RequestId) => {
     const { id: folderId } = validationZod({ id }, idSchema);
-    return await Repository.folder.findOne(folderId);
+    const folder =  await Repository.folder.findOne(folderId);
+    if(!folder) throw ServerError.notFound('No se encontro la carpeta');
+    return folder;
 }
 
 export const updateOne = async (id: RequestId, routeId: RequestId) => {
     const { id: folderId } = validationZod({ id }, idSchema);
     const { id: routeIdVal } = validationZod({ id: routeId }, idSchema);
-    return await Repository.folder.updateOne(folderId, routeIdVal);
+    await Repository.folder.findOne(folderId);
+    const folderUpdated =  await Repository.folder.updateOne(folderId, routeIdVal);
+
+    if(!folderUpdated) {
+        throw ServerError.badRequest(`No se pudo actualizar la carpeta`);
+    }
+}
+
+const deleteGroupsInFolder = async ( groups: {id: number}[] ) => {
+    const groupsId = groups.map(({id}: { id: number }) => id);
+
+    const groupsDeleted = await Repository.group.deleteMany(groupsId);
+
+    if(groupsDeleted?.count < 0) {
+        throw ServerError.internalServer('Ocurrio un error, no se pudo eliminar los grupos de la carpeta')
+    }
+
 }
 
 export const deleteOne = async (id: RequestId) => {
     const { id: folderId } = validationZod({ id }, idSchema);
-    return await Repository.folder.deleteOne(folderId);
+
+    const folderDb = await Repository.folder.findCountGroups(folderId);
+
+    if(!folderDb) {
+        throw ServerError.notFound('No se encontro la carpeta');
+    }
+
+    if(folderDb._count.groups > 0) {
+        let hasCredit = false;
+
+        for (let index = 0; index < folderDb.groups.length; index++) {
+            if(folderDb.groups[index]._count.credits) {
+                hasCredit = true;
+                break;
+            }
+        }
+
+        if(hasCredit) {
+            throw ServerError.badRequest(`La carpeta ${folderDb.name} tiene creditos asignados a uno o varios grupos`);
+        }
+
+        await deleteGroupsInFolder(folderDb.groups);
+    }
+
+    const folderDeleted =  await Repository.folder.deleteOne(folderId);
+    if(!folderDeleted) {
+        throw ServerError.internalServer('No se pudo eliminar la carpeta')
+    }
 }
 
 export const createOne = async (townId: RequestId, routeId: RequestId) => {
@@ -37,13 +88,36 @@ export const createOne = async (townId: RequestId, routeId: RequestId) => {
     const { id: townIdVal } = validationZod({ id: townId }, idSchema);
     const { id: routeIdVal } = validationZod({ id: routeId }, idSchema);
 
-    return await Repository.folder.createOne(townIdVal, routeIdVal);
-}
+    // TODO: create town and route repository
+    const [town, route] = await Promise.all([
+        db.town.findUnique({ where: { id: townIdVal }}),
+        db.route.findUnique({ where: { id: routeIdVal }})
+    ]);
 
+    if(!town || !route) {
+        throw ServerError.badRequest('No existe la ruta ni/o la localidad');
+    }
+
+    const nextConsecutive = await findNextConsecutive(townIdVal);
+
+    const newFolder = await Repository.folder.createOne(townIdVal, routeIdVal, nextConsecutive, `${town.name} ${nextConsecutive}`);
+
+    
+    if(!newFolder) 
+        throw ServerError.internalServer('No se pudo crear la carpeta');
+
+    const group = await Repository.group.createOne(1, newFolder.id);
+
+    if(!group){
+        await Repository.folder.deleteOne(newFolder.id);
+        throw ServerError.internalServer(`No se pudo crear automaticamente el grupo de la carpeta ${newFolder.name}`)
+    }
+}
 
 export const findNextConsecutive = async (townId: RequestId) => {
     const { id } = validationZod({ id: townId }, idSchema);
-    return await Repository.folder.findNextConsecutive(id);
+    const consecutive =  await Repository.folder.findLastConsecutive(id);
+    return consecutive + 1;
 }
 
 export default {
