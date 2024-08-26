@@ -22,7 +22,7 @@ export function FolderRepository() : FolderRepositoryI {
         }
        
         if(column === 'municipality') {
-            orderBy = { town: { municipality: {name: directionBy } }}
+            orderBy = { town: { municipality: { name: directionBy } }}
         }
 
           let whereClause = null;
@@ -182,7 +182,7 @@ export function FolderRepository() : FolderRepositoryI {
                         id: true,
                         _count: {
                             select: {
-                                credit: true
+                                credits: true
                             }
                         }
                     }
@@ -198,7 +198,7 @@ export function FolderRepository() : FolderRepositoryI {
             let hasCredit = false;
     
             for (let index = 0; index < folderDb.groups.length; index++) {
-                if(folderDb.groups[index]._count.credit) {
+                if(folderDb.groups[index]._count.credits) {
                     hasCredit = true;
                     break;
                 }
