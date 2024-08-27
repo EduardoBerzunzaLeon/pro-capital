@@ -22,7 +22,7 @@ export function baseRepository<
         if(isUnique) {
             return await entity.findUnique(params);
         }
-        return await entity.findOne(params); 
+        return await entity.findFirst(params); 
     }
 
     async function findManyPaginator({ searchParams, select, paginatonWithFilter }: FindManyWithPaginatorProps<P,S>) {
@@ -35,7 +35,6 @@ export function baseRepository<
         const whereAssign = Object.assign({}, searchParams, filter );
         const params = prepareParams(whereAssign, select);
 
-        // console.log(whereAssign.town.municipality.name)
         const [data, total] = await Promise.all([
             entity.findMany({...params, ...paginate, orderBy }),
             entity.count({ where: whereAssign })

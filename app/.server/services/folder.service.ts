@@ -6,20 +6,18 @@ import { validationZod } from "./validation.service";
 import { Folder } from "../domain/entity";
 import { ServerError } from "../errors";
 import { db } from "../adapter";
+import { Service } from ".";
 
 export const findAll = async (props: PaginationWithFilters) => {
 
     const { data, metadata } =  await Repository.folder.findAll({...props});
 
-    if(metadata.total === 0) {
-        throw ServerError.notFound('No se encontraron carpetas');
-    }
-    const dataMapped = Folder.mapper(data);
-    
-    return {
-        data: dataMapped,
-        ...metadata
-    }
+    return Service.paginator.mapper({
+        metadata,
+        data, 
+        entityMapper: Folder,
+        errorMessage: 'No se encontraron carpetas'
+    });
 }
 
 export const findOne = async (id: RequestId) => {

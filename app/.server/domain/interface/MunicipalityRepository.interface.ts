@@ -1,14 +1,20 @@
+import { Prisma } from "@prisma/client"
+import { GenericRepository, ResponseWithMetadata } from "~/.server/adapter/repository/base.repository.inteface"
+import { Generic } from "~/.server/interfaces"
+import { PaginationWithFilters } from "./Pagination.interface"
 
-import { MunicipalityI } from "../entity";
-import { PaginationI, PaginationProps } from "./Pagination.interface";
-import { Autocomplete } from "~/.server/interfaces";
-
-
-export interface MunicipalityRepositoryI {
-    findAll: (props: PaginationProps) => Promise<PaginationI<MunicipalityI>>,
-    findOne: (id: number) => Promise<MunicipalityI>,
-    findByName: (name: string) => Promise<Autocomplete[]>,
-    createOne: (name: string) => Promise<MunicipalityI>,
-    deleteOne: (id: number) => Promise<void>,
-    updateOne: (id: number, name: string) => Promise<void>,
+export interface MunicipalityRepositoryI extends GenericRepository<
+    Prisma.MunicipalityDelegate, 
+    Prisma.MunicipalityWhereInput, 
+    Prisma.MunicipalitySelect,
+    Prisma.$MunicipalityPayload
+> {
+    findAll: (paginationData: PaginationWithFilters ) => Promise<ResponseWithMetadata>,
+    findAutocomplete: (name: string) => Promise<Generic[] | undefined>,
+    findOne: (id: number) => Promise<Generic | undefined>,
+    findIfExists: (name: string) => Promise<Generic | undefined>,
+    findIfHasTowns: (id: number) => Promise<Generic | undefined>,
+    updateOne: (id: number, name: string) => Promise<Generic | undefined>,
+    deleteOne: (id: number) => Promise<Generic | undefined>
+    createOne: (name: string) => Promise<Generic | undefined>
 }

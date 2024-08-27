@@ -5,7 +5,7 @@ import { Generic } from "~/.server/interfaces";
 import { handlerError, handlerSuccess } from "~/.server/reponses";
 import { Service } from "~/.server/services";
 
-const columnNames: Generic = {
+const columnSortNames: Generic = {
   town: 'town.name',
   name: 'name',
   municipality: 'town.municipality.name'
@@ -33,7 +33,7 @@ export const loader: LoaderFunction = async ({ request }) => {
       const data = await Service.folder.findAll({
         page: Number(page), 
         limit: Number(limit), 
-        column: columnNames[column] ?? 'name', 
+        column: columnSortNames[column] ?? 'name', 
         direction,
         search: searchParsed
       });

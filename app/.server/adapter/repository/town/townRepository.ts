@@ -82,7 +82,8 @@ export function TownRepository(): TownRepositoryI {
         createOne,
         findIfHasFolders,
         findIfExists,
-        findAutocomplete
+        findAutocomplete,
+        base
     }
 
 }

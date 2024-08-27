@@ -1,5 +1,5 @@
 import { ActionFunction, json, LoaderFunction } from "@remix-run/node";
-import { MunicipalityI } from "~/.server/domain/entity";
+import { Municipality } from "~/.server/domain/entity";
 import { PaginationI } from "~/.server/domain/interface";
 import { handlerError } from "~/.server/reponses/handlerError";
 import { handlerSuccess } from "~/.server/reponses/handlerSuccess";
@@ -12,18 +12,22 @@ export const loader: LoaderFunction = async ({ request }) => {
   const limit = url.searchParams.get('lm') || 5;
   const column = url.searchParams.get('cm') || 'name';
   const direction = url.searchParams.get('dm') || 'ascending';
-  const search = url.searchParams.get('sm') || '';
+  const searchData = url.searchParams.get('sm');
   
   try {
+      const searchParsed = searchData 
+      ? JSON.parse(searchData) 
+      : [ { column: 'name', value: ''} ]
+
       const data = await Service.municipality.findAll({
         page: Number(page), 
         limit: Number(limit), 
         column, 
         direction,
-        search
+        search: searchParsed
       });
 
-      return handlerSuccess<PaginationI<MunicipalityI>>(200, data);
+      return handlerSuccess<PaginationI<Municipality>>(200, data);
     } catch (error) {
       return json({
         error: 'no data',

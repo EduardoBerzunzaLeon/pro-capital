@@ -12,7 +12,7 @@ export const loader: LoaderFunction = async ({ request}) => {
     }
     
     try {
-        const dataDB = await Service.town.findByName(data.toLowerCase());
+        const dataDB = await Service.town.findAutocomplete(data.toLowerCase());
         return handlerSuccess(200, dataDB);
     } catch (error) {
         console.log(error);

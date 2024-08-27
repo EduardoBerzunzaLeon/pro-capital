@@ -37,6 +37,11 @@ export const handlerError = (error: unknown, data?: GenericUnknown) => {
       }
 
       if(error instanceof PrismaClientKnownRequestError) {
+        if(!error.meta?.target) {
+          console.log(error)
+          return json({ error: 'Ocurrio un error en la base de datos, intentar mas tarde', status: 500, serverData });
+        }
+
         if(error.meta) {
           const errors = error.meta.target as unknown[];
           return json({ error: `El valor del campo ${errors[0]} ya existe`, status: 404, serverData});

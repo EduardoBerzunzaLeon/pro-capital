@@ -5,45 +5,35 @@ import {  idSchema, townCreateSchema } from "~/schemas";
 import { PaginationWithFilters } from "../domain/interface/Pagination.interface";
 import { ServerError } from "../errors";
 import { Town } from "../domain/entity";
-
+import { Service } from ".";
 
 interface UpdateTownI {
     name: string,
     municipalityId: RequestId
 }
 
-
 export const findAll = async (props: PaginationWithFilters) => {
     const { data, metadata } =  await Repository.town.findAll({...props});
 
-    if(metadata.total === 0) {
-        throw ServerError.notFound('No se encontraron municipios');
-    }
-
-    const dataMapped = Town.mapper(data);
-
-    return {
-        data: dataMapped,
-        ...metadata
-    }
+    return Service.paginator.mapper({
+        metadata,
+        data, 
+        entityMapper: Town,
+        errorMessage: 'No se encontraron localidades'
+    });
+    
 }
 
 export const findOne = async (id: RequestId) => {
     const { id: townId } = validationZod({ id }, idSchema);
     const town = await Repository.town.findOne(townId);
-
-    if(!town) throw ServerError.notFound('No se encontro el municipio');
-
+    if(!town) throw ServerError.notFound('No se encontro la localidad');
     return town;
 }
 
 export const findAutocomplete = async (name: string) => {
     const town = await Repository.town.findAutocomplete(name);
-
-    //  TODO: create autocomplete service
-    if(town.length === 0) return [];
-
-    return town.map(({ id, name }: { id: number, name: string}) => ({ id, value: name}));
+    return Service.autocomplete.mapper('id', 'name', town);
 }
 
 export const deleteOne = async (id: RequestId) => {
@@ -52,18 +42,18 @@ export const deleteOne = async (id: RequestId) => {
     const townWithFolders = await Repository.town.findIfHasFolders(townId);
 
     if(!townWithFolders) {
-        throw ServerError.notFound(`No se encontro el municipio con ID: ${id}`);
+        throw ServerError.notFound(`No se encontro la localidad con ID: ${id}`);
     }
 
     const townsCount = townWithFolders._count.folders;
     if(townsCount > 0) {
-        throw ServerError.badRequest(`El municipio de ${townWithFolders.name} tiene ${townsCount} localidades`)
+        throw ServerError.badRequest(`La localidad de ${townWithFolders.name} tiene ${townsCount} carpetas`)
     }
 
     const townDeleted = await Repository.town.deleteOne(townId);
 
-    if(townDeleted?.count === 0) {
-        throw ServerError.internalServer(`No se pudo eliminar el municipio ${townWithFolders.name}`);
+    if(!townDeleted  || townDeleted?.count === 0) {
+        throw ServerError.internalServer(`No se pudo eliminar la localidad ${townWithFolders.name}`);
     }
 }
 
@@ -74,14 +64,11 @@ export const updateOne = async (id: RequestId, { name, municipalityId }: UpdateT
     );
     const { id: townId } = validationZod({ id }, idSchema);
 
-    // TODO: create municipality repository with base repository
-    // const municipality = await db.municipality.findUnique({ where: { id: municipalityId }});
-
-    // if(!municipality) throw ServerError.notFound('El municipio solicitado no existe');
+    await Service.municipality.findOne(mId);
 
     const townUpdated = await Repository.town.updateOne(townId, { name: townName, municipalityId: mId });
 
-    if(townUpdated) {
+    if(!townUpdated) {
         throw ServerError.badRequest(`No se pudo actualizar la localidad con el nombre ${name}`);
     }
 }
@@ -92,8 +79,7 @@ export const createOne = async (municipalityId: RequestId, name: string) => {
         townCreateSchema
     );
 
-    // TODO: create validation municiplaity and town
-    // await Repository.municipality.findOne(municipalityId);
+    await Service.municipality.findOne(id);
 
     const town = await Repository.town.findIfExists(townName);
 

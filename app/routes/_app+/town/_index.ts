@@ -1,8 +1,15 @@
 import { ActionFunction, json, LoaderFunction } from "@remix-run/node";
 import { TownI } from "~/.server/domain/entity";
 import { PaginationI } from "~/.server/domain/interface";
+import { Generic } from "~/.server/interfaces";
 import { handlerError, handlerSuccess } from "~/.server/reponses";
 import { Service } from "~/.server/services";
+
+const columnSortNames: Generic = {
+  name: 'name',
+  municipality: 'municipality.name'
+}
+
 
 export const loader: LoaderFunction = async ({ request }) => {
   
@@ -12,18 +19,21 @@ export const loader: LoaderFunction = async ({ request }) => {
     const column = url.searchParams.get('cm') || 'name';
     const direction = url.searchParams.get('dm') || 'ascending';
     
-    const searchData = url.searchParams.get('sm') || `[
-      { column: 'name', value: ''},
-      { column: 'municipality', value: ''},
-    ]`;
-    
+    const searchData = url.searchParams.get('sm');
+
     try {
 
-      const searchParsed = JSON.parse(searchData);
+      const searchParsed = searchData 
+      ? JSON.parse(searchData) 
+      : [
+        { column: 'name', value: ''},
+        { column: 'municipality.name', value: ''},
+      ]
+
       const data = await Service.town.findAll({
         page: Number(page), 
         limit: Number(limit), 
-        column, 
+        column: columnSortNames[column] ?? 'name', 
         direction,
         search: searchParsed
       });

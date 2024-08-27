@@ -17,7 +17,7 @@ export interface FolderRepositoryI extends GenericRepository<
     Prisma.$TownPayload
 > {
     findAll: (paginationData: PaginationWithFilters ) => Promise<ResponseWithMetadata>,
-    findAutocomplete: (name: string) => Promise<Generic | undefined>,
+    findAutocomplete: (name: string) => Promise<Generic[] | undefined>,
     findOne: (id: number) => Promise<Generic | undefined>,
     findIfExists: (name: string) => Promise<Generic | undefined>,
     findIfHasFolders: (id: number) => Promise<Generic | undefined>,

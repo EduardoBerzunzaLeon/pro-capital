@@ -1,5 +1,5 @@
 import { ActionFunction, LoaderFunction } from "@remix-run/node";
-import { MunicipalityI } from "~/.server/domain/entity";
+import { Generic } from "~/.server/interfaces";
 import { handlerError } from "~/.server/reponses/handlerError";
 import { handlerSuccess } from "~/.server/reponses/handlerSuccess";
 import { Service } from "~/.server/services";
@@ -10,7 +10,8 @@ export const loader: LoaderFunction = async ({ params }) => {
     
     try {
         const municipality = await Service.municipality.findOne(municipalityId);
-        return handlerSuccess<MunicipalityI>(200, municipality);
+        console.log({municipality});
+        return handlerSuccess<Generic>(200, municipality);
     } catch (error) {
         return handlerError(error)
     }

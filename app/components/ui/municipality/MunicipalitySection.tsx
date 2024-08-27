@@ -20,7 +20,7 @@ const columns = [
 ]
 
 export  function MunicipalitySection() {
-    const { load, state, data } = useFetcher<HandlerSuccess<PaginationI<MunicipalityI>>>({ key: 'municipalities' });
+    const { load, state, data, submit } = useFetcher<HandlerSuccess<PaginationI<MunicipalityI>>>({ key: 'municipalities' });
     const { isOpen, onOpenChange, onOpen } = useDisclosure();
     const [ limit, setLimit ] = useState(5);
     const [ page, setPage ] = useState(1);
@@ -46,7 +46,16 @@ export  function MunicipalitySection() {
     }, [data])
 
     useEffect(() => {
-        load(`/municipality/?lm=${limit}&pm=${page}&cm=${sortDescriptor.column}&dm=${sortDescriptor.direction}&sm=${search}`)
+        const data = [{ column: 'name', value: search }];
+
+        // load(`/municipality/?lm=${limit}&pm=${page}&cm=${sortDescriptor.column}&dm=${sortDescriptor.direction}&sm=${JSON.stringify(data)}`)
+        submit({
+            lm: limit,
+            pm: page,
+            cm: sortDescriptor.column as string,
+            dm: sortDescriptor.direction as string,
+            sm: JSON.stringify(data),
+        },{ action: '/municipality'} );
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [limit, page, sortDescriptor, search]);
 

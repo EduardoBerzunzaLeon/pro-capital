@@ -50,7 +50,7 @@ export function TownSection() {
         // load(`/town/?lm=${limit}&pm=${page}&cm=${sortDescriptor.column}&dm=${sortDescriptor.direction}&sm=${search}`)
         const data = [
             { column: 'name', value: search },
-            { column: 'municipality', value: searchMunicipality }
+            { column: 'municipality.name', value: searchMunicipality }
         ];
 
         submit({

@@ -28,7 +28,7 @@ export interface Metadata {
 export interface BaseRepositoryI<T, P, S, D> {
     findOne: (searchParams: P, select?: S, isUnique?: boolean) => Promise<Generic | undefined>,
     findManyPaginator: ({ searchParams, select, paginatonWithFilter }: FindManyWithPaginatorProps<P,S>) => Promise<ResponseWithMetadata>,
-    findMany: ({ searchParams, select, take }: FindManyProps<P,S>) => Promise<Generic | undefined>,
+    findMany: ({ searchParams, select, take }: FindManyProps<P,S>) => Promise<Generic[] | undefined>,
     updateOne: (searchParams: P, data: D) => Promise<Generic | undefined>,
     deleteOne: (searchParams: P) => Promise<Generic | undefined>,
     deleteMany: (searchParams: P) => Promise<Generic | undefined>,
