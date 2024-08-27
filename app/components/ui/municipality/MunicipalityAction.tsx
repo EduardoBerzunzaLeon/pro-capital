@@ -1,7 +1,5 @@
 import { useFetcher } from "@remix-run/react";
 import { Action } from "./Action";
-import { useEffect } from "react";
-import { toast } from "react-toastify";
 import { MunicipalityI } from "~/.server/domain/entity";
 import { ActionPostMunicipality, HandlerSuccess } from "~/.server/reponses";
 
@@ -29,12 +27,6 @@ export function MunicipalityAction({ idMunicipality, onOpenEdit }: Props)  {
         onOpenEdit();
         fetcherGet.load(`/municipality/${idMunicipality}`);
     }
-
-    useEffect(() => {
-        if(fetcherDelete.data?.error && !isDeleting ) {
-            toast.error(fetcherDelete.data?.error);
-        }
-    }, [fetcherDelete.data, isDeleting]);
     
     return (
         <Action 

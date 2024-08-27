@@ -21,7 +21,7 @@ const columns = [
 
 export  function MunicipalitySection() {
     const { load, state, data, submit } = useFetcher<HandlerSuccess<PaginationI<MunicipalityI>>>({ key: 'municipalities' });
-    const { isOpen, onOpenChange, onOpen } = useDisclosure();
+    const { isOpen, onOpenChange, onOpen, onClose } = useDisclosure();
     const [ limit, setLimit ] = useState(5);
     const [ page, setPage ] = useState(1);
     const [ search, setSearch ] = useState('');
@@ -47,8 +47,6 @@ export  function MunicipalitySection() {
 
     useEffect(() => {
         const data = [{ column: 'name', value: search }];
-
-        // load(`/municipality/?lm=${limit}&pm=${page}&cm=${sortDescriptor.column}&dm=${sortDescriptor.direction}&sm=${JSON.stringify(data)}`)
         submit({
             lm: limit,
             pm: page,
@@ -94,6 +92,7 @@ export  function MunicipalitySection() {
             />
             <ModalMunicipalityEdit 
                 isOpen={isOpen}
+                onClose={onClose}
                 onOpenChange={onOpenChange}
             />
           <Table 

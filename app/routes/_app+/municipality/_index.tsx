@@ -1,4 +1,5 @@
 import { ActionFunction, json, LoaderFunction } from "@remix-run/node";
+import { jsonWithError, jsonWithSuccess, redirectWithWarning } from "remix-toast";
 import { Municipality } from "~/.server/domain/entity";
 import { PaginationI } from "~/.server/domain/interface";
 import { handlerError } from "~/.server/reponses/handlerError";
@@ -49,10 +50,14 @@ export const loader: LoaderFunction = async ({ request }) => {
     try {
       if(data._action === 'create') {
           await Service.municipality.createOne(formData);
+          return jsonWithSuccess({ result: "Data created successfully", status:'success' }, `¡Creación exitosa del municipio ${data.name}! 🎉`);
       }
-      return handlerSuccess(201, { id: Number(data?.id), name: data?.name+'' });
+
+      return redirectWithWarning("/", "Entrada a una ruta de manera invalida");
+      
     } catch (error) {
-      return handlerError(error, { ...data });
+      const { error: errorMessage } = handlerError(error, { ...data });
+      return jsonWithError(null, errorMessage);
     }
   }
 

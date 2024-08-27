@@ -1,11 +1,6 @@
-import { GroupRepositoryI } from "~/.server/domain/interface/Group.repository.interface";
-import { db } from "../../db";
-import { baseRepository } from "../base.repository";
+import { BaseGroupI, GroupRepositoryI } from "~/.server/domain/interface";
 
-
-export function GroupRepository(): GroupRepositoryI {
-
-    const base = baseRepository(db.group);
+export function GroupRepository(base: BaseGroupI): GroupRepositoryI {
 
     async function deleteMany(groupsId: number[]) {
         return await base.deleteMany({ id: { in: groupsId }});

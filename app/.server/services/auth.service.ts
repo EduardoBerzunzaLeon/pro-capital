@@ -4,7 +4,7 @@ import { Authenticator } from 'remix-auth';
 import { FormStrategy } from "remix-auth-form";
 
 import { Repository } from '../adapter/repository';
-import { User } from '../domain/entity';
+import { User, UserI } from '../domain/entity';
 import { parseWithZod } from '@conform-to/zod';
 import { loginSchema } from '~/schemas';
 import { ServerError, ValidationConformError } from '../errors';
@@ -52,13 +52,20 @@ authenticator.use(
 
 export const signIn = async (username: string, password: string) => {
 
-  const user = await Repository.auth.findByUserName(username);
+  const userDb = await Repository.auth.findByUserName(username);
+
+  if(!userDb) {
+    throw ServerError.badRequest('Credenciales Incorrectas');
+  }
+
+  const user = new User(userDb as UserI);
+
   const isValidPassword = await encriptor.compare(password, user.password);
 
   if(!isValidPassword) {
     throw ServerError.badRequest('Credenciales Incorrectas');
   }
-
+  
   return user;
 }
 

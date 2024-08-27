@@ -2,19 +2,19 @@ import {  idSchema, nameSchema } from "~/schemas";
 import { Repository } from "../adapter/repository"
 import { validationConform, validationZod } from "./validation.service";
 import { RequestDataGeneric, RequestId } from "../interfaces";
-import { PaginationWithFilters } from "../domain/interface/Pagination.interface";
 import { ServerError } from "../errors";
 import { Municipality } from "../domain/entity";
+import { PaginationWithFilters } from "../domain/interface";
 import { Service } from './index';
 
 
 export const findAll = async (props: PaginationWithFilters) => {
     const { data, metadata } = await Repository.municipality.findAll({...props});
 
-    return Service.paginator.mapper({
+    return Service.paginator.mapper<Municipality>({
         metadata,
         data, 
-        entityMapper: Municipality,
+        mapper: Municipality.mapper,
         errorMessage: 'No se encontraron municipios'
     });
 }
@@ -22,11 +22,9 @@ export const findAll = async (props: PaginationWithFilters) => {
 export const findOne = async (id: RequestId) => {
     const { id: municipalityId } = validationZod({ id }, idSchema);
     const municipality =  await Repository.municipality.findOne(municipalityId);
-    if(!municipality) throw ServerError.notFound('No se encontro el municipio');
-    return municipality;
+    if(!municipality) throw ServerError.notFound('No se encontró el municipio');
+    return Municipality.create(municipality);
 }
-
-
 
 export const findAutocomplete = async (name: string) => {
     const municipality = await Repository.municipality.findAutocomplete(name);
@@ -69,13 +67,10 @@ export const createOne = async (form: FormData) => {
         throw ServerError.badRequest(`El municipio con nombre: ${name} ya existe`);
     }
 
-
     const municipalityCreated = await Repository.municipality.createOne(name);
     if(!municipalityCreated) {
         throw ServerError.internalServer(`No se pudo crear el municipio ${name}, intentelo mas tarde`);
     }
-
-    return municipalityCreated;
 }
 
 export default {

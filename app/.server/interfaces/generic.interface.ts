@@ -8,7 +8,6 @@ export interface RequestDataGeneric  {
     id: RequestId
 }
 
-
 export interface Autocomplete {
     id: number;
     value: string;

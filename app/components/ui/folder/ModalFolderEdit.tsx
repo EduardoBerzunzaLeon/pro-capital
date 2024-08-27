@@ -1,4 +1,4 @@
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input, Spinner, Select, SelectItem } from "@nextui-org/react";
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Spinner, Select, SelectItem } from "@nextui-org/react";
 import { useFetcher } from "@remix-run/react";
 import { useEffect } from "react";
 import { toast } from "react-toastify";

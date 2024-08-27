@@ -1,14 +1,16 @@
 import { Prisma } from "@prisma/client"
-import { GenericRepository, ResponseWithMetadata } from "~/.server/adapter/repository/base.repository.inteface"
 import { Generic } from "~/.server/interfaces"
-import { PaginationWithFilters } from "./Pagination.interface"
+import { BaseRepositoryI, PaginationWithFilters, ResponseWithMetadata } from ".";
 
-export interface MunicipalityRepositoryI extends GenericRepository<
+export type BaseMunicipalityI = BaseRepositoryI<
     Prisma.MunicipalityDelegate, 
     Prisma.MunicipalityWhereInput, 
     Prisma.MunicipalitySelect,
-    Prisma.$MunicipalityPayload
-> {
+    Prisma.XOR<Prisma.MunicipalityUpdateInput, Prisma.MunicipalityUncheckedUpdateInput>,
+    Prisma.XOR<Prisma.MunicipalityCreateInput, Prisma.MunicipalityUncheckedCreateInput>
+>;
+
+export interface MunicipalityRepositoryI {
     findAll: (paginationData: PaginationWithFilters ) => Promise<ResponseWithMetadata>,
     findAutocomplete: (name: string) => Promise<Generic[] | undefined>,
     findOne: (id: number) => Promise<Generic | undefined>,
@@ -17,4 +19,5 @@ export interface MunicipalityRepositoryI extends GenericRepository<
     updateOne: (id: number, name: string) => Promise<Generic | undefined>,
     deleteOne: (id: number) => Promise<Generic | undefined>
     createOne: (name: string) => Promise<Generic | undefined>
+    base: BaseMunicipalityI
 }

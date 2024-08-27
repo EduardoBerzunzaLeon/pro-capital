@@ -1,5 +1,5 @@
 import { ActionFunction, LoaderFunction } from "@remix-run/node";
-import { Generic } from "~/.server/interfaces";
+import { jsonWithError, jsonWithSuccess, redirectWithWarning } from "remix-toast";
 import { handlerError } from "~/.server/reponses/handlerError";
 import { handlerSuccess } from "~/.server/reponses/handlerSuccess";
 import { Service } from "~/.server/services";
@@ -10,14 +10,12 @@ export const loader: LoaderFunction = async ({ params }) => {
     
     try {
         const municipality = await Service.municipality.findOne(municipalityId);
-        console.log({municipality});
-        return handlerSuccess<Generic>(200, municipality);
+        return handlerSuccess(200, municipality);
     } catch (error) {
-        return handlerError(error)
+      const { error: errorMessage } = handlerError(error);
+      return jsonWithError({status: 'error'}, errorMessage);
     }
 }
-
-
 
 export const action: ActionFunction = async({params, request}) => {
     const formData = await request.formData();
@@ -28,15 +26,18 @@ export const action: ActionFunction = async({params, request}) => {
       
       if(data._action === 'update') {
         await Service.municipality.updateOne({ id, form: formData });
+        return jsonWithSuccess({ result: "Data saved successfully" }, "¡Actualización exitosa! 🎉");
       }
-
+      
       if(data._action === 'delete') {
         await Service.municipality.deleteOne(id);
+        return jsonWithSuccess({ result: "Data deleted successfully" }, "Elimación exitosa! 🎉");
       }
 
-      return handlerSuccess(201, { id: Number(data?.id), name: data?.name+'' });
+      return redirectWithWarning("/", "Entrada a una ruta de manera invalida");
 
     } catch (error) {
-      return handlerError(error, { ...data });
+      const { error: errorMessage, serverData } = handlerError(error, { ...data });
+      return jsonWithError({ serverData }, errorMessage);
     }
   }

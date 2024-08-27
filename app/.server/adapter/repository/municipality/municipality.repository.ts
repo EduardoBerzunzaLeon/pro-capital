@@ -1,11 +1,6 @@
-import { MunicipalityRepositoryI } from "~/.server/domain/interface";
-import { db } from "../../db";
-import { baseRepository } from "../base.repository";
-import { PaginationWithFilters } from "~/.server/domain/interface/Pagination.interface";
+import { BaseMunicipalityI, MunicipalityRepositoryI, PaginationWithFilters } from "~/.server/domain/interface";
 
-export function MunicipalityRepository():  MunicipalityRepositoryI {
-
-    const base = baseRepository(db.municipality);
+export function MunicipalityRepository(base: BaseMunicipalityI):  MunicipalityRepositoryI {
 
     async function findAutocomplete(name: string)  {
         return await base.findMany({

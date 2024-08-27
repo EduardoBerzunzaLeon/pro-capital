@@ -1,11 +1,7 @@
 import { PaginationWithFilters } from "~/.server/domain/interface/Pagination.interface";
-import { db } from "../../db";
-import { baseRepository } from "../base.repository";
-import { FolderRepositoryI } from "~/.server/domain/interface";
+import { BaseFolderI, FolderRepositoryI } from "~/.server/domain/interface";
 
-export function FolderRepository() : FolderRepositoryI {
-
-    const base = baseRepository(db.folder);
+export function FolderRepository(base: BaseFolderI) : FolderRepositoryI {
 
     async function findLastConsecutive( townId: number ) {
 

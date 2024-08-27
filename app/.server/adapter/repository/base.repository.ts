@@ -1,14 +1,15 @@
 
 import { Generic } from "~/.server/interfaces";
-import { BaseRepositoryI, FindManyProps, FindManyWithPaginatorProps } from "./base.repository.inteface";
-import { apiPrismaFeatures } from "../paginator";
+import { apiPrismaFeatures } from "../";
+import { BaseRepositoryI, FindManyProps, FindManyWithPaginatorProps } from "~/.server/domain/interface";
 
 export function baseRepository<
     T extends Generic, 
     P extends Generic, 
     S,
-    D extends Generic
->(entity: T): BaseRepositoryI<T, P, S, D> {
+    D extends Generic,
+    C extends Generic
+>(entity: T): BaseRepositoryI<T, P, S, D, C> {
 
     function prepareParams(searchParams: P, select?: S) {
         const whereSection = { where: searchParams };
@@ -68,7 +69,7 @@ export function baseRepository<
         return await entity.deleteMany({ where: { ...searchParams }});
     }
 
-    async function createOne(data: D) {
+    async function createOne(data: C) {
         return await entity.create({ data: { ...data }});
     }
 

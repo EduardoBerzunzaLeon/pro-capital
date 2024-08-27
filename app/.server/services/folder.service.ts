@@ -1,12 +1,12 @@
 import { idSchema } from "~/schemas";
 import { Repository } from "../adapter/repository";
-import { PaginationWithFilters } from "../domain/interface/Pagination.interface";
 import { RequestId } from "../interfaces";
 import { validationZod } from "./validation.service";
 import { Folder } from "../domain/entity";
 import { ServerError } from "../errors";
 import { db } from "../adapter";
 import { Service } from ".";
+import { PaginationWithFilters } from "../domain/interface";
 
 export const findAll = async (props: PaginationWithFilters) => {
 
@@ -15,7 +15,7 @@ export const findAll = async (props: PaginationWithFilters) => {
     return Service.paginator.mapper({
         metadata,
         data, 
-        entityMapper: Folder,
+        mapper: Folder.mapper,
         errorMessage: 'No se encontraron carpetas'
     });
 }
@@ -24,7 +24,7 @@ export const findOne = async (id: RequestId) => {
     const { id: folderId } = validationZod({ id }, idSchema);
     const folder =  await Repository.folder.findOne(folderId);
     if(!folder) throw ServerError.notFound('No se encontro la carpeta');
-    return folder;
+    return Folder.createSingle(folder);
 }
 
 export const updateOne = async (id: RequestId, routeId: RequestId) => {
@@ -82,25 +82,22 @@ export const deleteOne = async (id: RequestId) => {
 }
 
 export const createOne = async (townId: RequestId, routeId: RequestId) => {
-
-    const { id: townIdVal } = validationZod({ id: townId }, idSchema);
     const { id: routeIdVal } = validationZod({ id: routeId }, idSchema);
 
-    // TODO: create town and route repository
+    // TODO: create route repository
     const [town, route] = await Promise.all([
-        db.town.findUnique({ where: { id: townIdVal }}),
+        Service.town.findOne(townId),
         db.route.findUnique({ where: { id: routeIdVal }})
     ]);
 
-    if(!town || !route) {
+    if(!route) {
         throw ServerError.badRequest('No existe la ruta ni/o la localidad');
     }
 
-    const nextConsecutive = await findNextConsecutive(townIdVal);
+    const nextConsecutive = await findNextConsecutive(town.id);
 
-    const newFolder = await Repository.folder.createOne(townIdVal, routeIdVal, nextConsecutive, `${town.name} ${nextConsecutive}`);
+    const newFolder = await Repository.folder.createOne(town.id, routeIdVal, nextConsecutive, `${town.name} ${nextConsecutive}`);
 
-    
     if(!newFolder) 
         throw ServerError.internalServer('No se pudo crear la carpeta');
 

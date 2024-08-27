@@ -3,7 +3,6 @@ import { useEffect } from "react";
 import { useFetcher} from "@remix-run/react";
 import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Spinner, useDisclosure } from "@nextui-org/react";
 import { FaPlus } from "react-icons/fa";
-import { toast } from "react-toastify";
 import { HandlerSuccess, ActionPostMunicipality } from "~/.server/reponses";
 import { nameSchema } from "~/schemas";
 import { useForm } from "@conform-to/react";
@@ -27,14 +26,8 @@ export function MunicipalityButtonAdd() {
     }
 
     useEffect(() => {
-        if(fetcher.data?.error && isOpen && fetcher.state === 'idle') {
-          toast.error(fetcher.data?.error, {
-            toastId: 'addMunicipality'
-          });
-        }
         
         if(fetcher.data?.status === 'success' && isOpen && fetcher.state === 'idle') {
-          toast.success('El municipio se creo correctamente');
           onClose();
         }
     

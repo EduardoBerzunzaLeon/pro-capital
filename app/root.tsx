@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useLocation, useOutlet } from 'react-router-dom';
 import type { LinksFunction } from "@remix-run/node";
 import {
@@ -5,11 +6,12 @@ import {
   Meta,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
   useNavigate,
 } from "@remix-run/react";
 import {NextUIProvider} from "@nextui-org/react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Bounce, ToastContainer } from 'react-toastify';
+import { Bounce, ToastContainer, toast as notify } from 'react-toastify';
 
 import { rootLoader } from "./application/root/root.loader";
 
@@ -24,6 +26,15 @@ export const links: LinksFunction = () => [
 export default function App() {
   const outlet = useOutlet();
   const navigate = useNavigate();
+  const { toast } = useLoaderData<typeof rootLoader>();
+
+  console.log({toast});
+
+  useEffect(() => {
+    if(toast){
+     notify(toast.message, { type: toast.type });
+    }
+   }, [toast])
 
   return (
     <html lang="en">

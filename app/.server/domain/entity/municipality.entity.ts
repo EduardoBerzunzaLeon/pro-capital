@@ -23,7 +23,6 @@ export class Municipality {
 
         const { id, name, towns } = municipality;
         if(!name || typeof name !== 'string' ) throw ServerError.badRequest('el nombre es requerido');
-
         if(!id || typeof id !== 'number') throw ServerError.badRequest('el ID es requerido');
        
         return new Municipality(id, name, towns);

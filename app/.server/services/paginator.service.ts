@@ -1,22 +1,19 @@
-import { Metadata } from '../adapter/repository/base.repository.inteface';
+import { Metadata } from '../domain/interface/Base.repository.interface';
 import { ServerError } from '../errors';
 import { Generic } from '../interfaces';
 
-interface MapperClass {
-    mapper: (data: Generic[]) => Generic[]
-}
 
-interface PaginatorMapper<T extends MapperClass> {
+interface PaginatorMapper<T extends Generic> {
     metadata: Metadata,
     data: Generic[]
-    entityMapper: T,
+    mapper: (data: Generic[]) => T[],
     errorMessage: string
 }
 
-export const mapper = <T extends MapperClass>({
+export const mapper = <T extends Generic>({
     metadata,
     data,
-    entityMapper,
+    mapper,
     errorMessage
 }: PaginatorMapper<T>) => {
 
@@ -24,7 +21,7 @@ export const mapper = <T extends MapperClass>({
         throw ServerError.notFound(errorMessage);
     }
 
-    const dataMapped = entityMapper.mapper(data);
+    const dataMapped = mapper(data);
 
     return {
         data: dataMapped,

@@ -14,6 +14,9 @@ export const loginAction: ActionFunction =  async ({ request, context }: ActionF
     });
 
   } catch (error) {
+    if(error instanceof Response) {
+      return error;
+    }
     return handlerError(error);
   }
 

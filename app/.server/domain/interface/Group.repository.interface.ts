@@ -1,14 +1,19 @@
 import { Generic } from '~/.server/interfaces';
-import { GenericRepository } from '../../adapter/repository/base.repository.inteface';
 import { Prisma } from '@prisma/client';
+import { BaseRepositoryI } from '.';
 
-export interface GroupRepositoryI extends GenericRepository<
+
+export type BaseGroupI = BaseRepositoryI<
     Prisma.GroupDelegate, 
     Prisma.GroupWhereInput, 
     Prisma.GroupSelect,
-    Prisma.$GroupPayload
-> {
+    Prisma.XOR<Prisma.GroupUpdateInput, Prisma.GroupUncheckedUpdateInput>,
+    Prisma.XOR<Prisma.GroupCreateInput, Prisma.GroupUncheckedCreateInput>
+>;
+
+export interface GroupRepositoryI {
     deleteMany: (groupsId:number[]) => Promise<Generic | undefined>
-    createOne: (name: number, folderId: number) => Promise<Generic | undefined>
+    createOne: (name: number, folderId: number) => Promise<Generic | undefined>,
+    base: BaseGroupI
 }
 

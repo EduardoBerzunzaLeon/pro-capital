@@ -15,7 +15,6 @@ export const loader: LoaderFunction = async ({ request}) => {
         const dataDB = await Service.municipality.findAutocomplete(data.toLowerCase());
         return handlerSuccess(200, dataDB);
     } catch (error) {
-        console.log(error);
         return handlerSuccess(200, []);
     }
     

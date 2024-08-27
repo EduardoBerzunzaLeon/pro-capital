@@ -22,10 +22,11 @@ interface Count {
 export interface FolderI {
     id: number;
     name: string;
+    consecutive: number;
     town: Pick<TownI, 'name' | 'municipality'>;
-    route: Pick<RouteI, 'name'>;
+    route: RouteI;
     groups?: string[] //TODO: add group interface
-    leader?: LeaderI | null; //TODO: add leader interface
+    leader?: LeaderI | null;
     credits?: string[]; //TODO: add credit Interface
     _count?: Count;
 }
@@ -66,7 +67,7 @@ export class Folder {
     }
 
     static mapper(folders: Partial<FolderI>[]) {
-        return  folders.map(Folder.create);
+        return folders.map(Folder.create);
     }
 
     static create(folder: Partial<FolderI>) {
@@ -81,14 +82,11 @@ export class Folder {
             _count,
         } =  folder;
 
-        if(!name || typeof name !== 'string' ) throw ServerError.badRequest('el nombre es requerido');
-
-        if(!id || typeof id !== 'number') throw ServerError.badRequest('el ID es requerido');
-
+        if(!name || typeof name !== 'string' ) throw ServerError.badRequest('El nombre es requerido');
+        if(!id || typeof id !== 'number') throw ServerError.badRequest('El ID es requerido');
+        if(!route)  throw ServerError.badRequest('La ruta es requerida');
         if(!town)  throw ServerError.badRequest('La localidad es requerida');
         if(!town.municipality?.name)  throw ServerError.badRequest('El municipio es requerido');
-        if(!route)  throw ServerError.badRequest('La ruta es requerida');
-        if(!route)  throw ServerError.badRequest('el ID es requerido');
         
         const townName = town.name;
         const municipalityName = town.municipality.name;
@@ -108,6 +106,17 @@ export class Folder {
             credits, 
             groups, 
         });
+    }
+
+    static createSingle(folder: Partial<FolderI>) {
+        const { name, id, route, consecutive } = folder;
+
+        if(!name || typeof name !== 'string' ) throw ServerError.badRequest('El nombre es requerido');
+        if(!id || typeof id !== 'number') throw ServerError.badRequest('El ID es requerido');
+        if(!consecutive || typeof consecutive !== 'number') throw ServerError.badRequest('El Consecutivo es requerido');
+        if(!route || !route.id )  throw ServerError.badRequest('La ruta es requerida');
+
+        return  { id, name, consecutive, route };
     }
 
 }

@@ -1,34 +1,29 @@
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input, Spinner } from "@nextui-org/react";
 import { useFetcher } from "@remix-run/react";
 import { useEffect } from "react";
-import { toast } from "react-toastify";
 import { MunicipalityI } from "~/.server/domain/entity";
 import { HandlerSuccess, ActionPostMunicipality } from "~/.server/reponses";
 
 interface Props {
     isOpen: boolean;
+    onClose: () => void;
     onOpenChange: (isOpen: boolean) => void
 }
 
 export function ModalMunicipalityEdit({
         isOpen, 
-        onOpenChange 
+        onClose,
+        onOpenChange
     }: Props) {
     
     const fetcher = useFetcher<HandlerSuccess<ActionPostMunicipality>>();
     const fetcherGet = useFetcher<HandlerSuccess<MunicipalityI>>({ key: 'getMunicipality' });
 
     useEffect(() => {
-        
-        if(fetcher.data?.error ) {
-          toast.error(fetcher.data?.error);
-        }
-        
-        if(fetcher.data?.status === 'success' ) {
-          toast.success('El municipio se actualizo correctamente');
-        }
-
-      }, [fetcher.data]);
+      if(fetcherGet.data?.status === 'error') {
+        onClose()
+      }
+    },[fetcherGet.data])
 
     return (
       <Modal 
@@ -42,7 +37,7 @@ export function ModalMunicipalityEdit({
           {(onClose) => (
             <>
               {
-                 fetcherGet.state === 'idle' ||  fetcher.state === 'loading' ?
+                 (fetcherGet.state === 'idle' && fetcherGet.data?.status !== 'error') ||  fetcher.state === 'loading' ?
                    (
                     <>
                     <fetcher.Form method='POST' action={`/municipality/${fetcherGet.data?.serverData.id}`}>

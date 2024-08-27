@@ -1,11 +1,11 @@
 import { Repository } from "~/.server/adapter/repository";
 import {  RequestId } from "~/.server/interfaces";
-import {  validationZod } from "~/.server/services/validation.service";
 import {  idSchema, townCreateSchema } from "~/schemas";
-import { PaginationWithFilters } from "../domain/interface/Pagination.interface";
 import { ServerError } from "../errors";
 import { Town } from "../domain/entity";
 import { Service } from ".";
+import { PaginationWithFilters } from "../domain/interface";
+import { validationZod } from "./validation.service";
 
 interface UpdateTownI {
     name: string,
@@ -18,7 +18,7 @@ export const findAll = async (props: PaginationWithFilters) => {
     return Service.paginator.mapper({
         metadata,
         data, 
-        entityMapper: Town,
+        mapper: Town.mapper,
         errorMessage: 'No se encontraron localidades'
     });
     
@@ -28,7 +28,7 @@ export const findOne = async (id: RequestId) => {
     const { id: townId } = validationZod({ id }, idSchema);
     const town = await Repository.town.findOne(townId);
     if(!town) throw ServerError.notFound('No se encontro la localidad');
-    return town;
+    return Town.create(town);
 }
 
 export const findAutocomplete = async (name: string) => {

@@ -1,15 +1,13 @@
 import { AuthorizationError } from "remix-auth";
 import { ValidationConformError } from "../errors/ValidationConformError";
-import { json } from "@remix-run/node";
 import { ServerError } from "../errors/ServerError";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { GenericUnknown } from "../interfaces";
+import { Generic, GenericUnknown } from "../interfaces";
 import { ZodError } from "zod";
 
 const handlerConform = (error: ValidationConformError, serverData: GenericUnknown) => {
   const errors =  error.submission.error;
 
-  console.log(errors);
   const defaultMessage = 'Ocurrio un error al momento de validar los campos';
   if(!errors) {
     return { error: defaultMessage, status: 400, serverData }
@@ -21,58 +19,66 @@ const handlerConform = (error: ValidationConformError, serverData: GenericUnknow
 }
 
 const handlerZod = (error: ZodError, serverData: GenericUnknown) => {
-  console.log(error.errors[0].message);
   return { error: error.errors[0].message, status: 400, serverData};
 }
 
-export const handlerError = (error: unknown, data?: GenericUnknown) => {
+interface CustomError {
+  error: string,
+  status: number,
+  serverData: Generic
+}
 
-      console.log(error);
+export const handlerError = (error: unknown, data?: GenericUnknown): CustomError => {
 
       const serverData = { ...data };
 
       if(error instanceof ServerError) {
         const { message, status } = error;
-        return json({ error: message, status, serverData });
+        return { error: message, status, serverData };
       }
 
       if(error instanceof PrismaClientKnownRequestError) {
         if(!error.meta?.target) {
           console.log(error)
-          return json({ error: 'Ocurrio un error en la base de datos, intentar mas tarde', status: 500, serverData });
+          return { error: 'Ocurrio un error en la base de datos, intentar mas tarde', status: 500, serverData };
         }
 
         if(error.meta) {
           const errors = error.meta.target as unknown[];
-          return json({ error: `El valor del campo ${errors[0]} ya existe`, status: 404, serverData});
+          return { error: `El valor del campo ${errors[0]} ya existe`, status: 404, serverData};
         }
-        return error;
+
+        console.log({prismaErrornotHandler: error});
+
+        return { error: 'Algo salio mal, intentelo más tarde', status: 500, serverData};
       }
 
       if(error instanceof ValidationConformError) {
-        
-        return json(handlerConform(error, serverData));
+        return handlerConform(error, serverData);
       }
 
       if(error instanceof ZodError) {
-        return json(handlerZod(error, serverData));
+        return handlerZod(error, serverData);
+      }
+
+      if(error instanceof Response) {
+        return { error: 'Is Response', status: 500, serverData};
       }
 
       if(!(error instanceof AuthorizationError)) {
-        console.log(error);
-        return error;
+        return { error: 'Algo salio mal, intentelo más tarde', status: 500, serverData};
       }
       
       const { cause } = error;
 
       if( cause instanceof ValidationConformError) {
-        return json(handlerConform(cause, serverData));
+        return handlerConform(cause, serverData);
       }
       
       if( cause instanceof ServerError) {
         const { message, status } = cause;
-        return json({ error: message, status, serverData});
+        return { error: message, status, serverData};
       }
   
-      return json({error: error.message, status: 400, serverData});
+      return { error: error.message, status: 400, serverData};
 }

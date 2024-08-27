@@ -8,7 +8,9 @@ export const loader: LoaderFunction = async ({ params }) => {
     const { folderId } = params;
     try {
         const folder = await Service.folder.findOne(folderId);
-        return handlerSuccess<any>(200, folder);
+
+        console.log({folder});
+        return handlerSuccess(200, folder);
     } catch (error) {
         return handlerError(error)
     }
