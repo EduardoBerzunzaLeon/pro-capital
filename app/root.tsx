@@ -27,9 +27,7 @@ export default function App() {
   const outlet = useOutlet();
   const navigate = useNavigate();
   const { toast } = useLoaderData<typeof rootLoader>();
-
-  console.log({toast});
-
+  
   useEffect(() => {
     if(toast){
      notify(toast.message, { type: toast.type });
@@ -55,7 +53,9 @@ export default function App() {
                 </motion.main>
             </AnimatePresence>
           </div>
-          <ScrollRestoration />
+          <ScrollRestoration 
+            getKey={(location) => { return location.pathname }}
+          />
           <Scripts />
         </NextUIProvider>
         <ToastContainer 

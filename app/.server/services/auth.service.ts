@@ -16,7 +16,7 @@ if (!sessionSecret) {
   throw new Error('SESSION_SECRET must be set')
 }
 
-export const storage = createCookieSessionStorage({
+export const sessionStorage  = createCookieSessionStorage({
   cookie: {
     name: 'procapital-session',
     secure: process.env.NODE_ENV === 'production',
@@ -28,9 +28,10 @@ export const storage = createCookieSessionStorage({
   },
 });
 
+export const { getSession, commitSession, destroySession } = sessionStorage;
 export const USER_PASSWORD_STRATEGY = "user-password-strategy";
 
-export const authenticator = new Authenticator<User | Error | null>(storage, {
+export const authenticator = new Authenticator<Omit<User, 'password'> | Error | null>(sessionStorage , {
     sessionKey: "sessionKey",
     sessionErrorKey: "sessionErrorKey",
   });
@@ -65,8 +66,15 @@ export const signIn = async (username: string, password: string) => {
   if(!isValidPassword) {
     throw ServerError.badRequest('Credenciales Incorrectas');
   }
-  
-  return user;
+
+  return {
+    id: user.id,
+    email: user.email,
+    username: user.username,
+    name: user.name,
+    lastNameFirst: user.lastNameFirst,
+    lastNameSecond: user.lastNameSecond
+  };
 }
 
 export default {

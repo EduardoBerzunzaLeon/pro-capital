@@ -67,15 +67,11 @@ export function FolderButtonAdd() {
       }
     }, [selected]);
 
-    console.log({selected, fetcherNext: fetcherNextConsecutive.state, submission: fetcherNextConsecutive.formData?.get('id') })
-
     const handleOpen = () => {
         onOpen();
         setSelected({id: 0, value: ''});
     }
     
-    
-
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       setQuery(event.target.value)
     }

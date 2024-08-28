@@ -1,5 +1,5 @@
 import { ActionFunction, LoaderFunction } from "@remix-run/node";
-import { jsonWithError, jsonWithSuccess, redirectWithWarning } from "remix-toast";
+import { jsonWithError, jsonWithSuccess, redirectWithError, redirectWithWarning } from "remix-toast";
 import { Town } from "~/.server/domain/entity";
 import { handlerError } from "~/.server/reponses/handlerError";
 import { handlerSuccess } from "~/.server/reponses/handlerSuccess";
@@ -12,7 +12,7 @@ export const loader: LoaderFunction = async ({ params }) => {
         return handlerSuccess<Town>(200, {...town});
     } catch (error) {
       const { error: errorMessage } = handlerError(error);
-      return jsonWithError({status: 'error'}, errorMessage);
+      return redirectWithError('/region', errorMessage);
     }
 }
 

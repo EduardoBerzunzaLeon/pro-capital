@@ -60,6 +60,3 @@ export const loader: LoaderFunction = async ({ request }) => {
       return jsonWithError(null, errorMessage);
     }
   }
-
-
-

@@ -11,7 +11,9 @@ import { parseWithZod } from "@conform-to/zod";
 
 export function MunicipalityButtonAdd() {
     const { isOpen, onOpenChange, onOpen, onClose } = useDisclosure();
-    const fetcher = useFetcher<HandlerSuccess<ActionPostMunicipality>>({ key: 'municipalityCreate' });
+    const fetcher = useFetcher<HandlerSuccess<ActionPostMunicipality>>();
+
+    console.log({data:fetcher.data, state:fetcher.state, fetcher});
 
     const [form, fields] = useForm({
         onValidate({ formData }) {

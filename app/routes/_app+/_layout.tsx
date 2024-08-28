@@ -1,5 +1,5 @@
 import { Breadcrumbs, BreadcrumbItem } from "@nextui-org/react";
-import { Outlet, useLocation, useNavigationType, useRouteLoaderData} from "@remix-run/react";
+import { Outlet, useLoaderData, useLocation, useNavigationType, useRouteLoaderData} from "@remix-run/react";
 import { type MetaFunction } from "@remix-run/node";
 import { FaHome, FaUser, FaUsers } from "react-icons/fa";
 import { LogginEnd } from "~/components/ui";
@@ -12,16 +12,12 @@ export const meta: MetaFunction = () => {
   return [{ title: "Dashboard" }];
 };
 
-// export const action: ActionFunction = async ({ request }) => {
-//   console.log('asdsa')
-//   return await authenticator.logout(request, { redirectTo: "/login" });
-// };
-
-
 export default function Dashboard() {
+  
   const location = useLocation();
   const navigationType = useNavigationType();
-  const { user } = useRouteLoaderData('root') as { user: User};
+  const { user } = useRouteLoaderData('root') as { user: User };
+  const data = useLoaderData<typeof dashboardLoader>();
 
   return (
     <>
@@ -44,7 +40,12 @@ export default function Dashboard() {
         </section>
       { 
         ( 
-          navigationType === 'PUSH' && location?.state?._isRedirect
+         data?.message 
+         && (
+          data.message === 'welcome to app' && 
+          navigationType === 'PUSH' && 
+          location?.state?._isRedirect
+        )
         ) && 
           ( <LogginEnd text={`Bienvenido de nuevo, ${user?.name.toUpperCase()}`} /> )
       }

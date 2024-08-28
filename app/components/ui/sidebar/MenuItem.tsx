@@ -23,10 +23,11 @@ interface Props  {
   icon: JSX.Element;
   text: string;
   to: string;
+  id: number;
 }
 
 "flex gap-2 items-center bg-background p-2 pl-4 rounded-lg"
-export const MenuItem = ({ icon, text, to }: Props) => {
+export const MenuItem = ({ icon, text, to, id }: Props) => {
   return (
     <motion.li
       variants={variants}
@@ -35,7 +36,10 @@ export const MenuItem = ({ icon, text, to }: Props) => {
       className="cursor-pointer list-none"
     >
       <NavLink 
+      end
+      key={id}
       to={to}
+      preventScrollReset
       className={({ isActive, isPending }) =>
         isPending ? "flex gap-2 items-center p-2 pl-4" 
                   : isActive 

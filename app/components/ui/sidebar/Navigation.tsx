@@ -20,7 +20,7 @@ const variants: Variants = {
 export const Navigation = () => (
   <motion.ul variants={variants}>
     {items.map(({icon, text, to, id}) => (
-      <MenuItem key={id} icon={icon} text={text} to={to}/>
+      <MenuItem key={id} icon={icon} text={text} to={to} id={id}/>
     ))}
   </motion.ul>
 );
