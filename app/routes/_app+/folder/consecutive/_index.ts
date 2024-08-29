@@ -8,15 +8,10 @@ export const loader: LoaderFunction = async ({ request }) => {
     const townId = url.searchParams.get('id') || '0';
 
     try {
-      
       const consecutive = await Service.folder.findNextConsecutive(townId);
-      
-      return handlerSuccess<{
-        consecutive: number,
-        townId: number
-      }>(200, { consecutive, townId: parseInt(townId)});
-      } catch (error) {
-        return handlerError(error);
-      }
+      return handlerSuccess(200, { consecutive, townId: parseInt(townId)});
+    } catch (error) {
+      return handlerError(error);
+    }
       
   }

@@ -1,19 +1,20 @@
 import { ActionFunction, LoaderFunction } from "@remix-run/node";
-import { handlerError } from "~/.server/reponses/handlerError";
-import { handlerSuccess } from "~/.server/reponses/handlerSuccess";
+import { redirectWithWarning } from "remix-toast";
+import { handlerError, handlerErrorWithToast } from "~/.server/reponses/handlerError";
+import { handlerSuccess, handlerSuccessWithToast } from "~/.server/reponses/handlerSuccess";
 import { Service } from "~/.server/services";
 
 export const loader: LoaderFunction = async ({ params }) => {
   
     const { folderId } = params;
+
     try {
         const folder = await Service.folder.findOne(folderId);
-
-        console.log({folder});
         return handlerSuccess(200, folder);
     } catch (error) {
         return handlerError(error)
     }
+
 }
 
 export const action: ActionFunction = async({params, request}) => {
@@ -21,24 +22,22 @@ export const action: ActionFunction = async({params, request}) => {
     const data = Object.fromEntries(formData);
     const id = params.folderId;
 
-
-    let status =  200;
     try {
       
       if(data._action === 'update') {
-        const routeId = data['route']+'';
+        const routeId = String(data['route']);
         await Service.folder.updateOne( id, routeId );
+        return handlerSuccessWithToast('update');
       }
 
       if(data._action === 'delete') {
         await Service.folder.deleteOne(id);
-        status = 201;
+        return handlerSuccessWithToast('delete');
       }
 
-      return handlerSuccess(status, { id: Number(data?.id), name: data?.name+'' });
+      return redirectWithWarning("/", "Entrada a una ruta de manera invalida");
 
     } catch (error) {
-      console.log(error);
-      return handlerError(error, { ...data });
+      return handlerErrorWithToast(error, data);
     }
   }

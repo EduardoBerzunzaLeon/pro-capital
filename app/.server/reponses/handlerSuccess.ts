@@ -1,5 +1,8 @@
 import { json } from "@remix-run/node";
 import { HandlerSuccess } from "./handler.interface";
+import { jsonWithSuccess } from "remix-toast";
+
+type TypeHandler = 'update' | 'delete' | 'create';
 
 export const handlerSuccess = <T>(status: number, data: T)  => {
     return json<HandlerSuccess<T>>({
@@ -7,4 +10,78 @@ export const handlerSuccess = <T>(status: number, data: T)  => {
         serverData: data,
         error: null
     }, status)
+}
+
+export const handlerSuccessWithToast = (type: TypeHandler, info?: string) => {
+
+    const infoSanatized = info ? ` ${info}` : '';
+
+    const types = {
+        update: {
+            result: 'Data saved successfully',
+            message: `¡Actualización exitosa${infoSanatized}! 🎉`,
+        },
+        create: {
+            result: 'Data deleted successfully',
+            message: `¡Elimación exitosa${infoSanatized}! 🎉`,
+        },
+        delete: {
+            result: 'Data created successfully',
+            message: `¡Creción exitosa${infoSanatized}! 🎉`,
+        }
+    }
+
+    const defaultType = { result: 'Operation done successfully', message: '¡Operación realizada con exito! 🎉'};
+
+    const { result, message  } = types[type] ?? defaultType;
+
+    return jsonWithSuccess({ result }, message);
+
+}
+
+export const handlerPaginationParams = (urlText: string, defaultColumn: string, columns: string[]) => {
+    const url = new URL(urlText);
+
+    const page = url.searchParams.get('pm') || 1;
+    const limit = url.searchParams.get('lm') || 5;
+    const column = url.searchParams.get('cm') || defaultColumn;
+    const direction = url.searchParams.get('dm') || 'ascending';
+    const searchData = url.searchParams.get('sm');
+
+    const searchParsed = searchData 
+    ? JSON.parse(searchData) 
+    : convertColumns(columns);
+
+    return {
+        page: Number(page),
+        limit: Number(limit),
+        column,
+        direction,
+        search: searchParsed
+    }
+
+}
+
+const convertColumns = (columns: string[]) => {
+    return columns.map((column) => ({ column, value: '' }));
+}
+
+export const handlerAutocomplete = async <T>(urlText: string, serviceCB: (arg: string) => Promise<T>
+) => {
+    try {
+
+        const url = new URL(urlText);
+        const data = url.searchParams.get('data') || '';    
+
+        if(data.length === 0){
+            return [];
+        }
+    
+        const dataDB = await serviceCB(data.toLowerCase());
+        return handlerSuccess(200, dataDB);
+
+    } catch (error) {
+        return handlerSuccess(200, []);
+    }
+    
 }

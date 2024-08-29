@@ -1,8 +1,8 @@
 import { ActionFunction, json, LoaderFunction } from "@remix-run/node";
-import { Folder } from "~/.server/domain/entity";
-import { PaginationI } from "~/.server/domain/interface";
 import { Generic } from "~/.server/interfaces";
 import { handlerError, handlerSuccess } from "~/.server/reponses";
+import { getEmptyPagination } from "~/.server/reponses/handlerError";
+import { handlerPaginationParams, handlerSuccessWithToast } from "~/.server/reponses/handlerSuccess";
 import { Service } from "~/.server/services";
 
 const columnSortNames: Generic = {
@@ -11,44 +11,28 @@ const columnSortNames: Generic = {
   municipality: 'town.municipality.name'
 }
 
+const columnsFilter = ['name', 'town.name', 'town.municipality.name'];
+
 export const loader: LoaderFunction = async ({ request }) => {
   
-    const url = new URL(request.url);
-    const page = url.searchParams.get('pm') || 1;
-    const limit = url.searchParams.get('lm') || 5;
-    const column = url.searchParams.get('cm') || 'name';
-    const direction = url.searchParams.get('dm') || 'ascending';
-    const searchData = url.searchParams.get('sm');
-    
     try {
 
-      const searchParsed = searchData 
-          ? JSON.parse(searchData) 
-          : [
-            { column: 'name', value: ''},
-            { column: 'town.name', value: ''},
-            { column: 'town.municipality.name', value: ''},
-          ]
-          
+      const { 
+        page, limit, column, direction, search
+      } = handlerPaginationParams(request.url, 'name', columnsFilter);
+
       const data = await Service.folder.findAll({
-        page: Number(page), 
-        limit: Number(limit), 
+        page, 
+        limit, 
         column: columnSortNames[column] ?? 'name', 
         direction,
-        search: searchParsed
+        search
       });
       
-      return handlerSuccess<PaginationI<Folder>>(200, data);
+      return handlerSuccess(200, data);
+
       } catch (error) {
-        return json({
-          error: 'no data',
-          serverData: { 
-            data: [], 
-            total: 0, 
-            currentPage: 0,
-            pageCount: 0
-          }
-        })  
+        return json(getEmptyPagination())
       }
       
   }
@@ -63,9 +47,11 @@ export const loader: LoaderFunction = async ({ request }) => {
     try {
       if(data._action === 'create') {
           await Service.folder.createOne(townId, route+'');
+          return handlerSuccessWithToast('create');
       }
       return handlerSuccess(201, { id: Number(data?.id), name: data?.name+'' });
     } catch (error) {
+      // TODO: change this for handlerErrorWithToast
       return handlerError(error, { ...data });
     }
   }

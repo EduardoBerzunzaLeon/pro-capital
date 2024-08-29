@@ -1,21 +1,7 @@
 import { LoaderFunction } from "@remix-run/node";
-import { handlerSuccess } from "~/.server/reponses";
+import { handlerAutocomplete } from "~/.server/reponses/handlerSuccess";
 import { Service } from "~/.server/services";
 
 export const loader: LoaderFunction = async ({ request}) => {
-  
-    const url = new URL(request.url);
-    const data = url.searchParams.get('data') || '';    
-
-    if(data.length === 0){
-        return [];
-    }
-    
-    try {
-        const dataDB = await Service.municipality.findAutocomplete(data.toLowerCase());
-        return handlerSuccess(200, dataDB);
-    } catch (error) {
-        return handlerSuccess(200, []);
-    }
-    
+    return handlerAutocomplete(request.url, Service.municipality.findAutocomplete);
 }

@@ -1,7 +1,5 @@
-import { useFetcher } from "@remix-run/react";
-import { Action } from "./Action";
-import { MunicipalityI } from "~/.server/domain/entity";
-import { ActionPostMunicipality, HandlerSuccess } from "~/.server/reponses";
+import { Action } from "../Action/Action";
+import { useFetcherAction } from "~/application";
 
 interface Props {
     idMunicipality: number,
@@ -9,36 +7,21 @@ interface Props {
 }
 
 export function MunicipalityAction({ idMunicipality, onOpenEdit }: Props)  {
-    const fetcherDelete = useFetcher<HandlerSuccess<ActionPostMunicipality>>();
-    const fetcherGet = useFetcher<HandlerSuccess<MunicipalityI>>({ key: 'getMunicipality' });
-    const isDeleting = fetcherDelete.formData?.get("id") === idMunicipality+'';
-
-    const handleDelete = () => {
-        fetcherDelete.submit({
-            id: idMunicipality, 
-            _action: 'delete'
-        }, {
-          method: 'POST', 
-          action:`/municipality/${idMunicipality}`,
-       })
-    }
-
-    const handleUpdate = () => {
-        onOpenEdit();
-        console.log(idMunicipality);
-
-        console.log(fetcherGet)
-        fetcherGet.load(`/municipality/${idMunicipality}`);
-        // fetcherGet.submit(null,{
-        //     method: 'GET',
-        //     action: `/municipality/${idMunicipality}`
-        // })
-    }
+   const { handleUpdate, handleDelete, isDeleting } = useFetcherAction({ 
+    key: 'getMunicipality', 
+    route:'municipality', 
+    id: idMunicipality
+ });
     
+   const handleUpdateWithModal = () => {
+    onOpenEdit();
+    handleUpdate();
+   }
+
     return (
         <Action 
             ariaLabel="Municipalities"
-            onUpdate={handleUpdate}
+            onUpdate={handleUpdateWithModal}
             onDelete={handleDelete}
             isLoading={isDeleting}
         />

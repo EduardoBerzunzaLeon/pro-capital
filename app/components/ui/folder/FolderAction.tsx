@@ -1,9 +1,5 @@
-import { useFetcher } from "@remix-run/react";
-import { Action } from "../municipality/Action";
-import { useEffect } from "react";
-import { toast } from "react-toastify";
-import { HandlerSuccess } from "~/.server/reponses";
-import { Generic } from "~/.server/interfaces";
+import { Action } from "../Action/Action";
+import { useFetcherAction } from "~/application";
 
 interface Props {
     idFolder: number,
@@ -11,35 +7,23 @@ interface Props {
 }
 
 export function FolderAction({ idFolder, onOpenEdit }: Props)  {
-    const fetcherDelete = useFetcher<HandlerSuccess<Generic>>();
-    const fetcherGet = useFetcher({ key: 'getFolder' });
-    const isDeleting = fetcherDelete.formData?.get("id") === idFolder+'';
 
-    const handleDelete = () => {
-        fetcherDelete.submit({
-            id: idFolder, 
-            _action: 'delete'
-        }, {
-          method: 'POST', 
-          action:`/folder/${idFolder}`,
-       })
-    }
-
-    const handleUpdate = () => {
+    const { handleUpdate, handleDelete, isDeleting } = useFetcherAction({ 
+        key: 'getFolder', 
+        route:'folder', 
+        id: idFolder
+     });
+        
+    const handleUpdateWithModal = () => {
         onOpenEdit();
-        fetcherGet.load(`/folder/${idFolder}`);
+        handleUpdate();
     }
-
-    useEffect(() => {
-        if(fetcherDelete.data?.error && !isDeleting ) {
-            toast.error(fetcherDelete.data?.error);
-        }
-    }, [fetcherDelete.data, isDeleting]);
+    
     
     return (
         <Action 
             ariaLabel="folders"
-            onUpdate={handleUpdate}
+            onUpdate={handleUpdateWithModal}
             onDelete={handleDelete}
             isLoading={isDeleting}
         />

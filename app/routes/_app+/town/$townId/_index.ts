@@ -1,18 +1,16 @@
 import { ActionFunction, LoaderFunction } from "@remix-run/node";
-import { jsonWithError, jsonWithSuccess, redirectWithError, redirectWithWarning } from "remix-toast";
-import { Town } from "~/.server/domain/entity";
-import { handlerError } from "~/.server/reponses/handlerError";
-import { handlerSuccess } from "~/.server/reponses/handlerSuccess";
+import { redirectWithWarning } from "remix-toast";
+import { handlerError, handlerErrorWithToast } from "~/.server/reponses/handlerError";
+import { handlerSuccess, handlerSuccessWithToast } from "~/.server/reponses/handlerSuccess";
 import { Service } from "~/.server/services";
 
 export const loader: LoaderFunction = async ({ params }) => {
     const { townId } = params;
     try {
         const town = await Service.town.findOne(townId);
-        return handlerSuccess<Town>(200, {...town});
+        return handlerSuccess(200, town);
     } catch (error) {
-      const { error: errorMessage } = handlerError(error);
-      return redirectWithError('/region', errorMessage);
+      return handlerError(error);
     }
 }
 
@@ -27,18 +25,17 @@ export const action: ActionFunction = async({params, request}) => {
         const municipalityId = data['municipality[id]']+'';
         const name = data.name+'';
         await Service.town.updateOne( id, { name, municipalityId });
-        return jsonWithSuccess({ result: "Data saved successfully" }, "¡Actualización exitosa! 🎉");
+        return handlerSuccessWithToast('update');
       }
 
       if(data._action === 'delete') {
         await Service.town.deleteOne(id);
-        return jsonWithSuccess({ result: "Data deleted successfully" }, "Elimación exitosa! 🎉");
+        return handlerSuccessWithToast('delete');
       }
 
       return redirectWithWarning("/", "Entrada a una ruta de manera invalida");
 
     } catch (error) {
-      const { error: errorMessage, serverData } = handlerError(error, { ...data });
-      return jsonWithError({ serverData }, errorMessage);
+      return handlerErrorWithToast(error, data);
     }
 }
