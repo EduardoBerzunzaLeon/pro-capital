@@ -61,8 +61,7 @@ export default function ClientsPage() {
   });
   const [page, setPage] = React.useState(1);
   const outlet = useOutlet();
-  
-  console.log(selectedKeys);
+
   const hasSearchFilter = Boolean(filterValue);
   const hasSearchFilterAval = Boolean(filterValueAval);
   const hasSearchFilterLocalidad = Boolean(filterValueLocalidad);

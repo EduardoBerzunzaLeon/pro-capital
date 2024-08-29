@@ -38,6 +38,13 @@ export const handlerError = (error: unknown, data?: GenericUnknown): CustomError
       }
 
       if(error instanceof PrismaClientKnownRequestError) {
+          if(
+            typeof error.meta?.cause === 'string' 
+            && error.meta?.cause.includes('not found')
+          ) {
+            return { error: 'No se encontro los datos en el servidor', status: 404, serverData };  
+          }
+        
         if(!error.meta?.target) {
           console.log(error)
           return { error: 'Ocurrio un error en la base de datos, intentar mas tarde', status: 500, serverData };
@@ -45,7 +52,7 @@ export const handlerError = (error: unknown, data?: GenericUnknown): CustomError
 
         if(error.meta) {
           const errors = error.meta.target as unknown[];
-          return { error: `El valor del campo ${errors[0]} ya existe`, status: 404, serverData};
+          return { error: `El valor del campo ${errors[0]} ya existe`, status: 400, serverData};
         }
 
         console.log({prismaErrornotHandler: error});

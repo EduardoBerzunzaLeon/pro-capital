@@ -104,7 +104,6 @@ export function TownButtonAdd() {
         }} 
         by={compareAutocomplete}
         onClose={() => {
-          console.log('data');
           setQuery('')
         }}
       >

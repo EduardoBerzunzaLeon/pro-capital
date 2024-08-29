@@ -109,7 +109,6 @@ export function ModalTownEdit({
         }} 
         by={compareAutocomplete}
         onClose={() => {
-          console.log('data');
           setQuery('')
         }}
       >

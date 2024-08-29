@@ -25,7 +25,14 @@ export function MunicipalityAction({ idMunicipality, onOpenEdit }: Props)  {
 
     const handleUpdate = () => {
         onOpenEdit();
+        console.log(idMunicipality);
+
+        console.log(fetcherGet)
         fetcherGet.load(`/municipality/${idMunicipality}`);
+        // fetcherGet.submit(null,{
+        //     method: 'GET',
+        //     action: `/municipality/${idMunicipality}`
+        // })
     }
     
     return (

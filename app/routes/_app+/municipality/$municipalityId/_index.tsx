@@ -11,14 +11,39 @@ export const loader: LoaderFunction = async ({ params }) => {
     
     try {
       const municipality = await Service.municipality.findOne(municipalityId);
-        return handlerSuccess(200, municipality);
+      return handlerSuccess(200, municipality);
     } catch (error) {
-      const { error: errorMessage } = handlerError(error);
-      return redirectWithError('/region', errorMessage);
+      return handlerError(error);
+      // return redirectWithError('/region', errorMessage);
+      // return jsonWithError({ status, id: municipalityId }, errorMessage);
+      // 
     }
 }
 
+export function shouldRevalidate({
+  actionResult,
+  defaultShouldRevalidate,
+  formData,
+}: ShouldRevalidateFunctionArgs) {
+  const actionType = formData?.get('_action') ?? '';
 
+
+  console.log({actionType, actionResult});
+  if( actionType === 'create' ) return false;
+  
+  if(actionType === 'update' && ( 
+      actionResult?.status === 404 
+      || actionResult?.status === 500
+    )) {
+      return false;
+  }
+
+  if(actionType === 'delete') {
+    return false;
+  }
+  
+  return defaultShouldRevalidate;
+}
 
 export const action: ActionFunction = async({params, request}) => {
     const formData = await request.formData();
@@ -29,8 +54,7 @@ export const action: ActionFunction = async({params, request}) => {
       
       if(data._action === 'update') {
         await Service.municipality.updateOne({ id, form: formData });
-        // return jsonWithSuccess({ result: "Data saved successfully" }, "¡Actualización exitosa! 🎉");
-        return { ok: true}
+        return jsonWithSuccess({ result: "Data saved successfully" }, "¡Actualización exitosa! 🎉");
       }
       
       if(data._action === 'delete') {
@@ -41,16 +65,8 @@ export const action: ActionFunction = async({params, request}) => {
       return redirectWithWarning("/", "Entrada a una ruta de manera invalida");
 
     } catch (error) {
-      const { error: errorMessage } = handlerError(error, { ...data });
-      return jsonWithError(null, errorMessage);
+      const { error: errorMessage, status } = handlerError(error, { ...data });
+      return jsonWithError({ status, id }, errorMessage);
     }
   }
 
-  export function shouldRevalidate({
-    actionResult,
-    defaultShouldRevalidate,
-  }: ShouldRevalidateFunctionArgs) {
-    console.log('entraste');
-    console.log({actionResult});
-    return defaultShouldRevalidate;
-  }

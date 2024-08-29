@@ -40,7 +40,6 @@ export const loader: LoaderFunction = async ({ request }) => {
         }
       })  
     }
-    
 }
 
   export const action: ActionFunction = async({request}) => {
@@ -60,3 +59,5 @@ export const loader: LoaderFunction = async ({ request }) => {
       return jsonWithError(null, errorMessage);
     }
   }
+
+  

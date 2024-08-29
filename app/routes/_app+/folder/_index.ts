@@ -40,7 +40,6 @@ export const loader: LoaderFunction = async ({ request }) => {
       
       return handlerSuccess<PaginationI<Folder>>(200, data);
       } catch (error) {
-        console.log(error);
         return json({
           error: 'no data',
           serverData: { 
