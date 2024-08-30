@@ -31,7 +31,7 @@ export const routes = [
 const compareAutocomplete = (a?: Autocomplete, b?: Autocomplete): boolean =>
   a?.id === b?.id;
 
-const initialValue = {id: 0, value: ''};
+const initialValue = { id: 0, value: ''};
 
 export function FolderButtonAdd() {
     const { isOpen, onOpenChange, onOpen, onClose } = useDisclosure();

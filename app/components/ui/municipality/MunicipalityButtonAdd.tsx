@@ -1,17 +1,20 @@
 import { useEffect } from "react";
 
 import { useFetcher} from "@remix-run/react";
-import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Spinner, useDisclosure } from "@nextui-org/react";
+import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@nextui-org/react";
 import { FaPlus } from "react-icons/fa";
-import { HandlerSuccess, ActionPostMunicipality } from "~/.server/reponses";
 import { nameSchema } from "~/schemas";
 import { useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
+import { action } from "~/routes/_app+/municipality/_index";
+import { InputValidation } from "../forms/Input";
 
 
 export function MunicipalityButtonAdd() {
+    const fetcher = useFetcher<typeof action>();
     const { isOpen, onOpenChange, onOpen, onClose } = useDisclosure();
-    const fetcher = useFetcher<HandlerSuccess<ActionPostMunicipality>>();
+    const wasCreated = fetcher.data?.status === 'success' && isOpen && fetcher.state === 'idle';
+    const  isCreating = fetcher.state !== 'idle';
     
     const [form, fields] = useForm({
         onValidate({ formData }) {
@@ -19,22 +22,27 @@ export function MunicipalityButtonAdd() {
         },
         shouldValidate: 'onSubmit',
         shouldRevalidate: 'onInput',
+
     }); 
 
-    const handleOpen = () => {
+    useEffect(() => {
+        if(wasCreated) {
+          onClose();
+        }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, [wasCreated]);
+    
+      useEffect(() => {
+        if(!isOpen && form?.status === 'error') {
+            form.reset()        
+        }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, [isOpen]);
+    
+      const handleOpen = () => {
         onOpen();
     }
 
-    useEffect(() => {
-        
-        if(fetcher.data?.status === 'success' && isOpen && fetcher.state === 'idle') {
-          onClose();
-        }
-    
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      }, [fetcher, fetcher.data, fetcher.state]);
-
- 
     return (
         <>
             <Button 
@@ -65,26 +73,31 @@ export function MunicipalityButtonAdd() {
                             Agregar Municipio
                             </ModalHeader>
                             <ModalBody> 
-                                <Input
+                                <InputValidation
                                     label="Nombre"
                                     placeholder="Ingresa el Municipio"
-                                    variant="bordered"
-                                    labelPlacement="outside"
                                     name={fields.name.name}
                                     key={fields.name.key}
-                                    isInvalid={!!fields.name.errors}
-                                    color={fields.name.errors ? "danger" : "default"}
-                                    errorMessage={fields.name.errors}
-                                    endContent={fetcher.state !== 'idle' && (
-                                        <Spinner />
-                                    )}
+                                    errors={fields.name.errors}
                                 />
                             </ModalBody>
                             <ModalFooter>
-                                <Button color="danger" variant="flat" onPress={onClose}>
+                                <Button 
+                                    color="danger" 
+                                    variant="flat" 
+                                    onPress={onClose}
+                                    isDisabled={isCreating}
+                                >
                                     Cerrar
                                 </Button>
-                                <Button color="primary" type='submit' name='_action' value='create'>
+                                <Button 
+                                    color="primary" 
+                                    type='submit' 
+                                    name='_action' 
+                                    value='create'
+                                    isDisabled={isCreating}
+                                    isLoading={isCreating}
+                                >
                                     Crear
                                 </Button>
                             </ModalFooter>

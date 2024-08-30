@@ -15,7 +15,7 @@ export const name = z.string({
 .toLowerCase()
 .min(2, 'El nombre debe tener minimo dos letras')
 .refine(
-    (value) => /^[a-zA-Z]+[-'s]?[a-zA-Z ]+$/.test(value ?? ""), 
+    (value) => /^[A-Za-z]+$/.test(value ?? ""), 
     'El nombre solo debe tener caracteres del alfabeto'
 )
 
@@ -25,7 +25,7 @@ export const alphabet = z.string({
 }).trim()
 .toLowerCase()
 .refine(
-    (value) => /^[a-zA-Z]+[-'s]?[a-zA-Z ]+$/.test(value ?? ""), 
+    (value) => /^[A-Za-z]+$/.test(value ?? ""), 
     'El nombre solo debe tener caracteres del alfabeto'
 )
 

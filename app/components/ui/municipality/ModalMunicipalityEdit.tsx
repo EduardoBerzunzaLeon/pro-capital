@@ -1,8 +1,11 @@
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input } from "@nextui-org/react";
+import { useForm } from "@conform-to/react";
+import { parseWithZod } from "@conform-to/zod";
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button } from "@nextui-org/react";
 import { useFetcher } from "@remix-run/react";
-import { MunicipalityI } from "~/.server/domain/entity";
-import { HandlerSuccess, ActionPostMunicipality } from "~/.server/reponses";
 import { ModalBodyHandler } from "~/components/utils/ModalBodyHandler";
+import { action, loader } from "~/routes/_app+/municipality/$municipalityId/_index";
+import { nameSchema } from "~/schemas";
+import { InputValidation } from "../forms/Input";
 
 interface Props {
     isOpen: boolean;
@@ -14,10 +17,20 @@ export function ModalMunicipalityEdit({
         onOpenChange
     }: Props) {
     
-    const fetcher = useFetcher<HandlerSuccess<ActionPostMunicipality>>();
-    const fetcherGet = useFetcher<HandlerSuccess<MunicipalityI>>({ key: 'getMunicipality' });
+    const fetcher = useFetcher<typeof action>();
+    const fetcherGet = useFetcher<typeof loader>({ key: 'getMunicipality' });
     const isVisible = fetcherGet.state === 'idle' && fetcherGet.data?.serverData?.id;
     const isUpdating =  fetcher.state !== 'idle' || fetcherGet.state !== 'idle';
+
+        
+    const [form, fields] = useForm({
+      onValidate({ formData }) {
+        return parseWithZod(formData, { schema: nameSchema });
+        },
+        lastResult: fetcherGet.data?.serverData,
+        shouldValidate: 'onSubmit',
+        shouldRevalidate: 'onInput',
+    }); 
 
     return (
       <>
@@ -39,16 +52,22 @@ export function ModalMunicipalityEdit({
             />
              {
               (isVisible) && (
-                <fetcher.Form method='POST' action={`/municipality/${fetcherGet.data?.serverData?.id}`}>
+                <fetcher.Form 
+                  method='POST' 
+                  action={`/municipality/${fetcherGet.data?.serverData?.id}`}
+                  onSubmit={form.onSubmit}
+                  id={form.id}
+                >
                     <ModalHeader className="flex flex-col gap-1">
                         Actualizar Municipio de {fetcherGet.data?.serverData.name}
                     </ModalHeader>
                     <ModalBody>
-                        <Input
-                            label="Nombre"
-                            placeholder="Ingresa el Municipio"
-                            variant="bordered"
-                            name='name'
+                        <InputValidation
+                             label="Nombre"
+                             placeholder="Ingresa el Municipio"
+                             name={fields.name.name}
+                             key={fields.name.key}
+                             errors={fields.name.errors}
                             defaultValue={fetcherGet.data?.serverData?.name}
                         />
                     </ModalBody>
