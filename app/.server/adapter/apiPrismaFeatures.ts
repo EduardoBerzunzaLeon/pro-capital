@@ -31,6 +31,22 @@ export function apiPrismaFeatures({
         return  convert(columns, directionBy);
     }
 
+    function getCondition(value: unknown) {
+      if(value === 'notUndefined') {
+        return { not: undefined }
+      }
+
+      if(Array.isArray(value)) {
+        return { in: value }
+      }
+
+      if(typeof value === 'string') {
+        return { contains: value.toLowerCase() }
+      }
+
+      return { contains: value };
+    }
+
     function filter() {
 
         if(search.length === 0) return null;
@@ -40,7 +56,9 @@ export function apiPrismaFeatures({
           if(value === '') return acc;
 
           const columnArray = column.split('.');
-          const whereCondition = convert(columnArray, { contains: value.toLowerCase() });
+
+          const condition = getCondition(value);
+          const whereCondition = convert(columnArray, condition);
 
           for (const key in whereCondition) {
             if (key in acc) {

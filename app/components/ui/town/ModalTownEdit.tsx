@@ -37,7 +37,6 @@ export function ModalTownEdit({
         shouldValidate: 'onSubmit',
         shouldRevalidate: 'onInput',
       }); 
-      console.log({VALUE: form.value})
       useEffect(() => {
         if(fetcherGet?.data?.serverData?.municipality?.id) {
           setSelected({
@@ -87,7 +86,7 @@ export function ModalTownEdit({
                             selectedItem={selected}       
                           />
                           <InputValidation
-                             label="Nombre"
+                             label="Localidad"
                              placeholder="Ingresa la localidad"
                              defaultValue={fetcherGet.data?.serverData?.name}
                              metadata={fields.name}

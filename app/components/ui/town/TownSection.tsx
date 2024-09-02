@@ -1,14 +1,13 @@
-import { Input, SortDescriptor, Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, useDisclosure } from "@nextui-org/react";
-import { useFetcher } from "@remix-run/react";
-import { ChangeEvent, Key, useCallback, useEffect, useState } from "react";
-import { TownI } from "~/.server/domain/entity";
-import { PaginationI } from "~/.server/domain/interface";
-import { HandlerSuccess } from "~/.server/reponses";
+import {  Key, useCallback, useEffect, useState } from "react";
+
+import { Input,  Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, useDisclosure } from "@nextui-org/react";
+import { Town } from "~/.server/domain/entity";
 import { Pagination, RowPerPage } from "..";
 import { FaSearch } from "react-icons/fa";
 import { TownAction } from "./TownAction";
 import { TownButtonAdd } from "./TownButtonAdd";
 import { ModalTownEdit } from "./ModalTownEdit";
+import { useFetcherPaginator } from "~/application";
 
 type Column = 'name' | 'id';
 
@@ -20,56 +19,33 @@ const columns = [
 ]
 
 export function TownSection() {
-    const { load, state, data, submit } = useFetcher<HandlerSuccess<PaginationI<TownI>>>({ key: 'towns' });
-    const { isOpen, onOpenChange, onOpen } = useDisclosure();
-    const [ limit, setLimit ] = useState(5);
-    const [ page, setPage ] = useState(1);
+    
     const [ search, setSearch ] = useState('');
     const [ searchMunicipality, setSearchMunicipality ] = useState('');
-    const [ sortDescriptor, setSortDescriptor ] = useState<SortDescriptor>({
-        column: "name",
-        direction: "ascending",
-      });
-      
-      const loadingState = (state === 'loading' || state === 'submitting') || !data 
-      ? "loading" 
-      : "idle";
-
-      useEffect(() => {
-        load(`/town/?pm=${1}`);
-    },[load]);
-
-    useEffect(() => {
-        if(data?.serverData.data.length === 0 && data?.serverData.total > 0){
-            load(`/town/?limit=${limit}&page=${page}&dm=${sortDescriptor.direction}`);
-        }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [data])
+    const { isOpen, onOpenChange, onOpen } = useDisclosure();
+    const {        
+        data, 
+        limit, 
+        page, 
+        sortDescriptor, 
+        setSortDescriptor,
+        loadingState,
+        handlePagination,
+        handleRowPerPage,
+        onSubmit
+    } = useFetcherPaginator<Town>({key: 'town', route: 'town'});
 
     useEffect(() => {
-        // load(`/town/?lm=${limit}&pm=${page}&cm=${sortDescriptor.column}&dm=${sortDescriptor.direction}&sm=${search}`)
+
         const data = [
             { column: 'name', value: search },
             { column: 'municipality.name', value: searchMunicipality }
         ];
 
-        submit({
-            lm: limit,
-            pm: page,
-            cm: sortDescriptor.column as string,
-            dm: sortDescriptor.direction as string,
-            sm: JSON.stringify(data),
-        },{ action: '/town'} );
+        onSubmit(data);
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [limit, page, sortDescriptor, search, searchMunicipality]);
     
-    const handlePagination = (page: number) => {
-        setPage(page);
-    }
-
-    const handleRowPerPage = (e: ChangeEvent<HTMLSelectElement>) => {
-        setLimit(Number(e.target.value))
-    }
 
     const handlerClose = () => {
         setSearch('');
@@ -79,10 +55,9 @@ export function TownSection() {
         setSearchMunicipality('');
     }
 
-    const renderCell = useCallback((town: TownI, columnKey: Key) => {
+    const renderCell = useCallback((town: Town, columnKey: Key) => {
         if(columnKey === 'actions') {
           return (<TownAction onOpenEdit={onOpen} idTown={town.id}/>)
-            // return <span>ACTIONS</span>
         } 
 
         if(columnKey === 'municipality') {
@@ -102,8 +77,9 @@ export function TownSection() {
         <Input
             isClearable
             className="w-full sm:max-w-[44%]"
-            placeholder="Buscar por nombre"
+            placeholder="Buscar por localidad"
             startContent={<FaSearch />}
+            variant='bordered'
             value={search}
             onClear={handlerClose}
             onValueChange={setSearch}
@@ -111,8 +87,9 @@ export function TownSection() {
         <Input
             isClearable
             className="w-full sm:max-w-[44%]"
-            placeholder="Buscar por nombre de Municipio"
+            placeholder="Buscar por municipio"
             startContent={<FaSearch />}
+            variant='bordered'
             value={searchMunicipality}
             onClear={handlerCloseMunicipality}
             onValueChange={setSearchMunicipality}
@@ -125,7 +102,6 @@ export function TownSection() {
       <Table 
         aria-label="Municipalities table"
         onSortChange={setSortDescriptor}
-        // topContentPlacement="outside"
         sortDescriptor={sortDescriptor}
         bottomContent={
             <div className="flex w-full justify-center">
@@ -139,7 +115,9 @@ export function TownSection() {
         topContent={
             <div className="flex justify-between items-center">
                 <TownButtonAdd />
-                <span className="text-default-400 text-small">Total {data?.serverData.total || 0 } localidades </span>
+                <span className="text-default-400 text-small">
+                    Total {data?.serverData.total || 0 } localidades
+                </span>
                 <RowPerPage 
                     onChange={handleRowPerPage}
                 />

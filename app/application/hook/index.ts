@@ -1,4 +1,5 @@
 
+export { useFetcherPaginator } from "./useFetcherPaginator";
 export { useFetcherAction } from "./useFetcherAction";
 export { useDimensions } from "./useDimensions";
 export { useMatchesData } from "./useMatchesData";

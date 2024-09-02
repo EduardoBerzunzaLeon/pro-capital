@@ -97,7 +97,7 @@ model Permission {
 
 model Route {
   id Int @id @default(autoincrement())
-  name String @unique
+  name Int @unique
   isActive Boolean @default(true)
   agentsRoutes AgentRoute[]
   folders Folder[]

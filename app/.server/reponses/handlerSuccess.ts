@@ -42,11 +42,11 @@ export const handlerSuccessWithToast = (type: TypeHandler, info?: string) => {
 export const handlerPaginationParams = (urlText: string, defaultColumn: string, columns: string[]) => {
     const url = new URL(urlText);
 
-    const page = url.searchParams.get('pm') || 1;
-    const limit = url.searchParams.get('lm') || 5;
-    const column = url.searchParams.get('cm') || defaultColumn;
-    const direction = url.searchParams.get('dm') || 'ascending';
-    const searchData = url.searchParams.get('sm');
+    const page = url.searchParams.get('p') || 1;
+    const limit = url.searchParams.get('l') || 5;
+    const column = url.searchParams.get('c') || defaultColumn;
+    const direction = url.searchParams.get('d') || 'ascending';
+    const searchData = url.searchParams.get('s');
 
     const searchParsed = searchData 
     ? JSON.parse(searchData) 

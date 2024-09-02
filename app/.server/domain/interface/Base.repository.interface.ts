@@ -9,7 +9,7 @@ export interface FindManyWithPaginatorProps<P,S> {
 }
 
 export interface FindManyProps<P,S> {
-    searchParams: P,
+    searchParams?: P,
     select?: S,
     take?: number
 }

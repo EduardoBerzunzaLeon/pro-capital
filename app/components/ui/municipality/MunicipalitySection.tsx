@@ -1,15 +1,13 @@
-import { ChangeEvent, Key, useCallback, useEffect, useState} from "react";
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Spinner, useDisclosure, SortDescriptor, Input } from "@nextui-org/react";
-import { useFetcher } from "@remix-run/react";
-import { MunicipalityI } from "~/.server/domain/entity";
-import { PaginationI } from "~/.server/domain/interface";
+import { Key, useCallback, useEffect, useState} from "react";
+import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Spinner, useDisclosure, Input } from "@nextui-org/react";
+import { Municipality } from "~/.server/domain/entity";
 import { Pagination } from "..";
 import { RowPerPage } from '../rowPerPage/RowPerPage';
 import { MunicipalityAction } from "./MunicipalityAction";
 import { ModalMunicipalityEdit } from './ModalMunicipalityEdit';
 import { MunicipalityButtonAdd } from "./MunicipalityButtonAdd";
-import { HandlerSuccess } from "~/.server/reponses";
 import { FaSearch } from "react-icons/fa";
+import { useFetcherPaginator } from "~/application";
 
 type Column = 'name' | 'id';
 
@@ -20,57 +18,31 @@ const columns = [
 ]
 
 export  function MunicipalitySection() {
-    const { load, state, data, submit } = useFetcher<HandlerSuccess<PaginationI<MunicipalityI>>>({ key: 'municipalities' });
     const { isOpen, onOpenChange, onOpen } = useDisclosure();
-    const [ limit, setLimit ] = useState(5);
-    const [ page, setPage ] = useState(1);
     const [ search, setSearch ] = useState('');
-    const [ sortDescriptor, setSortDescriptor ] = useState<SortDescriptor>({
-        column: "name",
-        direction: "ascending",
-      });
-
-    const loadingState = (state === 'loading' || state === 'submitting') || !data 
-        ? "loading" 
-        : "idle";
-
-    useEffect(() => {
-        load(`/municipality/?pm=${1}`);
-    },[load]);
-    
-    useEffect(() => {
-        if(data?.serverData.data.length === 0 && data?.serverData.total > 0){
-            load(`/municipality/?limit=${limit}&page=${page}&dm=${sortDescriptor.direction}`);
-        }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [data])
+    const {        
+        data, 
+        limit, 
+        page, 
+        sortDescriptor, 
+        setSortDescriptor,
+        loadingState,
+        handlePagination,
+        handleRowPerPage,
+        onSubmit
+    } = useFetcherPaginator<Municipality>({key: 'municipality', route: 'municipality'});
 
     useEffect(() => {
         const data = [{ column: 'name', value: search }];
-        submit({
-            lm: limit,
-            pm: page,
-            cm: sortDescriptor.column as string,
-            dm: sortDescriptor.direction as string,
-            sm: JSON.stringify(data),
-        },{ action: '/municipality'} );
+        onSubmit(data);
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [limit, page, sortDescriptor, search]);
-
-
-    const handlePagination = (page: number) => {
-        setPage(page);
-    }
-
-    const handleRowPerPage = (e: ChangeEvent<HTMLSelectElement>) => {
-        setLimit(Number(e.target.value))
-    }
 
     const handlerClose = () => {
         setSearch('');
     }
 
-    const renderCell = useCallback((municipality: MunicipalityI, columnKey: Key) => {
+    const renderCell = useCallback((municipality: Municipality, columnKey: Key) => {
         if(columnKey === 'actions') {
           return (<MunicipalityAction onOpenEdit={onOpen} idMunicipality={municipality.id}/>)
         } 
@@ -83,8 +55,9 @@ export  function MunicipalitySection() {
         <div className='w-full md:max-w-[48%]'>
             <Input
                 isClearable
-                className="w-full sm:max-w-[44%] mt-5 mb-3 "
-                placeholder="Buscar por nombre"
+                className="w-full sm:max-w-[44%] mt-5 mb-3"
+                placeholder="Buscar por municipio"
+                variant='bordered'
                 startContent={<FaSearch />}
                 value={search}
                 onClear={handlerClose}
@@ -97,7 +70,6 @@ export  function MunicipalitySection() {
           <Table 
             aria-label="Municipalities table"
             onSortChange={setSortDescriptor}
-            // topContentPlacement="outside"
             sortDescriptor={sortDescriptor}
             bottomContent={
                 <div className="flex w-full justify-center">

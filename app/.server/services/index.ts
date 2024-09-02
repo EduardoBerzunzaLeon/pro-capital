@@ -5,6 +5,7 @@ import folderService from "./folder.service";
 import validationService from "./validation.service";
 import autocompleteService from "./autocomplete.service";
 import paginatorService from "./paginator.service";
+import routeService from "./route.service";
 
 function buildService() {
     return {
@@ -13,6 +14,7 @@ function buildService() {
         validation: { ...validationService },
         town: { ...townService },
         folder: { ...folderService },
+        routes: { ...routeService },
         autocomplete: { ...autocompleteService },
         paginator: { ...paginatorService },
     }

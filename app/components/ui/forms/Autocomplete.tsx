@@ -1,15 +1,14 @@
-import { forwardRef, useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import clsx from 'clsx';
 import { Autocomplete } from "~/.server/interfaces";
 import { HandlerSuccess } from "~/.server/reponses";
 import { useFetcher } from "@remix-run/react";
-import { Field, Label, Combobox, ComboboxInput, ComboboxButton, ComboboxOptions, ComboboxOption } from "@headlessui/react";
-import { Spinner } from "@nextui-org/react";
+import { Combobox, ComboboxInput, ComboboxOptions, ComboboxOption } from "@headlessui/react";
+import { Input, Spinner } from "@nextui-org/react";
 import { FaCheck } from "react-icons/fa";
 
 export const compareAutocomplete = (a?: Autocomplete, b?: Autocomplete): boolean =>
     a?.id === b?.id;
-
 
 export const initialValue = { id: 0, value: ''};
 
@@ -36,6 +35,7 @@ export const AutocompleteCombobox = ({
 }: Props) => {
 
     const [query, setQuery] = useState('');
+    const [displayValue, setDisplayValue] = useState('');
     const [selected, setSelected] = useState<Autocomplete | undefined>({...initialValue});
     const { submit, data, state } = useFetcher<HandlerSuccess<Autocomplete[]>>({ key: keyFetcher });
 
@@ -45,19 +45,14 @@ export const AutocompleteCombobox = ({
         submit({ data: query }, { action: actionRoute });
    }, [actionRoute, query, submit]);
 
-   const AutocompleteInput =  useMemo(() => {
-        return forwardRef(function MyInputs(props, ref: React.ForwardedRef<HTMLInputElement | null>) {
-            return <input 
-            {...props} 
-            ref={ref} 
-            placeholder={placeholder}  
-            className={clsx(
-                      'w-full mt-1  rounded-lg border-none bg-white/5 py-1.5 pr-8 pl-3 text-sm/6 text-white',
-                      'focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25'
-                    )}
-          />
-        })
-   },[placeholder])
+
+    // TODO: Hay un brinco mientras espera que se ejecute este useeffect en los formularios de edicion  
+   useEffect(() => {
+    if(selectedItem?.value && selectedItem.value.toLowerCase() !== displayValue.toLowerCase()) {
+        setDisplayValue(selectedItem.value)
+    }
+   // eslint-disable-next-line react-hooks/exhaustive-deps
+   }, [selectedItem])
 
    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value)
@@ -71,12 +66,11 @@ export const AutocompleteCombobox = ({
         return;
     }
 
+    setDisplayValue(newValue.value);
     setSelected(newValue);
     !!onSelected && onSelected(newValue);
   }
     return (  
-        <Field>
-            <Label className='m-2'>{label}</Label>
             <Combobox
                 name={comboBoxName} 
                 value={isControlled ? selectedItem : selected} 
@@ -90,15 +84,23 @@ export const AutocompleteCombobox = ({
                 
                 <ComboboxInput
                     displayValue={(data) => {
-                    return (data as Autocomplete)?.value;
+                        return (data as Autocomplete)?.value;
                     }}
                     onChange={handleChange}
-                    as={AutocompleteInput}
-                />
-                
-                <ComboboxButton className="group absolute inset-y-0 right-0 px-2.5">
-                    { state !== 'idle' && <Spinner size='sm' />}
-                </ComboboxButton>
+                    as={Fragment}
+                >
+                    <Input 
+                        variant='bordered'
+                        labelPlacement='outside'
+                        label={label}
+                        placeholder={placeholder}
+                        onChange={(e) => setDisplayValue(e.target.value)}
+                        value={displayValue}
+                        endContent={
+                            (state !== 'idle' && (<Spinner size='sm' />))
+                        }
+                    />
+                </ComboboxInput>
                 </div>
                         {(state === 'idle') ?(
                                 <ComboboxOptions
@@ -122,6 +124,5 @@ export const AutocompleteCombobox = ({
                                 </ComboboxOptions>
                         ): null}
             
-            </Combobox>
-        </Field>)
+            </Combobox>)
 }

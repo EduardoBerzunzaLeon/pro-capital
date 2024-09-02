@@ -11,11 +11,22 @@ export function baseRepository<
     C extends Generic
 >(entity: T): BaseRepositoryI<T, P, S, D, C> {
 
-    function prepareParams(searchParams: P, select?: S) {
-        const whereSection = { where: searchParams };
-        return select 
-            ? { ...whereSection, select }
-            : whereSection;
+    function prepareParams(searchParams?: P, select?: S) {
+
+        if(!searchParams && !select) {
+            return null
+        }
+        let params = null;
+
+        if(searchParams) {
+            params = { where: searchParams }
+        }
+
+        if(select) {
+            params = { ...params, select }
+        }
+        
+        return params;
     }
 
     async function findOne(searchParams: P, select?: S, isUnique: boolean = false) {

@@ -91,10 +91,10 @@ export function FolderButtonAdd() {
                   { ...getFormProps(form) }
                 >
          
-                            <ModalHeader className="flex flex-col gap-1">
-                            Agregar Localidad
-                            </ModalHeader>
-                            <ModalBody> 
+            <ModalHeader className="flex flex-col gap-1">
+            Agregar Carpeta
+            </ModalHeader>
+              <ModalBody> 
               <Select
                 items={routes}
                 label="Ruta"

@@ -28,7 +28,7 @@ export const loader: LoaderFunction = async ({ request }) => {
         search
       });
       
-      return handlerSuccess(200, data);
+        return handlerSuccess(200, data);
       } catch (error) {
         return json(getEmptyPagination())
       }

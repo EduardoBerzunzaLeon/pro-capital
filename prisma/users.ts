@@ -41,8 +41,8 @@ export const permissions = [
 ]
 
 export const routes = [
-    { name: '1', isActive: true },
-    { name: '2', isActive: true },
+    { name: 1, isActive: true },
+    { name: 2, isActive: true },
 ]
 
 // -- Se hace sola
@@ -71,31 +71,31 @@ export const folders = [
         consecutive: 1,  
         town: 'carrillo puerto', 
         name: 'carrillo puerto 1', 
-        route: '1'
+        route: 1
     },
     { 
         consecutive: 1,  
         town: 'sihochac', 
         name: 'sihochac 1', 
-        route: '1'
+        route: 1
     },
     { 
         consecutive: 1,  
         town: 'champoton',
         name: 'champoton 1', 
-        route: '1'
+        route: 1
     },
     { 
         consecutive: 2,  
         town: 'champoton', 
         name: 'champoton 2', 
-        route: '1'
+        route: 1
     },
     { 
         consecutive: 1,  
         town: 'maxcanu', 
         name: 'maxcanu 1', 
-        route: '2'
+        route: 2
     },
 ]
 
