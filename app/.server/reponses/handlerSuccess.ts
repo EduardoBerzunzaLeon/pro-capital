@@ -21,11 +21,11 @@ export const handlerSuccessWithToast = (type: TypeHandler, info?: string) => {
             result: 'Data saved successfully',
             message: `¡Actualización exitosa${infoSanatized}! 🎉`,
         },
-        create: {
+        delete: {
             result: 'Data deleted successfully',
             message: `¡Elimación exitosa${infoSanatized}! 🎉`,
         },
-        delete: {
+        create: {
             result: 'Data created successfully',
             message: `¡Creción exitosa${infoSanatized}! 🎉`,
         }
@@ -35,7 +35,7 @@ export const handlerSuccessWithToast = (type: TypeHandler, info?: string) => {
 
     const { result, message  } = types[type] ?? defaultType;
 
-    return jsonWithSuccess({ result }, message);
+    return jsonWithSuccess({ result, status: 'success' }, message);
 
 }
 

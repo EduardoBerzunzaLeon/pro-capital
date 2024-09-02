@@ -1,4 +1,4 @@
-import { useForm } from "@conform-to/react";
+import { getFormProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button } from "@nextui-org/react";
 import { useFetcher } from "@remix-run/react";
@@ -24,8 +24,8 @@ export function ModalMunicipalityEdit({
 
         
     const [form, fields] = useForm({
-      onValidate({ formData }) {
-        return parseWithZod(formData, { schema: nameSchema });
+        onValidate({ formData }) {
+          return parseWithZod(formData, { schema: nameSchema });
         },
         lastResult: fetcherGet.data?.serverData,
         shouldValidate: 'onSubmit',
@@ -55,8 +55,7 @@ export function ModalMunicipalityEdit({
                 <fetcher.Form 
                   method='POST' 
                   action={`/municipality/${fetcherGet.data?.serverData?.id}`}
-                  onSubmit={form.onSubmit}
-                  id={form.id}
+                  { ...getFormProps(form)}
                 >
                     <ModalHeader className="flex flex-col gap-1">
                         Actualizar Municipio de {fetcherGet.data?.serverData.name}
@@ -65,10 +64,8 @@ export function ModalMunicipalityEdit({
                         <InputValidation
                              label="Nombre"
                              placeholder="Ingresa el Municipio"
-                             name={fields.name.name}
-                             key={fields.name.key}
-                             errors={fields.name.errors}
-                            defaultValue={fetcherGet.data?.serverData?.name}
+                             defaultValue={fetcherGet.data?.serverData?.name}
+                             metadata={fields.name}
                         />
                     </ModalBody>
                     <ModalFooter>

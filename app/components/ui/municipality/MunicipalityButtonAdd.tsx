@@ -1,21 +1,16 @@
-import { useEffect } from "react";
-
 import { useFetcher} from "@remix-run/react";
-import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@nextui-org/react";
+import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/react";
 import { FaPlus } from "react-icons/fa";
 import { nameSchema } from "~/schemas";
-import { useForm } from "@conform-to/react";
+import { getFormProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import { action } from "~/routes/_app+/municipality/_index";
 import { InputValidation } from "../forms/Input";
+import { useModalCreateForm } from "~/application";
 
 
 export function MunicipalityButtonAdd() {
     const fetcher = useFetcher<typeof action>();
-    const { isOpen, onOpenChange, onOpen, onClose } = useDisclosure();
-    const wasCreated = fetcher.data?.status === 'success' && isOpen && fetcher.state === 'idle';
-    const  isCreating = fetcher.state !== 'idle';
-    
     const [form, fields] = useForm({
         onValidate({ formData }) {
           return parseWithZod(formData, { schema: nameSchema });
@@ -25,23 +20,12 @@ export function MunicipalityButtonAdd() {
 
     }); 
 
-    useEffect(() => {
-        if(wasCreated) {
-          onClose();
-        }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      }, [wasCreated]);
-    
-      useEffect(() => {
-        if(!isOpen && form?.status === 'error') {
-            form.reset()        
-        }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      }, [isOpen]);
-    
-      const handleOpen = () => {
-        onOpen();
-    }
+    const { isOpen, onOpenChange, onOpen, isCreating } = useModalCreateForm({ 
+        form, 
+        state: fetcher.state, 
+        status: fetcher.data?.status 
+    });
+
 
     return (
         <>
@@ -49,7 +33,7 @@ export function MunicipalityButtonAdd() {
                 variant="ghost" 
                 color="secondary" 
                 endContent={<FaPlus />}
-                onPress={handleOpen}
+                onPress={onOpen}
             >
                 Agregar Municipio
             </Button>
@@ -66,8 +50,7 @@ export function MunicipalityButtonAdd() {
                         <fetcher.Form 
                             method='POST' 
                             action="/municipality"
-                            onSubmit={form.onSubmit}
-                            id={form.id}
+                            { ...getFormProps(form)}
                         >
                             <ModalHeader className="flex flex-col gap-1">
                             Agregar Municipio
@@ -76,9 +59,7 @@ export function MunicipalityButtonAdd() {
                                 <InputValidation
                                     label="Nombre"
                                     placeholder="Ingresa el Municipio"
-                                    name={fields.name.name}
-                                    key={fields.name.key}
-                                    errors={fields.name.errors}
+                                    metadata={fields.name}
                                 />
                             </ModalBody>
                             <ModalFooter>

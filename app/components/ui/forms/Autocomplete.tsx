@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useState } from "react";
+import { forwardRef, useEffect, useMemo, useState } from "react";
 import clsx from 'clsx';
 import { Autocomplete } from "~/.server/interfaces";
 import { HandlerSuccess } from "~/.server/reponses";
@@ -6,20 +6,6 @@ import { useFetcher } from "@remix-run/react";
 import { Field, Label, Combobox, ComboboxInput, ComboboxButton, ComboboxOptions, ComboboxOption } from "@headlessui/react";
 import { Spinner } from "@nextui-org/react";
 import { FaCheck } from "react-icons/fa";
-
-export const AutocompleteInput = forwardRef(function MyInputs(props, ref: React.ForwardedRef<HTMLInputElement | null>) {
-    return <input 
-    {...props} 
-    ref={ref} 
-    placeholder="Ingresa la localidad"  
-    className={clsx(
-              'w-full mt-1  rounded-lg border-none bg-white/5 py-1.5 pr-8 pl-3 text-sm/6 text-white',
-              'focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25'
-            )}
-  />
-})
-
-// TODO: mejorar el autocomplete para que sea dinamico
 
 export const compareAutocomplete = (a?: Autocomplete, b?: Autocomplete): boolean =>
     a?.id === b?.id;
@@ -32,37 +18,69 @@ interface Props {
     actionRoute: string,
     label: string,
     comboBoxName: string,
+    placeholder: string,
+    selectedItem?: Autocomplete, 
     onSelected?: (value: Autocomplete) =>  void,
     onChange?: (value: string)  => void
 }
 
-export const AutocompleteCombobox = ({ keyFetcher, actionRoute, label, comboBoxName, onSelected, onChange }: Props) => {
+export const AutocompleteCombobox = ({ 
+    keyFetcher, 
+    actionRoute, 
+    label, 
+    comboBoxName, 
+    placeholder, 
+    selectedItem,
+    onSelected, 
+    onChange 
+}: Props) => {
 
     const [query, setQuery] = useState('');
     const [selected, setSelected] = useState<Autocomplete | undefined>({...initialValue});
     const { submit, data, state } = useFetcher<HandlerSuccess<Autocomplete[]>>({ key: keyFetcher });
 
+    const isControlled = !!selectedItem && !!onSelected;
+
     useEffect(() => {
         submit({ data: query }, { action: actionRoute });
-   }, [actionRoute, query, submit])
+   }, [actionRoute, query, submit]);
+
+   const AutocompleteInput =  useMemo(() => {
+        return forwardRef(function MyInputs(props, ref: React.ForwardedRef<HTMLInputElement | null>) {
+            return <input 
+            {...props} 
+            ref={ref} 
+            placeholder={placeholder}  
+            className={clsx(
+                      'w-full mt-1  rounded-lg border-none bg-white/5 py-1.5 pr-8 pl-3 text-sm/6 text-white',
+                      'focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25'
+                    )}
+          />
+        })
+   },[placeholder])
 
    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value)
-    // TODO: CREATE A CALLBACK for this methods
     !!onChange && onChange(event.target.value);
   }
 
+  const handleSelected = (value: NoInfer<Autocomplete> | null) =>{
+    const newValue = value ?? { id: 0, value: '' };
+    if(isControlled) { 
+        onSelected(newValue);
+        return;
+    }
+
+    setSelected(newValue);
+    !!onSelected && onSelected(newValue);
+  }
     return (  
         <Field>
             <Label className='m-2'>{label}</Label>
             <Combobox
                 name={comboBoxName} 
-                value={selected} 
-                onChange={(value) => {
-                    const newValue = value ?? {id: 0, value: ''};
-                    setSelected(newValue);
-                    !!onSelected && onSelected(newValue)
-                }} 
+                value={isControlled ? selectedItem : selected} 
+                onChange={handleSelected} 
                 by={compareAutocomplete}
                 onClose={() => {
                     setQuery('')

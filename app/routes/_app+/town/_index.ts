@@ -40,6 +40,8 @@ export const loader: LoaderFunction = async ({ request }) => {
     const formData = await request.formData();
     const data = Object.fromEntries(formData);
 
+    console.log({data});
+
     const municipalityId = data['municipality[id]']+'';
     const { name } = data;
 

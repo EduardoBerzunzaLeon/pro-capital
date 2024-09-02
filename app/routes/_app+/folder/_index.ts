@@ -1,7 +1,7 @@
 import { ActionFunction, json, LoaderFunction } from "@remix-run/node";
 import { Generic } from "~/.server/interfaces";
-import { handlerError, handlerSuccess } from "~/.server/reponses";
-import { getEmptyPagination } from "~/.server/reponses/handlerError";
+import { handlerSuccess } from "~/.server/reponses";
+import { getEmptyPagination, handlerErrorWithToast } from "~/.server/reponses/handlerError";
 import { handlerPaginationParams, handlerSuccessWithToast } from "~/.server/reponses/handlerSuccess";
 import { Service } from "~/.server/services";
 
@@ -51,8 +51,7 @@ export const loader: LoaderFunction = async ({ request }) => {
       }
       return handlerSuccess(201, { id: Number(data?.id), name: data?.name+'' });
     } catch (error) {
-      // TODO: change this for handlerErrorWithToast
-      return handlerError(error, { ...data });
+      return handlerErrorWithToast(error, data);
     }
   }
 

@@ -18,6 +18,7 @@ export const name = z.string({
     (value) => /^[A-Za-z]+$/.test(value ?? ""), 
     'El nombre solo debe tener caracteres del alfabeto'
 )
+// TODO AGREGAR ESPACIOS EN EL REGEX
 
 export const alphabet = z.string({
     invalid_type_error: "Nombre invalido",
@@ -32,8 +33,10 @@ export const alphabet = z.string({
 export const idSchema = z.object({ id });
 export const nameSchema = z.object({ name });
 export const alphabetSchema = z.object({ value: alphabet });
+export const actionSchema = z.object({ _action: alphabet })
 
 export default {
     idSchema,
-    nameSchema
+    nameSchema,
+    actionSchema
 }

@@ -1,9 +1,8 @@
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Spinner, Select, SelectItem } from "@nextui-org/react";
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Select, SelectItem } from "@nextui-org/react";
 import { useFetcher } from "@remix-run/react";
-import { useEffect } from "react";
-import { toast } from "react-toastify";
 import { Generic } from "~/.server/interfaces";
 import { HandlerSuccess } from "~/.server/reponses";
+import { ModalBodyHandler } from "~/components/utils/ModalBodyHandler";
 
 interface Props {
     isOpen: boolean;
@@ -22,18 +21,8 @@ export function ModalFolderEdit({
     
     const fetcher = useFetcher<HandlerSuccess<Generic>>();
     const fetcherGet = useFetcher<HandlerSuccess<Generic>>({ key: 'getFolder' });
-
-    useEffect(() => {
-        
-        if(fetcher.data?.error ) {
-          toast.error(fetcher.data?.error);
-        }
-        
-        if(fetcher.data?.status === 'success' ) {
-          toast.success('La carpeta se actualizo correctamente');
-        }
-
-      }, [fetcher.data]);
+    const isVisible = fetcherGet.state === 'idle' && fetcherGet.data?.serverData?.id;
+    const isUpdating = fetcher.state !== 'idle' || fetcherGet.state !== 'idle';
 
     return (
       <Modal 
@@ -46,20 +35,23 @@ export function ModalFolderEdit({
         <ModalContent>
           {(onClose) => (
             <>
+              <ModalBodyHandler 
+                state={fetcherGet.state} 
+                loadingMessage='Buscando el grupo de la carpeta'
+                error={fetcherGet.data?.error}             
+              />
               {
-                 fetcherGet.state === 'idle' ||  fetcher.state === 'loading' ?
+                 (isVisible) &&
                    (
                     <>
-                    <fetcher.Form method='POST' action={`/folder/${fetcherGet.data?.serverData.id}`}>
+                    <fetcher.Form 
+                      method='POST' 
+                      action={`/folder/${fetcherGet.data?.serverData.id}`}
+                    >
                         <ModalHeader className="flex flex-col gap-1">
-                            Actualizar Municipio de {fetcherGet.data?.serverData.name}
+                            Actualizar la Carpeta {fetcherGet.data?.serverData.name}
                         </ModalHeader>
                         <ModalBody>
-                            <input 
-                                name='id'
-                                defaultValue={fetcherGet.data?.serverData.id}
-                                type="hidden"
-                            />
                           <Select
                             items={routes}
                             label="Ruta"
@@ -72,31 +64,25 @@ export function ModalFolderEdit({
                           >
                             {(route) => <SelectItem key={route.key}>{route.label}</SelectItem>}
                           </Select>
-                            {/* <Input
-                                label="Ruta"
-                                placeholder="Ingresa el numero de la ruta"
-                                variant="bordered"
-                                name='route'
-                                type='number'
-                                defaultValue={fetcherGet.data?.serverData.route.id}
-                            /> */}
                         </ModalBody>
                         <ModalFooter>
                             <Button color="danger" variant="flat" onPress={onClose}>
                                 Cerrar
                             </Button>
-                            <Button color="primary" type='submit' name='_action' value='update' isLoading={fetcher.state !== 'idle'}>
+                            <Button 
+                              color="primary" 
+                              type='submit' 
+                              name='_action' 
+                              value='update' 
+                              isLoading={isUpdating}
+                              isDisabled={isUpdating}
+                            >
                                 Actualizar
                             </Button>
                         </ModalFooter>
                     </fetcher.Form>
                     </>
                   )
-                  : (<ModalBody>
-                    <Spinner 
-                      label="Cargando datos de la carpeta"
-                    />
-                  </ModalBody>)
               }
               
             </>
