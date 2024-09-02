@@ -12,11 +12,17 @@ export const loader: LoaderFunction = async ({ request }) => {
             page, limit, column, direction, search
           } = handlerPaginationParams(request.url, 'name', columnsFilter);
 
-          let isActiveParsed = JSON.parse(search[0].value); 
+          let isActiveParsed = JSON.parse(search[0].value);
+          
+          if(Array.isArray(isActiveParsed) && isActiveParsed.length === 1) {
+            isActiveParsed = Boolean(isActiveParsed[0]);
+          }
         
           if(Array.isArray(isActiveParsed) && isActiveParsed.length === 2) {
             isActiveParsed = 'notUndefined'
-          }
+          } 
+
+
           search[0].value = isActiveParsed;
 
           const data = await Service.routes.findAll({

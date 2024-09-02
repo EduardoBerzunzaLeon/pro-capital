@@ -43,6 +43,10 @@ export function apiPrismaFeatures({
       if(typeof value === 'string') {
         return { contains: value.toLowerCase() }
       }
+      
+      if(typeof value === 'boolean') {
+        return { equals: value }
+      }
 
       return { contains: value };
     }
