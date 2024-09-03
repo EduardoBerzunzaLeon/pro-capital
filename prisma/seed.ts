@@ -12,7 +12,8 @@ groups,
 clients, avals, 
 credits,
 paymentDetail,
-leaders} from './users';
+leaders,
+agent_routes} from './users';
 import { encriptor } from "~/.server/adapter";
 // import { encriptor } from "~/.server/adapter";
 
@@ -36,6 +37,7 @@ async function seed() {
      prisma.leader.deleteMany(),
      prisma.credit.deleteMany(),
      prisma.paymentDetail.deleteMany(),
+     prisma.agentRoute.deleteMany()
     ]);
 
     await Promise.all([
@@ -60,6 +62,7 @@ async function seed() {
     await insertLeaders(prisma);
     await insertCredits(prisma);
     await insertPaymentDetails(prisma);
+    await insertAgentRoutes(prisma);
 
   } catch (error) {
     console.log({error});   
@@ -85,9 +88,16 @@ async function insertRoutes(prisma: PrismaClient) {
   });
 }
 
+
 async function insertMunicipalities(prisma: PrismaClient) {
   return await prisma.municipality.createMany({
     data: [...municipalities]
+  });
+}
+
+async function insertAgentRoutes(prisma: PrismaClient) {
+  return await prisma.agentRoute.createMany({
+    data: [...agent_routes]
   });
 }
 
@@ -200,14 +210,35 @@ async function insertLeaders(prisma: PrismaClient) {
   }
 }
 
+
+function concatFullName({ name, lastNameFirst, lastNameSecond }: { name: string, lastNameFirst: string, lastNameSecond?: string }) {
+
+  const nameTrim = name.trim();
+  const lastNameFirstTrim = lastNameFirst.trim();
+  const fullName = `${nameTrim} ${lastNameFirstTrim}`;
+  
+  if(!lastNameSecond) {
+    return fullName;
+  }
+
+  const lastNameSecondTrim = lastNameSecond.trim();
+  return `${fullName} ${lastNameSecondTrim}`;
+}
+
 async function insertUsers(prisma: PrismaClient) {
   for (const user of users) {
-    const { password, role, ...userNew } = user;
+    const { password, role, name, lastNameFirst, lastNameSecond, ...userNew } = user;
     const passwordHashed = await encriptor.hash(password, 10);
     const roleDb = await prisma.role.findUnique({ where: { role } });
+    const fullName = concatFullName({ name, lastNameFirst, lastNameSecond });
+
     if(roleDb) {
       await prisma.user.create({
         data:  {
+          name,
+          lastNameFirst,
+          lastNameSecond,
+          fullName,
           ...userNew,
           password: passwordHashed,
           role: {

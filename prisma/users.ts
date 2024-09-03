@@ -46,7 +46,10 @@ export const routes = [
 ]
 
 // -- Se hace sola
-export const agent_routes = []
+export const agent_routes = [{
+    userId: 1,
+    routeId: 1,
+}]
 
 export const municipalities = [ 
     { name: 'campeche' },

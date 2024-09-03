@@ -7,6 +7,8 @@ import { MunicipalityRepository } from "./municipality/municipality.repository";
 import { RouteRepository } from "./route/route.repository";
 import { TownRepository } from "./town/town.repository";
 
+
+
 function buildRepository() {
     return {
         auth: { ...AuthRepository(baseRepository(db.user)) },

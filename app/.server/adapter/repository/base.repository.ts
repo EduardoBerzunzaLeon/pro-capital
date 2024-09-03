@@ -72,6 +72,14 @@ export function baseRepository<
         });
     } 
 
+    async function updateMany(searchParams: P, data: D) {
+        return await entity.updateMany({
+            where: { ...searchParams },
+            data: { ...data }
+        });
+    } 
+
+
     async function deleteOne(searchParams: P) {
         return await entity.delete({ where: { ...searchParams }});
     }
@@ -89,6 +97,7 @@ export function baseRepository<
         findMany,
         findManyPaginator,
         updateOne,
+        updateMany,
         deleteOne,
         deleteMany,
         createOne,

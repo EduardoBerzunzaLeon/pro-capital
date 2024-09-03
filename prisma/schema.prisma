@@ -60,6 +60,7 @@ model User {
   name String
   lastNameFirst String
   lastNameSecond String?
+  fullName String
   password String
   isActive Boolean @default(true)
   roleId Int
@@ -109,7 +110,7 @@ model AgentRoute {
   routeId Int
   route Route @relation(fields: [routeId], references: [id])
   user User @relation(fields: [userId], references: [id])
-  assignAt DateTime @default(now())
+  assignAt DateTime @default(now()) @db.Date
 }
 
 model Municipality {
@@ -171,8 +172,8 @@ model Leader {
   lastNameSecond String?
   curp String @unique
   address String
-  birthday DateTime
-  anniversaryDate DateTime
+  birthday DateTime @db.Date
+  anniversaryDate DateTime @db.Date
   unsubscribeDate DateTime
   folderId Int @unique
   folder Folder @relation(fields: [folderId], references: [id])
@@ -205,7 +206,7 @@ model Credit {
   amount Decimal @db.Decimal(6,2)
   paymentAmount Decimal @db.Decimal(5,2)
   captureAt DateTime @default(now())
-  creditAt DateTime
+  creditAt DateTime @db.Date
   canRenovate Boolean @default(false)
   nextPayment DateTime
   lastPayment DateTime 
