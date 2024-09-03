@@ -19,9 +19,9 @@ const columns = [
   { key: 'name', label: 'CARPETA',  sortable: true },
   { key: 'leader', label: 'LIDER', },
   { key: 'municipality', label: 'MUNICIPIO', sortable: true },
-  { key: 'town', label: 'Localidad',  sortable: true },
-  { key: 'count', label: 'Grupos',  },
-  { key: 'actions', label: 'ACTIONS'},
+  { key: 'town', label: 'LOCALIDAD',  sortable: true },
+  { key: 'count', label: 'GRUPOS',  },
+  { key: 'actions', label: 'ACCIONES'},
 ]
 
 export function FolderSection() {

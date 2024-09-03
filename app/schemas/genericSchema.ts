@@ -30,13 +30,21 @@ export const alphabet = z.string({
     'El nombre solo debe tener caracteres del alfabeto'
 )
 
+export const active = z.coerce.boolean({
+    invalid_type_error: "Estado invalido",
+    required_error: "Requerido",
+});
+
 export const idSchema = z.object({ id });
 export const nameSchema = z.object({ name });
+export const activeSchema = z.object({ isActive: active });
 export const alphabetSchema = z.object({ value: alphabet });
-export const actionSchema = z.object({ _action: alphabet })
+export const actionSchema = z.object({ _action: alphabet });
+// export const activeSchema = z.object({ id, isActive });
+
 
 export default {
     idSchema,
     nameSchema,
-    actionSchema
+    actionSchema,
 }

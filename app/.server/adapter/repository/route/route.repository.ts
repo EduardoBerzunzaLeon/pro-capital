@@ -5,9 +5,6 @@ import { BaseRouteI, RouteRepositoryI } from "~/.server/domain/interface/Route.r
 export function RouteRepository(base: BaseRouteI): RouteRepositoryI {
 
     async function findAll(paginationData: PaginationWithFilters) {
-
-        console.log(paginationData);
-
         return await base.findManyPaginator({
             paginatonWithFilter: paginationData,
             select: {
@@ -39,11 +36,11 @@ export function RouteRepository(base: BaseRouteI): RouteRepositoryI {
     }
 
     async function findIsActive(id: number) {
-        return await base.findOne({id}, { isActive: true });
+        return await base.findOne({ id }, { isActive: true, id: true });
     }
 
     async function updateIsActive(id: number, isActive: boolean) {
-        return await base.updateOne({id}, { isActive: !isActive })
+        return await base.updateOne({id}, { isActive })
     }
 
     async function createOne(name: number) {

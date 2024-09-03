@@ -27,8 +27,6 @@ export function ModalTownEdit({
     const isVisible = fetcherGet.state === 'idle' && fetcherGet.data?.serverData?.id;
     const isUpdating = fetcher.state !== 'idle' || fetcherGet.state !== 'idle';
 
-      
-
       const [form, fields] = useForm({
         onValidate({ formData }) {
           return parseWithZod(formData, { schema: nameSchema });

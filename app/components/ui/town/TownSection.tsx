@@ -15,7 +15,7 @@ const columns = [
   { key: 'id', label: 'ID' },
   { key: 'name', label: 'NOMBRE',  sortable: true },
   { key: 'municipality', label: 'MUNICIPIO', sortable: true },
-  { key: 'actions', label: 'ACTIONS'},
+  { key: 'actions', label: 'ACCIONES'},
 ]
 
 export function TownSection() {

@@ -6,12 +6,12 @@ import { PaginationWithFilters } from "../domain/interface";
 import { RequestId } from "../interfaces";
 import { validationZod } from "./validation.service";
 import { ServerError } from "../errors";
+import { activeSchema } from "~/schemas/genericSchema";
 
 
 export const findAll = async (props: PaginationWithFilters) => {
     const { data, metadata } =  await Repository.route.findAll({...props});
-
-    console.log({data});
+    
     return Service.paginator.mapper({
         metadata,
         data, 
@@ -38,9 +38,12 @@ export const findIsActive =  async (id: RequestId) => {
     return route;
 }
 
-export const updateIsActive = async(id: RequestId) => {
-    const { id: routeId, isActive } = await findIsActive(id);
-    const routeUpdated =  await Repository.route.updateIsActive(routeId, !isActive);
+export const updateIsActive = async(id: RequestId, isActiveRoute?: boolean) => {
+    
+    const { isActive: isActiveValidated } = validationZod({ isActive: isActiveRoute }, activeSchema);
+    const { id: routeId } = await findIsActive(id);
+    console.log({routeId, isActiveValidated});
+    const routeUpdated =  await Repository.route.updateIsActive(routeId, isActiveValidated);
     if(!routeUpdated) {
         throw ServerError.internalServer('No se pudo actualizar la ruta');
     }

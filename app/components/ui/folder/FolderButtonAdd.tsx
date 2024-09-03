@@ -121,6 +121,7 @@ export function FolderButtonAdd() {
                   name='folder'
                   variant="bordered"
                   placeholder="Ingresa el nombre de la localidad"
+                  description='El sistema calcula automáticamente el nombre de la carpeta'
                   labelPlacement="outside"
                   value={ folderName }
                   autoComplete="off"

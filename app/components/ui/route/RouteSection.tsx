@@ -1,10 +1,13 @@
-import { Table,  TableHeader, TableColumn, TableBody, Spinner, TableRow, TableCell, Chip, Dropdown, Button, DropdownItem, DropdownMenu, DropdownTrigger } from "@nextui-org/react";
+import { Table,  TableHeader, TableColumn, TableBody, Spinner, TableRow, TableCell, Chip } from "@nextui-org/react";
 import { Route } from "@prisma/client";
-import { useFetcherPaginator } from "~/application";
+import { useFetcherPaginator, useStatusMemo } from "~/application";
 import { RowPerPage } from "../rowPerPage/RowPerPage";
-import { Pagination } from "..";
+import { DropdownStatus, Pagination } from "..";
 import { Key } from "../folder/FolderSection";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect,  useState } from "react";
+import { RouteButtonAdd } from "./RouteButtonAdd";
+import { RouteAction } from "./RouteAction";
+import RouteToggleActive from "./RouteToggleActive";
 
 type Column = 'name' | 'id';
 
@@ -12,14 +15,12 @@ const columns = [
     { key: 'id', label: 'ID' },
     { key: 'name', label: 'NOMBRE', sortable: true },
     { key: 'isActive', label: 'ESTATUS', sortable: true },
-    { key: 'actions', label: 'ACTIONS'},
+    { key: 'actions', label: 'ACCIONES'},
 ]
 
 type Selection = 'all' | Set<Key>;
 
 export function RouteSection() {
-
-    // const [ search, setSearch ] = useState('');
 
     const {        
         data, 
@@ -32,24 +33,28 @@ export function RouteSection() {
         handleRowPerPage,
         onSubmit
     } = useFetcherPaginator<Route>({key: 'route', route: 'routePage'});
+
     const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set(['active', 'inactive']));
 
-    const selectedValue = useMemo(
-      () => Array.from(selectedKeys).map(value => value === 'active'),
-      [selectedKeys]
-    );
-
+    const selectedValue = useStatusMemo({ selectedKeys });
 
     useEffect(() => {
-        const data = [{ column: 'isActive', value: JSON.stringify(selectedValue) }];
+        const data = [{ column: 'isActive', value: selectedValue }];
         onSubmit(data);
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [limit, page, sortDescriptor, selectedValue]);
     
     const renderCell = useCallback((route: Route, columnKey: Key) => {
         if(columnKey === 'actions') {
-        //   return (<MunicipalityAction onOpenEdit={onOpen} idMunicipality={municipality.id}/>)
-          return (<div>Acciones</div>)
+          return (
+            <div className='flex justify-center items-center gap-1'>
+                <RouteToggleActive 
+                    routeId={route.id}
+                    isActive={route.isActive}
+                />
+                <RouteAction idRoute={route.id}/>
+            </div>
+          )
         } 
 
         if(columnKey == 'isActive') {
@@ -69,28 +74,10 @@ export function RouteSection() {
 
     return (
         <div className='w-full md:max-w-[48%]'>
-    <Dropdown>
-      <DropdownTrigger>
-        <Button 
-          variant="bordered" 
-          className="capitalize"
-        >
-          Estatus
-        </Button>
-      </DropdownTrigger>
-      <DropdownMenu 
-        aria-label="Multiple selection status routes"
-        variant="flat"
-        closeOnSelect={false}
-        disallowEmptySelection
-        selectionMode="multiple"
-        selectedKeys={selectedKeys}
-        onSelectionChange={setSelectedKeys}
-      >
-        <DropdownItem key="active">Activo</DropdownItem>
-        <DropdownItem key="inactive">Inactivo</DropdownItem>
-      </DropdownMenu>
-    </Dropdown>
+        <DropdownStatus 
+          selectedKeys={selectedKeys} 
+          onSelectionChange={setSelectedKeys} 
+        />
         <Table 
             aria-label="Municipalities table"
             onSortChange={setSortDescriptor}
@@ -106,7 +93,7 @@ export function RouteSection() {
             }
             topContent={
                 <div className="flex justify-between items-center">
-                    {/* <MunicipalityButtonAdd /> */}
+                    <RouteButtonAdd />
                     <span className="text-default-400 text-small">Total {data?.serverData.total || 0 } rutas </span>
                     <RowPerPage 
                         onChange={handleRowPerPage}
