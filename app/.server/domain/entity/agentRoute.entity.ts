@@ -1,6 +1,6 @@
 import { ServerError } from "~/.server/errors";
 import { Route } from "./route.entity";
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 interface PrepUser { avatar: string, fullName: string }
 
@@ -35,7 +35,7 @@ export class AgentRoute {
         if(!user?.fullName) throw ServerError.badRequest('El nombre del asesor es requerido');
         if(!assignAt) throw ServerError.badRequest('La fecha es requerida');
 
-        const assignAtFormatted = moment(assignAt).format('YYYY-MM-DD');
+        const assignAtFormatted = dayjs(assignAt).format('YYYY-MM-DD');
         return new AgentRoute(id, route, user, assignAtFormatted);
     }
 }

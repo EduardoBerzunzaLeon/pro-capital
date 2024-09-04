@@ -6,6 +6,7 @@ export interface PaginationI<T> {
     nextPage: number | null;
 }
 
+
 export interface PaginationProps  {
     page: number,
     limit: number,
@@ -16,7 +17,7 @@ export interface PaginationProps  {
 
 export interface Filter {
     column: string,
-    value: string
+    value: string | boolean | number | string[] | number[]
 }
 
 export interface PaginationWithFilters {

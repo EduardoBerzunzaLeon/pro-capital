@@ -44,8 +44,12 @@ export function apiPrismaFeatures({
         return { contains: value.toLowerCase() }
       }
       
-      if(typeof value === 'boolean') {
+      if(typeof value === 'boolean' || typeof value === 'number') {
         return { equals: value }
+      }
+      
+      if(value instanceof Date) {
+        console.log(value)
       }
 
       return { contains: value };

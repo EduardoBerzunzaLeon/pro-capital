@@ -14,7 +14,7 @@ export const loader: LoaderFunction = async ({ request }) => {
           } = handlerPaginationParams(request.url, 'name', columnsFilter);
 
           // TODO: Refactor this
-          let isActiveParsed = JSON.parse(search[0].value);
+          let isActiveParsed = JSON.parse(search[0].value+'');
           
           if(Array.isArray(isActiveParsed) && isActiveParsed.length === 1) {
             isActiveParsed = Boolean(isActiveParsed[0]);
