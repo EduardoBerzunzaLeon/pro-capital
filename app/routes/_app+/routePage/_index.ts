@@ -24,7 +24,6 @@ export const loader: LoaderFunction = async ({ request }) => {
             isActiveParsed = 'notUndefined'
           } 
 
-
           search[0].value = isActiveParsed;
 
           const data = await Service.routes.findAll({

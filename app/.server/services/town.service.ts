@@ -33,7 +33,7 @@ export const findOne = async (id: RequestId) => {
 
 export const findAutocomplete = async (name: string) => {
     const town = await Repository.town.findAutocomplete(name);
-    return Service.autocomplete.mapper('id', 'name', town);
+    return Service.dto.autocompleteMapper('id', 'name', town);
 }
 
 export const deleteOne = async (id: RequestId) => {

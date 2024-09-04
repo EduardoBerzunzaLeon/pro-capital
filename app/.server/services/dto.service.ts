@@ -1,6 +1,6 @@
 import { Generic } from "../interfaces";
 
-export const mapper = (idColumn: string, valueColumn: string, data?: Generic[])  => {
+export const autocompleteMapper = (idColumn: string, valueColumn: string, data?: Generic[])  => {
     if(!data || data?.length === 0) return [];
     return data.map(obj  => {
         return  {
@@ -11,5 +11,5 @@ export const mapper = (idColumn: string, valueColumn: string, data?: Generic[]) 
 }
 
 export default {
-    mapper
+    autocompleteMapper
 }

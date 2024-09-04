@@ -91,6 +91,13 @@ export function baseRepository<
     async function createOne(data: C) {
         return await entity.create({ data: { ...data }});
     }
+    
+    async function createMany(data: C[], skipDuplicates: boolean = false) {
+        return await entity.createMany({ 
+            data,
+            skipDuplicates
+        });
+    }
 
     return {
         findOne,
@@ -101,6 +108,7 @@ export function baseRepository<
         deleteOne,
         deleteMany,
         createOne,
+        createMany,
         entity
     }
 }

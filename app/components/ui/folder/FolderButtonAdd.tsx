@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from 'react'
 
 import { useFetcher} from "@remix-run/react";
-import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem, Spinner } from "@nextui-org/react";
+import { Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Spinner } from "@nextui-org/react";
 import { FaPlus  } from "react-icons/fa";
 import { Autocomplete } from "~/.server/interfaces";
 import { HandlerSuccess } from "~/.server/reponses";
@@ -12,12 +12,7 @@ import { getFormProps, useForm } from "@conform-to/react";
 import { useModalCreateForm } from "~/application";
 import { parseWithZod } from '@conform-to/zod';
 import { actionSchema } from '~/schemas/genericSchema';
-
-// TODO: create a async data to retrieve ROUTES
-export const routes = [
-  {key: "1", label: "Ruta 1"},
-  {key: "2", label: "Ruta 2"},
-];
+import { SelectRoutes } from '../route/SelectRoutes';
 
 export function FolderButtonAdd() {
     const fetcherNextConsecutive = useFetcher<HandlerSuccess<{
@@ -27,7 +22,8 @@ export function FolderButtonAdd() {
     const fetcher = useFetcher<HandlerSuccess<RequestDataGeneric>>({ key: 'createFolder' });
     const [selected, setSelected] = useState<Autocomplete | undefined>();
 
-    const isLoading = fetcherNextConsecutive.state !== 'idle' || fetcherNextConsecutive.data?.serverData?.townId !==  selected?.id;
+    const isLoading = fetcherNextConsecutive.state !== 'idle' 
+      || fetcherNextConsecutive.data?.serverData?.townId !==  selected?.id;
 
     const folderName = useMemo(() => {
       if(!selected || selected?.id === 0) return 'No se ha asignado la localidad';
@@ -60,6 +56,7 @@ export function FolderButtonAdd() {
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selected]);
+
 
     const handleOpen = () => {
         onOpen();
@@ -95,17 +92,7 @@ export function FolderButtonAdd() {
             Agregar Carpeta
             </ModalHeader>
               <ModalBody> 
-              <Select
-                items={routes}
-                label="Ruta"
-                placeholder="Seleccione una ruta"
-                className="red-dark text-foreground bg-content1"
-                labelPlacement="outside"
-                variant="bordered"
-                name="route"
-              >
-                {(route) => <SelectItem key={route.key}>{route.label}</SelectItem>}
-              </Select>
+              <SelectRoutes />
                 
               <AutocompleteCombobox 
                     keyFetcher='findTownAutocomplete' 

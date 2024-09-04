@@ -1,12 +1,14 @@
-import { BaseAgentRouteI, PaginationWithFilters } from "~/.server/domain/interface";
+import { AgentRouteRepositoryI, BaseAgentRouteI, PaginationWithFilters } from "~/.server/domain/interface";
+import { db } from "../../db";
 
-interface CreateOne {
+
+export interface CreateOne {
     routeId: number,
     userId: number,
-    assignAt: 
+    assignAt: Date
 }
 
-export function AgentRouteRepository(base: BaseAgentRouteI) {
+export function AgentRouteRepository(base: BaseAgentRouteI): AgentRouteRepositoryI {
 
     async function findAll(paginationData: PaginationWithFilters ) {
         return await base.findManyPaginator({
@@ -33,11 +35,63 @@ export function AgentRouteRepository(base: BaseAgentRouteI) {
         return await base.deleteOne({ id });
     }
 
-    async function createMany() 
+    async function deleteMany(ids: number[], assignAt: Date) {
+        return await base.deleteMany({ 
+            id: { in: ids }, 
+            assignAt: {equals: assignAt} 
+        });
+    }
+
+    async function createMany(data: CreateOne[]) {
+        return await base.createMany(data, true);
+    } 
+
+    // TODO: move this to user repository
+    //  TODO: Preguntar si traer todos los usuarios o solo los agentes
+
+    async function findAgents() {
+        return await db.user.findMany({
+            where: {
+                role: {
+                    role: {
+                        in: ['ADMIN', 'AGENT']
+                    }
+                },
+                isActive: true
+            },
+            select: {
+                fullName: true,
+                id: true,
+            }
+        });
+    }
+
+    async function findMany(routeId: number, assignAt: Date) {
+        return await base.findMany({
+            searchParams: {
+                routeId,
+                assignAt
+            },
+            select: {
+                user: {
+                    select: {
+                        fullName: true,
+                        avatar: true,
+                        id: true
+                    }
+                }
+            }
+        });
+    }
 
     return { 
         findAll,
-        deleteOne 
+        findAgents,
+        findMany,
+        deleteOne,
+        deleteMany,
+        createMany,
+        base
     }
 
 }

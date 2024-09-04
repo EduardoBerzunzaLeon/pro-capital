@@ -111,6 +111,7 @@ model AgentRoute {
   route Route @relation(fields: [routeId], references: [id])
   user User @relation(fields: [userId], references: [id])
   assignAt DateTime @default(now()) @db.Date
+  @@unique([userId, assignAt])
 }
 
 model Municipality {

@@ -1,8 +1,9 @@
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Select, SelectItem } from "@nextui-org/react";
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button } from "@nextui-org/react";
 import { useFetcher } from "@remix-run/react";
 import { Generic } from "~/.server/interfaces";
 import { HandlerSuccess } from "~/.server/reponses";
 import { ModalBodyHandler } from "~/components/utils/ModalBodyHandler";
+import { SelectRoutes } from "../route/SelectRoutes";
 
 interface Props {
     isOpen: boolean;
@@ -52,18 +53,9 @@ export function ModalFolderEdit({
                             Actualizar la Carpeta {fetcherGet.data?.serverData.name}
                         </ModalHeader>
                         <ModalBody>
-                          <Select
-                            items={routes}
-                            label="Ruta"
-                            placeholder="Seleccione una ruta"
-                            className="red-dark text-foreground bg-content1"
-                            labelPlacement="outside"
-                            variant="bordered"
-                            name="route"
+                          <SelectRoutes 
                             defaultSelectedKeys={[fetcherGet.data?.serverData.route.id+'']}
-                          >
-                            {(route) => <SelectItem key={route.key}>{route.label}</SelectItem>}
-                          </Select>
+                          />
                         </ModalBody>
                         <ModalFooter>
                             <Button color="danger" variant="flat" onPress={onClose}>

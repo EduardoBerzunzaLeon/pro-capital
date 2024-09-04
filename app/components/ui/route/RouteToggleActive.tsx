@@ -26,8 +26,6 @@ const RouteToggleActive = ({ routeId, isActive }: Props ) => {
 
     }, [isActive]);
 
-    console.log({isActive})
-
     const handleClick = () => {
         submit({
             isActiveRoute: !isActive,

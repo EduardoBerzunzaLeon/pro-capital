@@ -1,4 +1,5 @@
 import { db } from "../db";
+import { AgentRouteRepository } from "./agentRoute/agentRoute.repository";
 import { AuthRepository } from "./auth/auth.repository";
 import { baseRepository } from "./base.repository";
 import { FolderRepository } from "./folder/folder.repository";
@@ -17,6 +18,7 @@ function buildRepository() {
         folder: { ...FolderRepository(baseRepository(db.folder))},
         group: { ...GroupRepository(baseRepository(db.group))},
         route: { ...RouteRepository(baseRepository(db.route))},
+        agentRoute: { ...AgentRouteRepository(baseRepository(db.agentRoute))},
     }
 }
 

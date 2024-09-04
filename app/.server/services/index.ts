@@ -3,9 +3,10 @@ import municipalityService from "./municipality.service";
 import townService from "./town.service";
 import folderService from "./folder.service";
 import validationService from "./validation.service";
-import autocompleteService from "./autocomplete.service";
+import dto from "./dto.service";
 import paginatorService from "./paginator.service";
 import routeService from "./route.service";
+import agentRouteService from "./agentRoute.service";
 
 function buildService() {
     return {
@@ -15,8 +16,9 @@ function buildService() {
         town: { ...townService },
         folder: { ...folderService },
         routes: { ...routeService },
-        autocomplete: { ...autocompleteService },
+        dto: { ...dto },
         paginator: { ...paginatorService },
+        agent: { ...agentRouteService },
     }
 }
 
