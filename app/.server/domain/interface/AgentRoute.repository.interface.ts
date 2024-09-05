@@ -18,6 +18,7 @@ export interface AgentRouteRepositoryI {
     findMany: (routeId: number, assignAt: Date) => Promise<Generic[] | undefined>,
     deleteOne: (id: number) => Promise<Generic | undefined>,
     deleteMany: (ids: number[], assignAt: Date) => Promise<Generic | undefined>,
+    deleteManyByRoute: (routeId: number, assignAt: Date) => Promise<Generic | undefined>,
     createMany: (data: CreateOne[]) => Promise<Generic | undefined>,
     base: BaseAgentRouteI
 }

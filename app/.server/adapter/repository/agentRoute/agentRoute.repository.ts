@@ -42,6 +42,13 @@ export function AgentRouteRepository(base: BaseAgentRouteI): AgentRouteRepositor
         });
     }
 
+    async function deleteManyByRoute(routeId: number, assignAt: Date) {
+        return await base.deleteMany({
+            routeId,
+            assignAt: { equals: assignAt}
+        })
+    }
+
     async function createMany(data: CreateOne[]) {
         return await base.createMany(data, true);
     } 
@@ -70,6 +77,7 @@ export function AgentRouteRepository(base: BaseAgentRouteI): AgentRouteRepositor
                 id: true,
                 avatar: true,
                 email: true,
+                username: true,
                 agentsRoutes: {
                     where: {
                         assignAt: {
@@ -85,7 +93,8 @@ export function AgentRouteRepository(base: BaseAgentRouteI): AgentRouteRepositor
                         }
                     }
                 }
-            }
+            },
+            take: 10
         });
    
     }
@@ -102,6 +111,7 @@ export function AgentRouteRepository(base: BaseAgentRouteI): AgentRouteRepositor
                         fullName: true,
                         avatar: true,
                         email: true,
+                        username: true,
                         id: true
                     }
                 }
@@ -115,6 +125,7 @@ export function AgentRouteRepository(base: BaseAgentRouteI): AgentRouteRepositor
         findMany,
         deleteOne,
         deleteMany,
+        deleteManyByRoute,
         createMany,
         base
     }

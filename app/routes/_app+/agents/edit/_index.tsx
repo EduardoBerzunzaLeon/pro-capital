@@ -1,36 +1,81 @@
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, DatePicker } from "@nextui-org/react";
-import {  useNavigate } from "@remix-run/react";
-import {  now } from "@internationalized/date";
+import {  Form, useNavigate } from "@remix-run/react";
+import {  getLocalTimeZone, today } from "@internationalized/date";
 // import { handlerSuccess, handlerError, HandlerSuccess } from "~/.server/reponses";
 // import { Service } from "~/.server/services";
 import { SelectRoutes } from "~/components/ui/route/SelectRoutes";
 import { AutocompleteMultiple } from "~/components/ui";
+import { useState } from "react";
+import { Key } from "~/components/ui/folder/FolderSection";
+import { ActionFunction } from "@remix-run/node";
+import { ServerError } from "~/.server/errors";
+import dayjs from 'dayjs';
+import { Service } from "~/.server/services";
+import { handlerErrorWithToast } from "~/.server/reponses/handlerError";
+import { handlerSuccessWithToast } from "~/.server/reponses/handlerSuccess";
 
-// TODO: change this
-// interface RouteData {
-//   id: number,
-//   name: number,
-//   isActive: boolean
-// }
+export const action: ActionFunction = async({ request }) => {
+  const formData = await request.formData();
+  const data = Object.fromEntries(formData);
+  const {  route, assignAt, ...agents } = data;
+  const keys = Object.keys(agents);
 
-// export const loader: LoaderFunction = async () => {
+  try {
+    
+  const agentIds: number[] = keys.reduce((acc: number[], key) => {
+    if(key.includes('id')) {
+      const id = Number(agents[key]);
+      if(isNaN(id)) {
+        throw ServerError.badRequest('Los agentes seleccionados no son validos.')
+      }
+      return [
+        ...acc,
+        Number(id)
+      ]
+    }
+    return acc;
+  }, [] );
+
+  await Service.agent.createMany({
+    routeId: Number(route), 
+    assignAt: dayjs(String(assignAt)).toDate(), 
+    agentIds
+  });
+  return handlerSuccessWithToast('create');
+} catch (error) {
+  return handlerErrorWithToast(error, data);
+}
+}
 
 
-//     try {
-//       const data = await Service.agent.find();
-//       return handlerSuccess(200, data);
-//     } catch (error) {
-//       return handlerError(error);
-//     }
-
-// }
+type Selection = 'all' | Set<Key>;
 
 export default function EditAgentRoute () {
     const navigate = useNavigate();
+    const [route, setRoute] = useState<number>(0);
+    const [assignAt, setAssignAt] = useState(today(getLocalTimeZone()));
 
 
     const onClose = () => {
         navigate("/agents")
+    }
+
+    
+    const handleRouteChange = (routeKey: Selection) => {
+      
+      if(typeof routeKey === 'string') {
+        setRoute(0);
+        return;
+      } 
+
+      if(routeKey.size === 0)  {
+        setRoute(0)
+        return;
+      }
+
+      const [ routeSingle ] = [...routeKey]
+      setRoute(Number(routeSingle));
+
     }
 
 
@@ -46,25 +91,35 @@ export default function EditAgentRoute () {
         <ModalContent>
           {(onClose) => (
             <>
+              <Form method='post'>
               <ModalHeader className="flex flex-col gap-1">Modal Title</ModalHeader>
               <ModalBody>
                 <DatePicker 
                   label="Dia de asignación" 
                   variant='bordered' 
-                  defaultValue={now('America/Mexico_City')}
+                  name='assignAt'
+                  id='assignAt'
+                  value={assignAt}
+                  onChange={setAssignAt}
                   granularity="day"
                 />
-                <SelectRoutes />
-                <AutocompleteMultiple />
+                <SelectRoutes 
+                  onSelectionChange={handleRouteChange}
+                />
+                <AutocompleteMultiple 
+                  routeId={route}
+                  assignAt={assignAt}
+                />
               </ModalBody>
               <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
+                <Button color="danger" variant="light" onPress={onClose} type='button'>
                   Close
                 </Button>
-                <Button color="primary" onPress={onClose}>
-                  Action
+                <Button color="primary" type='submit'>
+                  Asignar
                 </Button>
               </ModalFooter>
+              </Form>
             </>
           )}
         </ModalContent>

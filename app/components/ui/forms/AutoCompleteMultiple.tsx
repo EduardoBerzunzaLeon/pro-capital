@@ -2,31 +2,44 @@ import { ChangeEvent, Fragment, useEffect, useState } from 'react'
 import { Combobox, ComboboxInput, ComboboxOption, ComboboxOptions } from '@headlessui/react'
 import clsx from 'clsx';
 import { FaCheck } from 'react-icons/fa';
-import { Chip, Input, Spinner, Textarea } from '@nextui-org/react';
+import { CalendarDate, Chip,  Textarea } from '@nextui-org/react';
 import { useFetcher } from '@remix-run/react';
 import { loader } from '~/routes/_app+/agents/autocomplete/_index';
 
-const people = [
-  { id: 1, name: 'Durward Reynolds' },
-  { id: 2, name: 'Kenton Towne' },
-  { id: 3, name: 'Therese Wunsch' },
-  { id: 4, name: 'Benedict Kessler' },
-  { id: 5, name: 'Katelyn Rohan' },
-]
 
-export function AutocompleteMultiple() {
+interface Props {
+    routeId: number,
+    assignAt: CalendarDate
+}
+
+export function AutocompleteMultiple({ routeId, assignAt }: Props) {
   const [selectedPeople, setSelectedPeople] = useState([]);
   const [query, setQuery] = useState('');
   const { submit, data, state } = useFetcher<typeof loader>({ key: 'getAgents' });
-  const routeId: number = 1;
+  
+  const fetcherSelected = useFetcher({ key: `getAgents_${routeId}` } );
 
-    // console.log({data, state})
+    useEffect(() => {
+
+        if(routeId === 0) {
+            setSelectedPeople([]);
+            return;
+        }
+
+        fetcherSelected.submit({ 
+            routeId, assignAt: 
+            assignAt.toString() 
+        }, {
+            action: '/agents/selected'
+        });
+
+    }, [routeId, assignAt]);
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
 
         submit({ 
             data: event.target.value,
-            assignAt: '2024-09-05'  
+            assignAt: assignAt.toString() 
         }, {
             action: '/agents/autocomplete'
         });
@@ -35,30 +48,20 @@ export function AutocompleteMultiple() {
     }
 
     useEffect(() => {
-        // TODO: do this when switch day or route
-        if(state === 'idle' && Array.isArray(data)) {
-            const agents = data.reduce((acc, agent) => {
-                
-                if(agent.agentsRoutes.length === 0) {
-                    return acc;
-                }
-                
-                const [{ route }] = agent.agentsRoutes;
-                
-                console.log(route, routeId);
-                if(route.name === routeId ) {
-                    console.log({ agent});
-                    acc.push({...agent});
-                    return acc;
-                }
-                
-                return acc;
-            }, []);
-            
-            console.log({data, agents});
-            setSelectedPeople(agents)
+
+        if(
+            fetcherSelected.state === 'idle'
+            && Array.isArray(fetcherSelected.data)
+        ) {
+            // setSel   
+            const newAgentsSelected = fetcherSelected.data.map(({ user }) => {
+                return {...user}
+            })
+
+            setSelectedPeople(newAgentsSelected);
         }
-    }, [route]);
+
+    },[fetcherSelected.data, fetcherSelected.state])
 
     const handleSelected = (a) => {
         
@@ -73,10 +76,11 @@ export function AutocompleteMultiple() {
 
     }
 
-    console.log({selectedPeople})
+    console.log({data})
 
   return (
     <Combobox 
+        name='agents'
         multiple 
         value={selectedPeople} 
         onChange={handleSelected} 
@@ -93,6 +97,7 @@ export function AutocompleteMultiple() {
                 labelPlacement='outside'
                 label='Asesores'
                 placeholder='selecciona los Asesores'
+                isDisabled={routeId === 0}
                 onChange={(e) => setQuery(e.target.value)}
                 value={query}
                 startContent={
@@ -102,7 +107,7 @@ export function AutocompleteMultiple() {
                         <Chip 
                             key={person.id}
                             onClose={() => handleDeleteChip(person.id)}
-                        >{person.fullName}</Chip>
+                        >{person.username}</Chip>
                       ))}
                     </div>
                   )}
@@ -125,6 +130,10 @@ export function AutocompleteMultiple() {
                 >
                     <FaCheck className="invisible size-4 fill-white group-data-[selected]:visible" />
                     <div className="text-sm/6 text-white">{data.fullName}</div>
+                    {
+                        data?.agentsRoutes.length > 0
+                            && ( <Chip color="warning" variant="bordered">{`Ruta ${data?.agentsRoutes[0].route.name}`}</Chip>)
+                    }
                 </ComboboxOption>
             ))}
             </ComboboxOptions>

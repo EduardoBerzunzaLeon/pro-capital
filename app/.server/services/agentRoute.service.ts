@@ -13,6 +13,12 @@ interface CreateManyProps {
     assignAt: Date;
 }
 
+interface DeleteManyProps {
+    routeId: number;
+    agentIds: number[];
+    assignAt: Date;
+}
+
 export const findAll = async (props: PaginationWithFilters) => {
     const { data, metadata } =  await Repository.agentRoute.findAll({...props});
 
@@ -39,12 +45,26 @@ export const createMany = async ({routeId, agentIds, assignAt}: CreateManyProps)
     }
 
     const { id } = validationZod({ id: routeId }, idSchema);
-    const deletedAgentRoutes = await Repository.agentRoute.deleteMany(agentIds, assignAt);
-    if(!deletedAgentRoutes) {
-        throw ServerError.internalServer('No se pudo desasignar los agentes a sus rutas atenriores');
-    }
+    
+    await deleteMany({
+        routeId: id,
+        assignAt,
+        agentIds
+    });
+
     const data = agentIds.map(agentId => ({ routeId: id, userId: agentId, assignAt}));
     await Repository.agentRoute.createMany(data);
+}
+
+const deleteMany = async ({routeId, agentIds, assignAt}: DeleteManyProps) => {
+    const [ deletedById, deletedByRoutes ] = await Promise.all([
+        Repository.agentRoute.deleteMany(agentIds, assignAt),
+        Repository.agentRoute.deleteManyByRoute(routeId, assignAt),
+    ]);
+
+    if(!deletedById || !deletedByRoutes) {
+        throw ServerError.internalServer('No se pudo desasignar los agentes a sus rutas anteriores');
+    }
 }
 
 export const findAgentsAutocomplete = async (fullname: string, assignAt: Date) => {
