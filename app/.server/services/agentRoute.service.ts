@@ -47,9 +47,10 @@ export const createMany = async ({routeId, agentIds, assignAt}: CreateManyProps)
     await Repository.agentRoute.createMany(data);
 }
 
-export const findAgentsAutocomplete = async () => {
-    const agents = await Repository.agentRoute.findAgents();
-    return Service.dto.autocompleteMapper('id', 'fullName', agents);
+export const findAgentsAutocomplete = async (fullname: string, assignAt: Date) => {
+    const agents = await Repository.agentRoute.findAgents(fullname, assignAt);
+    return agents;
+    // return Service.dto.autocompleteMapper('id', 'fullName', agents);
 }
 
 export const findMany = async (routeId: RequestId, assignAt: Date) => {

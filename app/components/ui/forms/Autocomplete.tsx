@@ -41,6 +41,7 @@ export const AutocompleteCombobox = ({
 
     const isControlled = !!selectedItem && !!onSelected;
 
+    // TODO: mover esto al handlechange a ver que sucede 
     useEffect(() => {
         submit({ data: query }, { action: actionRoute });
    }, [actionRoute, query, submit]);

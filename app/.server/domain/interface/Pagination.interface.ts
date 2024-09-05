@@ -17,7 +17,7 @@ export interface PaginationProps  {
 
 export interface Filter {
     column: string,
-    value: string | boolean | number | string[] | number[]
+    value: string | boolean | number | string[] | number[] | { start: Date, end: Date }
 }
 
 export interface PaginationWithFilters {

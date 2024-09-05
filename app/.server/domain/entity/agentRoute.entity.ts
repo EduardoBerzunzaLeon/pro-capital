@@ -35,7 +35,8 @@ export class AgentRoute {
         if(!user?.fullName) throw ServerError.badRequest('El nombre del asesor es requerido');
         if(!assignAt) throw ServerError.badRequest('La fecha es requerida');
 
-        const assignAtFormatted = dayjs(assignAt).format('YYYY-MM-DD');
+        // TODO: no se porque hay que agregarle un dia, al momento del format
+        const assignAtFormatted = dayjs(assignAt).add(1, 'day').format('YYYY-MM-DD');
         return new AgentRoute(id, route, user, assignAtFormatted);
     }
 }

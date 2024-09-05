@@ -49,7 +49,10 @@ export function AgentRouteRepository(base: BaseAgentRouteI): AgentRouteRepositor
     // TODO: move this to user repository
     //  TODO: Preguntar si traer todos los usuarios o solo los agentes
 
-    async function findAgents() {
+    async function findAgents(fullname: string, assignAt: Date) {
+
+        console.log(assignAt);
+
         return await db.user.findMany({
             where: {
                 role: {
@@ -57,13 +60,34 @@ export function AgentRouteRepository(base: BaseAgentRouteI): AgentRouteRepositor
                         in: ['ADMIN', 'AGENT']
                     }
                 },
+                fullName: {
+                    contains: fullname
+                },
                 isActive: true
             },
             select: {
                 fullName: true,
                 id: true,
+                avatar: true,
+                email: true,
+                agentsRoutes: {
+                    where: {
+                        assignAt: {
+                            equals: assignAt
+                        }
+                    },
+                    select: {
+                        assignAt: true,
+                        route: {
+                            select: {
+                                name: true
+                            }
+                        }
+                    }
+                }
             }
         });
+   
     }
 
     async function findMany(routeId: number, assignAt: Date) {
@@ -77,6 +101,7 @@ export function AgentRouteRepository(base: BaseAgentRouteI): AgentRouteRepositor
                     select: {
                         fullName: true,
                         avatar: true,
+                        email: true,
                         id: true
                     }
                 }

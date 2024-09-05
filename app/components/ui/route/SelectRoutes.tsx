@@ -31,6 +31,8 @@ export const SelectRoutes = ({ defaultSelectedKeys, onSelectionChange, selection
   // eslint-disable-next-line react-hooks/exhaustive-deps
   } ,[data]);
 
+  console.log({defaultSelectedKeys});
+
   useEffect(() => {
 
     if(defaultSelectedKeys) {

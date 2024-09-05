@@ -100,12 +100,13 @@ export const handlerErrorWithToast = (error: unknown, data: GenericUnknown) =>  
   return jsonWithError({status, error: errorMessage}, errorMessage);
 }
 
-export const getEmptyPagination = () => ({
+export const getEmptyPagination = (extraData?: Generic) => ({
   error: 'no data',
   serverData: { 
     data: [], 
     total: 0, 
     currentPage: 0,
-    pageCount: 0
+    pageCount: 0,
+    ...extraData
   }
 })

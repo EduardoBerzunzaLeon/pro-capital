@@ -31,7 +31,8 @@ export function apiPrismaFeatures({
         return  convert(columns, directionBy);
     }
 
-    function getCondition(value: unknown) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    function getCondition(value: any) {
       if(value === 'notUndefined') {
         return { not: undefined }
       }
@@ -48,8 +49,11 @@ export function apiPrismaFeatures({
         return { equals: value }
       }
       
-      if(value instanceof Date) {
-        console.log(value)
+      if(value?.start && value?.end)  {
+        return {
+          gte: value['start'],
+          lte: value['end'],
+        }
       }
 
       return { contains: value };
