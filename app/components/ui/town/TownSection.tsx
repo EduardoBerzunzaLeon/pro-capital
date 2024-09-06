@@ -73,7 +73,7 @@ export function TownSection() {
 
     return (
         <div className='w-full md:max-w-[48%]'>
-             <div className='w-full flex gap-2 mt-5 mb-3 flex-wrap justify-between'>
+        <div className='w-full flex gap-2 mt-5 mb-3 flex-wrap justify-between'>
         <Input
             isClearable
             className="w-full sm:max-w-[44%]"

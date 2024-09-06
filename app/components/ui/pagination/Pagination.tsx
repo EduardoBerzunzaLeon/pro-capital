@@ -7,7 +7,7 @@ interface Props {
 }
 
 export function Pagination({ onChange, currentPage, pageCount }: Props) {
-
+    
     const hasPagination = (pageCount && pageCount > 0) || false;
 
     return (

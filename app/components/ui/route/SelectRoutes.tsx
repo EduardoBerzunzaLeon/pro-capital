@@ -1,28 +1,26 @@
 import { Chip, Select, SelectItem } from "@nextui-org/react";
 import { useFetcher } from "@remix-run/react";
 import { useEffect, useState } from "react";
+import { Key, SelectionMode, Selection } from "~/.server/interfaces";
 import { HandlerSuccess } from "~/.server/reponses";
-import { Key } from "../folder/FolderSection";
 
 interface RouteData {
     id: number,
     name: number,
-    isActive: boolean
+    isActive: boolean,
 }
-
-type Selection = 'all' | Set<Key>;
-type SelectionMode = 'none' | 'single' | 'multiple';
 
 interface Props {
     defaultSelectedKeys?: "all" | Iterable<Key> | undefined,
     onSelectionChange?: (keys: Selection) => void,
-    selectionMode?: SelectionMode
+    selectionMode?: SelectionMode,
+    className?: string,
 }
 
-export const SelectRoutes = ({ defaultSelectedKeys, onSelectionChange, selectionMode }: Props) => {
+export const SelectRoutes = ({ defaultSelectedKeys, onSelectionChange, selectionMode, className }: Props) => {
+  
   const { load, data, state } = useFetcher<HandlerSuccess<RouteData[]>>({ key: 'getSelectRoutes' });
-
-    const [selected, setSelected] = useState<"all" | Iterable<Key>>([]);
+  const [selected, setSelected] = useState<"all" | Iterable<Key>>([]);
 
   useEffect(() => {
     if(!data?.serverData) {
@@ -30,8 +28,6 @@ export const SelectRoutes = ({ defaultSelectedKeys, onSelectionChange, selection
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   } ,[data]);
-
-  console.log({defaultSelectedKeys});
 
   useEffect(() => {
 
@@ -53,7 +49,7 @@ export const SelectRoutes = ({ defaultSelectedKeys, onSelectionChange, selection
             items={data?.serverData ?? []}
             label="Ruta"
             placeholder="Seleccione una ruta"
-            className="red-dark text-foreground bg-content1"
+            className={`red-dark text-foreground bg-content1 ${className}`}
             labelPlacement="outside"
             variant="bordered"
             name="route"

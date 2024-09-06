@@ -57,7 +57,7 @@ export default function EditAgentRoute () {
 
 
     const onClose = () => {
-        navigate("/agents")
+        navigate(-1)
     }
 
     

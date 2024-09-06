@@ -1,16 +1,15 @@
-import { Button, DateRangePicker,  Input, RangeValue, SortDescriptor, Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react";
+import { Button, DateRangePicker,  Input, Link, RangeValue, SortDescriptor, Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react";
 import { json, LoaderFunction } from "@remix-run/node";
-import { useLoaderData, useNavigate, useOutlet, useSearchParams } from "@remix-run/react";
+import { ShouldRevalidateFunctionArgs, useLoaderData, useLocation, useNavigate, useNavigation,  useOutlet, useSearchParams } from "@remix-run/react";
 import { ChangeEvent, useCallback, useMemo } from "react";
 import { AgentRoute } from "~/.server/domain/entity/agentRoute.entity";
 import { Filter } from "~/.server/domain/interface";
-import { Generic } from "~/.server/interfaces";
+import { Generic, Key, SortDirection, Selection, LoadingState } from "~/.server/interfaces";
 import { HandlerSuccess, handlerSuccess } from "~/.server/reponses";
 import { getEmptyPagination } from "~/.server/reponses/handlerError";
 import { handlerPaginationParams } from "~/.server/reponses/handlerSuccess";
 import { Service } from "~/.server/services";
 import { AgentRouteAction, Pagination, RowPerPage } from "~/components/ui";
-import { Key } from "~/components/ui/folder/FolderSection";
 import { SelectRoutes } from "~/components/ui/route/SelectRoutes";
 // TODO: decidir por internacionalized date or daysjs
 import { DateValue, parseDate } from "@internationalized/date";
@@ -32,7 +31,6 @@ const columnSortNames: Generic = {
 
 export const loader: LoaderFunction = async ({ request }) => {
 
-  // handleManualFilters
   const url = new URL(request.url);
   const routes = url.searchParams.get('routes');
   const agent = url.searchParams.get('agent') || '';
@@ -65,6 +63,8 @@ export const loader: LoaderFunction = async ({ request }) => {
       search: [routesParsed, agentParsed, datesParsed]
     });
 
+    console.log({data});
+
     return handlerSuccess(200, { 
         ...data,
         p: page,
@@ -78,7 +78,6 @@ export const loader: LoaderFunction = async ({ request }) => {
         end
       });
   } catch (error) {
-      console.log({error});
       return json(getEmptyPagination({
         agent,
         routes: routesParsed.value,
@@ -89,7 +88,52 @@ export const loader: LoaderFunction = async ({ request }) => {
     
 }
 
-export type SortDirection = 'ascending' | 'descending';
+
+
+export function shouldRevalidate({
+  currentUrl,
+  currentParams,
+  nextUrl,
+  nextParams,
+  formMethod,
+  formAction,
+  formEncType,
+  text,
+  formData,
+  json,
+  unstable_actionStatus,
+  actionResult,
+  defaultShouldRevalidate,
+}: ShouldRevalidateFunctionArgs) {
+  
+  // console.log({
+  //   currentUrl,
+  //   currentParams,
+  //   nextUrl,
+  //   nextParams,
+  //   formMethod,
+  //   formAction,
+  //   formEncType,
+  //   text,
+  //   formData,
+  //   json,
+  //   unstable_actionStatus,
+  //   actionResult,
+  //   defaultShouldRevalidate,
+  // })
+  
+  console.log('inside');
+  // if(formMethod === 'POST') {
+  //   return true;
+  // }
+
+  // if(nextUrl.pathname !== '/agents' || currentUrl.pathname === '/agents/edit') {
+  //   return false;
+  // }
+
+  return defaultShouldRevalidate;
+}
+
 
 interface Loader {
   data: AgentRoute[],
@@ -116,16 +160,25 @@ const columns = [
   { key: 'actions', label: 'ACCIONES'},
 ]
 
-type Selection = 'all' | Set<Key>;
-
 export default function  AgentsPage()  {
   
   // TODO: { serverData } can be undefined when change the page with the navlink
   const loader = useLoaderData<HandlerSuccess<Loader>>();
-  const [ , setSearchParams] = useSearchParams();
+  const [ searchParams , setSearchParams] = useSearchParams();
   const outlet = useOutlet();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
+  const navigation = useNavigation();
+  // const location = useLocation();
+
+  const loadingState: LoadingState = navigation.state === 'idle'
+    ? 'idle' : 'loading';
   
+  // console.log({
+  //   navigate,
+  //   navigation,
+  //   location
+  // })
+
   const renderCell = useCallback((agent: AgentRoute, columnKey: Key) => {
       if(columnKey === 'actions') {
         return (<AgentRouteAction idAgentRoute={agent.id} />)
@@ -180,7 +233,7 @@ export default function  AgentsPage()  {
       end: parseDate(end)
     }
 
-  },[loader.serverData]);
+  },[loader?.serverData]);
   
 
   const handlePagination = (page: number) => {
@@ -228,7 +281,6 @@ export default function  AgentsPage()  {
   }
 
   const handleSort = (descriptor: SortDescriptor) => {
-    // setSortDescriptor(descriptor);
     const direction = descriptor?.direction ??  'ascending';
     const column = descriptor?.column ??  'assignAt';
     setSearchParams((prev) => {
@@ -250,57 +302,63 @@ export default function  AgentsPage()  {
     }, {preventScrollReset: true});
   }
 
-
-  const handleOpen = () => {
-    navigate('/agents/edit');
-  }
   return (
     <>
     { outlet }
-    <SelectRoutes 
-      onSelectionChange={handleSelection}
-      selectionMode='multiple'
-      defaultSelectedKeys={defaultRoutes}
-    />
-    <Input 
-      id='agent'
-      name='agent'
-      defaultValue={loader?.serverData?.agent || ''}
-      onChange={handleAgentChange}
-    />
-    <ClientOnly>
-      {
-        () => (
-          <DateRangePicker
-          label="Rango de la Fecha de cobro"
-          className='w-full md:max-w-[40%]'
-          defaultValue={defaultDates}
-          value={defaultDates}
-          onChange={handleDates}
-          aria-label="date ranger picker"
-          labelPlacement='outside'
-          CalendarBottomContent={
-          <Button 
-            className="mb-2 ml-2"
-            size="sm" 
-            aria-label="delete_filter_date"
-            variant="ghost"
-            color='primary'
-            onClick={() => {
-              setSearchParams((prev) => {
-                prev.delete("start");
-                prev.delete("end");
-                return prev;
-              }, {preventScrollReset: true});
-            }}
-          >
-            Limpiar
-          </Button>}
-        />
-        )
-      }
-    </ClientOnly>
+    <div className='w-full flex gap-2 mt-5 mb-3 flex-wrap justify-between items-center'>
 
+      <SelectRoutes 
+        onSelectionChange={handleSelection}
+        selectionMode='multiple'
+        className='w-full md:max-w-[25%]'
+        defaultSelectedKeys={defaultRoutes}
+      />
+      
+      <Input 
+        id='agent'
+        name='agent'
+        variant='bordered'
+        className="w-full md:max-w-[30%]"
+        labelPlacement="outside"
+        label='Asesor'
+        placeholder="Nombre del asesor"
+        defaultValue={loader?.serverData?.agent || ''}
+        onChange={handleAgentChange}
+      />
+      <ClientOnly>
+        {
+          () => (
+            <DateRangePicker
+            label="Rango de la  fecha de asignación"
+            className="w-full md:max-w-[40%]"
+            variant='bordered'
+            defaultValue={defaultDates}
+            onChange={handleDates}
+            aria-label="date ranger picker"
+            labelPlacement='outside'
+            CalendarBottomContent={
+            <Button 
+              className="mb-2 ml-2"
+              size="sm" 
+              aria-label="delete_filter_date"
+              variant="ghost"
+              color='primary'
+              onClick={() => {
+                setSearchParams((prev) => {
+                  prev.delete("start");
+                  prev.delete("end");
+                  return prev;
+                }, {preventScrollReset: true});
+              }}
+            >
+              Limpiar
+            </Button>}
+          />
+          )
+        }
+      </ClientOnly>
+    </div>
+    
     <Table 
     aria-label="Municipalities table"
     onSortChange={handleSort}
@@ -311,23 +369,31 @@ export default function  AgentsPage()  {
     
     bottomContent={
         <div className="flex w-full justify-center">
-            <Pagination 
-                pageCount={loader?.serverData?.pageCount}
-                currentPage={loader?.serverData?.currentPage}
-                onChange={handlePagination}
-            />
+        <ClientOnly>
+          {
+            () => (
+              <Pagination 
+                    pageCount={loader?.serverData?.pageCount}
+                    currentPage={loader?.serverData?.currentPage}
+                    onChange={handlePagination}
+                />    
+              )
+          }
+        </ClientOnly>
         </div>
     }
     topContent={
         <div className="flex justify-between items-center">
-                <Button 
-                  variant="ghost" 
-                  color="secondary" 
-                  endContent={<MdEditCalendar />}
-                  onPress={handleOpen}
-                >
-                    Asignar Ruta
-                </Button>
+
+                    <Button
+                      href={`/agents/edit?${searchParams.toString()}`}
+                      as={Link}
+                      endContent={<MdEditCalendar />}
+                      variant="ghost"
+                      color="secondary" 
+                    >
+                      Asignar Ruta
+                    </Button>
             <span className="text-default-400 text-small">
                 Total {loader?.serverData.total || 0 } Agentes - Rutas
             </span>
@@ -348,10 +414,10 @@ export default function  AgentsPage()  {
         )}
     </TableHeader>
     <TableBody 
-        emptyContent='No se encontraron Localidades'
+        emptyContent='No se encontraron asesores asignados'
         items={loader?.serverData.data ?? []}
         loadingContent={<Spinner />}
-        // loadingState={loadingState}
+        loadingState={loadingState}
     >
         {(item) => {
             return (
@@ -360,7 +426,7 @@ export default function  AgentsPage()  {
             </TableRow>
         )}}
     </TableBody>
-  </Table>
+    </Table>
   </>
   )
 }
