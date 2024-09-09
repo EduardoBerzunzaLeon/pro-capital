@@ -327,7 +327,7 @@ export const leaders = [
         lastNameFirst: 'valencia',
         lastNameSecond:'pech',
         address: 'my casita linda',
-        birthday: new Date(2024, 6, 1).toISOString(),
+        birthday: new Date(1984, 6, 1).toISOString(),
         anniversaryDate: new Date(2024, 6, 1).toISOString(),
         unsubscribeDate: new Date(2024, 6, 1).toISOString(),
         folder: 'champoton 1',

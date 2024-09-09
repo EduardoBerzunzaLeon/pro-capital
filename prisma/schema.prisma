@@ -162,6 +162,7 @@ model Client {
   guarantee String
   phoneNumber String?
   type Type @default(NORMAL)
+  isActive Boolean @default(true)
   credits Credit[]
   isDeceased Boolean @default(false)
 }
@@ -171,12 +172,15 @@ model Leader {
   name String
   lastNameFirst String
   lastNameSecond String?
+  fullname String
   curp String @unique
   address String
   birthday DateTime @db.Date
   anniversaryDate DateTime @db.Date
-  unsubscribeDate DateTime
+  unsubscribeDate DateTime?
+  unsubscribeReason String?
   folderId Int @unique
+  isActive Boolean @default(true)
   folder Folder @relation(fields: [folderId], references: [id])
 }
 

@@ -7,6 +7,7 @@ import dto from "./dto.service";
 import paginatorService from "./paginator.service";
 import routeService from "./route.service";
 import agentRouteService from "./agentRoute.service";
+import utilsService from "./utils.service";
 
 function buildService() {
     return {
@@ -19,6 +20,7 @@ function buildService() {
         dto: { ...dto },
         paginator: { ...paginatorService },
         agent: { ...agentRouteService },
+        utils: { ...utilsService }
     }
 }
 

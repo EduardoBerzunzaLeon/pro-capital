@@ -193,13 +193,22 @@ async function insertGroups(prisma: PrismaClient) {
 
 async function insertLeaders(prisma: PrismaClient) {
   for (const leader of leaders) {
-    const { folder, ...restLeader } = leader;
+    const { 
+      folder, name, lastNameFirst, lastNameSecond,
+      ...restLeader 
+    } = leader;
     const folderDb = await prisma.folder.findUnique({ where: { name: folder } });
+
+    const fullName = concatFullName({ name, lastNameFirst, lastNameSecond });
 
     if(folderDb) {
       await prisma.leader.create({
         data: {
           ...restLeader,
+          name, 
+          lastNameFirst,
+          lastNameSecond,
+          fullname: fullName,
           folder: {
             connect: { id: folderDb.id }
           }

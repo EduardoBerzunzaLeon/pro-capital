@@ -7,16 +7,62 @@ export const id = z.coerce.number({
 .int({ message: 'ID debe ser entero' })
 .nonnegative({ message: 'ID debe ser positivo'});
 
+interface AlphabetBuilder {
+    requiredText: string,
+    minText: string,
+    extraText: string
+}
 
-export const name = z.string({
-    invalid_type_error: "Nombre invalido",
+export const alphabetBuilder = ({
+    requiredText,
+    minText,
+    extraText
+}: AlphabetBuilder) => z.string({
+    invalid_type_error: `${requiredText} invalido`,
     required_error: "Requerido",
 }).trim()
 .toLowerCase()
-.min(2, 'El nombre debe tener minimo dos letras')
+.min(2, `${minText} debe tener minimo dos letras`)
 .refine(
     (value) => /^[A-Za-z]+$/.test(value ?? ""), 
-    'El nombre solo debe tener caracteres del alfabeto'
+    `${extraText} solo debe tener caracteres del alfabeto`);
+
+
+export const name = alphabetBuilder({
+    requiredText: 'Nombre',
+    minText: 'El nombre',
+    extraText: 'El nombre'
+})
+
+export const curp = z.string({
+    invalid_type_error: "CURP invalido",
+    required_error: "Requerido",
+}).trim()
+.toLowerCase()
+.length(18)
+.refine(
+    (value) => {
+
+        const re =  /^([A-Z][AEIOUX][A-Z]{2}\d{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[12]\d|3[01])[HM](?:AS|B[CS]|C[CLMSH]|D[FG]|G[TR]|HG|JC|M[CNS]|N[ETL]|OC|PL|Q[TR]|S[PLR]|T[CSL]|VZ|YN|ZS)[B-DF-HJ-NP-TV-Z]{3}[A-Z\d])(\d)$/
+
+        const validate = value.match(re);
+
+        if(!validate) return false;
+
+        const verify = (curp: string) => {
+            const diccionary = "0123456789ABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
+            let lngSum = 0.0;
+            let lngDigit = 0.0;
+            for(let i=0; i<17; i++)
+                lngSum = lngSum + diccionary.indexOf(curp.charAt(i)) * (18 - i);
+            lngDigit = 10 - lngSum % 10;
+            if (lngDigit == 10) return 0;
+            return lngDigit;
+        }
+      
+        return Number(validate[2]) === verify(validate[1]);
+    }, 
+    'La estructura del CURP no es valida'
 )
 // TODO AGREGAR ESPACIOS EN EL REGEX
 
@@ -34,6 +80,17 @@ export const active = z.coerce.boolean({
     invalid_type_error: "Estado invalido",
     required_error: "Requerido",
 });
+
+export const stringSchema = (requiredText: string) =>  z.string({
+    invalid_type_error: `${requiredText} invalido`,
+    required_error: "Requerido",
+}).trim()
+.toLowerCase();
+
+export const dateSchema = (requiredText: string) => z.date({
+    invalid_type_error: `${requiredText} invalido`,
+    required_error: "Requerido",
+})
 
 export const idSchema = z.object({ id });
 export const nameSchema = z.object({ name });
