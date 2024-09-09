@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useLocation, useOutlet } from 'react-router-dom';
-import type { LinksFunction } from "@remix-run/node";
+import type { LinksFunction, MetaFunction } from "@remix-run/node";
 import {
   Links,
   Meta,
@@ -23,11 +23,11 @@ export const links: LinksFunction = () => [
 ];
 
 
-// export const meta: MetaFunction = () => ({
-//   charset: "utf-8",
-//   title: "Remix Notes",
-//   viewport: "width=device-width,initial-scale=1",
-// });
+export const meta: MetaFunction = () => ([{
+  charset: "utf-8",
+  title: "Pro capital",
+  viewport: "width=device-width,initial-scale=1",
+}]);
 
 // export function ErrorBoundary({ error }: {error: unknown}) {
 //   console.error(error);
@@ -50,6 +50,8 @@ export default function App() {
   const outlet = useOutlet();
   const navigate = useNavigate();
   const { toast } = useLoaderData<typeof rootLoader>();
+  const location = useLocation();
+  // console.log(navigate)
   
   useEffect(() => {
     if(toast){
@@ -71,7 +73,7 @@ export default function App() {
 
           <div className='red-dark text-foreground bg-content1 w-screen max-h-max min-h-screen'>
             <AnimatePresence mode="wait" initial={false}>
-                <motion.main key={useLocation().pathname}>
+                <motion.main key={location.pathname === '/login' ? location.pathname :'dashboard'}>
                   {outlet}
                 </motion.main>
             </AnimatePresence>

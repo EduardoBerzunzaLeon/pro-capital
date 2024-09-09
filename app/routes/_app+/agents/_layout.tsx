@@ -1,7 +1,7 @@
 import { Button, DateRangePicker,  Input, Link, RangeValue, SortDescriptor, Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react";
 import { json, LoaderFunction } from "@remix-run/node";
-import { ShouldRevalidateFunctionArgs, useLoaderData, useLocation, useNavigate, useNavigation,  useOutlet, useSearchParams } from "@remix-run/react";
-import { ChangeEvent, useCallback, useMemo } from "react";
+import { useLoaderData, useNavigation,  useOutlet, useSearchParams } from "@remix-run/react";
+import React, { ChangeEvent, useCallback, useMemo } from "react";
 import { AgentRoute } from "~/.server/domain/entity/agentRoute.entity";
 import { Filter } from "~/.server/domain/interface";
 import { Generic, Key, SortDirection, Selection, LoadingState } from "~/.server/interfaces";
@@ -30,7 +30,7 @@ const columnSortNames: Generic = {
 }
 
 export const loader: LoaderFunction = async ({ request }) => {
-
+  
   const url = new URL(request.url);
   const routes = url.searchParams.get('routes');
   const agent = url.searchParams.get('agent') || '';
@@ -63,8 +63,6 @@ export const loader: LoaderFunction = async ({ request }) => {
       search: [routesParsed, agentParsed, datesParsed]
     });
 
-    console.log({data});
-
     return handlerSuccess(200, { 
         ...data,
         p: page,
@@ -78,6 +76,7 @@ export const loader: LoaderFunction = async ({ request }) => {
         end
       });
   } catch (error) {
+    console.log({error});
       return json(getEmptyPagination({
         agent,
         routes: routesParsed.value,
@@ -87,53 +86,6 @@ export const loader: LoaderFunction = async ({ request }) => {
     }
     
 }
-
-
-
-export function shouldRevalidate({
-  currentUrl,
-  currentParams,
-  nextUrl,
-  nextParams,
-  formMethod,
-  formAction,
-  formEncType,
-  text,
-  formData,
-  json,
-  unstable_actionStatus,
-  actionResult,
-  defaultShouldRevalidate,
-}: ShouldRevalidateFunctionArgs) {
-  
-  // console.log({
-  //   currentUrl,
-  //   currentParams,
-  //   nextUrl,
-  //   nextParams,
-  //   formMethod,
-  //   formAction,
-  //   formEncType,
-  //   text,
-  //   formData,
-  //   json,
-  //   unstable_actionStatus,
-  //   actionResult,
-  //   defaultShouldRevalidate,
-  // })
-  
-  console.log('inside');
-  // if(formMethod === 'POST') {
-  //   return true;
-  // }
-
-  // if(nextUrl.pathname !== '/agents' || currentUrl.pathname === '/agents/edit') {
-  //   return false;
-  // }
-
-  return defaultShouldRevalidate;
-}
-
 
 interface Loader {
   data: AgentRoute[],
@@ -162,22 +114,13 @@ const columns = [
 
 export default function  AgentsPage()  {
   
-  // TODO: { serverData } can be undefined when change the page with the navlink
   const loader = useLoaderData<HandlerSuccess<Loader>>();
   const [ searchParams , setSearchParams] = useSearchParams();
   const outlet = useOutlet();
-  // const navigate = useNavigate();
   const navigation = useNavigation();
-  // const location = useLocation();
 
-  const loadingState: LoadingState = navigation.state === 'idle'
+  const loadingState: LoadingState = navigation.state === 'idle' 
     ? 'idle' : 'loading';
-  
-  // console.log({
-  //   navigate,
-  //   navigation,
-  //   location
-  // })
 
   const renderCell = useCallback((agent: AgentRoute, columnKey: Key) => {
       if(columnKey === 'actions') {
@@ -325,39 +268,33 @@ export default function  AgentsPage()  {
         defaultValue={loader?.serverData?.agent || ''}
         onChange={handleAgentChange}
       />
-      <ClientOnly>
-        {
-          () => (
-            <DateRangePicker
-            label="Rango de la  fecha de asignación"
-            className="w-full md:max-w-[40%]"
-            variant='bordered'
-            defaultValue={defaultDates}
-            onChange={handleDates}
-            aria-label="date ranger picker"
-            labelPlacement='outside'
-            CalendarBottomContent={
-            <Button 
-              className="mb-2 ml-2"
-              size="sm" 
-              aria-label="delete_filter_date"
-              variant="ghost"
-              color='primary'
-              onClick={() => {
-                setSearchParams((prev) => {
-                  prev.delete("start");
-                  prev.delete("end");
-                  return prev;
-                }, {preventScrollReset: true});
-              }}
-            >
-              Limpiar
-            </Button>}
-          />
-          )
-        }
-      </ClientOnly>
-    </div>
+      <DateRangePicker
+        label="Rango de la  fecha de asignación"
+        className="w-full md:max-w-[40%]"
+        variant='bordered'
+        defaultValue={defaultDates}
+        onChange={handleDates}
+        aria-label="date ranger picker"
+        labelPlacement='outside'
+        CalendarBottomContent={
+        <Button 
+          className="mb-2 ml-2"
+          size="sm" 
+          aria-label="delete_filter_date"
+          variant="ghost"
+          color='primary'
+          onClick={() => {
+            setSearchParams((prev) => {
+              prev.delete("start");
+              prev.delete("end");
+              return prev;
+            }, {preventScrollReset: true});
+          }}
+        >
+          Limpiar
+        </Button>}
+      />
+</div>
     
     <Table 
     aria-label="Municipalities table"

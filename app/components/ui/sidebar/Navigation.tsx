@@ -48,7 +48,7 @@ const items = [
   },
   {
     icon: <FaUsersCog />,
-    text: "Agentes",
+    text: "Asesores",
     to: "/agents",
     id: 6
   },

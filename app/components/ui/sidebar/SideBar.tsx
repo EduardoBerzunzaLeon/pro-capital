@@ -33,15 +33,19 @@ export default function SideBar() {
   const containerRef = useRef(null);
   const { height } = useDimensions(containerRef);
 
+  // TODO: verificar la salida del sidebar, cuando den click fuera del foco
   return (
       <motion.nav
         initial={false}
         animate={isOpen ? "open" : "closed"}
-        exit={isOpen ? "closed" : ''}
+        onBlur={() => {
+          if(isOpen) {
+            toggleOpen()
+          }
+        }}
         custom={height}
         ref={containerRef}
         className="sidebar"
-        onAnimationStart={() =>  console.log('endend')}
       >
         <motion.div className="background bg-content2" variants={sidebar} />
         <Navigation/>

@@ -18,7 +18,7 @@ export default function Dashboard() {
   const navigationType = useNavigationType();
   const { user } = useRouteLoaderData('root') as { user: User };
   const data = useLoaderData<typeof dashboardLoader>();
-
+  
   return (
     <>
         <SideBar />

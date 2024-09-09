@@ -29,7 +29,7 @@ export default function LoginPage() {
       safeToRemove();
       return true;
     }
-    return (navigation.state === "submitting" || navigation.state === "loading");
+    return (navigation.state !== "idle");
  }, [isPresent, navigation.state, safeToRemove])
 
   const [form, fields] = useForm({
