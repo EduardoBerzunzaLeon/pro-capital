@@ -81,7 +81,6 @@ const convertSearchData = (searchData: string, defaultColumn: string) => {
     if(!parsed[0]['column'] || !parsed[0]['value']) {
         return [{ column: defaultColumn, value: '' }];
     }
-    console.log({parsed});
 
     return parsed.map(({ column, value, type }) => {
 

@@ -118,3 +118,16 @@ export const unsubscribe = async (id: number, form: FormData) => {
     return await Repository.leader.unsubscribe(id, date, reason);
 }
 
+export default {
+    findAll, 
+    findOne, 
+    verifyIfHasFolder, 
+    verifyIfHasOwnFolder, 
+    verifyMutation, 
+    createOne, 
+    deleteOne, 
+    updateOne, 
+    findAllBirthday, 
+    resubscribe, 
+    unsubscribe, 
+}

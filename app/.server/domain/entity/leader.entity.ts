@@ -1,5 +1,6 @@
 import { ServerError } from "~/.server/errors";
 import { FolderI } from "./folder.entity";
+import dayjs from 'dayjs';
 
 export interface LeaderI {
     id: number,
@@ -17,7 +18,7 @@ export class Leader {
     public readonly fullname: string;
     public readonly curp: string;
     public readonly address: string;
-    public readonly birthday: Date;
+    public readonly birthday: string;
     public readonly folder: FolderI;
     public readonly isActive: boolean;
 
@@ -62,13 +63,15 @@ export class Leader {
         if(!birthday || !(birthday instanceof Date) ) throw ServerError.badRequest('La fecha de cumpleños es requerido');
         if(!folder || !folder.name ) throw ServerError.badRequest('La carpeta es requerida');
         if(!isActive || typeof isActive !== 'boolean' ) throw ServerError.badRequest('La estatus es requerido');
-         
+        const birthdayFormatted = dayjs(birthday).add(1, 'day').format('YYYY-MM-DD'); 
+
+
         return new Leader({
             id,
             fullname,
             curp,
             address,
-            birthday,
+            birthday: birthdayFormatted,
             folder,
             isActive
         })

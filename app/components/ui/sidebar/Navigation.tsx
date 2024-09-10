@@ -3,7 +3,7 @@ import { motion, Variants } from "framer-motion";
 import { MenuItem } from "./MenuItem";
 import { FaHome, FaRoute, FaUsers, FaUsersCog } from "react-icons/fa";
 import { IoStatsChartSharp } from "react-icons/io5";
-import { FaShield, FaUsersGear } from "react-icons/fa6";
+import { FaPersonDressBurst, FaShield, FaUsersGear } from "react-icons/fa6";
 
 const variants: Variants = {
   open: {
@@ -59,15 +59,21 @@ const items = [
     id: 7
   },
   {
+    icon: <FaPersonDressBurst />,
+    text: "Líderes",
+    to: "/leaders",
+    id: 8
+  },
+  {
     icon: <FaUsers />,
     text: "Clientes",
     to: "/clients",
-    id: 3
+    id: 9
   },
   {
     icon: <IoStatsChartSharp />,
     text: "Reportes",
     to: "/reports",
-    id: 4
+    id: 10
   },
 ];

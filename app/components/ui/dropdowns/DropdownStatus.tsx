@@ -5,11 +5,12 @@ import { Key } from '../folder/FolderSection';
 type Selection = 'all' | Set<Key>;
 
 interface Props {
-    selectedKeys: Selection,
-    onSelectionChange: (keys: Selection) => void
+  onSelectionChange: (keys: Selection) => void
+  selectedKeys?: Selection,
+  defaultSelectedKeys?: Selection,
 }
 
-export const DropdownStatus = ({ selectedKeys, onSelectionChange }: Props) => {
+export const DropdownStatus = ({ selectedKeys, onSelectionChange, defaultSelectedKeys }: Props) => {
   return (
     <Dropdown >
         <DropdownTrigger>
@@ -21,13 +22,14 @@ export const DropdownStatus = ({ selectedKeys, onSelectionChange }: Props) => {
         </Button>
         </DropdownTrigger>
         <DropdownMenu 
-        aria-label="Multiple selection status routes"
-        variant="flat"
-        closeOnSelect={false}
-        disallowEmptySelection
-        selectionMode="multiple"
-        selectedKeys={selectedKeys}
-        onSelectionChange={onSelectionChange}
+          aria-label="Multiple selection status"
+          variant="flat"
+          closeOnSelect={false}
+          disallowEmptySelection
+          selectionMode="multiple"
+          selectedKeys={selectedKeys}
+          onSelectionChange={onSelectionChange}
+          defaultSelectedKeys={defaultSelectedKeys}
         >
         <DropdownItem key="active">Activo</DropdownItem>
         <DropdownItem key="inactive">Inactivo</DropdownItem>

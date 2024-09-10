@@ -3,11 +3,11 @@ import { Route } from "@prisma/client";
 import { useFetcherPaginator, useStatusMemo } from "~/application";
 import { RowPerPage } from "../rowPerPage/RowPerPage";
 import { DropdownStatus, Pagination } from "..";
-import { Key } from "../folder/FolderSection";
 import { useCallback, useEffect,  useState } from "react";
 import { RouteButtonAdd } from "./RouteButtonAdd";
 import { RouteAction } from "./RouteAction";
 import RouteToggleActive from "./RouteToggleActive";
+import { Key, Selection} from "~/.server/interfaces";
 
 type Column = 'name' | 'id';
 
@@ -17,8 +17,6 @@ const columns = [
     { key: 'isActive', label: 'ESTATUS', sortable: true },
     { key: 'actions', label: 'ACCIONES'},
 ]
-
-type Selection = 'all' | Set<Key>;
 
 export function RouteSection() {
 

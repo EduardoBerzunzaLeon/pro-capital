@@ -6,6 +6,21 @@ import { Generic } from "~/.server/interfaces";
 export function LeaderRepository(base: BaseLeaderI): LeaderRepositoryI {
 
     async function findAll(paginationData: PaginationWithFilters) {
+
+        // const data = await db.leader.findMany({
+        //     where: {
+        //        birthday: {
+        //            getDate(): {
+        //             readonly: true
+        //            }
+   
+        //        }
+        //     }
+        //    })
+   
+        //    console.log({data});
+
+           
         return await base.findManyPaginator({
             paginatonWithFilter: paginationData,
             select: {
@@ -25,9 +40,10 @@ export function LeaderRepository(base: BaseLeaderI): LeaderRepositoryI {
     }
 
     async function findOne(id: number) {
-
         return await  base.findOne(
-            { id }, 
+            { 
+                id,
+            }, 
             {
                 id: true,
                 name: true,

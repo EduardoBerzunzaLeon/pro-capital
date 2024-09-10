@@ -17,7 +17,7 @@
     - añadir el breadcrumb
     - Cambiar el ROW PER PAGE por un select de nextui
     - Acomodar la interfaz de ROUTES PAGE
-    - Verificar el bug que cuando cambia de pagina el agents page se renderiza vacio
+    - Soluciopnar el bug donde si recargo la pagina pero cambie el row per page no se modifica
     
 
 # SERVER:

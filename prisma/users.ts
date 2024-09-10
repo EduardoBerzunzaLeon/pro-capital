@@ -331,6 +331,16 @@ export const leaders = [
         anniversaryDate: new Date(2024, 6, 1).toISOString(),
         unsubscribeDate: new Date(2024, 6, 1).toISOString(),
         folder: 'champoton 1',
-        curp: 'BELE9820389TS5'
+        curp: 'BELE982038HCCRND01'
+    },
+    {
+        name: 'Fatima Liset',
+        lastNameFirst: 'bernes',
+        lastNameSecond:'cruz',
+        address: 'col fraccionarama numero 29',
+        birthday: new Date(1977, 10, 13).toISOString(),
+        anniversaryDate: new Date(2024, 4, 9).toISOString(),
+        folder: 'maxcanu 1',
+        curp: 'BERN771013HCCRND01'
     }
 ]

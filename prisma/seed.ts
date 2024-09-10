@@ -224,14 +224,14 @@ function concatFullName({ name, lastNameFirst, lastNameSecond }: { name: string,
 
   const nameTrim = name.trim();
   const lastNameFirstTrim = lastNameFirst.trim();
-  const fullName = `${nameTrim} ${lastNameFirstTrim}`;
+  const fullName = `${nameTrim} ${lastNameFirstTrim}`.toLowerCase();
   
   if(!lastNameSecond) {
     return fullName;
   }
 
   const lastNameSecondTrim = lastNameSecond.trim();
-  return `${fullName} ${lastNameSecondTrim}`;
+  return `${fullName} ${lastNameSecondTrim}`.toLowerCase();
 }
 
 async function insertUsers(prisma: PrismaClient) {
