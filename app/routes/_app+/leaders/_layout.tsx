@@ -5,23 +5,23 @@ import { handlerPaginationParams, handlerSuccess } from "~/.server/reponses/hand
 import { Service } from "~/.server/services";
 import { getEmptyPagination } from "~/.server/reponses/handlerError";
 import { Leader } from "~/.server/domain/entity";
-import { useLoaderData, useNavigation, useSearchParams } from "@remix-run/react";
+import { useLoaderData, useNavigation, useOutlet, useSearchParams } from "@remix-run/react";
 import { HandlerSuccess } from "~/.server/reponses";
-import { ChangeEvent, useCallback, useMemo} from "react";
-import { Button, Chip, DateRangePicker, Input, RangeValue, SortDescriptor, Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react";
+import { ChangeEvent, useCallback, useEffect, useMemo, useState} from "react";
+import { Button, Chip, DateRangePicker, Input, Link, RangeValue, SortDescriptor, Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react";
 import { ClientOnly } from "remix-utils/client-only";
 import { DropdownStatus, Pagination, RowPerPage } from "~/components/ui";
 import { DateValue, parseDate } from "@internationalized/date";
+import { FaUserPlus } from "react-icons/fa";
 
-const columnsFilter = ['curp', 'fullname', 'birthday', 'isActive', 'folder.name'];
+const columnsFilter = ['curp', 'fullname', 'anniversaryDate', 'isActive', 'folder.name'];
 const columnSortNames: Generic = {
   curp: 'curp',
   leader: 'fullname',
-  birthday: 'birthday',
+  anniversaryDate: 'anniversaryDate',
   isActive: 'isActive',
   folder: 'folder.name'
 }
-
 
 export const loader: LoaderFunction = async ({ request }) => {
   
@@ -46,22 +46,15 @@ export const loader: LoaderFunction = async ({ request }) => {
   } 
 
   try {
-    
-    
+  
       const isActiveFormatted = { column: 'isActive', value: isActiveParsed };
       const curpParsed = { column: 'curp', value: curp };
       const folderParsed = { column: 'folder.name', value: folder.toLowerCase() };
       const fullnameParsed = { column: 'fullname', value: name.toLowerCase() };
-  
-      console.log({fullnameParsed})
 
-      //  TODO: Esto va dar problemas por que necesito comparalo con la fecha de cumpleaños,
-      // no con la fecha actual
-
-      console.log({start, end});
       const datesParsed = (!start || !end) 
-      ? { column: 'birthday', value: ''}
-      : { column:  'birthday', value: {
+      ? { column: 'anniversaryDate', value: ''}
+      : { column:  'anniversaryDate', value: {
         start: dayjs(start+'T00:00:00.000Z').toDate(),
         end: dayjs(end).toDate()
       }}
@@ -128,7 +121,7 @@ const columns = [
   { key: 'id', label: 'ID' },
   { key: 'fullname', label: 'Nombre',  sortable: true },
   { key: 'address', label: 'DIRECCION'},
-  { key: 'birthday', label: 'FECHA DE NACIMIENTO', sortable: true},
+  { key: 'anniversaryDate', label: 'FECHA DE ASIGNACIÓN', sortable: true},
   { key: 'folder', label: 'CARPETA', sortable: true},
   { key: 'isActive', label: 'ESTATUS', sortable: true},
   { key: 'actions', label: 'ACCIONES'},
@@ -136,9 +129,9 @@ const columns = [
 
 export default function LeaderPage () {
   const loader = useLoaderData<HandlerSuccess<Loader>>();
+  const outlet = useOutlet();
   const [ searchParams , setSearchParams] = useSearchParams();
-  // const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set(['active', 'inactive']));
-  console.log(loader);
+  const [selectedDates, setSelectedDates] = useState<RangeValue<DateValue> | null>(null)
   const navigation = useNavigation();
 
   const loadingState: LoadingState = navigation.state === 'idle' 
@@ -166,20 +159,23 @@ export default function LeaderPage () {
   }, [])
 
   
-  const defaultDates = useMemo(() => {
+  useEffect(() => {
 
-    if(!loader?.serverData?.start || !loader?.serverData?.end) {
-      return null
+    if(!selectedDates && (
+      loader?.serverData.start 
+        || loader?.serverData.end
+    )) {
+      const { start, end } = loader.serverData;
+
+      const newDates = { 
+        start: parseDate(start),
+        end: parseDate(end)
+      }
+      setSelectedDates(newDates);
     }
-
-    const { start, end } = loader.serverData;
-
-    return { 
-      start: parseDate(start),
-      end: parseDate(end)
-    }
-
-  },[loader?.serverData]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loader.serverData.start, loader.serverData.end]);
+  
 
   const defaultStatus: Selection = useMemo(() => {
 
@@ -242,6 +238,7 @@ export default function LeaderPage () {
   const handleDates = (dates: RangeValue<DateValue>) => {
     const start = dayjs(dates.start.toDate('America/Mexico_City')).format('YYYY-MM-DD');
     const end = dayjs(dates.end.toDate('America/Mexico_City')).format('YYYY-MM-DD');
+    setSelectedDates(dates);
 
     setSearchParams((prev) => {
       prev.set("start", start);
@@ -260,7 +257,7 @@ export default function LeaderPage () {
 
   return (
     <>
-    {/* { outlet } */}
+    { outlet }
     <div className='w-full flex gap-2 mt-5 mb-3 flex-wrap justify-between items-center'>
       <DropdownStatus 
         defaultSelectedKeys={defaultStatus}
@@ -289,11 +286,11 @@ export default function LeaderPage () {
         onChange={handleFolderChange}
       />
       <DateRangePicker
-        label="Rango de la  fecha de asignación"
+        label="Rango de la fecha de asignación"
         className="w-full md:max-w-[40%]"
         variant='bordered'
-        defaultValue={defaultDates}
         onChange={handleDates}
+        value={selectedDates}
         aria-label="date ranger picker"
         labelPlacement='outside'
         CalendarBottomContent={
@@ -304,6 +301,7 @@ export default function LeaderPage () {
           variant="ghost"
           color='primary'
           onClick={() => {
+            setSelectedDates(null);
             setSearchParams((prev) => {
               prev.delete("start");
               prev.delete("end");
@@ -314,51 +312,6 @@ export default function LeaderPage () {
           Limpiar
         </Button>}
       />
-{/* 
-      <SelectRoutes 
-        onSelectionChange={handleSelection}
-        selectionMode='multiple'
-        className='w-full md:max-w-[25%]'
-        defaultSelectedKeys={defaultRoutes}
-      />
-      
-      // <Input 
-      //   id='agent'
-      //   name='agent'
-      //   variant='bordered'
-      //   className="w-full md:max-w-[30%]"
-      //   labelPlacement="outside"
-      //   label='Asesor'
-      //   placeholder="Nombre del asesor"
-      //   defaultValue={loader?.serverData?.agent || ''}
-      //   onChange={handleAgentChange}
-      // />
-      <DateRangePicker
-        label="Rango de la  fecha de asignación"
-        className="w-full md:max-w-[40%]"
-        variant='bordered'
-        defaultValue={defaultDates}
-        onChange={handleDates}
-        aria-label="date ranger picker"
-        labelPlacement='outside'
-        CalendarBottomContent={
-        <Button 
-          className="mb-2 ml-2"
-          size="sm" 
-          aria-label="delete_filter_date"
-          variant="ghost"
-          color='primary'
-          onClick={() => {
-            setSearchParams((prev) => {
-              prev.delete("start");
-              prev.delete("end");
-              return prev;
-            }, {preventScrollReset: true});
-          }}
-        >
-          Limpiar
-        </Button>}
-      /> */}
 </div>
     
     <Table 
@@ -386,15 +339,15 @@ export default function LeaderPage () {
     }
     topContent={
         <div className="flex justify-between items-center">
-            {/* <Button
-              href={`/agents/edit?${searchParams.toString()}`}
+            <Button
+              href={`/leaders/create?${searchParams.toString()}`}
               as={Link}
-              endContent={<MdEditCalendar />}
+              endContent={<FaUserPlus />}
               variant="ghost"
               color="secondary" 
             >
-              Asignar Ruta
-            </Button> */}
+              Crear Líder
+            </Button>
             <span className="text-default-400 text-small">
                 Total {loader?.serverData.total || 0 } Líderes
             </span>

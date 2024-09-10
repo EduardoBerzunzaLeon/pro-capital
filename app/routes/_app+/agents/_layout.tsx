@@ -1,7 +1,7 @@
 import { Button, DateRangePicker,  Input, Link, RangeValue, SortDescriptor, Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react";
 import { json, LoaderFunction } from "@remix-run/node";
 import { useLoaderData, useNavigation,  useOutlet, useSearchParams } from "@remix-run/react";
-import React, { ChangeEvent, useCallback, useMemo } from "react";
+import React, { ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { AgentRoute } from "~/.server/domain/entity/agentRoute.entity";
 import { Filter } from "~/.server/domain/interface";
 import { Generic, Key, SortDirection, Selection, LoadingState } from "~/.server/interfaces";
@@ -118,6 +118,7 @@ export default function  AgentsPage()  {
   const [ searchParams , setSearchParams] = useSearchParams();
   const outlet = useOutlet();
   const navigation = useNavigation();
+  const [selectedDates, setSelectedDates] = useState<RangeValue<DateValue> | null>(null)
 
   const loadingState: LoadingState = navigation.state === 'idle' 
     ? 'idle' : 'loading';
@@ -163,20 +164,23 @@ export default function  AgentsPage()  {
 
   },[loader?.serverData?.routes]);
 
-  const defaultDates = useMemo(() => {
 
-    if(!loader?.serverData?.start || !loader?.serverData?.end) {
-      return null
+  useEffect(() => {
+
+    if(!selectedDates && (
+      loader?.serverData.start 
+        || loader?.serverData.end
+    )) {
+      const { start, end } = loader.serverData;
+
+      const newDates = { 
+        start: parseDate(start),
+        end: parseDate(end)
+      }
+      setSelectedDates(newDates);
     }
-
-    const { start, end } = loader.serverData;
-
-    return { 
-      start: parseDate(start),
-      end: parseDate(end)
-    }
-
-  },[loader?.serverData]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loader.serverData.start, loader.serverData.end]);
   
 
   const handlePagination = (page: number) => {
@@ -235,6 +239,8 @@ export default function  AgentsPage()  {
 
   const handleDates = (dates: RangeValue<DateValue>) => {
 
+    setSelectedDates(dates);
+
     const start = dayjs(dates.start.toDate('America/Mexico_City')).format('YYYY-MM-DD');
     const end = dayjs(dates.end.toDate('America/Mexico_City')).format('YYYY-MM-DD');
 
@@ -272,8 +278,9 @@ export default function  AgentsPage()  {
         label="Rango de la  fecha de asignación"
         className="w-full md:max-w-[40%]"
         variant='bordered'
-        defaultValue={defaultDates}
+        // defaultValue={defaultDates}
         onChange={handleDates}
+        value={selectedDates}
         aria-label="date ranger picker"
         labelPlacement='outside'
         CalendarBottomContent={
@@ -284,11 +291,12 @@ export default function  AgentsPage()  {
           variant="ghost"
           color='primary'
           onClick={() => {
+            setSelectedDates(null);
             setSearchParams((prev) => {
               prev.delete("start");
               prev.delete("end");
               return prev;
-            }, {preventScrollReset: true});
+            }, { preventScrollReset: true });
           }}
         >
           Limpiar

@@ -5,19 +5,21 @@
 
 
 # UI:
-    - Verificar como usar Await and defer de remix para el uso de skeleton al renderizar una página.
-    - Intentar implementar skeleton cada vez que inicia la carga de una nueva pagina
+    - Agregar el isActive en carpeta y en su tabla crud
+    -- Bug en folder ya que lideres es un arreglo, debe traer solo la lider activa
     - Separar la logica de agents Page
     - Crear componentes filters
     - Verificar si es factible crear un componente tabla generica
-    - ponerle un estilo de loader en el navlink cuando cambia de pagina
     - separar la logica del autocomplete multiple
-    - cambiar el color de todo la app segun el thema sin necesidad de forzarlo con red-dark
-    - verificar el color de las secciones
     - añadir el breadcrumb
     - Cambiar el ROW PER PAGE por un select de nextui
+    - Solucionar el bug donde si recargo la pagina pero cambie el row per page no se modifica
+    - Cambiar el idioma en los calendarios
     - Acomodar la interfaz de ROUTES PAGE
-    - Soluciopnar el bug donde si recargo la pagina pero cambie el row per page no se modifica
+    - Acomodar la UI de la seccion de lideres
+    - verificar el color de los dialogs
+    - cambiar el color de todo la app segun el thema sin necesidad de forzarlo con red-dark
+    - ponerle un estilo de loader en el navlink cuando cambia de pagina
     
 
 # SERVER:

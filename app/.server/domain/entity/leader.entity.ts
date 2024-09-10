@@ -7,7 +7,7 @@ export interface LeaderI {
     fullname: string,
     curp: string,
     address: string,
-    birthday: Date,
+    anniversaryDate: Date,
     folder: FolderI,
     isActive: boolean
 }
@@ -18,7 +18,7 @@ export class Leader {
     public readonly fullname: string;
     public readonly curp: string;
     public readonly address: string;
-    public readonly birthday: string;
+    public readonly anniversaryDate: string;
     public readonly folder: FolderI;
     public readonly isActive: boolean;
 
@@ -27,7 +27,7 @@ export class Leader {
         fullname,
         curp,
         address,
-        birthday,
+        anniversaryDate,
         folder,
         isActive,
     }: Leader) {
@@ -35,7 +35,7 @@ export class Leader {
         this.fullname = fullname;
         this.curp = curp;
         this.address = address;
-        this.birthday = birthday;
+        this.anniversaryDate = anniversaryDate;
         this.folder = folder;
         this.isActive = isActive;
     }
@@ -51,7 +51,7 @@ export class Leader {
             fullname,
             curp,
             address,
-            birthday,
+            anniversaryDate,
             folder,
             isActive,
         } = leader;
@@ -60,10 +60,10 @@ export class Leader {
         if(!id || typeof id !== 'number') throw ServerError.badRequest('El ID es requerido');
         if(!curp || typeof curp !== 'string' ) throw ServerError.badRequest('El CURP es requerido');
         if(!address || typeof address !== 'string' ) throw ServerError.badRequest('La dirección es requerido');
-        if(!birthday || !(birthday instanceof Date) ) throw ServerError.badRequest('La fecha de cumpleños es requerido');
+        if(!anniversaryDate || !(anniversaryDate instanceof Date) ) throw ServerError.badRequest('La fecha de cumpleños es requerido');
         if(!folder || !folder.name ) throw ServerError.badRequest('La carpeta es requerida');
         if(!isActive || typeof isActive !== 'boolean' ) throw ServerError.badRequest('La estatus es requerido');
-        const birthdayFormatted = dayjs(birthday).add(1, 'day').format('YYYY-MM-DD'); 
+        const anniversaryDateFormatted = dayjs(anniversaryDate).add(1, 'day').format('YYYY-MM-DD'); 
 
 
         return new Leader({
@@ -71,7 +71,7 @@ export class Leader {
             fullname,
             curp,
             address,
-            birthday: birthdayFormatted,
+            anniversaryDate: anniversaryDateFormatted,
             folder,
             isActive
         })

@@ -5,7 +5,9 @@ export const id = z.coerce.number({
     invalid_type_error: "ID debe ser un número",
 })
 .int({ message: 'ID debe ser entero' })
-.nonnegative({ message: 'ID debe ser positivo'});
+.gte(1, 'El ID tiene que ser mayor que 0')
+.nonnegative({ message: 'ID debe ser positivo'})
+
 
 interface AlphabetBuilder {
     requiredText: string,
@@ -24,7 +26,7 @@ export const alphabetBuilder = ({
 .toLowerCase()
 .min(2, `${minText} debe tener minimo dos letras`)
 .refine(
-    (value) => /^[A-Za-z]+$/.test(value ?? ""), 
+    (value) =>  /^[a-zA-Z ]*$/.test(value ?? ""), 
     `${extraText} solo debe tener caracteres del alfabeto`);
 
 
@@ -38,8 +40,8 @@ export const curp = z.string({
     invalid_type_error: "CURP invalido",
     required_error: "Requerido",
 }).trim()
-.toLowerCase()
-.length(18)
+.toUpperCase()
+.length(18, 'La CURP debe ser de 18 caracteres')
 .refine(
     (value) => {
 
@@ -59,7 +61,6 @@ export const curp = z.string({
             if (lngDigit == 10) return 0;
             return lngDigit;
         }
-      
         return Number(validate[2]) === verify(validate[1]);
     }, 
     'La estructura del CURP no es valida'
@@ -72,7 +73,7 @@ export const alphabet = z.string({
 }).trim()
 .toLowerCase()
 .refine(
-    (value) => /^[A-Za-z]+$/.test(value ?? ""), 
+    (value) => /^[a-zA-Z ]*$/.test(value ?? ""), 
     'El nombre solo debe tener caracteres del alfabeto'
 )
 

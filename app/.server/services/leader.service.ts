@@ -6,7 +6,7 @@ import { PaginationWithFilters } from "../domain/interface";
 import { RequestId } from "../interfaces";
 import { validationConform, validationZod } from "./validation.service";
 import { ServerError } from "../errors";
-import { CreateLeaderSchema, UnsubscribeLeaderSchema } from "~/schemas/leaderSchema";
+import { CreateLeaderServerSchema, UnsubscribeLeaderSchema } from "~/schemas/leaderSchema";
 
 
 export const findAll = async (props: PaginationWithFilters) => {
@@ -48,9 +48,9 @@ const verifyMutation = async (form: FormData) => {
         name,
         lastNameFirst,
         lastNameSecond,
-        folderId,
+        folder: folderId,
         ...restProps
-    } = validationConform(form, CreateLeaderSchema);
+    } = validationConform(form, CreateLeaderServerSchema);
 
     const fullname = Service.utils.concatFullname({
         name, lastNameFirst, lastNameSecond

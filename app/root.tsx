@@ -69,7 +69,10 @@ export default function App() {
       </head>
       <body className='overflow-x-hidden'>
 
-        <NextUIProvider navigate={navigate}>
+        <NextUIProvider 
+          navigate={navigate}
+          locale='es-MX'
+        >
 
           <div className='red-dark text-foreground bg-content1 w-screen max-h-max min-h-screen'>
             <AnimatePresence mode="wait" initial={false}>

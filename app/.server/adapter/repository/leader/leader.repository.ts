@@ -7,20 +7,6 @@ export function LeaderRepository(base: BaseLeaderI): LeaderRepositoryI {
 
     async function findAll(paginationData: PaginationWithFilters) {
 
-        // const data = await db.leader.findMany({
-        //     where: {
-        //        birthday: {
-        //            getDate(): {
-        //             readonly: true
-        //            }
-   
-        //        }
-        //     }
-        //    })
-   
-        //    console.log({data});
-
-           
         return await base.findManyPaginator({
             paginatonWithFilter: paginationData,
             select: {
@@ -28,7 +14,7 @@ export function LeaderRepository(base: BaseLeaderI): LeaderRepositoryI {
                 fullname: true,
                 curp: true,
                 address: true,
-                birthday: true,
+                anniversaryDate: true,
                 folder: {
                     select: {
                         name: true,
@@ -40,7 +26,7 @@ export function LeaderRepository(base: BaseLeaderI): LeaderRepositoryI {
     }
 
     async function findOne(id: number) {
-        return await  base.findOne(
+        return await base.findOne(
             { 
                 id,
             }, 

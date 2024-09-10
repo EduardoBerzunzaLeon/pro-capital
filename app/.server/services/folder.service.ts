@@ -20,6 +20,11 @@ export const findAll = async (props: PaginationWithFilters) => {
     });
 }
 
+export const findAutocomplete = async (name: string) => {
+    const folder = await Repository.folder.findAutocomplete(name);
+    return Service.dto.autocompleteMapper('id', 'name', folder);
+}
+
 export const findOne = async (id: RequestId) => {
     const { id: folderId } = validationZod({ id }, idSchema);
     const folder =  await Repository.folder.findOne(folderId);
@@ -121,5 +126,6 @@ export default {
     updateOne,
     deleteOne,
     createOne,
-    findNextConsecutive
+    findNextConsecutive,
+    findAutocomplete
 }

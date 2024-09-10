@@ -14,7 +14,15 @@ export function FolderRepository(base: BaseFolderI) : FolderRepositoryI {
 
         return consecutive ?? 0;
     }
+    
+    async function findAutocomplete(name: string)  {
+        return await base.findMany({
+            searchParams: { name: { contains: name } },
+            select: { id: true, name: true }
+        });
+    }
 
+    // TODO: traer solo las lideres activas
     async function findAll( paginationData: PaginationWithFilters ) {
         return await base.findManyPaginator({
                 paginatonWithFilter: paginationData,
@@ -107,6 +115,7 @@ export function FolderRepository(base: BaseFolderI) : FolderRepositoryI {
         findLastConsecutive,
         findAll,
         findOne,
+        findAutocomplete,
         findCountGroups,
         updateOne,
         deleteOne,

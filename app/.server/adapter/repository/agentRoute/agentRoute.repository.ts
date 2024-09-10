@@ -58,8 +58,6 @@ export function AgentRouteRepository(base: BaseAgentRouteI): AgentRouteRepositor
 
     async function findAgents(fullname: string, assignAt: Date) {
 
-        console.log(assignAt);
-
         return await db.user.findMany({
             where: {
                 role: {

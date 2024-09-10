@@ -19,9 +19,19 @@ export const CreateLeaderSchema = z.object({
     lastNameSecond: lastNameLast,
     curp,
     address: stringSchema('La dirección'),
-    folderId: id,
     birthday: dateSchema('Fecha de cumpleaños'),
     anniversaryDate: dateSchema('Fecha de alta'),
+}); 
+
+export const CreateLeaderServerSchema = z.object({
+    name,
+    lastNameFirst: lastNameFirst,
+    lastNameSecond: lastNameLast,
+    curp,
+    address: stringSchema('La dirección'),
+    birthday: dateSchema('Fecha de cumpleaños'),
+    anniversaryDate: dateSchema('Fecha de alta'),
+    folder: id
 }); 
 
 export const UnsubscribeLeaderSchema = z.object({
