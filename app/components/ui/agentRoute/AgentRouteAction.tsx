@@ -15,7 +15,7 @@ export function AgentRouteAction({ idAgentRoute }: Props)  {
        
     return (
         <Action 
-            ariaLabel="agen routes actions"
+            ariaLabel="agent routes actions"
             onDelete={handleDelete}
             isLoading={isDeleting}
         />

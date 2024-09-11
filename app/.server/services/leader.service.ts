@@ -24,7 +24,7 @@ export const findAll = async (props: PaginationWithFilters) => {
 export const findOne = async (id: RequestId) => {
     const { id: leaderId } = validationZod({ id }, idSchema);
     const leader =  await Repository.leader.findOne(leaderId);
-    if(!leader) throw ServerError.notFound('No se encontro la carpeta');
+    if(!leader) throw ServerError.notFound('No se encontro la líder');
     return leader;
 }
 
@@ -34,12 +34,13 @@ const verifyIfHasFolder = async (folderId: number) => {
     if(leader) {
         throw ServerError.badRequest(`El ${leader.folder.name} ya esta asignado a otra lider`)
     }
-
+    
     return false;
 }
 
 const verifyIfHasOwnFolder = async (folderId: number, leaderId: number) => {
     const leader = await Repository.leader.findIfHasOwnFolder(folderId, leaderId);
+    console.log({leader});
     return !!leader;
 }
 

@@ -43,6 +43,7 @@ export const AutocompleteCombobox = ({
 
     // TODO: mover esto al handlechange a ver que sucede 
     useEffect(() => {
+        console.log({query})
         submit({ data: query }, { action: actionRoute });
    }, [actionRoute, query, submit]);
 

@@ -2,26 +2,26 @@ import { Action } from "../Action/Action";
 import { useFetcherAction } from "~/application";
 
 interface Props {
-    idFolder: number,
+    leaderId: number,
     onOpenEdit: () => void
 }
 
-export function FolderAction({ idFolder, onOpenEdit }: Props)  {
+export function LeaderAction({ leaderId, onOpenEdit }: Props)  {
 
-    const { handleUpdate, handleDelete, isDeleting } = useFetcherAction({ 
-        key: 'getFolder', 
-        route:'folder', 
-        id: idFolder
+    const { handleDelete, isDeleting, handleUpdate } = useFetcherAction({ 
+        key: 'getLeader', 
+        route: 'leaders', 
+        id: leaderId
      });
-        
-    const handleUpdateWithModal = () => {
+
+     const handleUpdateWithModal = () => {
         onOpenEdit();
         handleUpdate();
     }
-    
+       
     return (
         <Action 
-            ariaLabel="folders action"
+            ariaLabel="leaders action"
             onUpdate={handleUpdateWithModal}
             onDelete={handleDelete}
             isLoading={isDeleting}

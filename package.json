@@ -10,7 +10,8 @@
     "start": "remix-serve ./build/server/index.js",
     "typecheck": "tsc",
     "prisma_push": "npx prisma db push",
-    "prisma_migrate": "npx prisma migrate dev"
+    "prisma_migrate": "npx prisma migrate dev",
+    "prisma_help": "npx prisma migrate dev"
   },
   "dependencies": {
     "@conform-to/react": "^1.1.5",

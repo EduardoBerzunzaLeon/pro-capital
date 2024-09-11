@@ -11,7 +11,6 @@ import { Service } from "~/.server/services";
 import { InputValidation } from "~/components/ui";
 import { AutocompleteCombobox } from "~/components/ui/forms/Autocomplete";
 import { CreateLeaderSchema } from "~/schemas/leaderSchema";
-import {I18nProvider} from "@react-aria/i18n";
 
 export const action: ActionFunction = async({ request }) => {
   const formData = await request.formData();
@@ -47,8 +46,7 @@ export default function CreateLeader() {
       shouldValidate: 'onSubmit',
       shouldRevalidate: 'onInput',
     }); 
-    
-    console.log({error: form.allErrors})
+  
     const onClose = () => {
         navigate(-1)
     }
@@ -71,62 +69,60 @@ export default function CreateLeader() {
               >
               <ModalHeader className="flex flex-col gap-1">Crear Líder</ModalHeader>
               <ModalBody>
-              <InputValidation
-                  label="Nombre(s)"
-                  placeholder="Ingresa el/los nombre(s)"
-                  metadata={fields.name}
-              />
-              <InputValidation
-                  label="Primer Apellido"
-                  placeholder="Ingresa el primer apellido"
-                  metadata={fields.lastNameFirst}
-              />
-              <InputValidation
-                  label="Segundo Apellido"
-                  placeholder="Ingresa el segundo apellido"
-                  metadata={fields.lastNameSecond}
-              />
-              <InputValidation
-                  label="Dirección"
-                  placeholder="Ingresa la dirección"
-                  metadata={fields.address}
-              />
-              <InputValidation
-                  label="CURP"
-                  placeholder="Ingresa la CURP"
-                  metadata={fields.curp}
-              />
-              <DatePicker 
-                  label="Fecha de nacimiento" 
-                  showMonthAndYearPickers
-                  variant='bordered' 
-                  id='birthday'
-                  key={fields.birthday.key}
-                  name={fields.birthday.name}
-                  isInvalid={!!fields.birthday.errors}
-                  errorMessage={fields.birthday.errors}
-                  granularity="day"
-               />
-                     <I18nProvider locale="es-MX">
-                      <DatePicker 
-                          label="Fecha de asignación" 
-                          variant='bordered' 
-                          id='anniversaryDate'
-                          key={fields.anniversaryDate.key}
-                          name={fields.anniversaryDate.name}
-                          isInvalid={!!fields.anniversaryDate.errors}
-                          errorMessage={fields.anniversaryDate.errors}
-                          defaultValue={today(getLocalTimeZone()).subtract({ days: 1 })}
-                          granularity="day"
-                      />
-                     </I18nProvider>
-                <AutocompleteCombobox 
-                  keyFetcher='findFolderAutocomplete' 
-                  actionRoute='/folder/search' 
-                  label='Carpeta' 
-                  comboBoxName='folder' 
-                  placeholder='Ingresa la carpeta'       
+                <InputValidation
+                    label="Nombre(s)"
+                    placeholder="Ingresa el/los nombre(s)"
+                    metadata={fields.name}
                 />
+                <InputValidation
+                    label="Primer Apellido"
+                    placeholder="Ingresa el primer apellido"
+                    metadata={fields.lastNameFirst}
+                />
+                <InputValidation
+                    label="Segundo Apellido"
+                    placeholder="Ingresa el segundo apellido"
+                    metadata={fields.lastNameSecond}
+                />
+                <InputValidation
+                    label="Dirección"
+                    placeholder="Ingresa la dirección"
+                    metadata={fields.address}
+                />
+                <InputValidation
+                    label="CURP"
+                    placeholder="Ingresa la CURP"
+                    metadata={fields.curp}
+                />
+                <DatePicker 
+                    label="Fecha de nacimiento" 
+                    variant='bordered' 
+                    id='birthday'
+                    key={fields.birthday.key}
+                    name={fields.birthday.name}
+                    isInvalid={!!fields.birthday.errors}
+                    errorMessage={fields.birthday.errors}
+                    granularity="day"
+                />
+                  <DatePicker 
+                      label="Fecha de asignación" 
+                      variant='bordered' 
+                      id='anniversaryDate'
+                      key={fields.anniversaryDate.key}
+                      name={fields.anniversaryDate.name}
+                      isInvalid={!!fields.anniversaryDate.errors}
+                      errorMessage={fields.anniversaryDate.errors}
+                      defaultValue={today(getLocalTimeZone()).subtract({ days: 1 })}
+                      granularity="day"
+                  />
+                  <AutocompleteCombobox 
+                    keyFetcher='findFolderAutocomplete' 
+                    actionRoute='/folder/search' 
+                    label='Carpeta' 
+                    comboBoxName='folder' 
+                    placeholder='Ingresa la carpeta'       
+                  />
+                  
               </ModalBody>
               <ModalFooter>
                 <Button color="danger" variant="light" onPress={onClose} type='button'>

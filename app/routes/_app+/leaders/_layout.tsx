@@ -8,9 +8,9 @@ import { Leader } from "~/.server/domain/entity";
 import { useLoaderData, useNavigation, useOutlet, useSearchParams } from "@remix-run/react";
 import { HandlerSuccess } from "~/.server/reponses";
 import { ChangeEvent, useCallback, useEffect, useMemo, useState} from "react";
-import { Button, Chip, DateRangePicker, Input, Link, RangeValue, SortDescriptor, Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react";
+import { Button, Chip,  DateRangePicker, Input, Link, RangeValue, SortDescriptor, Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, useDisclosure } from "@nextui-org/react";
 import { ClientOnly } from "remix-utils/client-only";
-import { DropdownStatus, Pagination, RowPerPage } from "~/components/ui";
+import { DropdownStatus, LeaderAction, ModalLeaderEdit, Pagination, RowPerPage } from "~/components/ui";
 import { DateValue, parseDate } from "@internationalized/date";
 import { FaUserPlus } from "react-icons/fa";
 
@@ -133,13 +133,15 @@ export default function LeaderPage () {
   const [ searchParams , setSearchParams] = useSearchParams();
   const [selectedDates, setSelectedDates] = useState<RangeValue<DateValue> | null>(null)
   const navigation = useNavigation();
+  const { isOpen, onOpenChange, onOpen } = useDisclosure();
+  
 
   const loadingState: LoadingState = navigation.state === 'idle' 
     ? 'idle' : 'loading';
   
   const renderCell = useCallback((leader: Leader, columnKey: Key) => {
     if(columnKey === 'actions') {
-      return (<span>Acciones</span>)
+      return (<LeaderAction leaderId={leader.id} onOpenEdit={onOpen} />)
     } 
     
     if(columnKey === 'folder') {
@@ -312,8 +314,8 @@ export default function LeaderPage () {
           Limpiar
         </Button>}
       />
-</div>
-    
+    </div>
+    <ModalLeaderEdit isOpen={isOpen} onOpenChange={onOpenChange} />
     <Table 
     aria-label="Municipalities table"
     onSortChange={handleSort}

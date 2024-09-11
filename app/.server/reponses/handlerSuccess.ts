@@ -104,8 +104,8 @@ export const handlerAutocomplete = async <T>(urlText: string, serviceCB: (arg: s
     try {
 
         const url = new URL(urlText);
-        const data = url.searchParams.get('data') || '';    
-
+        const data = url.searchParams.get('data') || ''; 
+    
         if(data.length === 0){
             return [];
         }
@@ -114,6 +114,7 @@ export const handlerAutocomplete = async <T>(urlText: string, serviceCB: (arg: s
         return handlerSuccess(200, dataDB);
 
     } catch (error) {
+        console.log({error});
         return handlerSuccess(200, []);
     }
     

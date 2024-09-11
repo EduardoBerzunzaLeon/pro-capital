@@ -88,10 +88,11 @@ export const stringSchema = (requiredText: string) =>  z.string({
 }).trim()
 .toLowerCase();
 
-export const dateSchema = (requiredText: string) => z.date({
+export const dateSchema = (requiredText: string) => z.coerce.date({
     invalid_type_error: `${requiredText} invalido`,
     required_error: "Requerido",
 })
+// export const dateSchema = (requiredText?: string) => z.string().pipe(z.coerce.date())
 
 export const idSchema = z.object({ id });
 export const nameSchema = z.object({ name });

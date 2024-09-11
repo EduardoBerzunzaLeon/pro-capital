@@ -27,14 +27,13 @@ export function LeaderRepository(base: BaseLeaderI): LeaderRepositoryI {
 
     async function findOne(id: number) {
         return await base.findOne(
-            { 
-                id,
-            }, 
+            { id }, 
             {
                 id: true,
                 name: true,
                 lastNameFirst: true,
                 lastNameSecond: true,
+                fullname: true,
                 curp: true,
                 address: true,
                 birthday: true,
@@ -58,15 +57,15 @@ export function LeaderRepository(base: BaseLeaderI): LeaderRepositoryI {
         return await base.findOne({
             isActive: true,
             folderId
-        }, { name: true, id: true });
+        }, { name: true, id: true, folderId: true, folder: true });
     }
 
     async function findIfHasOwnFolder(folderId: number, leaderId: number) {
         return await base.findOne({
             isActive: true,
             folderId,
-            id: { not: leaderId }
-        }, { name: true, id: true });
+            id: leaderId 
+        }, { name: true, id: true, folder: true });
     }
 
     async function deleteOne( id: number) {

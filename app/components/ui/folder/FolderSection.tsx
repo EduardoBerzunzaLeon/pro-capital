@@ -1,14 +1,13 @@
 import {  useCallback, useEffect, useState } from "react";
 
 import { Input,  Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, useDisclosure } from "@nextui-org/react";
-
 import { Pagination, RowPerPage } from "..";
 import { FaSearch } from "react-icons/fa";
 import { Folder } from "~/.server/domain/entity/folder.entity";
 import { FolderAction } from "./FolderAction";
 import { FolderButtonAdd } from "./FolderButtonAdd";
-import { ModalFolderEdit } from "./ModalFolderEdit";
 import { useFetcherPaginator } from "~/application";
+import { ModalFolderEdit } from "./ModalFolderEdit";
 
 export type Key = string | number;
 
