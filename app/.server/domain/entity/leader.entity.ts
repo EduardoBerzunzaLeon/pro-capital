@@ -62,7 +62,7 @@ export class Leader {
         if(!address || typeof address !== 'string' ) throw ServerError.badRequest('La dirección es requerido');
         if(!anniversaryDate || !(anniversaryDate instanceof Date) ) throw ServerError.badRequest('La fecha de cumpleños es requerido');
         if(!folder || !folder.name ) throw ServerError.badRequest('La carpeta es requerida');
-        if(!isActive || typeof isActive !== 'boolean' ) throw ServerError.badRequest('La estatus es requerido');
+        if( typeof isActive !== 'boolean' ) throw ServerError.badRequest('La estatus es requerido');
         const anniversaryDateFormatted = dayjs(anniversaryDate).add(1, 'day').format('YYYY-MM-DD'); 
 
 

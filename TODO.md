@@ -15,7 +15,6 @@
     - Cambiar el ROW PER PAGE por un select de nextui
     - Solucionar el bug donde si recargo la pagina pero cambie el row per page no se modifica
     - Cambiar el idioma en los calendarios
-    - Acomodar la interfaz de ROUTES PAGE
     - Acomodar la UI de la seccion de lideres
     - verificar el color de los dialogs
     - cambiar el color de todo la app segun el thema sin necesidad de forzarlo con red-dark

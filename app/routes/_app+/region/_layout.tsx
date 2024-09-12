@@ -5,12 +5,12 @@ export default function RegionPage() {
 
   return (
     <div className='w-full flex gap-2 flex-col'>
-      <RouteSection />
       <FolderSection />
+      <TownSection />
       
       <div className='flex gap-2 flex-wrap justify-between'>
+        <RouteSection />
         <MunicipalitySection />
-        <TownSection />
       </div>
     </div>
   )

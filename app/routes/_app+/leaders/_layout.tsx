@@ -10,7 +10,7 @@ import { HandlerSuccess } from "~/.server/reponses";
 import { ChangeEvent, useCallback, useEffect, useMemo, useState} from "react";
 import { Button, Chip,  DateRangePicker, Input, Link, RangeValue, SortDescriptor, Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, useDisclosure } from "@nextui-org/react";
 import { ClientOnly } from "remix-utils/client-only";
-import { DropdownStatus, LeaderAction, ModalLeaderEdit, Pagination, RowPerPage } from "~/components/ui";
+import { DropdownStatus, LeaderAction, LeaderToggleActive, ModalLeaderEdit, ModalsToggle, Pagination, RowPerPage } from "~/components/ui";
 import { DateValue, parseDate } from "@internationalized/date";
 import { FaUserPlus } from "react-icons/fa";
 
@@ -131,17 +131,31 @@ export default function LeaderPage () {
   const loader = useLoaderData<HandlerSuccess<Loader>>();
   const outlet = useOutlet();
   const [ searchParams , setSearchParams] = useSearchParams();
-  const [selectedDates, setSelectedDates] = useState<RangeValue<DateValue> | null>(null)
+  const [selectedDates, setSelectedDates] = useState<RangeValue<DateValue> | null>(null);
+  const [selectedId, setSelectedId] = useState<number>(0);
   const navigation = useNavigation();
   const { isOpen, onOpenChange, onOpen } = useDisclosure();
-  
 
+
+  console.log({selectedId, al: 'render'});
   const loadingState: LoadingState = navigation.state === 'idle' 
     ? 'idle' : 'loading';
   
   const renderCell = useCallback((leader: Leader, columnKey: Key) => {
     if(columnKey === 'actions') {
-      return (<LeaderAction leaderId={leader.id} onOpenEdit={onOpen} />)
+      return (
+        <div className='flex justify-center items-center gap-1'>
+          <LeaderToggleActive 
+              leaderId={leader.id}
+              isActive={leader.isActive}
+              handlePress={setSelectedId}
+          />
+          <LeaderAction 
+            leaderId={leader.id} 
+            onOpenEdit={onOpen} 
+          />
+        </div>
+      )
     } 
     
     if(columnKey === 'folder') {
@@ -236,7 +250,6 @@ export default function LeaderPage () {
     })
   }
 
-  
   const handleDates = (dates: RangeValue<DateValue>) => {
     const start = dayjs(dates.start.toDate('America/Mexico_City')).format('YYYY-MM-DD');
     const end = dayjs(dates.end.toDate('America/Mexico_City')).format('YYYY-MM-DD');
@@ -256,10 +269,13 @@ export default function LeaderPage () {
       return prev;
     })
   }
-
   return (
     <>
     { outlet }
+    <ModalsToggle 
+      leaderId={selectedId}
+      handleSelectedId={setSelectedId}
+    />
     <div className='w-full flex gap-2 mt-5 mb-3 flex-wrap justify-between items-center'>
       <DropdownStatus 
         defaultSelectedKeys={defaultStatus}

@@ -13,7 +13,7 @@ type Column = 'name' | 'id';
 
 const columns = [
   { key: 'id', label: 'ID' },
-  { key: 'name', label: 'NOMBRE',  sortable: true },
+  { key: 'name', label: 'NOMBRE',  sortable: true }, 
   { key: 'municipality', label: 'MUNICIPIO', sortable: true },
   { key: 'actions', label: 'ACCIONES'},
 ]
@@ -72,7 +72,7 @@ export function TownSection() {
       }, [])
 
     return (
-        <div className='w-full md:max-w-[48%]'>
+        <div className='w-full'>
         <div className='w-full flex gap-2 mt-5 mb-3 flex-wrap justify-between'>
         <Input
             isClearable

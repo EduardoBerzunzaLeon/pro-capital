@@ -54,6 +54,7 @@ export function ModalLeaderEdit({
         placement="top-center"
         className='red-dark text-foreground bg-content1'
         isDismissable={false}
+        scrollBehavior='outside'
       >
         <ModalContent>
           {(onClose) => (

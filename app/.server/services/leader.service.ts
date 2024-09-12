@@ -114,9 +114,10 @@ export const resubscribe = async (id: RequestId, folderId: RequestId) => {
     return await Repository.leader.resubscribe(leaderIdVal, folderIdVal);
 } 
 
-export const unsubscribe = async (id: number, form: FormData) => {
+export const unsubscribe = async (id: RequestId, form: FormData) => {
+    const { id: leaderId } = validationZod({ id }, idSchema);
     const { date, reason } = validationConform(form, UnsubscribeLeaderSchema);
-    return await Repository.leader.unsubscribe(id, date, reason);
+    return await Repository.leader.unsubscribe(leaderId, date, reason);
 }
 
 export default {

@@ -38,6 +38,7 @@ export function LeaderRepository(base: BaseLeaderI): LeaderRepositoryI {
                 address: true,
                 birthday: true,
                 anniversaryDate: true,
+                isActive: true,
                 folder: {
                     select: {
                         id: true,

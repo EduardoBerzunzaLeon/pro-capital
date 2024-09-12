@@ -25,8 +25,6 @@ export const action: ActionFunction = async ({ params, request }) => {
     const data = Object.fromEntries(formData);
     const id = params.leaderId;
 
-    console.log({data,id});
-
     try {
       
         if(data._action === 'update') {
@@ -38,6 +36,16 @@ export const action: ActionFunction = async ({ params, request }) => {
         if(data._action === 'delete') {
           await Service.leader.deleteOne(id);
           return handlerSuccessWithToast('delete');
+        }
+
+        if(data._action === 'subscribe') {
+          await Service.leader.resubscribe(id, Number(data['folder[id]']));
+          return handlerSuccessWithToast('update', 'La lider');
+        }
+        
+        if(data._action === 'unsubscribe') {
+          await Service.leader.unsubscribe(id, formData);
+          return handlerSuccessWithToast('update', 'La lider');
         }
   
         return redirectWithWarning("/", "Entrada a una ruta de manera invalida");
