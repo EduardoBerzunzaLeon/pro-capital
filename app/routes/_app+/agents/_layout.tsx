@@ -118,7 +118,7 @@ export default function  AgentsPage()  {
   const [ searchParams , setSearchParams] = useSearchParams();
   const outlet = useOutlet();
   const navigation = useNavigation();
-  const [selectedDates, setSelectedDates] = useState<RangeValue<DateValue> | null>(null)
+  const [ selectedDates, setSelectedDates ] = useState<RangeValue<DateValue> | null>(null)
 
   const loadingState: LoadingState = navigation.state === 'idle' 
     ? 'idle' : 'loading';

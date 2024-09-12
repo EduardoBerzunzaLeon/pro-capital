@@ -19,6 +19,7 @@
     - verificar el color de los dialogs
     - cambiar el color de todo la app segun el thema sin necesidad de forzarlo con red-dark
     - ponerle un estilo de loader en el navlink cuando cambia de pagina
+    -- add prettier
     
 
 # SERVER:

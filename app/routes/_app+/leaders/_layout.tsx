@@ -7,11 +7,10 @@ import { getEmptyPagination } from "~/.server/reponses/handlerError";
 import { Leader } from "~/.server/domain/entity";
 import { useLoaderData, useNavigation, useOutlet, useSearchParams } from "@remix-run/react";
 import { HandlerSuccess } from "~/.server/reponses";
-import { ChangeEvent, useCallback, useEffect, useMemo, useState} from "react";
-import { Button, Chip,  DateRangePicker, Input, Link, RangeValue, SortDescriptor, Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, useDisclosure } from "@nextui-org/react";
+import { ChangeEvent, useCallback, useMemo, useState} from "react";
+import { Button, Chip,  Input, Link, SortDescriptor, Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, useDisclosure } from "@nextui-org/react";
 import { ClientOnly } from "remix-utils/client-only";
-import { DropdownStatus, LeaderAction, LeaderToggleActive, ModalLeaderEdit, ModalsToggle, Pagination, RowPerPage } from "~/components/ui";
-import { DateValue, parseDate } from "@internationalized/date";
+import { DropdownStatus, LeaderAction, LeaderToggleActive, ModalLeaderEdit, ModalsToggle, Pagination, RangePickerDateFilter, RowPerPage } from "~/components/ui";
 import { FaUserPlus } from "react-icons/fa";
 
 const columnsFilter = ['curp', 'fullname', 'anniversaryDate', 'isActive', 'folder.name'];
@@ -131,13 +130,10 @@ export default function LeaderPage () {
   const loader = useLoaderData<HandlerSuccess<Loader>>();
   const outlet = useOutlet();
   const [ searchParams , setSearchParams] = useSearchParams();
-  const [selectedDates, setSelectedDates] = useState<RangeValue<DateValue> | null>(null);
   const [selectedId, setSelectedId] = useState<number>(0);
   const navigation = useNavigation();
   const { isOpen, onOpenChange, onOpen } = useDisclosure();
 
-
-  console.log({selectedId, al: 'render'});
   const loadingState: LoadingState = navigation.state === 'idle' 
     ? 'idle' : 'loading';
   
@@ -173,25 +169,6 @@ export default function LeaderPage () {
     return <span className="capitalize">{leader[columnKey as never]}</span>
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-
-  
-  useEffect(() => {
-
-    if(!selectedDates && (
-      loader?.serverData.start 
-        || loader?.serverData.end
-    )) {
-      const { start, end } = loader.serverData;
-
-      const newDates = { 
-        start: parseDate(start),
-        end: parseDate(end)
-      }
-      setSelectedDates(newDates);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loader.serverData.start, loader.serverData.end]);
-  
 
   const defaultStatus: Selection = useMemo(() => {
 
@@ -250,18 +227,6 @@ export default function LeaderPage () {
     })
   }
 
-  const handleDates = (dates: RangeValue<DateValue>) => {
-    const start = dayjs(dates.start.toDate('America/Mexico_City')).format('YYYY-MM-DD');
-    const end = dayjs(dates.end.toDate('America/Mexico_City')).format('YYYY-MM-DD');
-    setSelectedDates(dates);
-
-    setSearchParams((prev) => {
-      prev.set("start", start);
-      prev.set("end", String(end));
-      return prev;
-    }, {preventScrollReset: true});
-  }
-
   const handleStatusChange = (keys: Selection) => {
     const data = JSON.stringify(Array.from(keys).map(value => value === 'active'));
     setSearchParams(prev => {
@@ -303,32 +268,12 @@ export default function LeaderPage () {
         defaultValue={loader?.serverData?.folder.name || ''}
         onChange={handleFolderChange}
       />
-      <DateRangePicker
-        label="Rango de la fecha de asignación"
-        className="w-full md:max-w-[40%]"
-        variant='bordered'
-        onChange={handleDates}
-        value={selectedDates}
-        aria-label="date ranger picker"
-        labelPlacement='outside'
-        CalendarBottomContent={
-        <Button 
-          className="mb-2 ml-2"
-          size="sm" 
-          aria-label="delete_filter_date"
-          variant="ghost"
-          color='primary'
-          onClick={() => {
-            setSelectedDates(null);
-            setSearchParams((prev) => {
-              prev.delete("start");
-              prev.delete("end");
-              return prev;
-            }, {preventScrollReset: true});
-          }}
-        >
-          Limpiar
-        </Button>}
+      <RangePickerDateFilter 
+        label="Rango de la fecha de asignación" 
+        startName="start" 
+        endName="end"
+        start={loader?.serverData.start} 
+        end={loader?.serverData.end} 
       />
     </div>
     <ModalLeaderEdit isOpen={isOpen} onOpenChange={onOpenChange} />

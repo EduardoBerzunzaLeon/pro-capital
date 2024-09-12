@@ -12,7 +12,7 @@ export * from './leader';
 export { Pagination } from './pagination/Pagination';
 export { RowPerPage } from './rowPerPage/RowPerPage';
 export { Action } from './Action/Action';
-
+export * from './filters';
 
 
 
