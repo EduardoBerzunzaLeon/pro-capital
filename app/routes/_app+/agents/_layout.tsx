@@ -220,6 +220,7 @@ export default function  AgentsPage()  {
             </span>
             <RowPerPage
               onChange={handleRowPerPage} 
+              checkParams
             />
           </div>
         } 

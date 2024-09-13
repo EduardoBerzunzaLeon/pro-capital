@@ -238,7 +238,7 @@ export default function LeaderPage () {
               <span className="text-default-400 text-small">
                   Total {loader?.serverData.total || 0 } Líderes
               </span>
-              <RowPerPage onChange={handleRowPerPage} />
+              <RowPerPage onChange={handleRowPerPage} checkParams/>
           </div>
       }
       columns={columns} 

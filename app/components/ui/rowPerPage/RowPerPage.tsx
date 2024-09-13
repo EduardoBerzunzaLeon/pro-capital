@@ -1,23 +1,39 @@
+import { Select, SelectItem } from "@nextui-org/react";
+import { useSearchParams } from "@remix-run/react";
 import { ChangeEventHandler } from "react";
 
 interface Props {
-    onChange?: ChangeEventHandler<HTMLSelectElement>
+    checkParams?: boolean;
+    onChange?: ChangeEventHandler<HTMLSelectElement>,
 }
 
-export function RowPerPage({ onChange }: Props) {
+const options = ['5','10', '20', '50', '100'];
+
+export function RowPerPage({ onChange, checkParams }: Props) {
+
+    const [searchParams] = useSearchParams();
+    const defaultValue = (checkParams && searchParams.get('l'))
+        ? String(searchParams.get('l'))
+        : '5'
+
     return (
         <label className="flex items-center text-default-400 text-small">
-            Filas por Página
-            <select
+            <Select 
+                variant='bordered'
+                label="Filas por Página"
+                labelPlacement="outside-left"
                 className="red-dark text-foreground bg-content1 outline-none text-small pl-4"
                 onChange={onChange}
+                defaultSelectedKeys={[defaultValue]}
             >
-                <option value="5">5</option>
-                <option value="10">10</option>
-                <option value="20">20</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
-            </select>
+                {
+                    options.map(option => (
+                        <SelectItem key={option}>
+                            {option}
+                        </SelectItem>
+                    ))
+                }
+            </Select>
         </label>
     )
 }
