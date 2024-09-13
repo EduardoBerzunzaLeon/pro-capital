@@ -1,8 +1,8 @@
 import {  Key, useCallback, useEffect, useState } from "react";
 
-import { Input,  Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, useDisclosure } from "@nextui-org/react";
+import { Input, useDisclosure } from "@nextui-org/react";
 import { Town } from "~/.server/domain/entity";
-import { Pagination, RowPerPage } from "..";
+import { Pagination, RowPerPage, TableDetail } from "..";
 import { FaSearch } from "react-icons/fa";
 import { TownAction } from "./TownAction";
 import { TownButtonAdd } from "./TownButtonAdd";
@@ -99,18 +99,16 @@ export function TownSection() {
             isOpen={isOpen}
             onOpenChange={onOpenChange}
         />
-      <Table 
-        aria-label="Municipalities table"
+      <TableDetail 
+        aria-label="Towns table"
         onSortChange={setSortDescriptor}
         sortDescriptor={sortDescriptor}
         bottomContent={
-            <div className="flex w-full justify-center">
-                <Pagination 
-                    pageCount={data?.serverData?.pageCount}
-                    currentPage={data?.serverData?.currentPage}
-                    onChange={handlePagination}
-                />
-            </div>
+            <Pagination 
+                pageCount={data?.serverData?.pageCount}
+                currentPage={data?.serverData?.currentPage}
+                onChange={handlePagination}
+            />
         }
         topContent={
             <div className="flex justify-between items-center">
@@ -123,31 +121,12 @@ export function TownSection() {
                 />
             </div>
         }
-      >
-        <TableHeader>
-            {columns.map((column) =>
-                <TableColumn 
-                    key={column.key} 
-                    allowsSorting={column.sortable}
-                    allowsResizing
-                    className={column.key === "actions" ? "text-center" : "text-start"}
-                >{column.label}</TableColumn>
-            )}
-        </TableHeader>
-        <TableBody 
-            emptyContent='No se encontraron Localidades'
-            items={data?.serverData.data ?? []}
-            loadingContent={<Spinner />}
-            loadingState={loadingState}
-        >
-            {(item) => {
-                return (
-                <TableRow key={item?.id}>
-                    {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
-                </TableRow>
-            )}}
-        </TableBody>
-      </Table>
+        columns={columns} 
+        loadingState={loadingState} 
+        emptyContent="No se encontraron localidades" 
+        renderCell={renderCell} 
+        data={data?.serverData.data ?? []}    
+      />
     </div>
     )
 }

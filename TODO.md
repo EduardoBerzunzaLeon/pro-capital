@@ -20,6 +20,7 @@
     - cambiar el color de todo la app segun el thema sin necesidad de forzarlo con red-dark
     - ponerle un estilo de loader en el navlink cuando cambia de pagina
     -- add prettier
+    -- Agregar titulo en cada pagina
     
 
 # SERVER:

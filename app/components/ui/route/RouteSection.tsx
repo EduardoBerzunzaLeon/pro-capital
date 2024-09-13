@@ -1,8 +1,8 @@
-import { Table,  TableHeader, TableColumn, TableBody, Spinner, TableRow, TableCell, Chip } from "@nextui-org/react";
+import { Chip } from "@nextui-org/react";
 import { Route } from "@prisma/client";
 import { useFetcherPaginator, useStatusMemo } from "~/application";
 import { RowPerPage } from "../rowPerPage/RowPerPage";
-import { DropdownStatus, Pagination } from "..";
+import { DropdownStatus, Pagination, TableDetail } from "..";
 import { useCallback, useEffect,  useState } from "react";
 import { RouteButtonAdd } from "./RouteButtonAdd";
 import { RouteAction } from "./RouteAction";
@@ -76,18 +76,16 @@ export function RouteSection() {
           selectedKeys={selectedKeys} 
           onSelectionChange={setSelectedKeys} 
         />
-        <Table 
-            aria-label="Municipalities table"
+        <TableDetail 
+            aria-label="Routes table"
             onSortChange={setSortDescriptor}
             sortDescriptor={sortDescriptor}
             bottomContent={
-                <div className="flex w-full justify-center">
-                    <Pagination 
-                        pageCount={data?.serverData.pageCount}
-                        currentPage={data?.serverData.currentPage}
-                        onChange={handlePagination}
-                    />
-                </div>
+                <Pagination 
+                    pageCount={data?.serverData.pageCount}
+                    currentPage={data?.serverData.currentPage}
+                    onChange={handlePagination}
+                />
             }
             topContent={
                 <div className="flex justify-between items-center">
@@ -98,31 +96,13 @@ export function RouteSection() {
                     />
                 </div>
             }
-          >
-            <TableHeader>
-                {columns.map((column) =>
-                    <TableColumn 
-                        key={column.key} 
-                        allowsSorting={column.sortable}
-                        allowsResizing
-                        className={column.key === "actions" ? "text-center" : "text-start"}
-                    >{column.label}</TableColumn>
-                )}
-            </TableHeader>
-            <TableBody 
-                emptyContent='No se encontraron Municipios'
-                items={data?.serverData.data ?? []}
-                loadingContent={<Spinner />}
-                loadingState={loadingState}
-            >
-                {(item) => {
-                    return (
-                    <TableRow key={item?.id}>
-                        {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
-                    </TableRow>
-                )}}
-            </TableBody>
-          </Table>
+            columns={columns} 
+            loadingState={loadingState} 
+            emptyContent="No se encontraron rutas" 
+            renderCell={renderCell} 
+            data={data?.serverData.data ?? []}    
+          />
+           
 
         </div>
     )

@@ -1,4 +1,5 @@
 import { Pagination as PaginationNext } from "@nextui-org/react";
+import { ClientOnly } from "remix-utils/client-only";
 
 interface Props {
     currentPage?: number,
@@ -14,17 +15,24 @@ export function Pagination({ onChange, currentPage, pageCount }: Props) {
         <>
             {
                 hasPagination && (
-                    <div className="flex w-full justify-center">
-                        <PaginationNext
-                            isCompact
-                            showControls
-                            showShadow
-                            color="secondary"
-                            page={currentPage || 0}
-                            total={pageCount || 0}
-                            onChange={onChange}
-                        />
-                    </div>
+                    <ClientOnly>
+                        {
+                            () => (
+
+                                <div className="flex w-full justify-center">
+                                    <PaginationNext
+                                        isCompact
+                                        showControls
+                                        showShadow
+                                        color="secondary"
+                                        page={currentPage || 0}
+                                        total={pageCount || 0}
+                                        onChange={onChange}
+                                    />
+                                </div>
+                            )
+                        }
+                    </ClientOnly>
                 ) 
             }
         </>

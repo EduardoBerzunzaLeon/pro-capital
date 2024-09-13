@@ -1,7 +1,7 @@
 import {  useCallback, useEffect, useState } from "react";
 
-import { Input,  Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, useDisclosure } from "@nextui-org/react";
-import { Pagination, RowPerPage } from "..";
+import { Input, useDisclosure } from "@nextui-org/react";
+import { Pagination, RowPerPage, TableDetail } from "..";
 import { FaSearch } from "react-icons/fa";
 import { Folder } from "~/.server/domain/entity/folder.entity";
 import { FolderAction } from "./FolderAction";
@@ -80,87 +80,66 @@ return (
   <div>
     <div className='w-full flex gap-2 mt-5 mb-3 flex-wrap justify-between'>
         <Input
-            isClearable
             className="w-full sm:max-w-[30%]"
+            isClearable
+            onClear={handlerClose}
+            onValueChange={setSearch}
             placeholder="Buscar por Carpeta"
             startContent={<FaSearch />}
             value={search}
             variant='bordered'
-            onClear={handlerClose}
-            onValueChange={setSearch}
         />
         <Input
+            className="w-full sm:max-w-[30%]"
             isClearable
-           className="w-full sm:max-w-[30%]"
+            onClear={handlerCloseTown}
+            onValueChange={setSearchTown}
             placeholder="Buscar por Localidad"
             startContent={<FaSearch />}
             value={searchTown}
             variant='bordered'
-            onClear={handlerCloseTown}
-            onValueChange={setSearchTown}
         />
         <Input
-            isClearable
-            variant='bordered'
             className="w-full sm:max-w-[30%]"
+            isClearable
+            onClear={handlerCloseMunicipality}
+            onValueChange={setSearchMunicipality}
             placeholder="Buscar por Municipio"
             startContent={<FaSearch />}
             value={searchMunicipality}
-            onClear={handlerCloseMunicipality}
-            onValueChange={setSearchMunicipality}
+            variant='bordered'
         />
     </div>
   <ModalFolderEdit 
       isOpen={isOpen}
       onOpenChange={onOpenChange}
   />
-<Table 
-  aria-label="Municipalities table"
-  onSortChange={setSortDescriptor}
-  sortDescriptor={sortDescriptor}
-  bottomContent={
-      <div className="flex w-full justify-center">
-          <Pagination 
-              pageCount={data?.serverData?.pageCount}
-              currentPage={data?.serverData?.currentPage}
-              onChange={handlePagination}
-          />
-      </div>
-  }
-  topContent={
-      <div className="flex justify-between items-center">
-          <FolderButtonAdd />
-          <span className="text-default-400 text-small">Total {data?.serverData.total || 0 } Carpetas </span>
-          <RowPerPage 
-              onChange={handleRowPerPage}
-          />
-      </div>
-  }
->
-  <TableHeader>
-      {columns.map((column) =>
-          <TableColumn 
-              key={column.key} 
-              allowsSorting={column.sortable}
-              allowsResizing
-              className={column.key === "actions" ? "text-center" : "text-start"}
-          >{column.label}</TableColumn>
-      )}
-  </TableHeader>
-  <TableBody 
-      emptyContent='No se encontraron Carpetas'
-      items={data?.serverData.data ?? []}
-      loadingContent={<Spinner />}
-      loadingState={loadingState}
-  >
-      {(item) => {
-          return (
-          <TableRow key={item?.id}>
-              {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
-          </TableRow>
-      )}}
-  </TableBody>
-</Table>
+    <TableDetail 
+        aria-label="folders table"
+        onSortChange={setSortDescriptor}
+        sortDescriptor={sortDescriptor}
+        bottomContent={
+            <Pagination 
+                pageCount={data?.serverData?.pageCount}
+                currentPage={data?.serverData?.currentPage}
+                onChange={handlePagination}
+            />
+        }
+        topContent={
+            <div className="flex justify-between items-center">
+                <FolderButtonAdd />
+                <span className="text-default-400 text-small">Total {data?.serverData.total || 0 } Carpetas </span>
+                <RowPerPage 
+                    onChange={handleRowPerPage}
+                />
+            </div>
+        }
+        columns={columns} 
+        loadingState={loadingState} 
+        emptyContent="No se encontraron carpetas" 
+        renderCell={renderCell} 
+        data={data?.serverData.data ?? []}    
+    />
 </div>
 )
 }

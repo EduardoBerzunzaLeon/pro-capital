@@ -1,17 +1,17 @@
 import { json, LoaderFunction } from "@remix-run/node"
-import { Generic, Key, Selection, LoadingState, SortDirection } from "~/.server/interfaces";
+import { Generic, Key, SortDirection } from "~/.server/interfaces";
 import dayjs from 'dayjs';
 import { handlerPaginationParams, handlerSuccess } from "~/.server/reponses/handlerSuccess";
 import { Service } from "~/.server/services";
 import { getEmptyPagination } from "~/.server/reponses/handlerError";
 import { Leader } from "~/.server/domain/entity";
-import { useLoaderData, useNavigation, useOutlet, useSearchParams } from "@remix-run/react";
+import { useLoaderData, useOutlet, useSearchParams } from "@remix-run/react";
 import { HandlerSuccess } from "~/.server/reponses";
-import { ChangeEvent, useCallback, useMemo, useState} from "react";
-import { Button, Chip,  Input, Link, SortDescriptor, Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, useDisclosure } from "@nextui-org/react";
-import { ClientOnly } from "remix-utils/client-only";
-import { DropdownStatus, LeaderAction, LeaderToggleActive, ModalLeaderEdit, ModalsToggle, Pagination, RangePickerDateFilter, RowPerPage } from "~/components/ui";
+import { useCallback, useState} from "react";
+import { Button, Chip, Link, useDisclosure } from "@nextui-org/react";
+import { InputFilter, LeaderAction, LeaderToggleActive, ModalLeaderEdit, ModalsToggle, Pagination, RangePickerDateFilter, RowPerPage, StatusFilter, TableDetail } from "~/components/ui";
 import { FaUserPlus } from "react-icons/fa";
+import { useParamsPaginator } from '../../../application';
 
 const columnsFilter = ['curp', 'fullname', 'anniversaryDate', 'isActive', 'folder.name'];
 const columnSortNames: Generic = {
@@ -129,13 +129,19 @@ const columns = [
 export default function LeaderPage () {
   const loader = useLoaderData<HandlerSuccess<Loader>>();
   const outlet = useOutlet();
-  const [ searchParams , setSearchParams] = useSearchParams();
+  const [ searchParams ] = useSearchParams();
   const [selectedId, setSelectedId] = useState<number>(0);
-  const navigation = useNavigation();
   const { isOpen, onOpenChange, onOpen } = useDisclosure();
 
-  const loadingState: LoadingState = navigation.state === 'idle' 
-    ? 'idle' : 'loading';
+  const { 
+    loadingState, 
+    handlePagination, 
+    handleRowPerPage, 
+    handleSort,
+    sortDescriptor
+  } = useParamsPaginator({
+    columnDefault: 'fullname'
+  });
   
   const renderCell = useCallback((leader: Leader, columnKey: Key) => {
     if(columnKey === 'actions') {
@@ -170,70 +176,6 @@ export default function LeaderPage () {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const defaultStatus: Selection = useMemo(() => {
-
-    if(!loader.serverData.isActive || loader.serverData.isActive === 'notUndefined') {
-      return new Set(['active','inactive']);
-    }
-
-    const { isActive } = loader.serverData;
-
-    const selectedStatus: Set<Key> = new Set();
-
-    isActive 
-      ? selectedStatus.add('active')
-      : selectedStatus.add('inactive');
-
-    return selectedStatus;
-
-  }, [loader?.serverData])
-
-  const handlePagination = (page: number) => {
-    setSearchParams((prev) => {
-      prev.set('p', String(page))
-      return prev;
-    });
-  }
-  
-  const handleRowPerPage = (e: ChangeEvent<HTMLSelectElement>) => {
-    setSearchParams((prev) => {
-      prev.set('l', String(e.target.value))
-      return prev;
-    });
-  }
-
-
-  const handleSort = (descriptor: SortDescriptor) => {
-    const direction = descriptor?.direction ??  'ascending';
-    const column = descriptor?.column ??  'fullname';
-    setSearchParams((prev) => {
-      prev.set("d", direction);
-      prev.set("c", String(column));
-      return prev;
-    }, {preventScrollReset: true});
-  }
-
-  const handleFullnameChange  = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchParams(prev => {
-      prev.set('name',event.currentTarget.value)
-      return prev;
-    })
-  }
-  
-  const handleFolderChange  = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchParams(prev => {
-      prev.set('folder',event.currentTarget.value)
-      return prev;
-    })
-  }
-
-  const handleStatusChange = (keys: Selection) => {
-    const data = JSON.stringify(Array.from(keys).map(value => value === 'active'));
-    setSearchParams(prev => {
-      prev.set('isActive',data)
-      return prev;
-    })
-  }
   return (
     <>
     { outlet }
@@ -242,31 +184,25 @@ export default function LeaderPage () {
       handleSelectedId={setSelectedId}
     />
     <div className='w-full flex gap-2 mt-5 mb-3 flex-wrap justify-between items-center'>
-      <DropdownStatus 
-        defaultSelectedKeys={defaultStatus}
-        onSelectionChange={handleStatusChange} 
+      <StatusFilter 
+        isActive={loader?.serverData?.isActive}
+        param='isActive'
       />
-      <Input 
-        id='name'
-        name='name'
-        variant='bordered'
-        className="w-full md:max-w-[30%]"
-        labelPlacement="outside"
-        label='Líder'
-        placeholder="Nombre de la líder"
-        defaultValue={loader?.serverData?.fullname || ''}
-        onChange={handleFullnameChange}
+      <InputFilter 
+        param="name" 
+        name="name" 
+        label="Líder" 
+        id="name" 
+        placeholder="Nombre de la líder"      
+        defaultValue={loader?.serverData?.fullname}
       />
-      <Input 
-        id='folder'
-        name='folder'
-        variant='bordered'
-        className="w-full md:max-w-[30%]"
-        labelPlacement="outside"
-        label='Carpeta'
-        placeholder="Nombre de la carpeta"
-        defaultValue={loader?.serverData?.folder.name || ''}
-        onChange={handleFolderChange}
+      <InputFilter 
+        param="folder" 
+        name="folder" 
+        label="Carpeta" 
+        id="folder" 
+        placeholder="Nombre de la carpeta"      
+        defaultValue={loader?.serverData?.folder.name}
       />
       <RangePickerDateFilter 
         label="Rango de la fecha de asignación" 
@@ -277,71 +213,40 @@ export default function LeaderPage () {
       />
     </div>
     <ModalLeaderEdit isOpen={isOpen} onOpenChange={onOpenChange} />
-    <Table 
-    aria-label="Municipalities table"
-    onSortChange={handleSort}
-    sortDescriptor={{
-      column:  loader?.serverData.c ?? 'assignAt',
-      direction: loader?.serverData.d ?? 'ascending',
-    }}
-    
-    bottomContent={
-        <div className="flex w-full justify-center">
-          <ClientOnly>
-            {
-              () => (
-                <Pagination 
-                      pageCount={loader?.serverData?.pageCount}
-                      currentPage={loader?.serverData?.currentPage}
-                      onChange={handlePagination}
-                  />    
-                )
-            }
-          </ClientOnly>
-        </div>
-    }
-    topContent={
-        <div className="flex justify-between items-center">
-            <Button
-              href={`/leaders/create?${searchParams.toString()}`}
-              as={Link}
-              endContent={<FaUserPlus />}
-              variant="ghost"
-              color="secondary" 
-            >
-              Crear Líder
-            </Button>
-            <span className="text-default-400 text-small">
-                Total {loader?.serverData.total || 0 } Líderes
-            </span>
-            <RowPerPage onChange={handleRowPerPage} />
-        </div>
-    }
-  >
-    <TableHeader>
-        {columns.map((column) =>
-            <TableColumn 
-                key={column.key} 
-                allowsSorting={column.sortable}
-                allowsResizing
-                className={column.key === "actions" ? "text-center" : "text-start"}
-            >{column.label}</TableColumn>
-        )}
-    </TableHeader>
-    <TableBody 
-        emptyContent='No se encontraron asesores asignados'
-        items={loader?.serverData.data ?? []}
-        loadingContent={<Spinner />}
-        loadingState={loadingState}
-    >
-        {(item) => {
-            return (
-            <TableRow key={item?.id}>
-                {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
-            </TableRow>
-        )}}
-    </TableBody>
-    </Table>
+    <TableDetail 
+      aria-label="Leaders table"
+      onSortChange={handleSort}
+      sortDescriptor={sortDescriptor}
+      bottomContent={
+        <Pagination 
+          pageCount={loader?.serverData?.pageCount}
+          currentPage={loader?.serverData?.currentPage}
+          onChange={handlePagination}
+        />    
+      }
+      topContent={
+          <div className="flex justify-between items-center">
+              <Button
+                href={`/leaders/create?${searchParams.toString()}`}
+                as={Link}
+                endContent={<FaUserPlus />}
+                variant="ghost"
+                color="secondary" 
+              >
+                Crear Líder
+              </Button>
+              <span className="text-default-400 text-small">
+                  Total {loader?.serverData.total || 0 } Líderes
+              </span>
+              <RowPerPage onChange={handleRowPerPage} />
+          </div>
+      }
+      columns={columns} 
+      loadingState={loadingState} 
+      emptyContent="No se encontraron lideres" 
+      renderCell={renderCell} 
+      data={loader?.serverData.data ?? []}    
+    />
   </>
   )
 }

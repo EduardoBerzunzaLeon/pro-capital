@@ -1,7 +1,7 @@
 import { Key, useCallback, useEffect, useState} from "react";
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Spinner, useDisclosure, Input } from "@nextui-org/react";
+import { useDisclosure, Input } from "@nextui-org/react";
 import { Municipality } from "~/.server/domain/entity";
-import { Pagination } from "..";
+import { Pagination, TableDetail } from "..";
 import { RowPerPage } from '../rowPerPage/RowPerPage';
 import { MunicipalityAction } from "./MunicipalityAction";
 import { ModalMunicipalityEdit } from './ModalMunicipalityEdit';
@@ -67,18 +67,16 @@ export  function MunicipalitySection() {
                 isOpen={isOpen}
                 onOpenChange={onOpenChange}
             />
-          <Table 
+          <TableDetail 
             aria-label="Municipalities table"
             onSortChange={setSortDescriptor}
             sortDescriptor={sortDescriptor}
             bottomContent={
-                <div className="flex w-full justify-center">
-                    <Pagination 
-                        pageCount={data?.serverData.pageCount}
-                        currentPage={data?.serverData.currentPage}
-                        onChange={handlePagination}
-                    />
-                </div>
+                <Pagination 
+                    pageCount={data?.serverData.pageCount}
+                    currentPage={data?.serverData.currentPage}
+                    onChange={handlePagination}
+                />
             }
             topContent={
                 <div className="flex justify-between items-center">
@@ -89,31 +87,12 @@ export  function MunicipalitySection() {
                     />
                 </div>
             }
-          >
-            <TableHeader>
-                {columns.map((column) =>
-                    <TableColumn 
-                        key={column.key} 
-                        allowsSorting={column.sortable}
-                        allowsResizing
-                        className={column.key === "actions" ? "text-center" : "text-start"}
-                    >{column.label}</TableColumn>
-                )}
-            </TableHeader>
-            <TableBody 
-                emptyContent='No se encontraron Municipios'
-                items={data?.serverData.data ?? []}
-                loadingContent={<Spinner />}
-                loadingState={loadingState}
-            >
-                {(item) => {
-                    return (
-                    <TableRow key={item?.id}>
-                        {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
-                    </TableRow>
-                )}}
-            </TableBody>
-          </Table>
+            columns={columns} 
+            loadingState={loadingState} 
+            emptyContent="No se encontraron municipios" 
+            renderCell={renderCell} 
+            data={data?.serverData.data ?? []}    
+          />
         </div>
     )
 } 
