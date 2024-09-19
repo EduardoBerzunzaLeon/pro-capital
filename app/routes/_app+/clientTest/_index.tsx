@@ -29,12 +29,14 @@ import {
 import { FaPlus , FaSearch, FaChevronDown  } from "react-icons/fa";
 import { FaEllipsisVertical, FaFilterCircleXmark } from "react-icons/fa6";
 import {columns, users, statusOptions, Client, Columns,ColumnSort, SortColumn, Status, StatusColors, renovateOptions} from "./data";
-import {capitalize} from "./utils";
 import { ClientOnly } from "remix-utils/client-only";
 import { DateValue } from "@internationalized/date";
 import { useOutlet, useNavigate } from "@remix-run/react";
 import ExcelExport from '../../../components/utils/ExcelExport';
 
+export function capitalize(str: string) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
 
 const statusColorMap: Record<Status, StatusColors> = {
   activo: "warning",

@@ -2,6 +2,7 @@ import { db } from "../db";
 import { AgentRouteRepository } from "./agentRoute/agentRoute.repository";
 import { AuthRepository } from "./auth/auth.repository";
 import { baseRepository } from "./base.repository";
+import { CreditRepository } from "./credit/credit.repository";
 import { FolderRepository } from "./folder/folder.repository";
 import { GroupRepository } from "./group/group.repository";
 import { LeaderRepository } from "./leader/leader.repository";
@@ -20,7 +21,8 @@ function buildRepository() {
         group: { ...GroupRepository(baseRepository(db.group))},
         route: { ...RouteRepository(baseRepository(db.route))},
         agentRoute: { ...AgentRouteRepository(baseRepository(db.agentRoute))},
-        leader: { ...LeaderRepository(baseRepository(db.leader))}
+        leader: { ...LeaderRepository(baseRepository(db.leader))},
+        credit: { ...CreditRepository(baseRepository(db.credit))}
     }
 }
 

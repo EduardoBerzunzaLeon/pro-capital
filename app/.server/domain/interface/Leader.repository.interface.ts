@@ -2,8 +2,6 @@ import { Prisma } from '@prisma/client';
 import { BaseRepositoryI, PaginationWithFilters, ResponseWithMetadata } from '.';
 import { Generic } from '~/.server/interfaces';
 
-
-
 export interface CreateLeaderProps{
     name: string,
     lastNameFirst: string,
@@ -15,7 +13,6 @@ export interface CreateLeaderProps{
     anniversaryDate: Date,
     folderId: number,
 }
-
 
 export interface UpdateLeaderProps{
     name: string,
@@ -29,7 +26,6 @@ export interface UpdateLeaderProps{
     folderId: number,
 }
 
-
 export type BaseLeaderI = BaseRepositoryI<
     Prisma.LeaderDelegate, 
     Prisma.LeaderWhereInput, 
@@ -37,7 +33,6 @@ export type BaseLeaderI = BaseRepositoryI<
     Prisma.XOR<Prisma.LeaderUpdateInput, Prisma.LeaderUncheckedUpdateInput>,
     Prisma.XOR<Prisma.LeaderCreateInput, Prisma.LeaderUncheckedCreateInput>
 >;
-
 
 export interface LeaderRepositoryI{
     findAll: (paginationData: PaginationWithFilters ) => Promise<ResponseWithMetadata>,
@@ -52,4 +47,3 @@ export interface LeaderRepositoryI{
     unsubscribe: (id: number, date: Date, reason?: string) => Promise<Generic | undefined>,
     resubscribe: (id: number, folderId: number) => Promise<Generic | undefined>,
 }
-

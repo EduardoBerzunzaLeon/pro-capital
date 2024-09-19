@@ -9,6 +9,7 @@ import routeService from "./route.service";
 import agentRouteService from "./agentRoute.service";
 import leaderService from "./leader.service";
 import utilsService from "./utils.service";
+import creditService from "./credit.service";
 
 function buildService() {
     return {
@@ -22,7 +23,8 @@ function buildService() {
         paginator: { ...paginatorService },
         agent: { ...agentRouteService },
         leader: { ...leaderService },
-        utils: { ...utilsService }
+        utils: { ...utilsService },
+        credit: { ...creditService },
     }
 }
 

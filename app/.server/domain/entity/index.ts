@@ -1,3 +1,4 @@
+export { Credit } from './credit.entity';
 
 export { Leader } from './leader.entity';
 
@@ -12,4 +13,7 @@ export type { UserI } from './user.entity';
 export type { TownI } from './town.entity';
 export type { FolderI } from './folder.entity';
 export type { LeaderI } from './leader.entity';
+export type { CreditI } from './credit.entity';
+
+
 
