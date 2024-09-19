@@ -32,7 +32,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   const folder = url.searchParams.get('folder') || '';
   const name = url.searchParams.get('name') || '';
   
-  let isActiveParsed =  isActive
+  let isActiveParsed = isActive
     ? JSON.parse(isActive+'')
     : 'notUndefined';
 
@@ -170,7 +170,7 @@ export default function LeaderPage () {
       const status = leader.isActive ? 'Activo' : 'Inactivo';
       const color = leader.isActive ? 'success' : 'danger' 
       return ( <Chip color={color} variant="bordered" >{status}</Chip>)
-  }
+    }
 
     return <span className="capitalize">{leader[columnKey as never]}</span>
   // eslint-disable-next-line react-hooks/exhaustive-deps

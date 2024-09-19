@@ -35,19 +35,22 @@ export interface CreditI {
     nextPayment: Date,
     lastPayment: Date,
     currentDebt: number,
-    status: string
+    status: Status
 }
 
+export type Status = 
+'ACTIVO' |
+'VENCIDO' |
+'LIQUIDADO' |
+'RENOVADO' |
+'FALLECIDO' 
 
 export class Credit {
     public readonly id: number;
     public readonly aval: Person;
     public readonly client: Person;
-    public readonly group: string;
-    public readonly folder: string;
-    public readonly municipality: string;
-    public readonly route: string;
-    public readonly town: string;
+    public readonly group: Name;
+    public readonly folder: CreditFolder;
     public readonly amount: number;
     public readonly paymentAmount: number;
     public readonly captureAt: string;
@@ -56,7 +59,7 @@ export class Credit {
     public readonly nextPayment: string;
     public readonly lastPayment: string;
     public readonly currentDebt: number;
-    public readonly status: string
+    public readonly status: Status
 
 
     private constructor({
@@ -65,9 +68,6 @@ export class Credit {
         client,
         group,
         folder,
-        municipality,
-        route,
-        town,
         amount,
         paymentAmount,
         captureAt,
@@ -83,9 +83,6 @@ export class Credit {
         this.client =  client;
         this.group =  group;
         this.folder =  folder;
-        this.municipality =  municipality;
-        this.route =  route;
-        this.town =  town;
         this.amount =  amount;
         this.paymentAmount =  paymentAmount;
         this.captureAt =  captureAt;
@@ -139,27 +136,20 @@ export class Credit {
         if(!folder.town.municipality) throw ServerError.badRequest('El municipio es requerido');
         if(!aval || !aval.fullname) throw ServerError.badRequest('El aval es requerida');
         if(!client || !client.fullname) throw ServerError.badRequest('el client es requerida');
-
-
         const captureAtFormatted = dayjs(captureAt).add(1, 'day').format('YYYY-MM-DD'); 
         const creditAtFormatted = dayjs(creditAt).add(1, 'day').format('YYYY-MM-DD'); 
         const nextPaymentFormatted = dayjs(nextPayment).add(1, 'day').format('YYYY-MM-DD'); 
         const lastPaymentFormatted = dayjs(lastPayment).add(1, 'day').format('YYYY-MM-DD'); 
-        const folderName = folder.name;
-        const townName = folder.town.name;
-        const municipalityName = folder.town.municipality.name;
-        const routeName = folder.route.name;
-        const groupName = group.name;
+
+        folder.route.name = `Ruta ${folder.route.name}`;
+        group.name = `Grupo ${group.name}`;
 
         return new Credit({
             id,
             aval,
             client,
-            group: groupName,
-            folder: folderName,
-            municipality: municipalityName,
-            route: routeName,
-            town: townName,
+            group: group,
+            folder: folder,
             amount,
             paymentAmount,
             captureAt: captureAtFormatted,

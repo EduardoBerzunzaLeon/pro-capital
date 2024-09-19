@@ -15,11 +15,16 @@ export const StatusFilter = ({ isActive, param }: Props) => {
     
   const defaultStatus: Selection = useMemo(() => {
 
+    if(Boolean(isActive) === false) {
+      return new Set(['inactive']);
+    }
+
     if(!isActive || isActive === 'notUndefined') {
       return new Set(['active','inactive']);
     }
 
     const selectedStatus: Set<Key> = new Set();
+
 
     isActive 
       ? selectedStatus.add('active')

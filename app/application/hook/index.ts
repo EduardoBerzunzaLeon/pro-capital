@@ -1,3 +1,4 @@
+export { useRenderCell } from "./useRenderCell";
 export { useDimensions } from "./useDimensions";
 export { useFetcherAction } from "./useFetcherAction";
 export { useFetcherPaginator } from "./useFetcherPaginator";

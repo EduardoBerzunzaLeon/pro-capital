@@ -7,16 +7,17 @@ interface Props {
   defaultSelectedKeys?: Selection,
 }
 
-const status = [
-  { key: 'active', value: 'Activo' },
-  { key: 'inactive', value: 'Inactivo' }
+const values = [
+  { key: 'renovate', value: 'Con derecho' },
+  { key: 'noRenovate', value: 'Sin derecho' }
 ]
 
-export const DropdownStatus = (props: Props) => {
+export const DropdownCanRenovate = (props: Props) => {
   return (
     <DropdownGeneric 
-      values={status}
-      textButton='Buscar por Estatus'
+      values={values}
+      textButton='Renovación'
+      ariaLabel='Multiple selection renovate status'
       {...props}
     />
   )
