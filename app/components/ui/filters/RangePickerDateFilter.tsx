@@ -3,6 +3,8 @@ import { DateValue, parseDate } from "@internationalized/date";
 import { RangeValue, DateRangePicker, Button } from "@nextui-org/react";
 import dayjs from 'dayjs';
 import { useSearchParams } from "@remix-run/react";
+import { FaSearch } from "react-icons/fa";
+
 
 interface Props {
     label: string,
@@ -61,13 +63,15 @@ export const RangePickerDateFilter = ({
         }, {preventScrollReset: true});
     }
 
-    return (<DateRangePicker
+    return (
+      <DateRangePicker
         label={label}
         className={`${className || 'w-full md:max-w-[40%]'}`}
         variant='bordered'
         onChange={handleDates}
         value={selectedDates}
         aria-label="date ranger picker"
+        startContent={<FaSearch />}
         labelPlacement='outside'
         CalendarBottomContent={
         <Button 
@@ -80,5 +84,6 @@ export const RangePickerDateFilter = ({
         >
           Limpiar
         </Button>}
-      />)
+      />
+    )
 }

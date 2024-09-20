@@ -16,7 +16,7 @@ export const DropdownCanRenovate = (props: Props) => {
   return (
     <DropdownGeneric 
       values={values}
-      textButton='Renovación'
+      textButton='Buscar por renovación'
       ariaLabel='Multiple selection renovate status'
       {...props}
     />

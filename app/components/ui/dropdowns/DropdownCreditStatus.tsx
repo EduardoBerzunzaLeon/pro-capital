@@ -19,7 +19,7 @@ export const DropdownCreditStatus = (props: Props) => {
   return (
     <DropdownGeneric 
       values={values}
-      textButton='Estatus'
+      textButton='Buscar por estatus'
        ariaLabel='Multiple selection credit status'
       {...props}
     />

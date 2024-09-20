@@ -73,7 +73,6 @@ export default function App() {
           navigate={navigate}
           locale='es-MX'
         >
-
           <div className='red-dark text-foreground bg-content1 w-screen max-h-max min-h-screen'>
             <AnimatePresence mode="wait" initial={false}>
                 <motion.main key={location.pathname === '/login' ? location.pathname :'dashboard'}>
