@@ -4,3 +4,4 @@ export type { ActionPostMunicipality } from '../interfaces/municipalityRes.inter
 export { handlerSuccess } from './handlerSuccess';
 export { handlerError } from './handlerError';
 
+export * from './parser';

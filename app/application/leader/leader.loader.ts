@@ -1,10 +1,9 @@
 import { json, LoaderFunction } from "@remix-run/node";
-import dayjs from "dayjs";
 
 import { Generic } from "~/.server/interfaces";
 import { getEmptyPagination } from "~/.server/reponses/handlerError";
 import { handlerPaginationParams } from "~/.server/reponses/handlerSuccess";
-import { handlerSuccess } from "~/.server/reponses";
+import { handlerSuccess, parseBoolean, parseRangeDate } from "~/.server/reponses";
 import { Service } from "~/.server/services";
 
 const columnsFilter = ['curp', 'fullname', 'anniversaryDate', 'isActive', 'folder.name'];
@@ -22,21 +21,11 @@ export const leaderLoader: LoaderFunction = async ({ request }) => {
   const start = url.searchParams.get('start') || '';
   const end = url.searchParams.get('end') || '';
   const curp = url.searchParams.get('curp') || '';
-  const isActive = url.searchParams.get('isActive');
+  const isActive = url.searchParams.get('isActive') || '';
   const folder = url.searchParams.get('folder') || '';
   const name = url.searchParams.get('name') || '';
   
-  let isActiveParsed = isActive
-    ? JSON.parse(isActive+'')
-    : 'notUndefined';
-
-  if(Array.isArray(isActiveParsed) && isActiveParsed.length === 1) {
-    isActiveParsed = Boolean(isActiveParsed[0]);
-  }
-
-  if(Array.isArray(isActiveParsed) && isActiveParsed.length === 2) {
-    isActiveParsed = 'notUndefined'
-  } 
+  const isActiveParsed = parseBoolean(isActive);
 
   try {
   
@@ -44,14 +33,8 @@ export const leaderLoader: LoaderFunction = async ({ request }) => {
       const curpParsed = { column: 'curp', value: curp };
       const folderParsed = { column: 'folder.name', value: folder.toLowerCase() };
       const fullnameParsed = { column: 'fullname', value: name.toLowerCase() };
+      const datesParsed = parseRangeDate('aniversaryDate', start, end);
 
-      const datesParsed = (!start || !end) 
-      ? { column: 'anniversaryDate', value: ''}
-      : { column:  'anniversaryDate', value: {
-        start: dayjs(start+'T00:00:00.000Z').toDate(),
-        end: dayjs(end).toDate()
-      }}
-    
     const {
       page, limit, column, direction
     } = handlerPaginationParams(request.url, 'fullname', columnsFilter);

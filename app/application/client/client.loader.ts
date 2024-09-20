@@ -1,8 +1,7 @@
 
 import { json, LoaderFunction } from '@remix-run/node';
-import dayjs from 'dayjs';
 import { Generic } from '~/.server/interfaces';
-import { handlerSuccess } from '~/.server/reponses';
+import { handlerSuccess, parseBoolean, parseRangeDate } from '~/.server/reponses';
 import { getEmptyPagination } from '~/.server/reponses/handlerError';
 import { handlerPaginationParams } from '~/.server/reponses/handlerSuccess';
 import { Service } from '~/.server/services';
@@ -70,17 +69,7 @@ const columnSortNames: Generic = {
       statusParsed = 'notUndefined';
     }
     
-    let canRenovateParsed = canRenovate
-      ? JSON.parse(canRenovate+'')
-      : 'notUndefined';
-  
-    if(Array.isArray(canRenovateParsed) && canRenovateParsed.length === 1) {
-      canRenovateParsed = Boolean(canRenovateParsed[0]);
-    }
-  
-    if(Array.isArray(canRenovateParsed) && canRenovateParsed.length === 2) {
-      canRenovateParsed = 'notUndefined'
-    } 
+    const canRenovateParsed = parseBoolean(canRenovate);
   
     try {
     
@@ -89,21 +78,8 @@ const columnSortNames: Generic = {
         const fullnameParsed = { column: 'client.fullname', value: client.toLowerCase() };
         const statusFormatted = { column: 'status', value: statusParsed };
         const canRenovateFormatted = { column: 'canRenovate', value: canRenovateParsed };
-  
-        const creditAtParsed = (!creditStart || !creditEnd) 
-        ? { column: 'creditAt', value: ''}
-        : { column:  'creditAt', value: {
-          start: dayjs(creditStart+'T00:00:00.000Z').toDate(),
-          end: dayjs(creditEnd).toDate()
-        }}
-        
-        
-        const captureAtParsed = (!captureStart || !captureEnd) 
-        ? { column: 'captureAt', value: ''}
-        : { column:  'captureAt', value: {
-          start: dayjs(captureStart+'T00:00:00.000Z').toDate(),
-          end: dayjs(captureEnd).toDate()
-        }}
+        const creditAtParsed = parseRangeDate('creditAt', creditStart, creditEnd)
+        const captureAtParsed = parseRangeDate('captureAt', captureStart, captureEnd);
       
       const {
         page, limit, column, direction
