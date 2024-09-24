@@ -279,7 +279,8 @@ interface Credit {
     canRenovate: boolean,
     nextPayment: string,
     lastPayment: string,
-    currentDebt: number
+    currentDebt: number,
+    paymentForgivent: number,
     status: Status
 }
 
@@ -298,6 +299,7 @@ export const credits: Credit[] = [
         lastPayment:  new Date(2024, 6, 1).toISOString(),
         currentDebt: 1200,
         status: 'ACTIVO',
+        paymentForgivent: 0
     }
 ]
 

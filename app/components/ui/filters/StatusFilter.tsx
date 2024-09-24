@@ -1,7 +1,5 @@
-import { useSearchParams } from "@remix-run/react";
-import { useMemo } from "react";
-import { Key, Selection } from "~/.server/interfaces";
 import { DropdownStatus } from "../dropdowns/DropdownStatus";
+import { useDropdownBoolean } from "~/application";
 
 
 interface Props {
@@ -11,38 +9,13 @@ interface Props {
 
 export const StatusFilter = ({ isActive, param }: Props) => {
 
-    const [ , setSearchParams] = useSearchParams();
-    
-  const defaultStatus: Selection = useMemo(() => {
+  const { defaultStatus, handleStatusChange} = useDropdownBoolean({
+    value: isActive,
+    param,
+    trueField: 'active',
+    falseField: 'inactive'
+  });
 
-    if(Boolean(isActive) === false) {
-      return new Set(['inactive']);
-    }
-
-    if(!isActive || isActive === 'notUndefined') {
-      return new Set(['active','inactive']);
-    }
-
-    const selectedStatus: Set<Key> = new Set();
-
-
-    isActive 
-      ? selectedStatus.add('active')
-      : selectedStatus.add('inactive');
-
-    return selectedStatus;
-
-  }, [isActive]);
-
-  const handleStatusChange = (keys: Selection) => {
-    const data = JSON.stringify(Array.from(keys).map(value => value === 'active'));
-    setSearchParams(prev => {
-      prev.set(param,data)
-      return prev;
-    })
-  }
-
-  
   return (
     <DropdownStatus 
         defaultSelectedKeys={defaultStatus}

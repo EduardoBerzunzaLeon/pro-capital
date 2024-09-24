@@ -1,179 +1,20 @@
+import { useCallback, useMemo, useState } from "react";
+import { Chip, Select, SelectItem } from "@nextui-org/react";
+import { useLoaderData} from "@remix-run/react";
 
-import { Generic, Key, SortDirection, Selection, Color } from "~/.server/interfaces";
-// import dayjs from 'dayjs';
-import { json, LoaderFunction } from "@remix-run/node";
-import { HandlerSuccess, handlerSuccess } from "~/.server/reponses";
-import { getEmptyPagination } from "~/.server/reponses/handlerError";
-import { handlerPaginationParams } from "~/.server/reponses/handlerSuccess";
-import { Service } from "~/.server/services";
-import { useLoaderData, useSearchParams } from "@remix-run/react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { clientLoader } from "~/application/client/client.loader";
 import { Credit } from "~/.server/domain/entity";
-import { useParamsPaginator, useRenderCell } from "~/application";
-import { TableDetail, RowPerPage, Pagination, InputFilter, RangePickerDateFilter } from "~/components/ui";
-import { Button, Chip, Select, SelectItem, Slider } from "@nextui-org/react";
-import { Status } from "~/.server/domain/entity/credit.entity";
 import { DropdownCanRenovate } from "~/components/ui/dropdowns/DropdownCanRenovate";
 import { DropdownCreditStatus } from "~/components/ui/dropdowns/DropdownCreditStatus";
-import { FaSearch } from "react-icons/fa";
+import { HandlerSuccess } from "~/.server/reponses";
+import { Key, SortDirection, Selection, Color } from "~/.server/interfaces";
+import { Status } from "~/.server/domain/entity/credit.entity";
+import { TableDetail, RowPerPage, Pagination, InputFilter, RangePickerDateFilter, SliderFilter } from "~/components/ui";
+import { useDropdown } from "~/application/hook/useDropdown";
+import { useDropdownBoolean, useParamsPaginator, useRenderCell } from "~/application";
 
-
-const columnsFilter = [
-  'client.fullname', 'aval.fullname', 'captureAt', 'creditAt', 'folder.name',
-  'group.name.fullname', 'folder.town.name', 'status', 'currentDebt', 'folder.town.municipality.name'
-];
-
-const columnSortNames: Generic = {
-  curp: 'client.curp',
-  client: 'client.fullname',
-  aval: 'aval.fullname',
-  captureAt: 'captureAt',
-  creditAt: 'creditAt',
-  status: 'status',
-  folder: 'folder.name',
-  town: 'folder.town.name',
-  municipality: 'folder.town.municipality.name',
-  nextPayment: 'nextPayment',
-  lastPayment: 'lastPayment',
-  currentDebt: 'currentDebt'
-}
-
-export const loader: LoaderFunction = async ({ request }) => {
-  
-  const url = new URL(request.url);
-  // const start = url.searchParams.get('start') || '';
-  // const end = url.searchParams.get('end') || '';
-  const curp = url.searchParams.get('curp') || '';
-  const aval = url.searchParams.get('aval') || '';
-  const client = url.searchParams.get('client') || '';
-  const folder = url.searchParams.get('folder') || '';
-  const municipality = url.searchParams.get('municipality') || '';
-  const town = url.searchParams.get('town') || '';
-  const group = url.searchParams.get('group') || '';
-  const creditStart = url.searchParams.get('creditStart') || '';
-  const creditEnd = url.searchParams.get('creditEnd') || '';
-  const captureStart = url.searchParams.get('captureStart') || '';
-  const captureEnd = url.searchParams.get('captureEnd') || '';
-  const status = url.searchParams.get('status') || '';
-  const canRenovate = url.searchParams.get('canRenovate') || '';
-  const debt = url.searchParams.get('debt') || '';
-  // const client = url.searchParams.get('client') || '';
-  // const status = url.searchParams.get('status') || '';
-  // const town = url.searchParams.get('town') || '';
-  // const municipality = url.searchParams.get('municipality') || '';
-
-
-  const debtParsed = debt
-    ? JSON.parse(debt)
-    : '';
-
-  const debtFormatted = {
-    column: 'currentDebt',
-    value: ''
-  };
-
-  if(Array.isArray(debtParsed) && debtParsed.length === 2) {
-    debtFormatted.value = {
-        start: Number(debtParsed[0]),
-        end: Number(debtParsed[1])
-    }
-  }
-   
-  let statusParsed = status
-    ? JSON.parse(status)
-    : 'notUndefined';
-
-  if(!Array.isArray(statusParsed)) {
-    statusParsed = 'notUndefined';
-  }
-  
-  let canRenovateParsed = canRenovate
-    ? JSON.parse(canRenovate+'')
-    : 'notUndefined';
-
-  if(Array.isArray(canRenovateParsed) && canRenovateParsed.length === 1) {
-    canRenovateParsed = Boolean(canRenovateParsed[0]);
-  }
-
-  if(Array.isArray(canRenovateParsed) && canRenovateParsed.length === 2) {
-    canRenovateParsed = 'notUndefined'
-  } 
-
-  try {
-  
-      // const isActiveFormatted = { column: 'isActive', value: isActiveParsed };
-      const curpParsed = { column: 'curp', value: curp };
-      const folderParsed = { column: 'folder.name', value: folder.toLowerCase() };
-      const fullnameParsed = { column: 'client.fullname', value: client.toLowerCase() };
-      const statusFormatted = { column: 'status', value: statusParsed };
-      const canRenovateFormatted = { column: 'canRenovate', value: canRenovateParsed };
-
-      // const datesParsed = (!start || !end) 
-      // ? { column: 'anniversaryDate', value: ''}
-      // : { column:  'anniversaryDate', value: {
-      //   start: dayjs(start+'T00:00:00.000Z').toDate(),
-      //   end: dayjs(end).toDate()
-      // }}
-    
-    const {
-      page, limit, column, direction
-    } = handlerPaginationParams(request.url, 'captureAt', columnsFilter);
-
-    const data = await Service.credit.findAll({
-      page, 
-      limit, 
-      column: columnSortNames[column] ?? 'captureAt', 
-      direction,
-      search: [
-        curpParsed, 
-        folderParsed, 
-        fullnameParsed, 
-        statusFormatted, 
-        canRenovateFormatted,
-        debtFormatted
-     ]
-    });
-    
-    return handlerSuccess(200, { 
-      ...data,
-      p: page,
-      l: limit,
-      c: column,
-      d: direction,
-      s: [curpParsed, folderParsed, fullnameParsed],
-      curp,
-      folder,
-      aval: 
-      client,
-      municipality,
-      status: statusParsed,
-      canRenovate: canRenovateParsed,
-      town,
-      creditStart,
-      creditEnd,
-      captureStart,
-      debt: debtParsed,
-      captureEnd,
-      group
-    });
-  } catch (error) {
-    console.log({error});
-      return json(getEmptyPagination({
-        client,
-        aval,
-        curp,
-        municipality,
-        town,
-        group,
-        creditStart,
-        creditEnd,
-        canRenovate: canRenovateParsed,
-        status: statusParsed,
-        captureStart,
-        debt: debtParsed,
-        captureEnd,
-      }));
-  }
+export {
+   clientLoader as loader
 }
 
 interface Loader {
@@ -207,7 +48,6 @@ interface Loader {
 }
 
 const columns = [
-  // { key: 'id', label: 'ID' },
   { key: 'client.fullname', label: 'CLIENTE',  sortable: true },
   { key: 'aval.fullname', label: 'AVAL',  sortable: true},
   { key: 'client.curp', label: 'CLIENTE CURP', sortable: true},
@@ -247,9 +87,26 @@ const statusRef: Record<Status, Color> = {
 export default function ClientsPage() {
 
   const loader = useLoaderData<HandlerSuccess<Loader>>();
-  const [visibleColumns, setVisibleColumns] = useState<Selection>(new Set(INITIAL_VISIBLE_COLUMNS));  
-  const [ , setSearchParams] = useSearchParams();
-  const [debt, setDebt] = useState<number | number[]>([0, 10000]);
+  const [visibleColumns, setVisibleColumns] = useState<Selection>(new Set(INITIAL_VISIBLE_COLUMNS)); 
+
+  const { 
+    defaultStatus: defaultCanRenovate, 
+    handleStatusChange: handleCanRenovate
+  } = useDropdownBoolean({
+    value: loader?.serverData?.canRenovate,
+    param: 'canRenovate',
+    trueField: 'renovate',
+    falseField: 'noRenovate'
+  });
+
+  const {
+    defaultValue,
+    handleValueChange
+  } = useDropdown({
+    param: 'status',
+    type: 'string',
+    value: loader?.serverData?.status
+  });
 
   const { 
     loadingState, 
@@ -287,105 +144,8 @@ export default function ClientsPage() {
 
     return <span className='capitalize'>{render(credit, columnKey)}</span>
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-
-  const defaultStatus: Selection = useMemo(() => {
-
-    if(!loader?.serverData?.status) {
-      return 'all';
-    }
-
-    const { status } = loader.serverData;
-
-    if(!Array.isArray(status) ) {
-      return 'all'
-    }
-
-    const areStrings =  status.every((value) => typeof value === 'string');
-
-    if(!areStrings) {
-      return 'all';
-    }
-
-    return new Set(status);
-
-  }, [loader])
-
-  useEffect(() => {
-
-    if(!loader?.serverData?.debt) {
-      setDebt([0, 10000]);
-      return;
-    }
-    
-    const {debt} = loader.serverData;
-    if(typeof debt === 'number') {
-      setDebt([0, debt]);
-      return;
-    }
-
-    const areNumbers = debt.every((value) => !isNaN(value));
-
-    if(!areNumbers) {
-      setDebt([0, 10000]);
-      return;
-    }
-
-    if(debt.length !== 2) {
-      setDebt([0, 10000]);
-      return;
-    }
-
-    setDebt([debt[0], debt[1]]);
-
-  }, [loader])
-
-  const defaultCanRenovate: Selection = useMemo(() => {
-
-    if(!loader?.serverData?.canRenovate) {
-      return 'all';
-    }
-
-    const { canRenovate } = loader.serverData;
-
-    if(canRenovate === 'notUndefined') {
-      return 'all'
-    }
-
-    const selectedStatus: Set<Key> = new Set();
-
-    canRenovate
-      ? selectedStatus.add('renovate')
-      : selectedStatus.add('noRenovate');
-
-    return selectedStatus;
-
-  }, [loader]);
-
-  const handleStatusChange = (keys: Selection) => {
-    const data = JSON.stringify(Array.from(keys));
-    setSearchParams(prev => {
-      prev.set('status',data)
-      return prev;
-    })
-  }
-  
-  const handleCanRenovate = (keys: Selection) => {
-    const data = JSON.stringify(Array.from(keys).map(value => value === 'renovate'));
-    setSearchParams(prev => {
-      prev.set('canRenovate',data)
-      return prev;
-    })
-  }
-
-  const handleDebtChange = () => {
-    const data = Array.isArray(debt) ? JSON.stringify(debt) : debt+'';
-    setSearchParams(prev => {
-      prev.set('debt', data);
-      return prev;
-    })
-  }
-
 
   const topContent = useMemo(() => {
     return (<Select
@@ -490,30 +250,15 @@ export default function ClientsPage() {
         defaultSelectedKeys={defaultCanRenovate}
       />
       <DropdownCreditStatus 
-        onSelectionChange={handleStatusChange} 
-        defaultSelectedKeys={defaultStatus}
+        onSelectionChange={handleValueChange} 
+        defaultSelectedKeys={defaultValue}
       />
       {/* TODO: traer de la base de datos el credito mas grande */}
-      <Slider 
-        label="Deuda"
-        step={50} 
-        minValue={0} 
-        maxValue={10000} 
-        defaultValue={[0, 10000]} 
-        value={debt} 
-        onChange={setDebt}
-        formatOptions={{style: "currency", currency: "MXN"}}
-        className="w-full md:max-w-[30%] grow"
-        endContent={
-          <Button
-            isIconOnly
-            radius="full"
-            variant="light"
-            onPress={handleDebtChange}
-          >
-            <FaSearch />
-          </Button>
-        }
+      <SliderFilter 
+        label='deuda'
+        maxValue={10000}
+        param='debt'
+        value={loader?.serverData?.debt}
       />
     </div>
     <TableDetail 
@@ -547,5 +292,4 @@ export default function ClientsPage() {
         data={loader?.serverData.data ?? []}    
     />
   </>
-
 }

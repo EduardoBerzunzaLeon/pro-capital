@@ -217,7 +217,7 @@ model Credit {
   captureAt DateTime @default(now())
   creditAt DateTime @db.Date
   canRenovate Boolean @default(false)
-  paymentForgivent Int // TODO: implement this, el pago perdonado, primer pago de la renovacion o el ultimo antes de renovar
+  paymentForgivent Int? // TODO: implement this, el pago perdonado, primer pago de la renovacion o el ultimo antes de renovar
   nextPayment DateTime
   lastPayment DateTime 
   currentDebt Decimal @db.Decimal(6,2)
