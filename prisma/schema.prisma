@@ -212,8 +212,7 @@ model Credit {
   folder Folder @relation(fields: [folderId], references: [id])
   amount Decimal @db.Decimal(6,2)
   paymentAmount Decimal @db.Decimal(5,2)
-  // Calcular el monto si se presto 1500 dividirlo entre 10 
-  //  y multiplicarlo por 15/12/10 que seria el monto real a pagar
+  totalAmount Decimal @db.Decimal(6,2)
   captureAt DateTime @default(now())
   creditAt DateTime @db.Date
   canRenovate Boolean @default(false)

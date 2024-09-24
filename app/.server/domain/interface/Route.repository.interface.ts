@@ -8,7 +8,8 @@ export type BaseRouteI = BaseRepositoryI<
     Prisma.RouteWhereInput, 
     Prisma.RouteSelect,
     Prisma.XOR<Prisma.RouteUpdateInput, Prisma.RouteUncheckedUpdateInput>,
-    Prisma.XOR<Prisma.RouteCreateInput, Prisma.RouteUncheckedCreateInput>
+    Prisma.XOR<Prisma.RouteCreateInput, Prisma.RouteUncheckedCreateInput>,
+    Prisma.RouteOrderByWithRelationInput | Prisma.RouteOrderByWithRelationInput[]
 >;
 
 

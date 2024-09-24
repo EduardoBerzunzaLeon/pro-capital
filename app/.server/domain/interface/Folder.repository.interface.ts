@@ -8,7 +8,8 @@ export type BaseFolderI = BaseRepositoryI<
     Prisma.FolderWhereInput, 
     Prisma.FolderSelect,
     Prisma.XOR<Prisma.FolderUpdateInput, Prisma.FolderUncheckedUpdateInput>,
-    Prisma.XOR<Prisma.FolderCreateInput, Prisma.FolderUncheckedCreateInput>
+    Prisma.XOR<Prisma.FolderCreateInput, Prisma.FolderUncheckedCreateInput>,
+    Prisma.FolderOrderByWithRelationInput | Prisma.FolderOrderByWithRelationInput[]
 >;
 
 

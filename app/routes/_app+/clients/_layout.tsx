@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 import { Chip, Select, SelectItem } from "@nextui-org/react";
-import { useLoaderData} from "@remix-run/react";
+import { Outlet, useLoaderData} from "@remix-run/react";
 
 import { clientLoader } from "~/application/client/client.loader";
 import { Credit } from "~/.server/domain/entity";
@@ -9,12 +9,14 @@ import { DropdownCreditStatus } from "~/components/ui/dropdowns/DropdownCreditSt
 import { HandlerSuccess } from "~/.server/reponses";
 import { Key, SortDirection, Selection, Color } from "~/.server/interfaces";
 import { Status } from "~/.server/domain/entity/credit.entity";
-import { TableDetail, RowPerPage, Pagination, InputFilter, RangePickerDateFilter, SliderFilter } from "~/components/ui";
-import { useDropdown } from "~/application/hook/useDropdown";
+import { TableDetail, RowPerPage, Pagination, InputFilter, RangePickerDateFilter, SliderFilter, CurpForm } from "~/components/ui";
 import { useDropdownBoolean, useParamsPaginator, useRenderCell } from "~/application";
+import { useDropdown } from "~/application/hook/useDropdown";
+import { clientAction } from '../../../application/client/client.action';
 
 export {
-   clientLoader as loader
+   clientLoader as loader,
+   clientAction as action
 }
 
 interface Loader {
@@ -99,10 +101,7 @@ export default function ClientsPage() {
     falseField: 'noRenovate'
   });
 
-  const {
-    defaultValue,
-    handleValueChange
-  } = useDropdown({
+  const { defaultValue, handleValueChange } = useDropdown({
     param: 'status',
     type: 'string',
     value: loader?.serverData?.status
@@ -155,6 +154,7 @@ export default function ClientsPage() {
       variant="bordered"
       labelPlacement="outside"
       className="max-w-xs"
+      disallowEmptySelection
       selectedKeys={visibleColumns}
       onSelectionChange={setVisibleColumns}
     >
@@ -167,6 +167,8 @@ export default function ClientsPage() {
   }, [visibleColumns])
 
   return <>
+    <Outlet />
+    <CurpForm />
     <div className='w-full flex gap-2 mt-5 mb-3 flex-wrap justify-between items-center'>
       <InputFilter 
         param="client" 

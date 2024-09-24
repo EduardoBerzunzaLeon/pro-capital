@@ -4,7 +4,7 @@ import { JSX } from "react/jsx-runtime";
 
 
 interface Props {
-  toggle: () => void
+  toggle: () => void,
 }
 
 type PathProps = JSX.IntrinsicAttributes & SVGMotionProps<SVGPathElement> & RefAttributes<SVGPathElement>;

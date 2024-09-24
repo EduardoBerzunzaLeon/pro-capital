@@ -8,8 +8,9 @@ export function baseRepository<
     P extends Generic, 
     S,
     D extends Generic,
-    C extends Generic
->(entity: T): BaseRepositoryI<T, P, S, D, C> {
+    C extends Generic,
+    O extends Generic
+>(entity: T): BaseRepositoryI<T, P, S, D, C, O> {
 
     function prepareParams(searchParams?: P, select?: S) {
 
@@ -60,9 +61,9 @@ export function baseRepository<
         }   
     }
     
-    async function findMany({ searchParams, select, take }: FindManyProps<P,S>) {
+    async function findMany({ searchParams, select, take, orderBy }: FindManyProps<P,S,O>) {
         const params =  prepareParams(searchParams, select);
-        return await entity.findMany({ ...params, take: take ?? 10 });
+        return await entity.findMany({ ...params, take: take ?? 10, orderBy });
     }
 
     async function updateOne(searchParams: P, data: D) {

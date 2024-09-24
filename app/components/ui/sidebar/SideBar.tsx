@@ -1,10 +1,8 @@
-// import { Link } from "@remix-run/react";
-import { motion, useCycle } from "framer-motion";
-import { useRef } from "react";
+import { motion } from "framer-motion";
 import "./styles.css";
 import { Navigation } from "./Navigation";
 import { MenuToggle } from "./MenuToggle";
-import { useDimensions } from "~/application";
+import { useComponentVisible, useDimensions } from "~/application";
 
 const sidebar = {
   open: (height = 1000) => ({
@@ -29,27 +27,26 @@ const sidebar = {
 };
 
 export default function SideBar() {
-  const [isOpen, toggleOpen] = useCycle(false, true);
-  const containerRef = useRef(null);
-  const { height } = useDimensions(containerRef);
+  const { ref, isComponentVisible, setIsComponentVisible } =
+  useComponentVisible(false);
+  const { height } = useDimensions(ref);
+
+  const handlerToggle = ( ) => {
+    setIsComponentVisible(!isComponentVisible)
+  }
 
   // TODO: verificar la salida del sidebar, cuando den click fuera del foco
   return (
       <motion.nav
         initial={false}
-        animate={isOpen ? "open" : "closed"}
-        onBlur={() => {
-          if(isOpen) {
-            toggleOpen()
-          }
-        }}
+        animate={isComponentVisible ? "open" : "closed"}
         custom={height}
-        ref={containerRef}
+        ref={ref}
         className="sidebar"
       >
         <motion.div className="background bg-content2" variants={sidebar} />
         <Navigation/>
-        <MenuToggle toggle={() => toggleOpen()} />
+        <MenuToggle toggle={handlerToggle} />
       </motion.nav>
   );
   } 

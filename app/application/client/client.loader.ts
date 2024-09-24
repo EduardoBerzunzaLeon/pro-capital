@@ -1,7 +1,6 @@
-
 import { json, LoaderFunction } from '@remix-run/node';
 import { Generic } from '~/.server/interfaces';
-import { handlerSuccess, parseBoolean, parseRangeDate } from '~/.server/reponses';
+import { handlerSuccess, parseArray, parseBoolean, parseRangeDate, parseRangeInt } from '~/.server/reponses';
 import { getEmptyPagination } from '~/.server/reponses/handlerError';
 import { handlerPaginationParams } from '~/.server/reponses/handlerSuccess';
 import { Service } from '~/.server/services';
@@ -44,42 +43,23 @@ const columnSortNames: Generic = {
     const status = url.searchParams.get('status') || '';
     const canRenovate = url.searchParams.get('canRenovate') || '';
     const debt = url.searchParams.get('debt') || '';
-  
-    const debtParsed = debt
-      ? JSON.parse(debt)
-      : '';
-  
-    const debtFormatted: { column: string, value: unknown} = {
-      column: 'currentDebt',
-      value: ''
-    };
-  
-    if(Array.isArray(debtParsed) && debtParsed.length === 2) {
-      debtFormatted.value = {
-          start: Number(debtParsed[0]),
-          end: Number(debtParsed[1])
-      }
-    }
-     
-    let statusParsed = status
-      ? JSON.parse(status)
-      : 'notUndefined';
-  
-    if(!Array.isArray(statusParsed)) {
-      statusParsed = 'notUndefined';
-    }
     
+    const statusParsed =  parseArray(status);
     const canRenovateParsed = parseBoolean(canRenovate);
-  
-    try {
+    const creditAtParsed = parseRangeDate(creditStart, creditEnd)
+    const captureAtParsed = parseRangeDate(captureStart, captureEnd);
+    const debtParsed = parseRangeInt(debt);
     
-        const curpParsed = { column: 'curp', value: curp };
-        const folderParsed = { column: 'folder.name', value: folder.toLowerCase() };
-        const fullnameParsed = { column: 'client.fullname', value: client.toLowerCase() };
-        const statusFormatted = { column: 'status', value: statusParsed };
-        const canRenovateFormatted = { column: 'canRenovate', value: canRenovateParsed };
-        const creditAtParsed = parseRangeDate('creditAt', creditStart, creditEnd)
-        const captureAtParsed = parseRangeDate('captureAt', captureStart, captureEnd);
+    try {
+      
+      const curpParsed = { column: 'curp', value: curp.toUpperCase() };
+      const folderParsed = { column: 'folder.name', value: folder.toLowerCase() };
+      const fullnameParsed = { column: 'client.fullname', value: client.toLowerCase() };
+      const statusFormatted = { column: 'status', value: statusParsed };
+      const canRenovateFormatted = { column: 'canRenovate', value: canRenovateParsed };
+      const creditAtFormatted = { column: ' creditAt', value:  creditAtParsed };
+      const captureAtFormatted = { column: 'captureAt', value: captureAtParsed };
+      const debtFormatted = { column: 'currentDebt', value: debtParsed };
       
       const {
         page, limit, column, direction
@@ -97,8 +77,8 @@ const columnSortNames: Generic = {
           statusFormatted, 
           canRenovateFormatted,
           debtFormatted,
-          captureAtParsed,
-          creditAtParsed,
+          captureAtFormatted,
+          creditAtFormatted,
        ]
       });
       

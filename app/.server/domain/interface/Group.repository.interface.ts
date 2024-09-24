@@ -8,7 +8,8 @@ export type BaseGroupI = BaseRepositoryI<
     Prisma.GroupWhereInput, 
     Prisma.GroupSelect,
     Prisma.XOR<Prisma.GroupUpdateInput, Prisma.GroupUncheckedUpdateInput>,
-    Prisma.XOR<Prisma.GroupCreateInput, Prisma.GroupUncheckedCreateInput>
+    Prisma.XOR<Prisma.GroupCreateInput, Prisma.GroupUncheckedCreateInput>,
+    Prisma.GroupOrderByWithRelationInput | Prisma.GroupOrderByWithRelationInput[]
 >;
 
 export interface GroupRepositoryI {

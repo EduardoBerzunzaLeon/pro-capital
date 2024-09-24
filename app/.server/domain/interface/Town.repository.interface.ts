@@ -13,7 +13,8 @@ export type BaseTownI = BaseRepositoryI<
     Prisma.TownWhereInput, 
     Prisma.TownSelect,
     Prisma.XOR<Prisma.TownUpdateInput, Prisma.TownUncheckedUpdateInput>,
-    Prisma.XOR<Prisma.TownCreateInput, Prisma.TownUncheckedCreateInput>
+    Prisma.XOR<Prisma.TownCreateInput, Prisma.TownUncheckedCreateInput>,
+    Prisma.TownOrderByWithRelationInput | Prisma.TownOrderByWithRelationInput[]
 >;
 
 export interface TownRepositoryI {

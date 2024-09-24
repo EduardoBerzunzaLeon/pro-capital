@@ -13,6 +13,7 @@ export * from './route';
 export * from './leader';
 export * from './filters';
 export * from './table';
+export * from './credit';
 
 
 

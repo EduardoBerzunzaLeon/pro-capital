@@ -1,3 +1,5 @@
+
+export { useComponentVisible } from "./useComponentVisible";
 export { useDimensions } from "./useDimensions";
 export { useDropdown } from "@nextui-org/react";
 export { useDropdownBoolean } from "./useDropdownBoolean";

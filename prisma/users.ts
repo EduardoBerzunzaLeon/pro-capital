@@ -200,7 +200,7 @@ export const clients: Client[] = [
         fullname: 'fatima pacheco bernes',
         address: 'fraccionamiento la riviera',
         reference: 'casa blanca de dos pisos',
-        curp: 'FATM290893MCCNRD01',
+        curp: 'AUNI760709MCCYHV00',
         guarantee: 'television de 30 in',
         type: 'NORMAL',
     },
@@ -238,7 +238,7 @@ export const avals = [
         fullname: 'fatima bernes hermoxa',
         address: 'col bosque real',
         reference: 'atras de refaccionaria leon',
-        curp: 'FATN290893MCCNRD01',
+        curp: 'AUNI760709MCCYHV01',
         guarantee: 'television de 30 in',
     },
     {
@@ -274,6 +274,7 @@ interface Credit {
     folder: string,
     amount: number,
     paymentAmount: number,
+    totalAmount: number,
     captureAt: string,
     creditAt: string,
     canRenovate: boolean,
@@ -286,11 +287,12 @@ interface Credit {
 
 export const credits: Credit[] = [
     {
-        aval: 'FATN290893MCCNRD01',
-        client: 'FATM290893MCCNRD01',
+        aval: 'AUNI760709MCCYHV01',
+        client: 'AUNI760709MCCYHV00',
         group: 2,
         folder: 'champoton 1',
         amount: 1500,
+        totalAmount: 2250,
         paymentAmount: 150,
         captureAt:  new Date(2024, 6, 1).toISOString(),
         creditAt:  new Date(2024, 6, 1).toISOString(),
@@ -317,7 +319,7 @@ interface PaymentDetail {
 
 export const paymentDetail: PaymentDetail[] = [
     {
-        client: 'FATM290893MCCNRD01',
+        client: 'AUNI760709MCCYHV00',
         folder: 'champoton 1',
         group: 2,
         paymentAmount: 300,

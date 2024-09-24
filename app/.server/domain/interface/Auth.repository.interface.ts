@@ -7,7 +7,8 @@ export type BaseAuthI = BaseRepositoryI<
     Prisma.UserWhereInput, 
     Prisma.UserSelect,
     Prisma.XOR<Prisma.UserUpdateInput, Prisma.UserUncheckedUpdateInput>,
-    Prisma.XOR<Prisma.UserCreateInput, Prisma.UserUncheckedCreateInput>
+    Prisma.XOR<Prisma.UserCreateInput, Prisma.UserUncheckedCreateInput>,
+    Prisma.UserOrderByWithRelationInput | Prisma.UserOrderByWithRelationInput[]
 >;
 
 

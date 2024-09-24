@@ -26,6 +26,7 @@ export const leaderLoader: LoaderFunction = async ({ request }) => {
   const name = url.searchParams.get('name') || '';
   
   const isActiveParsed = parseBoolean(isActive);
+  const datesParsed = parseRangeDate(start, end);
 
   try {
   
@@ -33,7 +34,7 @@ export const leaderLoader: LoaderFunction = async ({ request }) => {
       const curpParsed = { column: 'curp', value: curp };
       const folderParsed = { column: 'folder.name', value: folder.toLowerCase() };
       const fullnameParsed = { column: 'fullname', value: name.toLowerCase() };
-      const datesParsed = parseRangeDate('aniversaryDate', start, end);
+      const datesFormatted = { column: 'aniversaryDate', value: datesParsed };
 
     const {
       page, limit, column, direction
@@ -44,7 +45,7 @@ export const leaderLoader: LoaderFunction = async ({ request }) => {
       limit, 
       column: columnSortNames[column] ?? 'fullname', 
       direction,
-      search: [isActiveFormatted, curpParsed, folderParsed, fullnameParsed, datesParsed]
+      search: [isActiveFormatted, curpParsed, folderParsed, fullnameParsed, datesFormatted]
     });
     
     return handlerSuccess(200, { 

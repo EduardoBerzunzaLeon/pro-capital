@@ -8,9 +8,10 @@ export interface FindManyWithPaginatorProps<P,S> {
     select?: S,
 }
 
-export interface FindManyProps<P,S> {
+export interface FindManyProps<P,S,O> {
     searchParams?: P,
     select?: S,
+    orderBy?: O,
     take?: number
 }
 
@@ -26,10 +27,10 @@ export interface Metadata {
     nextPage: number | null,
 }
 
-export interface BaseRepositoryI<T, P, S, D, C> {
+export interface BaseRepositoryI<T, P, S, D, C, O> {
     findOne: (searchParams: P, select?: S, isUnique?: boolean) => Promise<Generic | undefined>,
     findManyPaginator: ({ searchParams, select, paginatonWithFilter }: FindManyWithPaginatorProps<P,S>) => Promise<ResponseWithMetadata>,
-    findMany: ({ searchParams, select, take }: FindManyProps<P,S>) => Promise<Generic[] | undefined>,
+    findMany: ({ searchParams, select, take }: FindManyProps<P,S, O>) => Promise<Generic[] | undefined>,
     updateOne: (searchParams: P, data: D) => Promise<Generic | undefined>,
     updateMany: (searchParams: P, data: D) => Promise<Generic | undefined>,
     deleteOne: (searchParams: P) => Promise<Generic | undefined>,
@@ -39,6 +40,6 @@ export interface BaseRepositoryI<T, P, S, D, C> {
     entity: T
 }
 
-export interface GenericRepository<T, P, S, D, C> {
-    base: BaseRepositoryI<T, P, S, D, C>
+export interface GenericRepository<T, P, S, D, C, O> {
+    base: BaseRepositoryI<T, P, S, D, C, O>
 }

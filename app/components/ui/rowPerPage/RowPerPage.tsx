@@ -24,6 +24,7 @@ export function RowPerPage({ onChange, checkParams }: Props) {
                 labelPlacement="outside-left"
                 className="red-dark text-foreground bg-content1 outline-none text-small pl-4"
                 onChange={onChange}
+                disallowEmptySelection
                 defaultSelectedKeys={[defaultValue]}
             >
                 {

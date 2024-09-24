@@ -7,7 +7,8 @@ export type BaseMunicipalityI = BaseRepositoryI<
     Prisma.MunicipalityWhereInput, 
     Prisma.MunicipalitySelect,
     Prisma.XOR<Prisma.MunicipalityUpdateInput, Prisma.MunicipalityUncheckedUpdateInput>,
-    Prisma.XOR<Prisma.MunicipalityCreateInput, Prisma.MunicipalityUncheckedCreateInput>
+    Prisma.XOR<Prisma.MunicipalityCreateInput, Prisma.MunicipalityUncheckedCreateInput>,
+    Prisma.MunicipalityOrderByWithRelationInput | Prisma.MunicipalityOrderByWithRelationInput[]
 >;
 
 export interface MunicipalityRepositoryI {

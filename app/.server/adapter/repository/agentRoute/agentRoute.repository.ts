@@ -1,7 +1,6 @@
 import { AgentRouteRepositoryI, BaseAgentRouteI, PaginationWithFilters } from "~/.server/domain/interface";
 import { db } from "../../db";
 
-
 export interface CreateOne {
     routeId: number,
     userId: number,
@@ -37,15 +36,15 @@ export function AgentRouteRepository(base: BaseAgentRouteI): AgentRouteRepositor
 
     async function deleteMany(ids: number[], assignAt: Date) {
         return await base.deleteMany({ 
-            id: { in: ids }, 
-            assignAt: {equals: assignAt} 
+            userId: { in: ids }, 
+            assignAt
         });
     }
 
     async function deleteManyByRoute(routeId: number, assignAt: Date) {
         return await base.deleteMany({
             routeId,
-            assignAt: { equals: assignAt}
+            assignAt
         })
     }
 

@@ -62,6 +62,8 @@ const deleteMany = async ({routeId, agentIds, assignAt}: DeleteManyProps) => {
         Repository.agentRoute.deleteManyByRoute(routeId, assignAt),
     ]);
 
+    console.log({deletedById, deletedByRoutes, assignAt, agentIds});
+
     if(!deletedById || !deletedByRoutes) {
         throw ServerError.internalServer('No se pudo desasignar los agentes a sus rutas anteriores');
     }

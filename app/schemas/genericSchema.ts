@@ -96,6 +96,7 @@ export const dateSchema = (requiredText: string) => z.coerce.date({
 
 export const idSchema = z.object({ id });
 export const nameSchema = z.object({ name });
+export const curpSchema = z.object({ curp });
 export const activeSchema = z.object({ isActive: active });
 export const alphabetSchema = z.object({ value: alphabet });
 export const actionSchema = z.object({ _action: alphabet });
@@ -106,4 +107,5 @@ export default {
     idSchema,
     nameSchema,
     actionSchema,
+    curpSchema
 }

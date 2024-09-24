@@ -66,9 +66,41 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
 
     }
 
+    async function findByCurp(curp: string) {
+        return await base.findOne({ client: { curp } }, { 
+            id: true, 
+            client: {
+                select: { isDeceased: true }
+            }
+        });
+    }
+
+    async function findLastCredit(curp: string) {
+
+        return await base.findMany({ 
+            searchParams: { client: { curp }},
+            select: {
+                id: true,
+                totalAmount: true,
+                currentDebt: true,
+                paymentAmount: true,
+                client: {
+                    select: {
+                        fullname: true
+                    }
+                }
+            },
+            orderBy: {
+                creditAt: 'desc'
+            },
+            take: 1
+        });
+    }
 
     return {
         findAll,
+        findByCurp,
+        findLastCredit,
         base
     }
 

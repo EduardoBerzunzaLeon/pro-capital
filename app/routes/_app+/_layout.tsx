@@ -35,7 +35,7 @@ export default function Dashboard() {
           >Cliente A</BreadcrumbItem>
         </Breadcrumbs>
 
-        <section className="w-11/12 flex flex-col items-center justify-start m-auto pt-5 pb-2">
+        <section className="w-11/12 flex flex-col items-center justify-start m-auto pt-5 pb-3">
           <Outlet />  
         </section>
       { 

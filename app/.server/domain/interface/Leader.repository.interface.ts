@@ -31,7 +31,8 @@ export type BaseLeaderI = BaseRepositoryI<
     Prisma.LeaderWhereInput, 
     Prisma.LeaderSelect,
     Prisma.XOR<Prisma.LeaderUpdateInput, Prisma.LeaderUncheckedUpdateInput>,
-    Prisma.XOR<Prisma.LeaderCreateInput, Prisma.LeaderUncheckedCreateInput>
+    Prisma.XOR<Prisma.LeaderCreateInput, Prisma.LeaderUncheckedCreateInput>,
+    Prisma.LeaderOrderByWithRelationInput | Prisma.LeaderOrderByWithRelationInput[]
 >;
 
 export interface LeaderRepositoryI{

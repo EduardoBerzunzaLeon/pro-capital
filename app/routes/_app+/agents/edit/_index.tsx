@@ -20,25 +20,28 @@ export const action: ActionFunction = async({ request }) => {
   const {  route, assignAt, ...agents } = data;
   const keys = Object.keys(agents);
 
+  
   try {
     
-  const agentIds: number[] = keys.reduce((acc: number[], key) => {
-    if(key.includes('id')) {
-      const id = Number(agents[key]);
-      if(isNaN(id)) {
-        throw ServerError.badRequest('Los agentes seleccionados no son validos.')
+    const agentIds: number[] = keys.reduce((acc: number[], key) => {
+      if(key.includes('id')) {
+        const id = Number(agents[key]);
+        if(isNaN(id)) {
+          throw ServerError.badRequest('Los agentes seleccionados no son validos.')
+        }
+        return [
+          ...acc,
+          Number(id)
+        ]
       }
-      return [
-        ...acc,
-        Number(id)
-      ]
-    }
-    return acc;
-  }, [] );
+      return acc;
+    }, [] );
+
+    console.log({assignAt});
 
   await Service.agent.createMany({
     routeId: Number(route), 
-    assignAt: dayjs(String(assignAt)).toDate(), 
+    assignAt: dayjs(assignAt+'T00:00:00.000Z').toDate(), 
     agentIds
   });
   return handlerSuccessWithToast('create');

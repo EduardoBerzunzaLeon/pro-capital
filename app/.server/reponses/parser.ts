@@ -1,15 +1,21 @@
 
 import dayjs from "dayjs";
 
-export const parseBoolean = (value: string) => {
-
+export const parseArray = (value: string) => {
     let valueParsed = value
-        ? JSON.parse(value+'')
-        : 'notUndefined';
-
+    ? JSON.parse(value+'')
+    : 'notUndefined';
+    
     if(!Array.isArray(valueParsed)) {
         valueParsed = 'notUndefined';
     }
+
+    return valueParsed;
+}
+
+export const parseBoolean = (value: string) => {
+
+    let valueParsed = parseArray(value);
 
     if(valueParsed.length === 1) {
         valueParsed = Boolean(valueParsed[0]);
@@ -22,11 +28,31 @@ export const parseBoolean = (value: string) => {
     return valueParsed;
 }
 
-export const parseRangeDate = (field: string, start: string, end: string) => {
+export const parseRangeDate = (start: string, end: string) => {
     return (!start || !end) 
-    ? { column: field, value: ''}
-    : { column:  field, value: {
+    ? ''
+    : {
       start: dayjs(start+'T00:00:00.000Z').toDate(),
       end: dayjs(end).toDate()
-    }}
+    }
+}
+
+
+export const parseRangeInt = (value: string) => {
+    const parsed = value
+      ? JSON.parse(value)
+      : '';
+
+    let newValue: string 
+        | { start: number, end: number } = '';  
+
+    if(Array.isArray(parsed) && parsed.length === 2) {
+        newValue = {
+            start: Number(parsed[0]),
+            end: Number(parsed[1])
+        }
+    }
+
+    return newValue;
+       
 }
