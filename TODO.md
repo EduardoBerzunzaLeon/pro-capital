@@ -21,5 +21,14 @@
 # SERVER:
     - Agregar el user repository y service
 
+
+# - ERRROR: 
+    Cuando le doy escape ocurre un error
 # Opciones de ampliacion
     - Controlar Ataque CSRF: https://github.com/sergiodxa/remix-utils#csrf
+    - Hacer un reporte vacio con los datos, 
+
+# NOTES 
+    - Puede renovar siempre y cuando llegue al monto del pago numero 10 
+    - Si tiene algun retrazo en algun pago no se le condena ningun pago
+
