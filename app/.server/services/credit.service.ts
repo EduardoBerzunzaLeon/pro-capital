@@ -3,7 +3,7 @@ import { Service } from ".";
 import { Repository } from "../adapter";
 import { Credit } from "../domain/entity";
 import { PaginationWithFilters } from "../domain/interface";
-import { validationConform } from "./validation.service";
+import { validationConform, validationZod } from "./validation.service";
 import { ServerError } from "../errors";
 
 
@@ -19,6 +19,15 @@ export const findAll = async (props: PaginationWithFilters) => {
     });
 
 }
+export const validationToCreate = async (curp?: string) => {
+    
+    const { curp: curpValidated } = validationZod({ curp }, curpSchema);
+
+    const clientDb = await Repository.credit.findByCurp(curpValidated);
+    if(clientDb) {
+        throw ServerError.badRequest('El cliente ya existe')
+    }
+} 
 
 export const verifyToCreate =  async ( form: FormData ) => {
     const { curp } = validationConform(form, curpSchema);
@@ -63,5 +72,6 @@ const verifyCanRenovate = ({ totalAmount, currentDebt, paymentAmount }: CreditI)
 
 export default{ 
     findAll,
-    verifyToCreate
+    verifyToCreate,
+    validationToCreate
 }

@@ -1,3 +1,4 @@
+export type { AvalRepositoryI, BaseAvalI } from './Aval.repository.interface';
 export type { 
     LeaderRepositoryI, 
     BaseLeaderI,
@@ -13,7 +14,3 @@ export type { BaseMunicipalityI, MunicipalityRepositoryI } from './Municipality.
 export type { BaseTownI, TownRepositoryI, UpdateTownProps} from './Town.repository.interface';
 export type { FindManyWithPaginatorProps, FindManyProps, ResponseWithMetadata, Metadata, BaseRepositoryI, GenericRepository } from './Base.repository.interface';
 export type { PaginationI, PaginationProps, Filter, PaginationWithFilters} from './Pagination.interface';
-
-
-
-
