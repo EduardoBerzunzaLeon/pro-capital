@@ -1,17 +1,5 @@
 import { z } from "zod";
-import { name, id, curp, alphabetBuilder, stringSchema, dateSchema } from "./genericSchema";
-
-const lastNameFirst = alphabetBuilder({
-    requiredText: 'Primer Apellido',
-    minText: 'El primer apellido',
-    extraText: 'El primer apellido'
-});
-
-const lastNameLast = alphabetBuilder({
-    requiredText: 'Segundo Apellido',
-    minText: 'El segundo apellido',
-    extraText: 'El segundo apellido'
-});
+import { name, id, curp, stringSchema, dateSchema, lastNameFirst, lastNameLast } from "./genericSchema";
 
 export const CreateLeaderSchema = z.object({
     name,

@@ -92,6 +92,18 @@ export const dateSchema = (requiredText: string) => z.coerce.date({
     invalid_type_error: `${requiredText} invalido`,
     required_error: "Requerido",
 })
+
+export const lastNameFirst = alphabetBuilder({
+    requiredText: 'Primer Apellido',
+    minText: 'El primer apellido',
+    extraText: 'El primer apellido'
+});
+
+export const lastNameLast = alphabetBuilder({
+    requiredText: 'Segundo Apellido',
+    minText: 'El segundo apellido',
+    extraText: 'El segundo apellido'
+});
 // export const dateSchema = (requiredText?: string) => z.string().pipe(z.coerce.date())
 
 export const idSchema = z.object({ id });

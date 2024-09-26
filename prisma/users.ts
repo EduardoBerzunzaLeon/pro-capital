@@ -131,7 +131,8 @@ type Appointment =
 'GERENCIA'|
 'SUBGERENTE'|
 'DIRECTOR';
-type Types = 'EMPLEADO' | 'LIDER' | 'NORMAL';
+
+export type Types = 'EMPLEADO' | 'LIDER' | 'NORMAL';
   
 
 interface User {
@@ -188,7 +189,6 @@ interface Client {
     address: string,
     reference: string,
     curp: string,
-    type: Types,
     guarantee: string
 }
 
@@ -202,7 +202,6 @@ export const clients: Client[] = [
         reference: 'casa blanca de dos pisos',
         curp: 'AUNI760709MCCYHV00',
         guarantee: 'television de 30 in',
-        type: 'NORMAL',
     },
     {
         name: 'maria',
@@ -213,7 +212,6 @@ export const clients: Client[] = [
         reference: 'a lado del pollo pollon',
         curp: 'JATM290893MCCNRD01',
         guarantee: 'television de 30 in',
-        type: 'LIDER',
     },
     {
         name: 'carlos',
@@ -224,7 +222,6 @@ export const clients: Client[] = [
         reference: 'casa blanca de dos pisos',
         curp: 'BELC290893MCCNRD01',
         guarantee: 'television de 30 in',
-        type: 'EMPLEADO',
     },
 ]
 

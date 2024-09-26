@@ -6,26 +6,40 @@ import { AutocompleteCombobox } from "../forms/Autocomplete"
 import { Autocomplete } from "~/.server/interfaces";
 import { useFetcher } from "@remix-run/react";
 import { AvalCreditsWarning } from "./AvalCreditsWarning";
-import { FieldMetadata } from '@conform-to/react';
-import { InputValidation } from "../forms/Input";
+import { FieldMetadata, useInputControl } from '@conform-to/react';
+import { useEffect } from "react";
+import { AvalSchema, CreditCreateSchema } from '../../../schemas/creditSchema';
 
-type Fields = FieldMetadata<{ name: string }, {
-  aval: {
-      name: string;
-  };
-}, string[]>
+type Fields = FieldMetadata<AvalSchema, CreditCreateSchema, string[]>
 
 interface Props {
-  fields: any,
-  setName: any
+  fields: Fields,
 }
 
-export const AvalFormSection = ({ fields, setName }: Props) => {
+interface FetcherData {
+  id: number,
+  name: string,
+  lastNameFirst: string,
+  lastNameSecond: string,
+  fullname: string,
+  address: string,
+  reference: string,
+  curp: string,
+  guarantee: string,
+  phoneNumber: string,
+  credits: any[],
+}
+
+export const AvalFormSection = ({ fields }: Props) => {
 
   // const [curp, setCurp] = useState('');
-  const fetcher = useFetcher();
+  const fetcher = useFetcher<FetcherData>();
+  const aval = fields.getFieldset();
 
-  console.log({data: fetcher.data});
+  const name = useInputControl(aval.name);
+  // const curp = useInputControl(aval.curp);
+
+  console.log({name: name.value})
 
   const handleSelected = ({ id }: Autocomplete) => {
 
@@ -35,8 +49,17 @@ export const AvalFormSection = ({ fields, setName }: Props) => {
 
     fetcher.load(`/aval/${id}`);
 
-    // setCurp(value.value)
   }
+
+  useEffect(() => {
+
+    if(fetcher.data?.id && fetcher.state === 'idle') {
+      name.change(fetcher.data.name ?? name.value) 
+    }
+
+  }, [fetcher.data?.id, fetcher.state]);
+
+  // console.log(name);
 
 
   return (
@@ -57,15 +80,18 @@ export const AvalFormSection = ({ fields, setName }: Props) => {
       {/* <InputValidation
           label="Nombre(s) del aval"
           placeholder="Ingresa el/los nombre(s)"
-          metadata={fields}
+          metadata={aval.name}
       /> */}
       <Input 
         variant='bordered'
         labelPlacement="outside"
         label='Nombre'
         isRequired
-        value={fields}
-        onValueChange={setName}
+        // key={name.key}
+        // name={name.name}
+        // defaultValue={name.initialValue}
+        value={name.value}
+        onValueChange={name.change}
       />
       <Input 
         variant='bordered'

@@ -9,6 +9,7 @@ export const loader: LoaderFunction = async({ params }) => {
         return  await Service.aval.findOne(params.avalId);
     } catch (error) {
         console.log({error})
+        return []
     }
 
 }

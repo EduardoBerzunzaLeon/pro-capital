@@ -1,5 +1,5 @@
 import { LoaderFunction } from "@remix-run/node"
-import { useLoaderData, useRouteError } from "@remix-run/react";
+import { Form, useLoaderData, useRouteError } from "@remix-run/react";
 import { Generic } from "~/.server/interfaces";
 import { handlerError } from "~/.server/reponses";
 import { Service } from "~/.server/services";
@@ -7,7 +7,7 @@ import { ErrorCard } from "~/components/utils/ErrorCard";
 import { ClientFormSection } from '../../../components/ui/credit/ClientFormSection';
 import { AvalFormSection, CreditFormSection } from "~/components/ui";
 import { Accordion, AccordionItem } from "@nextui-org/react";
-import { useForm } from "@conform-to/react";
+import { useForm, useInputControl } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import { creditCreateSchema } from "~/schemas";
 import { useState } from "react";
@@ -38,47 +38,67 @@ export default function CreateCredit () {
 
     const loader = useLoaderData<string>();
 
-    const [name, setName ] = useState('');
-
     const [form, fields] = useForm({
         onValidate({ formData }) {
           return parseWithZod(formData, { schema: creditCreateSchema });
         },
-        shouldValidate: 'onInput',
-        shouldRevalidate: 'onSubmit',
+        defaultValue: {
+            aval: {
+                name: '',
+                lastNameFirst: '',
+                lastNameSecond: '',
+                address: '',
+                reference: '',
+                curp: '',
+                guarantee: '',
+                phoneNumber: ''
+            },
+
+        },
+        shouldValidate: 'onSubmit',
+        shouldRevalidate: 'onInput',
       }); 
-    
 
-    console.log({ name });
-
-
+    //   const aval = fields.aval.getFieldset();
 
     return (
-        <Accordion variant="splitted" selectionMode="multiple">
-            <AccordionItem 
-                key="1" 
-                aria-label="Formulario del cliente" 
-                title="Formulario del Cliente"
+        <Form
+            method="post" 
+            id={form.id} 
+            onSubmit={form.onSubmit} 
+            noValidate
+            className="w-full"
+        >
+            <Accordion 
+                variant="splitted" 
+                selectionMode="multiple"
+                defaultExpandedKeys={'all'}
+                keepContentMounted
             >
-                <ClientFormSection />
-            </AccordionItem>
-            <AccordionItem 
-                key="2" 
-                aria-label="Formulario del Aval" 
-                title="Formulario del Aval"
-            >
-                <AvalFormSection 
-                    fields={name}
-                    setName={setName}
-                />
-            </AccordionItem>
-            <AccordionItem 
-                key="3" 
-                aria-label="Formulario del credito" 
-                title="Formulario del Crédito"
-            >
-                <CreditFormSection />
-            </AccordionItem>
-        </Accordion>
+                    <AccordionItem 
+                        key="1" 
+                        aria-label="Formulario del cliente" 
+                        title="Formulario del Cliente"
+                    >
+                        <ClientFormSection />
+                    </AccordionItem>
+                    <AccordionItem 
+                        key="2" 
+                        aria-label="Formulario del Aval" 
+                        title="Formulario del Aval"
+                    >
+                        <AvalFormSection 
+                            fields={fields.aval}
+                        />
+                    </AccordionItem>
+                    <AccordionItem 
+                        key="3" 
+                        aria-label="Formulario del credito" 
+                        title="Formulario del Crédito"
+                    >
+                        <CreditFormSection />
+                    </AccordionItem>
+            </Accordion>
+        </Form>
     )
 }

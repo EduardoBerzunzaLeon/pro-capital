@@ -1,11 +1,20 @@
 import { z } from "zod";
-import { name } from "./genericSchema";
+import { curp, lastNameFirst, lastNameLast, name, stringSchema } from "./genericSchema";
 
 export const avalSchema = z.object({
-    name
+    name,
+    lastNameFirst,
+    lastNameSecond: lastNameLast,
+    address: stringSchema('Dirección'),
+    reference: stringSchema('Referencia'),
+    curp: curp,
+    guarantee: stringSchema('Garantía'),
+    phoneNumber: stringSchema('Numero de telefono')
 })
 
 export const creditCreateSchema = z.object({
     aval: avalSchema,
-    name: name
 })
+
+export type AvalSchema = z.infer<typeof avalSchema>;
+export type CreditCreateSchema = z.infer<typeof creditCreateSchema>;
