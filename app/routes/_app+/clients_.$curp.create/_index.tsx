@@ -7,10 +7,9 @@ import { ErrorCard } from "~/components/utils/ErrorCard";
 import { ClientFormSection } from '../../../components/ui/credit/ClientFormSection';
 import { AvalFormSection, CreditFormSection } from "~/components/ui";
 import { Accordion, AccordionItem } from "@nextui-org/react";
-import { useForm, useInputControl } from "@conform-to/react";
+import { useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import { creditCreateSchema } from "~/schemas";
-import { useState } from "react";
 
 export const loader: LoaderFunction = async ({ params }) => {
     
@@ -26,7 +25,6 @@ export const loader: LoaderFunction = async ({ params }) => {
 
 export function ErrorBoundary() {
     const error = useRouteError();
-
     return (<ErrorCard 
         error={(error as Generic)?.data ?? 'Ocurrio un error inesperado'}
         description='Ocurrio un error al momento de crear un nuevo credito, intentelo de nuevo, verifique el CURP o que no exista el cliente'
@@ -36,30 +34,15 @@ export function ErrorBoundary() {
 
 export default function CreateCredit () {
 
-    const loader = useLoaderData<string>();
+    const curp = useLoaderData<string>();
 
     const [form, fields] = useForm({
         onValidate({ formData }) {
           return parseWithZod(formData, { schema: creditCreateSchema });
         },
-        defaultValue: {
-            aval: {
-                name: '',
-                lastNameFirst: '',
-                lastNameSecond: '',
-                address: '',
-                reference: '',
-                curp: '',
-                guarantee: '',
-                phoneNumber: ''
-            },
-
-        },
         shouldValidate: 'onSubmit',
         shouldRevalidate: 'onInput',
       }); 
-
-    //   const aval = fields.aval.getFieldset();
 
     return (
         <Form
@@ -72,7 +55,7 @@ export default function CreateCredit () {
             <Accordion 
                 variant="splitted" 
                 selectionMode="multiple"
-                defaultExpandedKeys={'all'}
+                defaultExpandedKeys='all'
                 keepContentMounted
             >
                     <AccordionItem 
@@ -80,7 +63,9 @@ export default function CreateCredit () {
                         aria-label="Formulario del cliente" 
                         title="Formulario del Cliente"
                     >
-                        <ClientFormSection />
+                        <ClientFormSection 
+                            fields={fields.client}
+                        />
                     </AccordionItem>
                     <AccordionItem 
                         key="2" 

@@ -81,7 +81,7 @@ export function FolderRepository(base: BaseFolderI) : FolderRepositoryI {
                 select: {
                     groups: true
                 }
-            },
+            }, 
             groups: {
                 select: {
                     id: true,
@@ -95,6 +95,16 @@ export function FolderRepository(base: BaseFolderI) : FolderRepositoryI {
         }
 
         return await base.findOne({ id }, select, true);
+    }
+
+    async function findLastGroup(id: number) {
+        return await base.findOne({id}, {
+            groups: {
+                select: { id: true, name: true },
+                orderBy: { name: 'desc' },
+                take: 1
+            }
+        }, true);
     }
 
     async function deleteOne(id: number) {
@@ -117,6 +127,7 @@ export function FolderRepository(base: BaseFolderI) : FolderRepositoryI {
         findOne,
         findAutocomplete,
         findCountGroups,
+        findLastGroup,
         updateOne,
         deleteOne,
         createOne

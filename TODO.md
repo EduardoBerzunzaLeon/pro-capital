@@ -6,7 +6,7 @@
 
 # UI:
     - Agregar el isActive en carpeta y en su tabla crud
-    -- Bug en folder ya que lideres es un arreglo, debe traer solo la lider activa
+    -- Bug en folder ya que lideres es un arreglo, debe traer solo la lider activo
     - Separar la logica de agents Page - falta solo el loader y el rendercell ?
     - separar la logica del autocomplete multiple
     - añadir el breadcrumb
@@ -16,6 +16,10 @@
     - ponerle un estilo de loader en el navlink cuando cambia de pagina
     -- add prettier
     -- Agregar titulo en cada pagina
+    -- Agregar conform en auto completes
+    -- Agregar folder active autocomplete
+    -- Agregar filter input solo numeros
+
     
 
 # SERVER:

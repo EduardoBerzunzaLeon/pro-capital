@@ -1,7 +1,3 @@
-// import { useState } from "react";
-
-import { Input, Textarea } from "@nextui-org/react"
-
 import { AutocompleteCombobox } from "../forms/Autocomplete"
 import { Autocomplete } from "~/.server/interfaces";
 import { useFetcher } from "@remix-run/react";
@@ -9,11 +5,20 @@ import { AvalCreditsWarning } from "./AvalCreditsWarning";
 import { FieldMetadata, useInputControl } from '@conform-to/react';
 import { useEffect } from "react";
 import { AvalSchema, CreditCreateSchema } from '../../../schemas/creditSchema';
+import { InputValidation } from "../forms/Input";
+import { TextareaValidation } from "../forms/Textarea";
 
 type Fields = FieldMetadata<AvalSchema, CreditCreateSchema, string[]>
 
 interface Props {
   fields: Fields,
+}
+
+interface Credit {
+  status: string,
+  client: {
+      fullname: string
+  }
 }
 
 interface FetcherData {
@@ -27,7 +32,7 @@ interface FetcherData {
   curp: string,
   guarantee: string,
   phoneNumber: string,
-  credits: any[],
+  credits: Credit[],
 }
 
 export const AvalFormSection = ({ fields }: Props) => {
@@ -37,31 +42,38 @@ export const AvalFormSection = ({ fields }: Props) => {
   const aval = fields.getFieldset();
 
   const name = useInputControl(aval.name);
-  // const curp = useInputControl(aval.curp);
-
-  console.log({name: name.value})
+  const lastNameFirst = useInputControl(aval.lastNameFirst);
+  const lastNameSecond = useInputControl(aval.lastNameSecond);
+  const address = useInputControl(aval.address);
+  const reference = useInputControl(aval.reference);
+  // const guarantee = useInputControl(aval.guarantee);
+  const phoneNumber = useInputControl(aval.phoneNumber);
 
   const handleSelected = ({ id }: Autocomplete) => {
 
     if(id === fetcher.data?.id) {
       return;
     }
-
     fetcher.load(`/aval/${id}`);
-
   }
 
   useEffect(() => {
 
     if(fetcher.data?.id && fetcher.state === 'idle') {
-      name.change(fetcher.data.name ?? name.value) 
+      name.change(fetcher.data.name);
+      lastNameFirst.change(fetcher.data.lastNameFirst);
+      lastNameSecond.change(fetcher.data.lastNameSecond);
+      address.change(fetcher.data.address);
+      reference.change(fetcher.data.reference);
+      // TODO: preguntar si cargo las garantias por defecto
+      // guarantee.change(fetcher.data.guarantee);
+      phoneNumber.change(fetcher.data.phoneNumber);
     }
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetcher.data?.id, fetcher.state]);
 
   // console.log(name);
-
-
   return (
     <div>
       {(fetcher.data?.credits) && (
@@ -70,61 +82,61 @@ export const AvalFormSection = ({ fields }: Props) => {
         />
       )}
       <AutocompleteCombobox 
-        keyFetcher='findFolderAutocomplete' 
+        keyFetcher='findAvalCurpAutocomplete' 
         actionRoute='/aval/search' 
         label='CURP del aval' 
         comboBoxName='aval' 
         placeholder='Ingresa la CURP' 
         onSelected={handleSelected}
       />
-      {/* <InputValidation
+      <InputValidation
           label="Nombre(s) del aval"
           placeholder="Ingresa el/los nombre(s)"
           metadata={aval.name}
-      /> */}
-      <Input 
-        variant='bordered'
-        labelPlacement="outside"
-        label='Nombre'
-        isRequired
-        // key={name.key}
-        // name={name.name}
-        // defaultValue={name.initialValue}
-        value={name.value}
-        onValueChange={name.change}
+          value={name.value ?? ''}
+          onValueChange={name.change}
       />
-      <Input 
-        variant='bordered'
-        labelPlacement="outside"
-        label='Primer Apellido del aval'
-        isRequired
+      <InputValidation
+          label='Primer Apellido del aval'
+          placeholder="Ingresa el primer apellido"
+          metadata={aval.lastNameFirst}
+          value={lastNameFirst.value ?? ''}
+          onValueChange={lastNameFirst.change}
       />
-      <Input 
-        variant='bordered'
-        labelPlacement="outside"
-        label='Segundo Apellido del aval'
-        />
-      <Input 
-        variant='bordered'
-        labelPlacement="outside"
-        label='Dirección'
+      <InputValidation
+          label='Segundo Apellido del aval'
+          placeholder="Ingresa el segundo apellido"
+          metadata={aval.lastNameSecond}
+          value={lastNameSecond.value ?? ''}
+          onValueChange={lastNameSecond.change}
       />
-      <Textarea
-        label="Referencias"
-        variant='bordered'
-        labelPlacement="outside"
-        placeholder='Ingrese las referencias de la dirección'
+      <InputValidation
+          label='Dirección del aval'
+          placeholder="Ingresa la dirección"
+          metadata={aval.address}
+          value={address.value ?? ''}
+          onValueChange={address.change}
       />
-      <Textarea
-        label="Garantías"
-        variant='bordered'
-        labelPlacement="outside"
-        placeholder='Ingrese las garantías'
+      <TextareaValidation 
+          label='Referencia del aval'
+          placeholder="Ingresa la referencia"
+          metadata={aval.reference}
+          value={reference.value ?? ''}
+          onValueChange={reference.change}
       />
-      <Input 
-        variant='bordered'
-        labelPlacement="outside"
-        label='Telefono'
+      <TextareaValidation 
+          label='Garantías del aval'
+          placeholder="Ingresa las garantías"
+          metadata={aval.guarantee}
+          // value={guarantee.value ?? ''}
+          // onValueChange={guarantee.change}
+      />
+      <InputValidation
+        label='Telefono del aval'
+        placeholder="Ingresa el telefono"
+        metadata={aval.phoneNumber}
+        value={phoneNumber.value ?? ''}
+        onValueChange={phoneNumber.change}
       />
   </div>
   )

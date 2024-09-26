@@ -120,6 +120,11 @@ export const findNextConsecutive = async (townId: RequestId) => {
     return consecutive + 1;
 }
 
+export const findLastGroup = async (folderId: RequestId) => {
+    const { id } = validationZod({ id: folderId }, idSchema);
+    return await Repository.folder.findLastGroup(id);
+}
+
 export default {
     findAll,
     findOne,
@@ -127,5 +132,6 @@ export default {
     deleteOne,
     createOne,
     findNextConsecutive,
-    findAutocomplete
+    findAutocomplete,
+    findLastGroup
 }

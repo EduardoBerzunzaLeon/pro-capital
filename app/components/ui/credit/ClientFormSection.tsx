@@ -1,46 +1,55 @@
-import { Input, Textarea } from "@nextui-org/react"
+import { FieldMetadata } from "@conform-to/react"
+import { ClientSchema, CreditCreateSchema } from "~/schemas/creditSchema"
+import { InputValidation } from "../forms/Input"
+import { TextareaValidation } from "../forms/Textarea"
 
-export const ClientFormSection = () => {
+
+type Fields = FieldMetadata<ClientSchema, CreditCreateSchema, string[]>
+
+interface Props {
+  fields: Fields,
+}
+
+export const ClientFormSection = ({ fields }: Props) => {
+
+  const client = fields.getFieldset();
+
   return (
     <div>
-      <Input 
-        variant='bordered'
-        labelPlacement="outside"
-        label='Nombre(s) del cliente'
-        isRequired
+       <InputValidation
+          label="Nombre(s) del aval"
+          placeholder="Ingresa el/los nombre(s)"
+          metadata={client.name}
       />
-      <Input 
-        variant='bordered'
-        labelPlacement="outside"
-        label='Primer Apellido del cliente'
-        isRequired
+      <InputValidation
+          label='Primer Apellido del cliente'
+          placeholder="Ingresa el primer apellido"
+          metadata={client.lastNameFirst}
       />
-      <Input 
-        variant='bordered'
-        labelPlacement="outside"
-        label='Segundo Apellido del cliente'
-        />
-      <Input 
-        variant='bordered'
-        labelPlacement="outside"
-        label='Dirección'
+      <InputValidation
+          label='Segundo Apellido del cliente'
+          placeholder="Ingresa el segundo apellido"
+          metadata={client.lastNameSecond}
       />
-      <Textarea
-        label="Referencias"
-        variant='bordered'
-        labelPlacement="outside"
-        placeholder='Ingrese las referencias de la dirección'
+      <InputValidation
+          label='Dirección del cliente'
+          placeholder="Ingresa la dirección"
+          metadata={client.address}
       />
-      <Textarea
-        label="Garantías"
-        variant='bordered'
-        labelPlacement="outside"
-        placeholder='Ingrese las garantías'
+      <TextareaValidation 
+          label='Referencia del cliente'
+          placeholder="Ingresa la referencia"
+          metadata={client.reference}
       />
-      <Input 
-        variant='bordered'
-        labelPlacement="outside"
-        label='Telefono'
+      <TextareaValidation 
+          label='Garantías del cliente'
+          placeholder="Ingresa las garantías"
+          metadata={client.guarantee}
+      />
+      <InputValidation
+        label='Telefono del cliente'
+        placeholder="Ingresa el telefono"
+        metadata={client.phoneNumber}
       />
     </div>
   )
