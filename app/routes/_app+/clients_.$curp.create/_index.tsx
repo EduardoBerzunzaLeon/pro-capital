@@ -81,8 +81,6 @@ export default function CreateCredit () {
         shouldRevalidate: 'onInput',
       }); 
 
-    console.log(form.allErrors)
-
     const handleCancel = () => {
         navigate('/clients')
     }

@@ -7,7 +7,7 @@ export const avalSchema = z.object({
     lastNameSecond: lastNameLast,
     address: stringSchema('Dirección'),
     reference: stringSchema('Referencia'),
-    // curp: curp,
+    curp: curp,
     guarantee: stringSchema('Garantía'),
     phoneNumber: stringSchema('Numero de telefono')
 });

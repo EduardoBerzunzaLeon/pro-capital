@@ -1,4 +1,4 @@
-import { AutocompleteCombobox } from "../forms/Autocomplete"
+
 import { Autocomplete } from "~/.server/interfaces";
 import { useFetcher } from "@remix-run/react";
 import { AvalCreditsWarning } from "./AvalCreditsWarning";
@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import { AvalSchema, CreditCreateSchema } from '../../../schemas/creditSchema';
 import { InputValidation } from "../forms/Input";
 import { TextareaValidation } from "../forms/Textarea";
+import {AutocompleteValidation } from "../forms/AutocompleteValidation";
 
 type Fields = FieldMetadata<AvalSchema, CreditCreateSchema, string[]>
 
@@ -41,6 +42,7 @@ export const AvalFormSection = ({ fields }: Props) => {
   const fetcher = useFetcher<FetcherData>();
   const aval = fields.getFieldset();
 
+  const curp = useInputControl(aval.curp);
   const name = useInputControl(aval.name);
   const lastNameFirst = useInputControl(aval.lastNameFirst);
   const lastNameSecond = useInputControl(aval.lastNameSecond);
@@ -55,6 +57,10 @@ export const AvalFormSection = ({ fields }: Props) => {
       return;
     }
     fetcher.load(`/aval/${id}`);
+  }
+
+  const handleChange = (value: string) => {
+    console.log({value});
   }
 
   useEffect(() => {
@@ -81,13 +87,17 @@ export const AvalFormSection = ({ fields }: Props) => {
           credits={fetcher.data.credits}
         />
       )}
-      <AutocompleteCombobox 
-        keyFetcher='findAvalCurpAutocomplete' 
-        actionRoute='/aval/search' 
-        label='CURP del aval' 
-        comboBoxName='aval' 
-        placeholder='Ingresa la CURP' 
-        onSelected={handleSelected}
+      <AutocompleteValidation 
+        keyFetcher='findAvalCurpAutocomplete'
+        actionRoute='/aval/search'
+        label='CURP del aval'
+        comboBoxName='aval'
+        placeholder='Ingresa la CURP'
+        onSelected={handleSelected} 
+        metadata={aval.curp}      
+        // value={curp.value ?? ''}
+        onValueChange={curp.change}
+        onChange={handleChange}
       />
       <InputValidation
           label="Nombre(s) del aval"

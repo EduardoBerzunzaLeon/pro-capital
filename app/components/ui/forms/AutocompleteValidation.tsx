@@ -6,9 +6,12 @@ import { useFetcher } from "@remix-run/react";
 import { Combobox, ComboboxInput, ComboboxOptions, ComboboxOption } from "@headlessui/react";
 import { Input, Spinner } from "@nextui-org/react";
 import { FaCheck } from "react-icons/fa";
+import { FieldMetadata, getInputProps } from "@conform-to/react";
 
 export const compareAutocomplete = (a?: Autocomplete, b?: Autocomplete): boolean =>
     a?.id === b?.id;
+
+type InputTypes = "number" | "color" | "search" | "time" | "text" | "hidden" | "email" | "tel" | "checkbox" | "date" | "datetime-local" | "file" | "month" | "password" | "radio" | "range" | "url" | "week";
 
 export const initialValue = { id: 0, value: ''};
 
@@ -18,26 +21,37 @@ interface Props {
     label: string,
     comboBoxName: string,
     placeholder: string,
+    metadata: FieldMetadata<unknown, any, any>,
+    value?: string,
+    onValueChange?: (value: string) => void,
+    inputType?: InputTypes,
+    defaultValue?: string,
     selectedItem?: Autocomplete, 
+    startContent?: React.ReactNode
     onSelected?: (value: Autocomplete) =>  void,
     onChange?: (value: string)  => void
 }
 
-export const AutocompleteCombobox = ({ 
+export const AutocompleteValidation = ({ 
     keyFetcher, 
     actionRoute, 
-    label, 
+    label,
+    inputType,
+    metadata, 
     comboBoxName, 
     placeholder, 
     selectedItem,
     onSelected, 
-    onChange 
+    onChange,
+    ...restProps
 }: Props) => {
 
     const [query, setQuery] = useState('');
     const [displayValue, setDisplayValue] = useState('');
     const [selected, setSelected] = useState<Autocomplete | undefined>({...initialValue});
     const { submit, data, state } = useFetcher<HandlerSuccess<Autocomplete[]>>({ key: keyFetcher });
+    const type = inputType ?? 'text';
+    const { key, ...restInputProps} = getInputProps(metadata, { type, ariaAttributes: true });
 
     const isControlled = !!selectedItem && !!onSelected;
 
@@ -71,6 +85,9 @@ export const AutocompleteCombobox = ({
     setSelected(newValue);
     !!onSelected && onSelected(newValue);
   }
+
+  console.log({query, displayValue, selected});
+
     return (  
             <Combobox
                 name={comboBoxName} 
@@ -96,7 +113,13 @@ export const AutocompleteCombobox = ({
                         label={label}
                         placeholder={placeholder}
                         onChange={(e) => setDisplayValue(e.target.value)}
+                        isInvalid={!!metadata.errors}
+                        color={metadata.errors ? "danger" : "default"}
+                        errorMessage={metadata.errors}
                         value={displayValue}
+                        key={key}
+                        {...restInputProps}
+                        {...restProps}
                         endContent={
                             (state !== 'idle' && (<Spinner size='sm' />))
                         }

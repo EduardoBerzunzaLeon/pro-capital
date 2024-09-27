@@ -83,6 +83,8 @@ export const CreditFormSection = ({ fields }: Props) => {
   }, [amount.value, type.value])
 
   const handleSelected = ({ id }: Autocomplete) => {
+
+    console.log('selected');
     fetcher.load(`/folder/group?id=${id}`);
   }
 
