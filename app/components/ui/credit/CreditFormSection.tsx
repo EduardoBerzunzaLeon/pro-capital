@@ -1,11 +1,21 @@
 import { today, getLocalTimeZone } from "@internationalized/date";
 import { DatePicker, Input, Select, SelectItem } from "@nextui-org/react"
 import { useEffect, useState } from "react";
-import { Autocomplete, Selection } from "~/.server/interfaces";
+import { Autocomplete } from "~/.server/interfaces";
 import { AutocompleteCombobox } from "../forms/Autocomplete";
 import { useFetcher } from "@remix-run/react";
+import { FieldMetadata, getSelectProps, useInputControl } from "@conform-to/react";
+import { CreditSchema, CreditCreateSchema } from "~/schemas/creditSchema";
+import { InputValidation } from "../forms/Input";
 
 type Types = 'NORMAL' | 'EMPLEADO' | 'LIDER';
+
+type Fields = FieldMetadata<CreditSchema, CreditCreateSchema, string[]>;
+
+interface Props {
+  fields: Fields;
+}
+
 
 const convertDebt = (amount: number, type: Types = 'NORMAL') => {
   const debt = { 
@@ -25,62 +35,60 @@ const convertDebt = (amount: number, type: Types = 'NORMAL') => {
   return debt;
 }
 
-const handleChange = (amount: string, type: Selection) => {
+const handleChange = (amount: string, type: string) => {
 
   const amountParsed =  Number(amount);
   if(isNaN(amountParsed)) {
     return { paymentAmount: 0, totalAmount: 0 }; 
   }
 
-  if(typeof type === 'string')  return { paymentAmount: 0, totalAmount: 0 };
-
-  const typeArray = Array.from(type);
-
   const data =  {
     amount: amountParsed,
-    type: typeArray.length !== 1 ? 'NORMAL' : typeArray[0]
+    type
   }
-
+  
   return convertDebt(data.amount, (data.type as Types));
 }
 
-
-export const CreditFormSection = () => {
+export const CreditFormSection = ({ fields }: Props) => {
   const fetcher = useFetcher<any>();
-  const [assignAt, setAssignAt] = useState(today(getLocalTimeZone()));
+  const credit = fields.getFieldset();
+  const group = useInputControl(credit.group);
+  const amount = useInputControl(credit.amount);
+  const type = useInputControl(credit.types);
   const [payment, setPayment] = useState(0);
   const [total, setTotal] = useState(0);
-  const [type, setType] = useState<Selection>(new Set([]));
-  const [amount, setAmount] = useState('0');
-  const [group, setGroup] = useState('0');
-
-  useEffect(() => {
-
-    const { paymentAmount, totalAmount } = handleChange(amount, type);
-
-    setPayment(paymentAmount);
-    setTotal(totalAmount)
-
-  }, [type, amount])
 
   useEffect(() => {
 
     if(fetcher.state === 'idle' && fetcher.data?.status === 'success' ) {
         const groups = fetcher.data?.serverData?.group.groups;
         if(groups.length === 1 ) {
-            setGroup(groups[0].name)
+            group.change(groups[0].name)
         } else {
-          setGroup('1')
+          group.change('1')
         }
 
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetcher.state, fetcher.data]);
+
+  useEffect(() => {
+
+    const { paymentAmount, totalAmount } = handleChange(amount.value ?? '', type.value ?? '');
+
+    setPayment(paymentAmount);
+    setTotal(totalAmount)
+
+  }, [amount.value, type.value])
 
   const handleSelected = ({ id }: Autocomplete) => {
     fetcher.load(`/folder/group?id=${id}`);
   }
 
-  console.log({ data: fetcher.data });
+  const handleSelectedType = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    type.change(e.target.value);
+  }
 
   return (
     <div>
@@ -92,38 +100,33 @@ export const CreditFormSection = () => {
         placeholder='Ingresa la carpeta' 
         onSelected={handleSelected}
       />
-        <Input
-          type="number"
+        <InputValidation
           label="Grupo"
-          placeholder="0"
-          labelPlacement="outside"
-          variant='bordered'
-          value={group}
-          onValueChange={setGroup}
+          placeholder="Ingresa el grupo"
+          metadata={credit.group}
+          value={group.value ?? ''}
+          onValueChange={group.change}
         />
       <Select 
           variant='bordered'
           labelPlacement="outside"
           label='Tipo de credito'
-          onSelectionChange={setType}
-          selectedKeys={type}
-          defaultSelectedKeys={new Set(['NORMAL'])}
+          onChange={handleSelectedType}
+          selectedKeys={[type.value ?? 'NORMAL']}
           disallowEmptySelection
+          {...getSelectProps(credit.types)}
       >
         <SelectItem key='NORMAL'>Normal</SelectItem>
         <SelectItem key='EMPLEADO'>Empleado</SelectItem>
         <SelectItem key='LIDER'>Lider</SelectItem>
       </Select>
-      {/* TODO: IMPLEMENT FOLDER AUTOCOMPLETE, AND PICK FOLDER GET LAST GROUP */}
-
-      <Input
-          type="number"
-          label="Cantidad Prestada"
-          placeholder="0.00"
-          labelPlacement="outside"
-          variant='bordered'
-          value={amount}
-          onValueChange={setAmount}
+        <InputValidation
+          label="Cantidad prestada"
+          inputType='number'
+          placeholder="Ingresa la cantidad prestada"
+          metadata={credit.amount}
+          value={amount.value ?? ''}
+          onValueChange={amount.change}
           startContent={
             <div className="pointer-events-none flex items-center">
               <span className="text-default-400 text-small">$</span>
@@ -131,12 +134,11 @@ export const CreditFormSection = () => {
           }
         />
        <Input
-          type="number"
           label="Pagos Semanal"
           placeholder="0.00"
           labelPlacement="outside"
           variant='bordered'
-          isReadOnly
+          isDisabled
           value={payment+''}
           startContent={
             <div className="pointer-events-none flex items-center">
@@ -145,11 +147,10 @@ export const CreditFormSection = () => {
           }
         />
        <Input
-          type="number"
           label="Total a pagar"
           placeholder="0.00"
           labelPlacement="outside"
-          isReadOnly
+          isDisabled
           value={total+''}
           variant='bordered'
           startContent={
@@ -159,13 +160,15 @@ export const CreditFormSection = () => {
           }
         />
         <DatePicker 
-          label="Dia de asignación del crédito" 
-          variant='bordered' 
-          name='assignAt'
-          id='assignAt'
-          value={assignAt}
-          onChange={setAssignAt}
-          granularity="day"
+            label="Fecha de asignación del crédito" 
+            variant='bordered' 
+            id='creditAt'
+            key={credit.creditAt.key}
+            name={credit.creditAt.name}
+            isInvalid={!!credit.creditAt.errors}
+            errorMessage={credit.creditAt.errors}
+            defaultValue={today(getLocalTimeZone()).subtract({ days: 1 })}
+            granularity="day"
         />
     </div>
   )

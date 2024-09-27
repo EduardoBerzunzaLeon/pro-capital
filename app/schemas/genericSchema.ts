@@ -8,6 +8,18 @@ export const id = z.coerce.number({
 .gte(1, 'El ID tiene que ser mayor que 0')
 .nonnegative({ message: 'ID debe ser positivo'})
 
+export const decimalBuilder = (field: string) => z.coerce.number({
+    required_error: `${field} es requerido`,
+    invalid_type_error: `${field} debe ser un número`,
+}).gte(1, `${field} tiene que ser mayor que 0`)
+.nonnegative({ message: `${field} debe ser positivo`});  
+
+export const integerBuilder = (field: string) => z.coerce.number({
+    required_error: `${field} es requerido`,
+    invalid_type_error: `${field} debe ser un número`,
+}).int({ message: `${field} debe ser entero` })
+.gte(1, `${field} tiene que ser mayor que 0`)
+.nonnegative({ message: `${field} debe ser positivo`});  
 
 interface AlphabetBuilder {
     requiredText: string,

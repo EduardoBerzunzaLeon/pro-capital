@@ -19,6 +19,7 @@
     -- Agregar conform en auto completes
     -- Agregar folder active autocomplete
     -- Agregar filter input solo numeros
+    -- Agregar schema para telefono (cantidad de caracteres)
 
     
 
