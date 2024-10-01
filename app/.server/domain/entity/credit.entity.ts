@@ -125,7 +125,7 @@ export class Credit {
         if(!captureAt || !(captureAt instanceof Date) ) throw ServerError.badRequest('La fecha de captura es requerida');
         if(!creditAt || !(creditAt instanceof Date) ) throw ServerError.badRequest('La fecha de alta del credito es requerida');
         if(!nextPayment || !(nextPayment instanceof Date) ) throw ServerError.badRequest('La fecha del siguiente pago es requerida');
-        if(!lastPayment || !(lastPayment instanceof Date) ) throw ServerError.badRequest('La fecha del ultimo pago es requerida');
+        // if(!lastPayment || !(lastPayment instanceof Date) ) throw ServerError.badRequest('La fecha del ultimo pago es requerida');
         //  TODO: verificar por que retonar  los numeros como objetos al igual que canrenovate
         // if( typeof canRenovate !== 'boolean' ) throw ServerError.badRequest('La estatus es requerido');
 
@@ -139,7 +139,7 @@ export class Credit {
         const captureAtFormatted = dayjs(captureAt).add(1, 'day').format('YYYY-MM-DD'); 
         const creditAtFormatted = dayjs(creditAt).add(1, 'day').format('YYYY-MM-DD'); 
         const nextPaymentFormatted = dayjs(nextPayment).add(1, 'day').format('YYYY-MM-DD'); 
-        const lastPaymentFormatted = dayjs(lastPayment).add(1, 'day').format('YYYY-MM-DD'); 
+        const lastPaymentFormatted = lastPayment ? dayjs(lastPayment).add(1, 'day').format('YYYY-MM-DD') : 'Sin cobrar'; 
 
         folder.route.name = `Ruta ${folder.route.name}`;
         group.name = `Grupo ${group.name}`;

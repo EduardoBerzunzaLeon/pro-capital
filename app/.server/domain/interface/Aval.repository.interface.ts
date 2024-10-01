@@ -2,6 +2,17 @@ import { Prisma } from "@prisma/client";
 import { BaseRepositoryI } from "./Base.repository.interface";
 import { Generic } from "~/.server/interfaces";
 
+export interface AvalCreateI {
+    name: string,
+    lastNameFirst: string,
+    lastNameSecond: string,
+    fullname: string,
+    address: string,
+    reference: string,
+    curp: string,
+    phoneNumber?: string
+}
+
 
 export type BaseAvalI = BaseRepositoryI<
     Prisma.AvalDelegate, 
@@ -15,6 +26,9 @@ export type BaseAvalI = BaseRepositoryI<
 
 export interface AvalRepositoryI{
     findAutocomplete: (curp: string) => Promise<Generic[] | undefined>,
-    findOne: (id: number) => Promise<Generic | undefined>
+    findOne: (id: number) => Promise<Generic | undefined>,
+    upsertOne: (aval: AvalCreateI) => Promise<Generic | undefined>,
+    hasCredits: (id: number) => Promise<Generic | undefined>,
+    deleteOne: (id: number) => Promise<Generic | undefined>,
 }
 

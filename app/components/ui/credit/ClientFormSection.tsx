@@ -17,7 +17,7 @@ export const ClientFormSection = ({ fields }: Props) => {
   return (
     <div>
        <InputValidation
-          label="Nombre(s) del aval"
+          label="Nombre(s) del cliente"
           placeholder="Ingresa el/los nombre(s)"
           metadata={client.name}
       />
@@ -30,6 +30,11 @@ export const ClientFormSection = ({ fields }: Props) => {
           label='Segundo Apellido del cliente'
           placeholder="Ingresa el segundo apellido"
           metadata={client.lastNameSecond}
+      />
+      <InputValidation
+        label='Telefono del cliente'
+        placeholder="Ingresa el telefono"
+        metadata={client.phoneNumber}
       />
       <InputValidation
           label='Dirección del cliente'
@@ -45,11 +50,6 @@ export const ClientFormSection = ({ fields }: Props) => {
           label='Garantías del cliente'
           placeholder="Ingresa las garantías"
           metadata={client.guarantee}
-      />
-      <InputValidation
-        label='Telefono del cliente'
-        placeholder="Ingresa el telefono"
-        metadata={client.phoneNumber}
       />
     </div>
   )

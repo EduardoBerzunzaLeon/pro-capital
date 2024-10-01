@@ -31,6 +31,7 @@ export const creditSchema = z.object({
     group,
     amount, 
     creditAt,
+    folder: stringSchema('Carpeta'),
     types: z.enum(['NORMAL', 'EMPLEADO', 'LIDER'])
 })
 

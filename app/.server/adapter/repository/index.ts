@@ -1,3 +1,4 @@
+import { ClientRepository } from "../client/client.repository";
 import { db } from "../db";
 import { AgentRouteRepository } from "./agentRoute/agentRoute.repository";
 import { AuthRepository } from "./auth/auth.repository";
@@ -24,7 +25,8 @@ function buildRepository() {
         agentRoute: { ...AgentRouteRepository(baseRepository(db.agentRoute))},
         leader: { ...LeaderRepository(baseRepository(db.leader))},
         credit: { ...CreditRepository(baseRepository(db.credit))},
-        aval: { ...AvalRepository(baseRepository(db.aval))}
+        aval: { ...AvalRepository(baseRepository(db.aval))},
+        client: { ...ClientRepository(baseRepository(db.client))}
     }
 }
 

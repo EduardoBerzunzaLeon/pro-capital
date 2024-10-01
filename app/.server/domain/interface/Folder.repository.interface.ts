@@ -20,6 +20,7 @@ export interface FolderRepositoryI{
     findAutocomplete: (name: string) => Promise<Generic[] | undefined>,
     findLastGroup: (id: number) => Promise<Generic | undefined>,
     findCountGroups: (id: number) => Promise<Generic | undefined>,
+    findByNameAndGroup: (name: string, group: number) => Promise<Generic | undefined>,
     updateOne: (id: number, routeId: number) => Promise<Generic | undefined>,
     deleteOne: (id:number) => Promise<Generic | undefined>
     createOne: (townId: number, routeId: number, consecutive: number, name: string) => Promise<Generic | undefined>,

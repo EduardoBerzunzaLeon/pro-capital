@@ -160,7 +160,6 @@ model Client {
   address String
   reference String
   curp String @unique
-  guarantee String
   phoneNumber String?
   isActive Boolean @default(true)
   credits Credit[]
@@ -194,7 +193,6 @@ model Aval {
   address String
   reference String
   curp String @unique
-  guarantee String
   phoneNumber String?
   credits Credit[]
 }
@@ -216,9 +214,11 @@ model Credit {
   captureAt DateTime @default(now())
   creditAt DateTime @db.Date
   canRenovate Boolean @default(false)
+  clientGuarantee String
+  avalGuarantee String
   paymentForgivent Int? // TODO: implement this, el pago perdonado, primer pago de la renovacion o el ultimo antes de renovar
   nextPayment DateTime
-  lastPayment DateTime 
+  lastPayment DateTime?
   currentDebt Decimal @db.Decimal(6,2)
   status Status @default(ACTIVO)
   payment_detail PaymentDetail[]

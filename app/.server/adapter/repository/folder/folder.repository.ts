@@ -70,6 +70,23 @@ export function FolderRepository(base: BaseFolderI) : FolderRepositoryI {
         return await base.findOne({ id }, select, true);
     }
 
+    async function findByNameAndGroup(name: string, group: number) {
+        
+        const select = {
+            id: true,
+            name: true,
+            groups: {
+                where: {
+                    name: group
+                }
+            }
+        }
+
+        return await base.findOne({ name }, select, true);
+    }
+
+
+
     async function updateOne(id: number, routeId: number) {
         return await base.updateOne({ id }, { routeId });
     }
@@ -127,6 +144,7 @@ export function FolderRepository(base: BaseFolderI) : FolderRepositoryI {
         findOne,
         findAutocomplete,
         findCountGroups,
+        findByNameAndGroup,
         findLastGroup,
         updateOne,
         deleteOne,

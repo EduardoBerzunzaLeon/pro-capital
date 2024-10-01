@@ -2,8 +2,20 @@
 
 - Cambiar la libreria de excel file-saver tiene vulnerabilidades
 - Agregar Transicion de logout mientras hace el loading
+# datos credito formulario
+    el telefono no es obligatorio si lo dejan vacio el sistema
+    pondra 0
+    al momento de buscar el aval te diga si es cliente no liquidado
+    en los creditos pendientes del aval
+    traer carpeta grupo y total de la deuda
+    No aceptar decimal
 
 
+#order
+    telefono
+    direccion
+    referencia
+    garantia
 # UI:
     - Agregar el isActive en carpeta y en su tabla crud
     -- Bug en folder ya que lideres es un arreglo, debe traer solo la lider activo

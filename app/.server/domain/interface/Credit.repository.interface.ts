@@ -1,6 +1,23 @@
-import { Prisma } from '@prisma/client';
+import { Prisma, Status, Type } from '@prisma/client';
 import { BaseRepositoryI, PaginationWithFilters, ResponseWithMetadata } from '.';
 import { Generic } from '~/.server/interfaces';
+
+export interface CreditCreateI {
+    avalId: number,
+    clientId: number,
+    groupId: number, 
+    folderId: number,
+    type: Type,
+    amount: number,
+    paymentAmount: number,
+    totalAmount: number,
+    creditAt: Date,
+    clientGuarantee: string,
+    avalGuarantee: string,
+    nextPayment: Date,
+    currentDebt: number
+    status: Status
+}
 
 export type BaseCreditI = BaseRepositoryI<
     Prisma.CreditDelegate, 
@@ -15,6 +32,6 @@ export interface CreditRepositoryI{
     findAll: (paginationData: PaginationWithFilters ) => Promise<ResponseWithMetadata>,
     findByCurp: (curp: string) => Promise<Generic | undefined>,
     findLastCredit: (curp: string) => Promise<Generic[] | undefined>,
+    createOne: (credit: CreditCreateI) => Promise<Generic | undefined>,
     base: BaseCreditI
 }
-

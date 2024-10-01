@@ -2,11 +2,11 @@ import { today, getLocalTimeZone } from "@internationalized/date";
 import { DatePicker, Input, Select, SelectItem } from "@nextui-org/react"
 import { useEffect, useState } from "react";
 import { Autocomplete } from "~/.server/interfaces";
-import { AutocompleteCombobox } from "../forms/Autocomplete";
 import { useFetcher } from "@remix-run/react";
 import { FieldMetadata, getSelectProps, useInputControl } from "@conform-to/react";
 import { CreditSchema, CreditCreateSchema } from "~/schemas/creditSchema";
 import { InputValidation } from "../forms/Input";
+import { AutocompleteValidation } from "../forms/AutocompleteValidation";
 
 type Types = 'NORMAL' | 'EMPLEADO' | 'LIDER';
 
@@ -56,6 +56,7 @@ export const CreditFormSection = ({ fields }: Props) => {
   const group = useInputControl(credit.group);
   const amount = useInputControl(credit.amount);
   const type = useInputControl(credit.types);
+  const folder = useInputControl(credit.folder);
   const [payment, setPayment] = useState(0);
   const [total, setTotal] = useState(0);
 
@@ -83,9 +84,11 @@ export const CreditFormSection = ({ fields }: Props) => {
   }, [amount.value, type.value])
 
   const handleSelected = ({ id }: Autocomplete) => {
-
-    console.log('selected');
     fetcher.load(`/folder/group?id=${id}`);
+  }
+
+  const handleChangeFolder = (value: string) => {
+    console.log({value})
   }
 
   const handleSelectedType = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -94,13 +97,16 @@ export const CreditFormSection = ({ fields }: Props) => {
 
   return (
     <div>
-      <AutocompleteCombobox 
+      <AutocompleteValidation 
         keyFetcher='findFolderAutocomplete' 
         actionRoute='/folder/search' 
         label='Carpeta' 
         comboBoxName='folder' 
         placeholder='Ingresa la carpeta' 
         onSelected={handleSelected}
+        metadata={credit.folder}      
+        onValueChange={folder.change}
+        onChange={handleChangeFolder}
       />
         <InputValidation
           label="Grupo"
@@ -114,7 +120,7 @@ export const CreditFormSection = ({ fields }: Props) => {
           labelPlacement="outside"
           label='Tipo de credito'
           onChange={handleSelectedType}
-          selectedKeys={[type.value ?? 'NORMAL']}
+          selectedKeys={[type.value || 'NORMAL']}
           disallowEmptySelection
           {...getSelectProps(credit.types)}
       >

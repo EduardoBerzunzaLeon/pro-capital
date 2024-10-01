@@ -48,7 +48,7 @@ export const AvalFormSection = ({ fields }: Props) => {
   const lastNameSecond = useInputControl(aval.lastNameSecond);
   const address = useInputControl(aval.address);
   const reference = useInputControl(aval.reference);
-  // const guarantee = useInputControl(aval.guarantee);
+  const guarantee = useInputControl(aval.guarantee);
   const phoneNumber = useInputControl(aval.phoneNumber);
 
   const handleSelected = ({ id }: Autocomplete) => {
@@ -60,7 +60,15 @@ export const AvalFormSection = ({ fields }: Props) => {
   }
 
   const handleChange = (value: string) => {
-    console.log({value});
+    if(!value) {
+      name.change('');
+      lastNameFirst.change('');
+      lastNameSecond.change('');
+      address.change('');
+      reference.change('');
+      guarantee.change('');
+      phoneNumber.change('');
+    }
   }
 
   useEffect(() => {
@@ -121,6 +129,13 @@ export const AvalFormSection = ({ fields }: Props) => {
           onValueChange={lastNameSecond.change}
       />
       <InputValidation
+        label='Telefono del aval'
+        placeholder="Ingresa el telefono"
+        metadata={aval.phoneNumber}
+        value={phoneNumber.value ?? ''}
+        onValueChange={phoneNumber.change}
+      />
+      <InputValidation
           label='Dirección del aval'
           placeholder="Ingresa la dirección"
           metadata={aval.address}
@@ -138,15 +153,6 @@ export const AvalFormSection = ({ fields }: Props) => {
           label='Garantías del aval'
           placeholder="Ingresa las garantías"
           metadata={aval.guarantee}
-          // value={guarantee.value ?? ''}
-          // onValueChange={guarantee.change}
-      />
-      <InputValidation
-        label='Telefono del aval'
-        placeholder="Ingresa el telefono"
-        metadata={aval.phoneNumber}
-        value={phoneNumber.value ?? ''}
-        onValueChange={phoneNumber.change}
       />
   </div>
   )

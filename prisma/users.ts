@@ -189,7 +189,6 @@ interface Client {
     address: string,
     reference: string,
     curp: string,
-    guarantee: string
 }
 
 export const clients: Client[] = [
@@ -201,7 +200,6 @@ export const clients: Client[] = [
         address: 'fraccionamiento la riviera',
         reference: 'casa blanca de dos pisos',
         curp: 'AUNI760709MCCYHV00',
-        guarantee: 'television de 30 in',
     },
     {
         name: 'maria',
@@ -211,7 +209,6 @@ export const clients: Client[] = [
         address: 'calle 2 col san joaquin',
         reference: 'a lado del pollo pollon',
         curp: 'JATM290893MCCNRD01',
-        guarantee: 'television de 30 in',
     },
     {
         name: 'carlos',
@@ -221,7 +218,6 @@ export const clients: Client[] = [
         address: 'col jardines',
         reference: 'casa blanca de dos pisos',
         curp: 'BELC290893MCCNRD01',
-        guarantee: 'television de 30 in',
     },
 ]
 
@@ -236,7 +232,6 @@ export const avals = [
         address: 'col bosque real',
         reference: 'atras de refaccionaria leon',
         curp: 'AUNI760709MCCYHV01',
-        guarantee: 'television de 30 in',
     },
     {
         name: 'patricia',
@@ -246,7 +241,6 @@ export const avals = [
         address: 'col bosque real',
         reference: 'acostado de ecomoda',
         curp: 'PVOR290893MCCNRD01',
-        guarantee: 'television de 30 in',
     },
 ]
 
@@ -277,6 +271,8 @@ interface Credit {
     canRenovate: boolean,
     nextPayment: string,
     lastPayment: string,
+    clientGuarantee: string,
+    avalGuarantee: string,
     currentDebt: number,
     paymentForgivent: number,
     status: Status
@@ -288,6 +284,8 @@ export const credits: Credit[] = [
         client: 'AUNI760709MCCYHV00',
         group: 2,
         folder: 'champoton 1',
+        clientGuarantee: 'television de 30 in',
+        avalGuarantee: 'aifon 16',
         amount: 1500,
         totalAmount: 2250,
         paymentAmount: 150,

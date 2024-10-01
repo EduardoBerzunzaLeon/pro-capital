@@ -1,4 +1,4 @@
-import { BaseCreditI, CreditRepositoryI, PaginationWithFilters } from "~/.server/domain/interface";
+import { BaseCreditI, CreditCreateI, CreditRepositoryI, PaginationWithFilters } from "~/.server/domain/interface";
 
 export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
 
@@ -61,9 +61,6 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
                 status: true
             }
         })
-    
-
-
     }
 
     async function findByCurp(curp: string) {
@@ -97,10 +94,15 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
         });
     }
 
+    async function createOne(credit: CreditCreateI) {
+        return await base.createOne(credit);
+    }
+
     return {
         findAll,
         findByCurp,
         findLastCredit,
+        createOne,
         base
     }
 

@@ -10,6 +10,8 @@ import { Accordion, AccordionItem, Button, Card, CardBody, CardHeader } from "@n
 import { getFormProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import { creditCreateSchema } from "~/schemas";
+import { handlerErrorWithToast } from "~/.server/reponses/handlerError";
+import { redirectWithSuccess } from "remix-toast";
 
 export const loader: LoaderFunction = async ({ params }) => {
     
@@ -24,39 +26,18 @@ export const loader: LoaderFunction = async ({ params }) => {
 }
 
 
-export const action: ActionFunction = async ({ request }) => {
-    console.log('inside');
+export const action: ActionFunction = async ({ request, params }) => {
     const formData = await request.formData();
     const data = Object.fromEntries(formData);
-    // data: {
-    //     'client.name': 'eduardo',
-    //     'client.lastNameFirst': 'berzunza',
-    //     'client.lastNameSecond': 'leon',
-    //     'client.address': 'asdasd',
-    //     'client.reference': 'asdasd',
-    //     'client.guarantee': 'qasdasdasd',
-    //     'client.phoneNumber': '912312',
-    //     'aval[id]': '1',
-    //     'aval[value]': 'AUNI760709MCCYHV01',
-    //     'aval.name': 'fatima',
-    //     'aval.lastNameFirst': 'bernes',
-    //     'aval.lastNameSecond': 'hermoxa',
-    //     'aval.address': 'col bosque real',
-    //     'aval.reference': 'atras de refaccionaria leon',
-    //     'aval.guarantee': 'mi esposo',
-    //     'aval.phoneNumber': '98112236445',
-    //     'folder[id]': '5',
-    //     'folder[value]': 'maxcanu 1',
-    //     'credit.group': '10',
-    //     'credit.types': 'NORMAL',
-    //     'credit.amount': '1500',
-    //     'credit.creditAt': '2024-09-25',
-    //     _action: ''
-    //   }
-    console.log({data});
 
+    try {
+        await Service.credit.create(formData, params?.curp)
+        return redirectWithSuccess('/clients', 'El crédito se ha creado con éxito 🎉');
+    } catch (error) {
+        console.log(error);
+        return handlerErrorWithToast(error, { data });
+    }
 
-    return [];
 }
 
 export function ErrorBoundary() {
