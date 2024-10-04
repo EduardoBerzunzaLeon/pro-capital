@@ -21,6 +21,7 @@ interface Props {
     label: string,
     comboBoxName: string,
     placeholder: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     metadata: FieldMetadata<unknown, any, any>,
     value?: string,
     onValueChange?: (value: string) => void,

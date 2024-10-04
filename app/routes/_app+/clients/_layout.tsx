@@ -9,7 +9,7 @@ import { DropdownCreditStatus } from "~/components/ui/dropdowns/DropdownCreditSt
 import { HandlerSuccess } from "~/.server/reponses";
 import { Key, SortDirection, Selection, Color } from "~/.server/interfaces";
 import { Status } from "~/.server/domain/entity/credit.entity";
-import { TableDetail, RowPerPage, Pagination, InputFilter, RangePickerDateFilter, SliderFilter, CurpForm } from "~/components/ui";
+import { TableDetail, RowPerPage, Pagination, InputFilter, RangePickerDateFilter, SliderFilter, CurpForm, ExportDropdown } from "~/components/ui";
 import { useDropdownBoolean, useParamsPaginator, useRenderCell } from "~/application";
 import { useDropdown } from "~/application/hook/useDropdown";
 import { clientAction } from '../../../application/client/client.action';
@@ -169,6 +169,7 @@ export default function ClientsPage() {
   return <>
     <Outlet />
     <CurpForm />
+    <ExportDropdown />
     <div className='w-full flex gap-2 mt-5 mb-3 flex-wrap justify-between items-center'>
       <InputFilter 
         param="client" 

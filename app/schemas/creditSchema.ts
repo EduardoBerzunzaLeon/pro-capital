@@ -35,6 +35,11 @@ export const creditSchema = z.object({
     types: z.enum(['NORMAL', 'EMPLEADO', 'LIDER'])
 })
 
+export const exportLayoutSchema = z.object({
+    folder: stringSchema('Carpeta'),
+    group,
+});
+
 export const creditCreateSchema = z.object({
     aval: avalSchema,
     client: clientSchema,

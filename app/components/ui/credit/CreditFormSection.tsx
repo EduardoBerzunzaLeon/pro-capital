@@ -87,9 +87,6 @@ export const CreditFormSection = ({ fields }: Props) => {
     fetcher.load(`/folder/group?id=${id}`);
   }
 
-  const handleChangeFolder = (value: string) => {
-    console.log({value})
-  }
 
   const handleSelectedType = (e: React.ChangeEvent<HTMLSelectElement>) => {
     type.change(e.target.value);
@@ -106,7 +103,6 @@ export const CreditFormSection = ({ fields }: Props) => {
         onSelected={handleSelected}
         metadata={credit.folder}      
         onValueChange={folder.change}
-        onChange={handleChangeFolder}
       />
         <InputValidation
           label="Grupo"
