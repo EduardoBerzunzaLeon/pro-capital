@@ -7,6 +7,8 @@ import { validationConform, validationZod } from "./validation.service";
 import { ServerError } from "../errors";
 import { creditCreateSchema } from "~/schemas";
 import dayjs from 'dayjs';
+import { exportLayoutSchema } from "~/schemas/creditSchema";
+import { Layout } from "../domain/entity/layout.entity";
 
 export const findAll = async (props: PaginationWithFilters) => {
 
@@ -170,9 +172,18 @@ const verifyCanRenovate = ({ totalAmount, currentDebt, paymentAmount }: CreditI)
     return paidAmount >= minAmount;
 }
 
+
+export const exportLayout = async (form: FormData) => {
+    const { folder, group } = validationConform(form, exportLayoutSchema);
+    const data = await Repository.credit.exportLayout(folder, group);
+
+    return Layout.mapper(data);
+}
+
 export default{ 
     findAll,
     verifyToCreate,
     validationToCreate,
+    exportLayout,
     create
 }
