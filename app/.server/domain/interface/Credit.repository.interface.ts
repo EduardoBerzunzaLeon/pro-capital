@@ -33,5 +33,6 @@ export interface CreditRepositoryI{
     findByCurp: (curp: string) => Promise<Generic | undefined>,
     findLastCredit: (curp: string) => Promise<Generic[] | undefined>,
     createOne: (credit: CreditCreateI) => Promise<Generic | undefined>,
+    exportLayout: (folderName: string, groupName: number) => Promise<Generic | undefined>,
     base: BaseCreditI
 }

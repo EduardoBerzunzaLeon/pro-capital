@@ -84,7 +84,7 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
                 creditAt: true,
                 client: {
                     select: {
-                        fullname: true
+                        fullname: true,
                     }
                 },
                 payment_detail: {
@@ -104,6 +104,46 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
         });
     }
 
+    async function exportLayout(folderName: string, groupName: number) {
+        return await base.findMany({
+            searchParams:  { folder: { name: folderName }, group: { name: groupName } },
+            select: {
+                id: true,
+                totalAmount: true,
+                currentDebt: true, 
+                paymentAmount: true,
+                amount: true,
+                creditAt: true,
+                clientGuarantee: true,
+                avalGuarantee: true,
+                client: {
+                    select: {
+                        fullname: true,
+                        address: true,
+                        phoneNumber: true,
+                    }
+                },
+                aval: {
+                    select: {
+                        fullname: true,
+                        address: true,
+                        phoneNumber: true,
+                    }
+                },
+                folder: {
+                    select: {
+                        name: true
+                    }
+                },
+                group: {
+                    select: {
+                        name: true
+                    }
+                }
+            }
+        })
+    }
+
     async function createOne(credit: CreditCreateI) {
         return await base.createOne(credit);
     }
@@ -113,6 +153,7 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
         findByCurp,
         findLastCredit,
         createOne,
+        exportLayout,
         base
     }
 
