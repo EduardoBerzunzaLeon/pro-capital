@@ -2,3 +2,4 @@ export type { SortDirection, Key, Color, Selection, SelectionMode, LoadingState 
 export type { ActionPostMunicipality } from './municipalityRes.interface';
 export type { Generic, GenericUnknown, RequestDataGeneric, RequestId, Autocomplete  } from './generic.interface';
 
+export type  * from './credit.interface';

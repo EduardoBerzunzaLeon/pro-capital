@@ -81,9 +81,19 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
                 totalAmount: true,
                 currentDebt: true,
                 paymentAmount: true,
+                creditAt: true,
                 client: {
                     select: {
                         fullname: true
+                    }
+                },
+                payment_detail: {
+                    select: {
+                        id: true,
+                        status: true,
+                        paymentAmount: true,
+                        paymentDate: true,
+                        folio: true
                     }
                 }
             },

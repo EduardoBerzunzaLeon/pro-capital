@@ -294,7 +294,7 @@ export const credits: Credit[] = [
         canRenovate: false,
         nextPayment:  new Date(2024, 6, 1).toISOString(),
         lastPayment:  new Date(2024, 6, 1).toISOString(),
-        currentDebt: 1200,
+        currentDebt: 750,
         status: 'ACTIVO',
         paymentForgivent: 0
     }
@@ -317,13 +317,46 @@ export const paymentDetail: PaymentDetail[] = [
         client: 'AUNI760709MCCYHV00',
         folder: 'champoton 1',
         group: 2,
-        paymentAmount: 300,
-        paymentDate: new Date(2024, 6, 1).toISOString(),
-        captureAt: new Date(2024, 6, 1).toISOString(),
+        paymentAmount: 150,
+        paymentDate: new Date(2024, 6, 7).toISOString(),
+        captureAt: new Date(2024, 6, 7).toISOString(),
         agendt: 'carlos.berzunza',
         notes: 'adelanto el pago, por que no estara la proxima semana',
         status: 'ADELANTO'
-    }
+    },
+    {
+        client: 'AUNI760709MCCYHV00',
+        folder: 'champoton 1',
+        group: 2,
+        paymentAmount: 150,
+        paymentDate: new Date(2024, 6, 8).toISOString(),
+        captureAt: new Date(2024, 6, 8).toISOString(),
+        agendt: 'carlos.berzunza',
+        notes: 'adelanto el pago, por que no estara la proxima semana',
+        status: 'ADELANTO'
+    },
+    {
+        client: 'AUNI760709MCCYHV00',
+        folder: 'champoton 1',
+        group: 2,
+        paymentAmount: 150,
+        paymentDate: new Date(2024, 6, 9).toISOString(),
+        captureAt: new Date(2024, 6, 9).toISOString(),
+        agendt: 'carlos.berzunza',
+        notes: 'adelanto el pago, por que no estara la proxima semana',
+        status: 'ADELANTO'
+    },
+    {
+        client: 'AUNI760709MCCYHV00',
+        folder: 'champoton 1',
+        group: 2,
+        paymentAmount: 1050, 
+        paymentDate: new Date(2024, 6, 10).toISOString(),
+        captureAt: new Date(2024, 6, 10).toISOString(),
+        agendt: 'carlos.berzunza',
+        notes: 'adelanto el pago, por que no estara la proxima semana',
+        status: 'ADELANTO'
+    },
 ]
 
 export const leaders = [

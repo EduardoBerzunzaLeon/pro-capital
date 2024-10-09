@@ -7,6 +7,7 @@ import { validationConform, validationZod } from "./validation.service";
 import { ServerError } from "../errors";
 import { creditCreateSchema } from "~/schemas";
 import dayjs from 'dayjs';
+import { PaymentI } from "../interfaces";
 
 export const findAll = async (props: PaginationWithFilters) => {
 
@@ -32,16 +33,50 @@ export const validationToCreate = async (curp?: string) => {
     return curpValidated;
 } 
 
+export const validationToRenovate = async (curp?: string) => {
+    const { curp: curpValidated } = validationZod({ curp }, curpSchema);
+
+    const clientDb = await Repository.credit.findByCurp(curpValidated);
+
+    if(!clientDb) {
+        throw ServerError.badRequest('El cliente no existe')
+    }
+
+    if(clientDb.client.isDeceased) {
+        throw ServerError.badRequest('El cliente fallecio.');
+    }
+
+    const creditsDb = await Repository.credit.findLastCredit(curpValidated);
+
+    if(!creditsDb || creditsDb.length !== 1) {
+        throw ServerError.badRequest('El cliente existe pero no tiene creditos asignados, consultar al administrador');
+    }
+
+    const [ credit ] = creditsDb;
+    const canRenovate =  verifyCanRenovate(credit as CreditI);
+
+    if(!canRenovate) {
+        throw ServerError.badRequest(`El cliente ${credit.client.fullname} no ha pagado el minimo para renovar`);
+    }
+
+    const hasPaymentForgivent = canHavePaymentForgivent(credit.creditAt, credit.paymentAmount, credit.payment_detail); 
+
+
+    return {
+        credit,
+        hasPaymentForgivent
+    };
+}
+
 export const createClient = async ( client: Omit<ClientCreateI, 'fullname'>, fullname: string ) => {
 
     const clientDb = await Service.client.createOne({ ...client, fullname });
 
-
-    console.log({clientDb});
     if(!clientDb) throw ServerError.badRequest('No se pudo guardar el cliente, favor de intentarlo de nuevo.');
 
     return clientDb;
 } 
+
 
 export const createAval = async ( aval: Omit<AvalCreateI, 'fullname'>, fullname: string, idClient: number) => {
     const avalDb = await Service.aval.upsertOne({ ...aval, fullname });
@@ -144,7 +179,7 @@ export const verifyToCreate =  async ( form: FormData ) => {
     const creditsDb = await Repository.credit.findLastCredit(curp);
 
     if(!creditsDb || creditsDb.length !== 1) {
-        throw ServerError.badRequest('Ocurrio un error, intentelo más tarde');
+        throw ServerError.badRequest('El cliente existe pero no tiene creditos asignados, consultar al administrador');
     }
 
     const [ credit ] = creditsDb;
@@ -170,9 +205,27 @@ const verifyCanRenovate = ({ totalAmount, currentDebt, paymentAmount }: CreditI)
     return paidAmount >= minAmount;
 }
 
+const canHavePaymentForgivent = (creditAt: Date, paymentAmount: number, payments: PaymentI[]) => {
+
+    const renovateDate =  dayjs(creditAt).add(70, 'day').toDate();
+    const renovatePayments =  payments.filter((payment) => payment.paymentDate <= renovateDate); 
+
+    for (const payment of renovatePayments) {
+        if(
+            (payment.paymentAmount < paymentAmount || payment.folio > 0) 
+            && payment.status !== 'ADELANTO'
+        ) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 export default{ 
     findAll,
     verifyToCreate,
     validationToCreate,
+    validationToRenovate,
     create
 }
