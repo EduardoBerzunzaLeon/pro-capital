@@ -82,8 +82,39 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
                 currentDebt: true,
                 paymentAmount: true,
                 creditAt: true,
+                folder: { 
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                },
+                group: {
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                },
                 client: {
                     select: {
+                        name: true,
+                        lastNameFirst: true,
+                        lastNameSecond: true,
+                        address: true,
+                        phoneNumber: true,
+                        curp: true,
+                        reference: true,
+                        fullname: true,
+                    }
+                },
+                aval: {
+                    select: {
+                        name: true,
+                        lastNameFirst: true,
+                        lastNameSecond: true,
+                        address: true,
+                        phoneNumber: true,
+                        curp: true,
+                        reference: true,
                         fullname: true,
                     }
                 },

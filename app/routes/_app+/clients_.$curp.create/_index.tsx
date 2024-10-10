@@ -63,7 +63,7 @@ export default function CreateCredit () {
       }); 
 
     const handleCancel = () => {
-        navigate('/clients')
+        navigate('/clients');
     }
 
     return (

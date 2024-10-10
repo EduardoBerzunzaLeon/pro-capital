@@ -33,7 +33,6 @@ const exportToExcel = (exportData: ExportProps, fileName: string) => {
   ], { cellStyles: true });
 
   XLSX.utils.sheet_add_json(worksheet, exportData.data, { origin: "A5" });
-  // const worksheet = XLSX.utils.json_to_sheet(data);
 
     [1,2,3].forEach((value) => {
       worksheet[`B${value}`].s = {
@@ -50,18 +49,6 @@ const exportToExcel = (exportData: ExportProps, fileName: string) => {
     const size = exportData.data.length+2;
     const columns = Object.keys(exportData.data[0]).length;
     
-    // Array.from([size]).forEach((_, index) => {
-      //   worksheet[`A${6+index}`].s = {
-        //     alignment: { wrapText: true }
-        //   }  
-    //   worksheet[`B${6+index}`].s = {
-      //     alignment: { wrapText: true }
-      //   }  
-      // });
-
-    // for (const element of object) {
-      
-    // }
 
     for (let col = 0; col < columns; col++) {
       for (let row = 0; row < size; row++) {

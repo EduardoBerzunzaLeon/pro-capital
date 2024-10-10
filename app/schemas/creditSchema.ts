@@ -33,7 +33,17 @@ export const creditSchema = z.object({
     creditAt,
     folder: stringSchema('Carpeta'),
     types: z.enum(['NORMAL', 'EMPLEADO', 'LIDER'])
-})
+});
+
+
+export const creditRenovateSchema = z.object({
+    group,
+    amount, 
+    creditAt,
+    folder: stringSchema('Carpeta'),
+    types: z.enum(['NORMAL', 'EMPLEADO', 'LIDER']),
+    paymentForgivent: integerBuilder('Pago perdonado')
+});
 
 export const exportLayoutSchema = z.object({
     folder: stringSchema('Carpeta'),
@@ -44,6 +54,12 @@ export const creditCreateSchema = z.object({
     aval: avalSchema,
     client: clientSchema,
     credit: creditSchema
+})
+
+export const creditReadmissionSchema = z.object({
+    aval: avalSchema,
+    client: clientSchema,
+    credit: creditRenovateSchema
 })
 
 export type AvalSchema = z.infer<typeof avalSchema>;
