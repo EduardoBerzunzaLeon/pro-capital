@@ -1,12 +1,12 @@
 import { getFormProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import { Card, CardHeader, CardBody, Accordion, AccordionItem, Button } from "@nextui-org/react";
-import { LoaderFunction } from "@remix-run/node"
+import { ActionFunction, LoaderFunction } from "@remix-run/node"
 import { Form, useLoaderData, useNavigate, useRouteError } from "@remix-run/react";
 import { Generic } from "~/.server/interfaces";
 import { handlerError } from "~/.server/reponses";
 import { Service } from "~/.server/services";
-import { AvalFormSection, ClientFormSection, CreditFormSection, CreditPaymentsTable, CreditRenovateFormSection } from "~/components/ui";
+import { AvalFormSection, ClientFormSection, CreditPaymentsTable, CreditRenovateFormSection } from "~/components/ui";
 import { ErrorCard } from "~/components/utils/ErrorCard";
 import { creditReadmissionSchema } from "~/schemas/creditSchema";
 
@@ -19,6 +19,24 @@ export const loader: LoaderFunction = async ({ params }) => {
         throw new Response(error, { status });
     }
 }
+
+export const action: ActionFunction = async ({ request, params }) => {
+    const formData = await request.formData();
+    const data = Object.fromEntries(formData);
+
+    try {
+        const retur = await Service.credit.renovate(formData, params?.curp)
+        console.log({retur});
+        return data;
+        // return redirectWithSuccess('/clients', 'El crédito se ha creado con éxito 🎉');
+    } catch (error) {
+        console.log(error);
+        return 'error';
+        // return handlerErrorWithToast(error, { data });
+    }
+
+}
+
 
 export function ErrorBoundary() {
     const error = useRouteError();
@@ -41,7 +59,8 @@ export default function Test () {
             client: { ...loader.credit.client },
             aval: { ...loader.credit.aval },
             credit: {
-                folder: loader.credit.folder.name
+                folder: loader.credit.folder.name,
+                paymentForgivent: loader.hasPaymentForgivent ? 'true' : 'false'
             },
         },
         shouldValidate: 'onSubmit',
@@ -114,6 +133,7 @@ export default function Test () {
                         // isLoading={navigation.state === 'submitting'}
                         // isDisabled={navigation.state !== 'idle'}
                         name='_action'
+                        value='renovate'
                     >
                         Crear Crédito
                     </Button>

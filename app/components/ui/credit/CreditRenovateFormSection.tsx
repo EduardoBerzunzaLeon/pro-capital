@@ -4,13 +4,14 @@ import { useEffect, useState } from "react";
 import { Autocomplete } from "~/.server/interfaces";
 import { useFetcher } from "@remix-run/react";
 import { FieldMetadata, getSelectProps, useInputControl } from "@conform-to/react";
-import { CreditSchema, CreditCreateSchema } from "~/schemas/creditSchema";
 import { InputValidation } from "../forms/Input";
 import { AutocompleteValidation } from "../forms/AutocompleteValidation";
+import { CreditReadmissionSchema, CreditRenovateSchema } from "~/schemas/creditSchema";
+import { calculateAmount, convertDebt } from "~/application";
 
 type Types = 'NORMAL' | 'EMPLEADO' | 'LIDER';
 
-type Fields = FieldMetadata<CreditSchema, CreditCreateSchema, string[]>;
+type Fields = FieldMetadata<CreditRenovateSchema, CreditReadmissionSchema, string[]>;
 
 interface Props {
   fields: Fields;
@@ -19,37 +20,15 @@ interface Props {
   folderId: number
 }
 
-const convertDebt = (amount: number, type: Types = 'NORMAL') => {
-  const debt = { 
-    paymentAmount: amount / 10, 
-    totalAmount: 0 
-  }
-
-  const types = {
-    'NORMAL': 15,
-    'EMPLEADO': 12,
-    'LIDER': 10,
-  }
-
-  const weeks = type in types ? types[type] : 15;
-  debt.totalAmount = debt.paymentAmount * weeks;
-
-  return debt;
-}
-
-const handleChange = (amount: string, type: string) => {
+const handleChange = (amount: string, type: string, currentDebt: number, isForgivent: boolean) => {
 
   const amountParsed =  Number(amount);
   if(isNaN(amountParsed)) {
     return { paymentAmount: 0, totalAmount: 0 }; 
   }
-
-  const data =  {
-    amount: amountParsed,
-    type
-  }
   
-  return convertDebt(data.amount, (data.type as Types));
+  const currentAmount = calculateAmount(amountParsed, isForgivent, Number(currentDebt));
+  return convertDebt(currentAmount, (type as Types));
 }
 
 export const CreditRenovateFormSection = ({ fields, paymentForgivent, currentDebt, folderId }: Props) => {
@@ -58,9 +37,12 @@ export const CreditRenovateFormSection = ({ fields, paymentForgivent, currentDeb
   const group = useInputControl(credit.group);
   const amount = useInputControl(credit.amount);
   const type = useInputControl(credit.types);
+  const isForgivent = useInputControl(credit.paymentForgivent);
   const folder = useInputControl(credit.folder);
   const [payment, setPayment] = useState(0);
   const [total, setTotal] = useState(0);
+
+  console.log({isForgivent});
 
   useEffect(() => {
 
@@ -78,12 +60,12 @@ export const CreditRenovateFormSection = ({ fields, paymentForgivent, currentDeb
 
   useEffect(() => {
 
-    const { paymentAmount, totalAmount } = handleChange(amount.value ?? '', type.value ?? '');
+    const { paymentAmount, totalAmount } = handleChange(amount.value ?? '', type.value ?? '', currentDebt, isForgivent.value === 'true');
 
     setPayment(paymentAmount);
     setTotal(totalAmount)
 
-  }, [amount.value, type.value]);
+  }, [amount.value, type.value, currentDebt, isForgivent.value]);
 
   useEffect(() => {
     fetcher.load(`/folder/group?id=${folderId}`);
@@ -93,7 +75,6 @@ export const CreditRenovateFormSection = ({ fields, paymentForgivent, currentDeb
   const handleSelected = ({ id }: Autocomplete) => {
     fetcher.load(`/folder/group?id=${id}`);
   }
-
 
   const handleSelectedType = (e: React.ChangeEvent<HTMLSelectElement>) => {
     type.change(e.target.value);
@@ -118,7 +99,14 @@ export const CreditRenovateFormSection = ({ fields, paymentForgivent, currentDeb
           value={group.value ?? ''}
           onValueChange={group.change}
         />
-        <Checkbox defaultSelected={paymentForgivent}>Perdonar último pago</Checkbox>
+        <Checkbox 
+          defaultSelected={paymentForgivent}
+          name={credit.paymentForgivent.name}
+          value={isForgivent.value}
+          // onChange={e => console.log(e.target.value)}
+          isSelected={isForgivent.value === 'true'}
+          onValueChange={(isSelected:boolean) => isForgivent.change(isSelected ? 'true' : 'false')}
+        >Perdonar último pago</Checkbox>
       <Select 
           variant='bordered'
           labelPlacement="outside"
@@ -163,7 +151,7 @@ export const CreditRenovateFormSection = ({ fields, paymentForgivent, currentDeb
           placeholder="0.00"
           labelPlacement="outside"
           isDisabled
-          value={currentDebt}
+          value={currentDebt+''}
           variant='bordered'
           startContent={
             <div className="pointer-events-none flex items-center">

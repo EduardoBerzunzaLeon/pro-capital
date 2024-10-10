@@ -1,5 +1,4 @@
-export type { SortDirection, Key, Color, Selection, SelectionMode, LoadingState } from './ui.interface';
-export type { ActionPostMunicipality } from './municipalityRes.interface';
-export type { Generic, GenericUnknown, RequestDataGeneric, RequestId, Autocomplete  } from './generic.interface';
-
 export type  * from './credit.interface';
+export type * from './generic.interface';
+export type * from './municipalityRes.interface';
+export type * from './ui.interface';

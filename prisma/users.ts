@@ -231,7 +231,7 @@ export const avals = [
         fullname: 'fatima bernes hermoxa',
         address: 'col bosque real',
         reference: 'atras de refaccionaria leon',
-        curp: 'AUNI760709MCCYHV01',
+        curp: 'AUAG840531MCCLVD01',
     },
     {
         name: 'patricia',
@@ -280,7 +280,7 @@ interface Credit {
 
 export const credits: Credit[] = [
     {
-        aval: 'AUNI760709MCCYHV01',
+        aval: 'AUAG840531MCCLVD01',
         client: 'AUNI760709MCCYHV00',
         group: 2,
         folder: 'champoton 1',

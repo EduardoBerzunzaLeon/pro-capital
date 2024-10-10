@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { curp, dateSchema, integerBuilder, lastNameFirst, lastNameLast, name, stringSchema } from "./genericSchema";
+import { active, curp, dateSchema, integerBuilder, lastNameFirst, lastNameLast, name, stringSchema } from "./genericSchema";
 
 export const avalSchema = z.object({
     name,
@@ -42,7 +42,7 @@ export const creditRenovateSchema = z.object({
     creditAt,
     folder: stringSchema('Carpeta'),
     types: z.enum(['NORMAL', 'EMPLEADO', 'LIDER']),
-    paymentForgivent: integerBuilder('Pago perdonado')
+    paymentForgivent: active
 });
 
 export const exportLayoutSchema = z.object({
@@ -65,4 +65,6 @@ export const creditReadmissionSchema = z.object({
 export type AvalSchema = z.infer<typeof avalSchema>;
 export type ClientSchema = z.infer<typeof clientSchema>;
 export type CreditSchema = z.infer<typeof creditSchema>;
+export type CreditRenovateSchema = z.infer<typeof creditRenovateSchema>;
 export type CreditCreateSchema = z.infer<typeof creditCreateSchema>;
+export type CreditReadmissionSchema = z.infer<typeof creditReadmissionSchema>;

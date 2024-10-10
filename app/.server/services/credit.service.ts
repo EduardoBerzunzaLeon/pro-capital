@@ -8,6 +8,8 @@ import { ServerError } from "../errors";
 import { creditCreateSchema } from "~/schemas";
 import dayjs from 'dayjs';
 import { PaymentI } from "../interfaces";
+import { creditReadmissionSchema } from "~/schemas/creditSchema";
+import { calculateAmount, convertDebt } from "~/application";
 
 export const findAll = async (props: PaginationWithFilters) => {
 
@@ -64,7 +66,8 @@ export const validationToRenovate = async (curp?: string) => {
 
     return {
         credit,
-        hasPaymentForgivent
+        hasPaymentForgivent,
+        curp: curpValidated,
     };
 }
 
@@ -107,8 +110,60 @@ export const createCredit = async (credit: CreditCreateI) => {
     throw ServerError.internalServer('No se pudo crear el credito, favor de intentarlo de nuevo.');
 }
 
-export const create = async (form: FormData, curp?: string) => {
+export const renovate = async (form: FormData, curp?: string) => {
+    const { credit: creditDb, curp: curpValidated } =  await validationToRenovate(curp);
+    const { aval, client, credit } =  validationConform(form, creditReadmissionSchema);
 
+    if(curpValidated ===  aval.curp) {
+        throw ServerError.badRequest('El curp del cliente no puede ser igual al curp del aval');
+    }  
+    
+    const clientFullname = Service.utils.concatFullname({ ...client });
+    const avalFullname = Service.utils.concatFullname({ ...aval });
+
+    const { amount, type, creditAt } = credit;
+
+    const nextPayment = dayjs(creditAt).add(7, 'day').toDate();
+
+    const folderDb = await Repository.folder.findByNameAndGroup(credit.folder, credit.group);
+  
+    if(!folderDb || !folderDb.groups || folderDb.groups.length != 1) {
+        throw ServerError.badRequest('La carpeta y el grupo no son validos');
+    }
+
+    const { guarantee: clientGuarantee , ...restClient } = client;
+    const { guarantee: avalGuarantee , ...restAval } = aval;
+
+    const paymentAmount = calculateAmount(amount, credit.paymentForgivent, creditDb.currentDebt);
+
+    const totalAmount = convertDebt(paymentAmount, type);
+    // TODO updateCliente and updateAval
+    // const clientDb = await createClient({...restClient, curp: curpValidated}, clientFullname);
+    // const avalDb = await createAval(restAval, avalFullname, clientDb.id);
+
+    const preCredit: CreditCreateI = {
+        avalId: avalDb.id,
+        clientId: clientDb.id,
+        groupId: folderDb.groups[0].id,
+        folderId: folderDb.id,
+        type, 
+        amount,
+        paymentAmount,
+        totalAmount,
+        creditAt,
+        clientGuarantee: clientGuarantee ?? '',
+        avalGuarantee: avalGuarantee ?? '',
+        nextPayment,
+        currentDebt: totalAmount,
+        status: 'ACTIVO',
+    }
+
+    return await createCredit(preCredit);
+    // return '';
+}
+
+export const create = async (form: FormData, curp?: string) => {
+ 
     const curpValidated =  await validationToCreate(curp);
     const { aval, client, credit } =  validationConform(form, creditCreateSchema);
 
@@ -227,5 +282,6 @@ export default{
     verifyToCreate,
     validationToCreate,
     validationToRenovate,
-    create
+    create,
+    renovate
 }
