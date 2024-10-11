@@ -1,5 +1,5 @@
 import { Repository } from "../adapter";
-import { ClientCreateI } from "../domain/interface";
+import { ClientCreateI, ClientUpdateI } from "../domain/interface";
 
 
 export const createOne = async (client: ClientCreateI) => {
@@ -10,7 +10,12 @@ export const deleteOne = async (id: number) => {
     return await Repository.client.deleteOne(id);
 }
 
+export const updateOne = async (curp: string, data: ClientUpdateI) => {
+    return await Repository.client.updateOne(curp, data);
+}
+
 export default {
     createOne,
-    deleteOne
+    deleteOne,
+    updateOne
 }

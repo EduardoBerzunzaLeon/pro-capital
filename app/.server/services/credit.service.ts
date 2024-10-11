@@ -2,7 +2,7 @@ import { curpSchema } from "~/schemas/genericSchema";
 import { Service } from ".";
 import { Repository } from "../adapter";
 import { Credit } from "../domain/entity";
-import { AvalCreateI, ClientCreateI, CreditCreateI, PaginationWithFilters } from "../domain/interface";
+import { AvalCreateI, ClientCreateI, ClientUpdateI, CreditCreateI, PaginationWithFilters } from "../domain/interface";
 import { validationConform, validationZod } from "./validation.service";
 import { ServerError } from "../errors";
 import { creditCreateSchema } from "~/schemas";
@@ -10,6 +10,7 @@ import dayjs from 'dayjs';
 import { PaymentI } from "../interfaces";
 import { creditReadmissionSchema } from "~/schemas/creditSchema";
 import { calculateAmount, convertDebt } from "~/application";
+import { Status } from "../domain/entity/credit.entity";
 
 export const findAll = async (props: PaginationWithFilters) => {
 
@@ -80,6 +81,17 @@ export const createClient = async ( client: Omit<ClientCreateI, 'fullname'>, ful
     return clientDb;
 } 
 
+export const updateClientToRenovate = async ( curp: string, client: Omit<ClientUpdateI, 'fullname'>, fullname: string) => {
+    const clientDb = await Service.client.updateOne(curp, { ...client, fullname });
+    if(!clientDb) throw ServerError.badRequest('No se pudo actualizar los datos del cliente, favor de intentarlo de nuevo.');
+    return clientDb;
+} 
+
+export const updateStatus = async ( id: number, status: Status) => {
+    const creditDb = await Repository.credit.updateStatus(id, status);
+    if(!creditDb) throw ServerError.internalServer('No se pudo actualizar el estatus del credito');
+    return creditDb;
+}
 
 export const createAval = async ( aval: Omit<AvalCreateI, 'fullname'>, fullname: string, idClient: number) => {
     const avalDb = await Service.aval.upsertOne({ ...aval, fullname });
@@ -110,14 +122,27 @@ export const createCredit = async (credit: CreditCreateI) => {
     throw ServerError.internalServer('No se pudo crear el credito, favor de intentarlo de nuevo.');
 }
 
+export const verifyRenovateDates = async (payments: PaymentI[], creditAt: Date) => {
+    
+    const dates = payments.map(({ paymentDate }) => paymentDate.getTime());
+    const lastDate = Math.max(...dates);
+    const newCreditAt = creditAt.getTime();
+
+    if(newCreditAt <= lastDate) {
+        throw ServerError.badRequest('El nuevo credito no puedo ser menor o igual al ultimo pago');
+    }
+    
+}
+
 export const renovate = async (form: FormData, curp?: string) => {
     const { credit: creditDb, curp: curpValidated } =  await validationToRenovate(curp);
     const { aval, client, credit } =  validationConform(form, creditReadmissionSchema);
-
+    
     if(curpValidated ===  aval.curp) {
         throw ServerError.badRequest('El curp del cliente no puede ser igual al curp del aval');
     }  
-    
+
+    verifyRenovateDates(creditDb.payment_detail, credit.creditAt);
     const clientFullname = Service.utils.concatFullname({ ...client });
     const avalFullname = Service.utils.concatFullname({ ...aval });
 
@@ -134,12 +159,12 @@ export const renovate = async (form: FormData, curp?: string) => {
     const { guarantee: clientGuarantee , ...restClient } = client;
     const { guarantee: avalGuarantee , ...restAval } = aval;
 
-    const paymentAmount = calculateAmount(amount, credit.paymentForgivent, creditDb.currentDebt);
+    const paymentAmount = calculateAmount(Number(amount), credit.paymentForgivent, Number(creditDb.currentDebt));
 
-    const totalAmount = convertDebt(paymentAmount, type);
-    // TODO updateCliente and updateAval
-    // const clientDb = await createClient({...restClient, curp: curpValidated}, clientFullname);
-    // const avalDb = await createAval(restAval, avalFullname, clientDb.id);
+    const { totalAmount } = convertDebt(paymentAmount, type);
+    await updateStatus(creditDb.id, 'LIQUIDADO');
+    const clientDb = await updateClientToRenovate( curpValidated, { ...restClient, curp: curpValidated }, clientFullname );
+    const avalDb = await createAval(restAval, avalFullname, clientDb.id);
 
     const preCredit: CreditCreateI = {
         avalId: avalDb.id,
@@ -155,11 +180,10 @@ export const renovate = async (form: FormData, curp?: string) => {
         avalGuarantee: avalGuarantee ?? '',
         nextPayment,
         currentDebt: totalAmount,
-        status: 'ACTIVO',
+        status: 'RENOVADO',
     }
 
     return await createCredit(preCredit);
-    // return '';
 }
 
 export const create = async (form: FormData, curp?: string) => {

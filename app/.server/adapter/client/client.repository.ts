@@ -1,4 +1,4 @@
-import { BaseClientI, ClientCreateI, ClientRepositoryI } from "~/.server/domain/interface";
+import { BaseClientI, ClientCreateI, ClientRepositoryI, ClientUpdateI } from "~/.server/domain/interface";
 
 export function ClientRepository(base: BaseClientI): ClientRepositoryI{
 
@@ -6,14 +6,9 @@ export function ClientRepository(base: BaseClientI): ClientRepositoryI{
         return await base.createOne(client);
     }
 
-    // TODO: implement update client with ID
-    // async function upsertOne(client: ClientCreateI) {
-    //     return await base.entity.upsert({
-    //         where: { curp: client.curp },
-    //         update: { ...client },
-    //         create: { ...client }
-    //     })
-    // }
+    async function updateOne(curp: string, data: ClientUpdateI) {
+        return await base.updateOne({ curp }, data );
+    }
 
     async function deleteOne(id: number) {
         return await base.deleteOne({id});
@@ -21,6 +16,7 @@ export function ClientRepository(base: BaseClientI): ClientRepositoryI{
 
     return {
         createOne,
-        deleteOne
+        deleteOne,
+        updateOne
     }
 }

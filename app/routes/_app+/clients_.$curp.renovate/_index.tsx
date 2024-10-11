@@ -3,8 +3,10 @@ import { parseWithZod } from "@conform-to/zod";
 import { Card, CardHeader, CardBody, Accordion, AccordionItem, Button } from "@nextui-org/react";
 import { ActionFunction, LoaderFunction } from "@remix-run/node"
 import { Form, useLoaderData, useNavigate, useRouteError } from "@remix-run/react";
+import { redirectWithSuccess } from "remix-toast";
 import { Generic } from "~/.server/interfaces";
 import { handlerError } from "~/.server/reponses";
+import { handlerErrorWithToast } from "~/.server/reponses/handlerError";
 import { Service } from "~/.server/services";
 import { AvalFormSection, ClientFormSection, CreditPaymentsTable, CreditRenovateFormSection } from "~/components/ui";
 import { ErrorCard } from "~/components/utils/ErrorCard";
@@ -25,14 +27,11 @@ export const action: ActionFunction = async ({ request, params }) => {
     const data = Object.fromEntries(formData);
 
     try {
-        const retur = await Service.credit.renovate(formData, params?.curp)
-        console.log({retur});
-        return data;
-        // return redirectWithSuccess('/clients', 'El crédito se ha creado con éxito 🎉');
+        await Service.credit.renovate(formData, params?.curp)
+        return redirectWithSuccess('/clients', 'El crédito se ha creado con éxito 🎉');
     } catch (error) {
         console.log(error);
-        return 'error';
-        // return handlerErrorWithToast(error, { data });
+        return handlerErrorWithToast(error, { data });
     }
 
 }
@@ -40,6 +39,7 @@ export const action: ActionFunction = async ({ request, params }) => {
 
 export function ErrorBoundary() {
     const error = useRouteError();
+
     return (<ErrorCard 
         error={(error as Generic)?.data ?? 'Ocurrio un error inesperado'}
         description='Ocurrio un error al momento de renovar un credito, intentelo de nuevo, verifique el CURP o que exista el cliente'

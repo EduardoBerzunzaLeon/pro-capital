@@ -56,7 +56,7 @@ export const AutocompleteValidation = ({
 
     const isControlled = !!selectedItem && !!onSelected;
 
-    // TODO: mover esto al handlechange a ver que sucede 
+    // TODO: mover esto al handlechange a ver que sucede p
     useEffect(() => {
         submit({ data: query }, { action: actionRoute });
    }, [actionRoute, query, submit]);

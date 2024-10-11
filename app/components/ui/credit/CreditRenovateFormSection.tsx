@@ -1,15 +1,13 @@
 import { today, getLocalTimeZone } from "@internationalized/date";
 import { Checkbox, DatePicker, Input, Select, SelectItem } from "@nextui-org/react"
 import { useEffect, useState } from "react";
-import { Autocomplete } from "~/.server/interfaces";
+import { Autocomplete, Types } from "~/.server/interfaces";
 import { useFetcher } from "@remix-run/react";
 import { FieldMetadata, getSelectProps, useInputControl } from "@conform-to/react";
 import { InputValidation } from "../forms/Input";
 import { AutocompleteValidation } from "../forms/AutocompleteValidation";
 import { CreditReadmissionSchema, CreditRenovateSchema } from "~/schemas/creditSchema";
 import { calculateAmount, convertDebt } from "~/application";
-
-type Types = 'NORMAL' | 'EMPLEADO' | 'LIDER';
 
 type Fields = FieldMetadata<CreditRenovateSchema, CreditReadmissionSchema, string[]>;
 
@@ -42,8 +40,6 @@ export const CreditRenovateFormSection = ({ fields, paymentForgivent, currentDeb
   const [payment, setPayment] = useState(0);
   const [total, setTotal] = useState(0);
 
-  console.log({isForgivent});
-
   useEffect(() => {
 
     if(fetcher.state === 'idle' && fetcher.data?.status === 'success' ) {
@@ -72,13 +68,14 @@ export const CreditRenovateFormSection = ({ fields, paymentForgivent, currentDeb
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ folderId ])
 
-  const handleSelected = ({ id }: Autocomplete) => {
+  const handleSelected = ({ id, value }: Autocomplete) => {
     fetcher.load(`/folder/group?id=${id}`);
   }
 
   const handleSelectedType = (e: React.ChangeEvent<HTMLSelectElement>) => {
     type.change(e.target.value);
   }
+
 
   return (
     <div>
@@ -91,6 +88,7 @@ export const CreditRenovateFormSection = ({ fields, paymentForgivent, currentDeb
         onSelected={handleSelected}
         metadata={credit.folder}      
         onValueChange={folder.change}
+        selectedItem={{ id: folderId, value: folder.value ?? '' }}
       />
         <InputValidation
           label="Grupo"

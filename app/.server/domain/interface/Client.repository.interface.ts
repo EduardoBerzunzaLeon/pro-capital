@@ -14,6 +14,17 @@ export interface ClientCreateI  {
     phoneNumber?: string
 }
 
+export interface ClientUpdateI  {
+    name: string,
+    lastNameFirst: string,
+    lastNameSecond: string,
+    fullname: string,
+    address: string,
+    reference: string,
+    curp: string,
+    phoneNumber?: string
+}
+
 export type BaseClientI = BaseRepositoryI<
     Prisma.ClientDelegate, 
     Prisma.ClientWhereInput, 
@@ -25,7 +36,8 @@ export type BaseClientI = BaseRepositoryI<
 
 
 export interface ClientRepositoryI{
-    createOne: (client: ClientCreateI) => Promise<Generic | undefined>
-    deleteOne: (id: number) => Promise<Generic | undefined>
+    createOne: (client: ClientCreateI) => Promise<Generic | undefined>,
+    deleteOne: (id: number) => Promise<Generic | undefined>,
+    updateOne: (curp: string, data: ClientCreateI) => Promise<Generic | undefined>,
 }
 

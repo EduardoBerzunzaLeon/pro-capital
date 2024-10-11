@@ -1,3 +1,4 @@
+import { Status } from "~/.server/domain/entity/credit.entity";
 import { BaseCreditI, CreditCreateI, CreditRepositoryI, PaginationWithFilters } from "~/.server/domain/interface";
 
 export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
@@ -179,12 +180,17 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
         return await base.createOne(credit);
     }
 
+    async function updateStatus(id: number, status: Status) {
+        return await base.updateOne({id}, { status });
+    }
+
     return {
         findAll,
         findByCurp,
         findLastCredit,
         createOne,
         exportLayout,
+        updateStatus,
         base
     }
 
