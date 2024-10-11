@@ -3,7 +3,7 @@ import { Autocomplete } from "~/.server/interfaces";
 import { useFetcher } from "@remix-run/react";
 import { AvalCreditsWarning } from "./AvalCreditsWarning";
 import { FieldMetadata, useInputControl } from '@conform-to/react';
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { AvalSchema, CreditCreateSchema } from '../../../schemas/creditSchema';
 import { InputValidation } from "../forms/Input";
 import { TextareaValidation } from "../forms/Textarea";
@@ -13,6 +13,7 @@ type Fields = FieldMetadata<AvalSchema, CreditCreateSchema, string[]>
 
 interface Props {
   fields: Fields,
+  avalId?: number
 }
 
 interface Credit {
@@ -36,13 +37,14 @@ interface FetcherData {
   credits: Credit[],
 }
 
-export const AvalFormSection = ({ fields }: Props) => {
+export const AvalFormSection = ({ fields, avalId }: Props) => {
 
   // const [curp, setCurp] = useState('');
   const fetcher = useFetcher<FetcherData>();
   const aval = fields.getFieldset();
 
   const curp = useInputControl(aval.curp);
+  const [idAval, setIdAval] = useState(avalId ?? 0);
   const name = useInputControl(aval.name);
   const lastNameFirst = useInputControl(aval.lastNameFirst);
   const lastNameSecond = useInputControl(aval.lastNameSecond);
@@ -51,13 +53,17 @@ export const AvalFormSection = ({ fields }: Props) => {
   const guarantee = useInputControl(aval.guarantee);
   const phoneNumber = useInputControl(aval.phoneNumber);
 
-  const handleSelected = ({ id }: Autocomplete) => {
-
-    if(id === fetcher.data?.id) {
-      return;
-    }
-    fetcher.load(`/aval/${id}`);
+  const handleSelected = ({ id, value }: Autocomplete) => {
+    setIdAval(id);
+    curp.change(value);
   }
+
+  useEffect(() => {
+    if(idAval !== fetcher.data?.id) {
+      fetcher.load(`/aval/${idAval}`);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [idAval])
 
   const handleChange = (value: string) => {
     if(!value) {
@@ -105,6 +111,7 @@ export const AvalFormSection = ({ fields }: Props) => {
         metadata={aval.curp}      
         // value={curp.value ?? ''}
         onValueChange={curp.change}
+        selectedItem={{ id: idAval, value: curp.value ?? '' }}
         onChange={handleChange}
       />
       <InputValidation

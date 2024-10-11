@@ -32,6 +32,7 @@ const handleChange = (amount: string, type: string, currentDebt: number, isForgi
 export const CreditRenovateFormSection = ({ fields, paymentForgivent, currentDebt, folderId }: Props) => {
   const fetcher = useFetcher<any>();
   const credit = fields.getFieldset();
+  const [idFolder, setIdFolder] = useState(folderId);
   const group = useInputControl(credit.group);
   const amount = useInputControl(credit.amount);
   const type = useInputControl(credit.types);
@@ -69,13 +70,14 @@ export const CreditRenovateFormSection = ({ fields, paymentForgivent, currentDeb
   }, [ folderId ])
 
   const handleSelected = ({ id, value }: Autocomplete) => {
+    setIdFolder(id);
+    folder.change(value);
     fetcher.load(`/folder/group?id=${id}`);
   }
 
   const handleSelectedType = (e: React.ChangeEvent<HTMLSelectElement>) => {
     type.change(e.target.value);
   }
-
 
   return (
     <div>
@@ -88,7 +90,8 @@ export const CreditRenovateFormSection = ({ fields, paymentForgivent, currentDeb
         onSelected={handleSelected}
         metadata={credit.folder}      
         onValueChange={folder.change}
-        selectedItem={{ id: folderId, value: folder.value ?? '' }}
+        defaultValue={{ id: idFolder, value: folder.value ?? '' }}
+        selectedItem={{ id: idFolder, value: folder.value ?? '' }}
       />
         <InputValidation
           label="Grupo"

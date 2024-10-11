@@ -26,7 +26,7 @@ interface Props {
     value?: string,
     onValueChange?: (value: string) => void,
     inputType?: InputTypes,
-    defaultValue?: string,
+    defaultValue?: Autocomplete,
     selectedItem?: Autocomplete, 
     startContent?: React.ReactNode
     onSelected?: (value: Autocomplete) =>  void,
@@ -41,15 +41,16 @@ export const AutocompleteValidation = ({
     metadata, 
     comboBoxName, 
     placeholder, 
+    defaultValue,
     selectedItem,
     onSelected, 
     onChange,
     ...restProps
 }: Props) => {
 
-    const [query, setQuery] = useState('');
-    const [displayValue, setDisplayValue] = useState('');
-    const [selected, setSelected] = useState<Autocomplete | undefined>({...initialValue});
+    const [query, setQuery] = useState(defaultValue ? defaultValue.value : '');
+    const [displayValue, setDisplayValue] = useState(defaultValue ? defaultValue.value : '');
+    const [selected, setSelected] = useState<Autocomplete | undefined>(defaultValue ?? initialValue);
     const { submit, data, state } = useFetcher<HandlerSuccess<Autocomplete[]>>({ key: keyFetcher });
     const type = inputType ?? 'text';
     const { key, ...restInputProps} = getInputProps(metadata, { type, ariaAttributes: true });
@@ -87,14 +88,13 @@ export const AutocompleteValidation = ({
     !!onSelected && onSelected(newValue);
   }
 
-  console.log({query, displayValue, selected});
-
     return (  
             <Combobox
                 name={comboBoxName} 
                 value={isControlled ? selectedItem : selected} 
                 onChange={handleSelected} 
                 by={compareAutocomplete}
+                defaultValue={defaultValue}
                 onClose={() => {
                     setQuery('')
                 }}

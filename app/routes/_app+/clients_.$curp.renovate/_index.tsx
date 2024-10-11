@@ -49,7 +49,6 @@ export function ErrorBoundary() {
 export default function Test () {
     const loader = useLoaderData<any>();
     const navigate = useNavigate();
-    console.log(loader);
 
     const [form, fields] = useForm({
         onValidate({ formData }) {
@@ -67,6 +66,7 @@ export default function Test () {
         shouldRevalidate: 'onInput',
       }); 
 
+      console.log(loader)
     const handleCancel = () => {
         navigate('/clients');
     }
@@ -104,6 +104,7 @@ export default function Test () {
                             >
                                 <AvalFormSection 
                                     fields={fields.aval}
+                                    avalId={loader.credit.aval.id}
                                 />
                             </AccordionItem>
                             <AccordionItem 

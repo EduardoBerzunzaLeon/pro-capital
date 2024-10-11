@@ -109,6 +109,7 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
                 },
                 aval: {
                     select: {
+                        id: true,
                         name: true,
                         lastNameFirst: true,
                         lastNameSecond: true,
