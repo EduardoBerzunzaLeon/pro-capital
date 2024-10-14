@@ -8,6 +8,7 @@ import { InputValidation } from "../forms/Input";
 import { AutocompleteValidation } from "../forms/AutocompleteValidation";
 import { CreditReadmissionSchema, CreditRenovateSchema } from "~/schemas/creditSchema";
 import { calculateAmount, convertDebt } from "~/application";
+import { calculateDeductions } from "~/application/utils/credit";
 
 type Fields = FieldMetadata<CreditRenovateSchema, CreditReadmissionSchema, string[]>;
 
@@ -15,24 +16,26 @@ interface Props {
   fields: Fields;
   paymentForgivent: boolean,
   currentDebt: number,
+  paymentAmount: number,
   folderId: number
 }
 
-const handleChange = (amount: string, type: string, currentDebt: number, isForgivent: boolean) => {
+const handleChange = (amount: string, type: string) => {
 
   const amountParsed =  Number(amount);
   if(isNaN(amountParsed)) {
     return { paymentAmount: 0, totalAmount: 0 }; 
   }
   
-  const currentAmount = calculateAmount(amountParsed, isForgivent, Number(currentDebt));
+  const currentAmount = calculateAmount(amountParsed);
   return convertDebt(currentAmount, (type as Types));
 }
 
-export const CreditRenovateFormSection = ({ fields, paymentForgivent, currentDebt, folderId }: Props) => {
+export const CreditRenovateFormSection = ({ fields, paymentForgivent, paymentAmount, currentDebt, folderId }: Props) => {
   const fetcher = useFetcher<any>();
   const credit = fields.getFieldset();
   const [idFolder, setIdFolder] = useState(folderId);
+  const [debt, setDebt] = useState(calculateDeductions(currentDebt, paymentAmount, paymentForgivent));
   const group = useInputControl(credit.group);
   const amount = useInputControl(credit.amount);
   const type = useInputControl(credit.types);
@@ -57,12 +60,11 @@ export const CreditRenovateFormSection = ({ fields, paymentForgivent, currentDeb
 
   useEffect(() => {
 
-    const { paymentAmount, totalAmount } = handleChange(amount.value ?? '', type.value ?? '', currentDebt, isForgivent.value === 'true');
-
+    const { paymentAmount, totalAmount } = handleChange(amount.value ?? '', type.value ?? '');
     setPayment(paymentAmount);
     setTotal(totalAmount)
 
-  }, [amount.value, type.value, currentDebt, isForgivent.value]);
+  }, [amount.value, type.value]);
 
   useEffect(() => {
     fetcher.load(`/folder/group?id=${folderId}`);
@@ -77,6 +79,14 @@ export const CreditRenovateFormSection = ({ fields, paymentForgivent, currentDeb
 
   const handleSelectedType = (e: React.ChangeEvent<HTMLSelectElement>) => {
     type.change(e.target.value);
+  }
+
+  const handlePaymentForgivent = (isSelected:boolean) => {
+
+    const deduction = calculateDeductions(currentDebt, paymentAmount, isSelected);
+    setDebt(deduction);
+
+    isForgivent.change(isSelected ? 'true' : 'false');
   }
 
   return (
@@ -106,7 +116,7 @@ export const CreditRenovateFormSection = ({ fields, paymentForgivent, currentDeb
           value={isForgivent.value}
           // onChange={e => console.log(e.target.value)}
           isSelected={isForgivent.value === 'true'}
-          onValueChange={(isSelected:boolean) => isForgivent.change(isSelected ? 'true' : 'false')}
+          onValueChange={handlePaymentForgivent}
         >Perdonar último pago</Checkbox>
       <Select 
           variant='bordered'
@@ -152,7 +162,7 @@ export const CreditRenovateFormSection = ({ fields, paymentForgivent, currentDeb
           placeholder="0.00"
           labelPlacement="outside"
           isDisabled
-          value={currentDebt+''}
+          value={debt+''}
           variant='bordered'
           startContent={
             <div className="pointer-events-none flex items-center">

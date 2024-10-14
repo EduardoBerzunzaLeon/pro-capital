@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 
-interface CreditLayout {
+export interface CreditLayout {
 
     id: number,
     amount: number,

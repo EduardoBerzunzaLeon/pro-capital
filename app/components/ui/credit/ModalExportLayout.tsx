@@ -8,7 +8,6 @@ import { Autocomplete, Generic } from "~/.server/interfaces";
 import { useEffect } from "react";
 import { InputValidation } from "../forms/Input";
 
-// import { utils, write } from 'xlsx';
 import XLSX from "xlsx-js-style";
 import saveAS from 'file-saver';
 
@@ -24,15 +23,43 @@ interface ExportProps {
   creditAt: string;
 }
 
-const exportToExcel = (exportData: ExportProps, fileName: string) => {
+const fakeDuplicateData = (exportData: ExportProps) => {
+
+  const { data } = exportData;
+
+  const values = data[0];
+
+  return  [
+    values,
+    values,
+    values,
+    values,
+    values,
+    values,
+    values,
+    values,
+    values,
+    values,
+  ]
+} 
+
+const printSheet = (header: Omit<ExportProps, 'data'>, data: Generic[]) => {
+
+  const initialValue: number = 0;
+
+  const total = data.reduce((acc: number, current) => {
+    acc += Number(current.Prestamo);
+    return acc;
+  }, initialValue);
+
   const worksheet = XLSX.utils.aoa_to_sheet([ 
-    [ '', exportData.folder.toUpperCase() ],
-    [ '',`GRUPO ${exportData.group}` ],
-    [ '',exportData.creditAt],
+    [ '', header.folder.toUpperCase() ],
+    [ '',`GRUPO ${header.group}`, 'TOTAL:',  `$${total}`],
+    [ '',header.creditAt],
     ['','','','',1,2,3,4,5,6,7,8,9,10,11,12,13,14,15] 
   ], { cellStyles: true });
 
-  XLSX.utils.sheet_add_json(worksheet, exportData.data, { origin: "A5" });
+  XLSX.utils.sheet_add_json(worksheet, data, { origin: "A5" });
 
     [1,2,3].forEach((value) => {
       worksheet[`B${value}`].s = {
@@ -42,12 +69,15 @@ const exportToExcel = (exportData: ExportProps, fileName: string) => {
           bottom: { style: 'thin' },
           left: { style: 'thin' },
           right: { style: 'thin' },  
-        }
+        },
+        alignment: {
+          wrapText: true,
+        },
       }
     });
 
-    const size = exportData.data.length+2;
-    const columns = Object.keys(exportData.data[0]).length;
+    const size = data.length+2;
+    const columns = Object.keys(data[0]).length;
     
 
     for (let col = 0; col < columns; col++) {
@@ -70,10 +100,47 @@ const exportToExcel = (exportData: ExportProps, fileName: string) => {
         }
       }
       
+    } 
+
+    worksheet["!margins"] = {
+      left: 0.25,
+      right: 0.25,
+      top: 0.75,
+      bottom: 0.75,
+      header: 0.3,
+      footer: 0.3
     }
 
+    // worksheet.
+    // worksheet['!pageSetup'] = { scale: 10, orientation: 'landscape' };
+    return worksheet;
+}
+
+const exportToExcel = (exportData: ExportProps, fileName: string, folder: string) => {
+
+  const data = fakeDuplicateData(exportData);
+ 
   const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+
+  let min = 0;
+  let max = 4;
+  let count = 1;
+
+  while (min < data.length) {
+
+    const credits =  data.slice(min, max);
+    const worksheet = printSheet(exportData, credits);
+    XLSX.utils.book_append_sheet(workbook, worksheet, `${folder}-${count}`);
+
+    min += 4;
+    max += 4;
+    count++;
+
+  }
+
+  // XLSX.utils.book_append_sheet(workbook, worksheet, `${folder}-2`);
+
+
   const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
   const blob = new Blob([excelBuffer], {type: 'application/octet-stream'});
   saveAS(blob, `${fileName}.xlsx`);
@@ -111,13 +178,14 @@ export const ModalExportLayout = ({ isOpen, onOpenChange }: Props) => {
     }, [fetcherGroup.state, fetcherGroup.data]);
 
     useEffect(() => {
-      if(fetcher.state === 'idle' && fetcher.data) {
-        exportToExcel(fetcher.data, 'layout');
+      if(fetcher.state === 'idle' && fetcher.data && folder.value) {
+        exportToExcel(fetcher.data, `Reporte_${folder.value}`, folder.value);
       }
 
     }, [ fetcher.state, fetcher.data ])
 
-    const handleSelected = ({ id }: Autocomplete) => {
+    const handleSelected = ({ id, value }: Autocomplete) => {
+      folder.change(value);
       fetcherGroup.load(`/folder/group?id=${id}`);
     }
 

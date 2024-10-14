@@ -1,4 +1,5 @@
 import { ActionFunction } from "@remix-run/node";
+import { handlerErrorWithToast } from "~/.server/reponses/handlerError";
 import { Service } from "~/.server/services";
 
 
@@ -7,9 +8,11 @@ export const action: ActionFunction = async ({ request }) => {
     // const data = Object.fromEntries(formData);
 
     try {
-        const  test =  await Service.credit.exportLayout(formData);
-        return test;
+        const data=  await Service.credit.exportLayout(formData);
+        console.log({data});
+        return data;
     } catch (error) {
-        return ''
+        console.log({error});
+        return handlerErrorWithToast(error, { message: ' ' });        
     }
 }

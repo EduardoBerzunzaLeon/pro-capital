@@ -1,14 +1,24 @@
 import { Types } from "~/.server/interfaces";
 
-export const calculateAmount = ( amount: number, isForgivent: boolean, currentDebt: number) => {
-    const payment = amount / 10;
-    const forgiventAmount = currentDebt < payment ? currentDebt : payment;
-    const currentAmount = (currentDebt ===  0 || !isForgivent) 
-        ?  amount
-        : amount - forgiventAmount;
-    
-    return (currentAmount + currentDebt) /  10;
+export const calculateAmount = ( amount: number) => {
+    return amount / 10;
 }
+
+
+export const calculateDeductions = ( currentDebt: number, paymentAmount: number, isForgivent: boolean) => {
+
+  if(!isForgivent) {
+    return currentDebt;
+  }
+
+  if(currentDebt < paymentAmount ) {
+    return 0;
+  }
+
+  return currentDebt - paymentAmount
+}
+
+
 
 export const convertDebt = (currentAmount: number, type: Types = 'NORMAL') => {
   

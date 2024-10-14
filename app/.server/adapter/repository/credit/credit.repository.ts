@@ -83,6 +83,7 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
                 currentDebt: true,
                 paymentAmount: true,
                 creditAt: true,
+                amount: true,
                 folder: { 
                     select: {
                         id: true,

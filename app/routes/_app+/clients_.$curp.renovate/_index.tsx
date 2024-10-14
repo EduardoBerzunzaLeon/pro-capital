@@ -59,14 +59,13 @@ export default function Test () {
             aval: { ...loader.credit.aval },
             credit: {
                 folder: loader.credit.folder.name,
-                paymentForgivent: loader.hasPaymentForgivent ? 'true' : 'false'
+                paymentForgivent: loader.hasPaymentForgivent ? 'true' : 'false',
+                amount: Number(loader.credit.amount) + 500
             },
         },
         shouldValidate: 'onSubmit',
         shouldRevalidate: 'onInput',
       }); 
-
-      console.log(loader)
     const handleCancel = () => {
         navigate('/clients');
     }
@@ -111,11 +110,17 @@ export default function Test () {
                                 key="3" 
                                 aria-label="Formulario del credito" 
                                 title="Formulario del Crédito"
+                                subtitle={
+                                    <span>
+                                      El crédito actual es de <strong>{loader.credit.amount}</strong>
+                                    </span>
+                                  }
                             >
                                 <CreditRenovateFormSection 
                                     fields={fields.credit}
                                     paymentForgivent={loader.hasPaymentForgivent}
-                                    currentDebt={loader.credit.currentDebt}
+                                    currentDebt={Number(loader.credit.currentDebt)}
+                                    paymentAmount={Number(loader.credit.paymentAmount)}
                                     folderId={loader.credit.folder.id}
                                 />
                             </AccordionItem>

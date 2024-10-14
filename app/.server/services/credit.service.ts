@@ -8,9 +8,10 @@ import { ServerError } from "../errors";
 import { creditCreateSchema } from "~/schemas";
 import dayjs from 'dayjs';
 import { PaymentI } from "../interfaces";
-import { creditReadmissionSchema } from "~/schemas/creditSchema";
+import { creditReadmissionSchema, exportLayoutSchema } from "~/schemas/creditSchema";
 import { calculateAmount, convertDebt } from "~/application";
 import { Status } from "../domain/entity/credit.entity";
+import { CreditLayout, Layout } from "../domain/entity/layout.entity";
 
 export const findAll = async (props: PaginationWithFilters) => {
 
@@ -147,6 +148,11 @@ export const renovate = async (form: FormData, curp?: string) => {
     const avalFullname = Service.utils.concatFullname({ ...aval });
 
     const { amount, type, creditAt } = credit;
+    const maxAmountAllowed = Number(creditDb.amount)+500;
+
+    if(amount > maxAmountAllowed ) {
+        throw ServerError.badRequest(`El nuevo monto no puede superar los $${maxAmountAllowed}`);
+    }
 
     const nextPayment = dayjs(creditAt).add(7, 'day').toDate();
 
@@ -159,9 +165,9 @@ export const renovate = async (form: FormData, curp?: string) => {
     const { guarantee: clientGuarantee , ...restClient } = client;
     const { guarantee: avalGuarantee , ...restAval } = aval;
 
-    const paymentAmount = calculateAmount(Number(amount), credit.paymentForgivent, Number(creditDb.currentDebt));
-
+    const paymentAmount = calculateAmount(Number(amount));
     const { totalAmount } = convertDebt(paymentAmount, type);
+
     await updateStatus(creditDb.id, 'LIQUIDADO');
     const clientDb = await updateClientToRenovate( curpValidated, { ...restClient, curp: curpValidated }, clientFullname );
     const avalDb = await createAval(restAval, avalFullname, clientDb.id);
@@ -301,11 +307,22 @@ const canHavePaymentForgivent = (creditAt: Date, paymentAmount: number, payments
     return true;
 }
 
+const exportLayout = async (form: FormData) => {
+    const { folder, group } = validationConform(form, exportLayoutSchema);
+    const data = await Repository.credit.exportLayout(folder, group);
+
+    if(!data) {
+        throw ServerError.badRequest('No se encontraron registros');
+    }
+    return Layout.mapper(data as CreditLayout[]); 
+}
+
 export default{ 
     findAll,
     verifyToCreate,
     validationToCreate,
     validationToRenovate,
+    exportLayout,
     create,
     renovate
 }
