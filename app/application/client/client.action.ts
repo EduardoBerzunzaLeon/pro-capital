@@ -8,6 +8,8 @@ export const clientAction: ActionFunction = async ({
 }: ActionFunctionArgs) => {
     
     const formData = await request.formData();
+    const url = new URL(request.url);
+    console.log({url});
     const data = Object.fromEntries(formData);
 
     try {
@@ -22,13 +24,10 @@ export const clientAction: ActionFunction = async ({
             }
 
             if(status === 'renovate') {
-                return redirect(`./${curp}/renovate`)
+                return redirect(`./${curp}/credits?${url.searchParams}`)
             }
 
             return status;
-
-
-    
         }
 
     } catch (error) {

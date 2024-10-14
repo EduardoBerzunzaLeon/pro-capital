@@ -118,7 +118,7 @@ export default function ClientsPage() {
   });
 
   const { render } = useRenderCell({ isMoney: true }); 
-  
+   
   const headerColumns = useMemo(() => {
     if (typeof visibleColumns === 'string') return columns;
     if (visibleColumns.has('all')) return columns;

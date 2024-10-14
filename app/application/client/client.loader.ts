@@ -52,9 +52,9 @@ const columnSortNames: Generic = {
     
     try {
       
-      const curpParsed = { column: 'curp', value: curp.toUpperCase() };
-      const folderParsed = { column: 'folder.name', value: folder.toLowerCase() };
-      const fullnameParsed = { column: 'client.fullname', value: client.toLowerCase() };
+      const curpParsed = { column: 'client.curp', value: curp };
+      const folderParsed = { column: 'folder.name', value: folder };
+      const fullnameParsed = { column: 'client.fullname', value: client };
       const statusFormatted = { column: 'status', value: statusParsed };
       const canRenovateFormatted = { column: 'canRenovate', value: canRenovateParsed };
       const creditAtFormatted = { column: ' creditAt', value:  creditAtParsed };

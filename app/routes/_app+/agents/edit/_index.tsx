@@ -37,8 +37,6 @@ export const action: ActionFunction = async({ request }) => {
       return acc;
     }, [] );
 
-    console.log({assignAt});
-
   await Service.agent.createMany({
     routeId: Number(route), 
     assignAt: dayjs(assignAt+'T00:00:00.000Z').toDate(), 
@@ -58,12 +56,10 @@ export default function EditAgentRoute () {
     const [route, setRoute] = useState<number>(0);
     const [assignAt, setAssignAt] = useState(today(getLocalTimeZone()));
 
-
     const onClose = () => {
         navigate(-1)
     }
 
-    
     const handleRouteChange = (routeKey: Selection) => {
       
       if(typeof routeKey === 'string') {

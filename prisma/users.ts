@@ -199,7 +199,7 @@ export const clients: Client[] = [
         fullname: 'fatima pacheco bernes',
         address: 'fraccionamiento la riviera',
         reference: 'casa blanca de dos pisos',
-        curp: 'AUNI760709MCCYHV00',
+        curp: 'AUNI760709MCCYHV00'.toLowerCase(),
     },
     {
         name: 'maria',
@@ -208,7 +208,7 @@ export const clients: Client[] = [
         fullname: 'maria berzunza leon',
         address: 'calle 2 col san joaquin',
         reference: 'a lado del pollo pollon',
-        curp: 'JATM290893MCCNRD01',
+        curp: 'JATM290893MCCNRD01'.toLowerCase(),
     },
     {
         name: 'carlos',
@@ -217,7 +217,7 @@ export const clients: Client[] = [
         fullname: 'carlos berzunza leon',
         address: 'col jardines',
         reference: 'casa blanca de dos pisos',
-        curp: 'BELC290893MCCNRD01',
+        curp: 'BELC290893MCCNRD01'.toLowerCase(),
     },
 ]
 

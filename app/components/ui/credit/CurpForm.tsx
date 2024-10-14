@@ -17,8 +17,6 @@ export const CurpForm = () => {
         shouldRevalidate: 'onInput',
     }); 
 
-    console.log(fetcher.data);
-
   return (
     <Card className='w-full'>
         <CardHeader>

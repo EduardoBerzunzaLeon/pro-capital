@@ -52,14 +52,18 @@ const printSheet = (header: Omit<ExportProps, 'data'>, data: Generic[]) => {
     return acc;
   }, initialValue);
 
+  const numeral = data.map((_, index) => ([index+1])); 
+
   const worksheet = XLSX.utils.aoa_to_sheet([ 
     [ '', header.folder.toUpperCase() ],
-    [ '',`GRUPO ${header.group}`, 'TOTAL:',  `$${total}`],
+    [ '',`GRUPO ${header.group}`],
     [ '',header.creditAt],
-    ['','','','',1,2,3,4,5,6,7,8,9,10,11,12,13,14,15] 
-  ], { cellStyles: true });
+    ['','','','','',1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
+    ['No.'],
+    ...numeral
+  ], { cellStyles: true  });
 
-  XLSX.utils.sheet_add_json(worksheet, data, { origin: "A5" });
+  XLSX.utils.sheet_add_json(worksheet, data, { origin: "B5" });
 
     [1,2,3].forEach((value) => {
       worksheet[`B${value}`].s = {
@@ -77,7 +81,7 @@ const printSheet = (header: Omit<ExportProps, 'data'>, data: Generic[]) => {
     });
 
     const size = data.length+2;
-    const columns = Object.keys(data[0]).length;
+    const columns = Object.keys(data[0]).length+1;
     
 
     for (let col = 0; col < columns; col++) {
@@ -102,17 +106,19 @@ const printSheet = (header: Omit<ExportProps, 'data'>, data: Generic[]) => {
       
     } 
 
+    XLSX.utils.sheet_add_aoa(worksheet, [['TOTAL', `$${total}`]], { origin: `C${data.length + 6}` });
+
     worksheet["!margins"] = {
       left: 0.25,
       right: 0.25,
-      top: 0.75,
-      bottom: 0.75,
-      header: 0.3,
-      footer: 0.3
+      top: 0,
+      bottom: 0,
+      header: 0,
+      footer: 0
     }
 
     // worksheet.
-    // worksheet['!pageSetup'] = { scale: 10, orientation: 'landscape' };
+    // worksheet['!pageSetup'] = { scale: 100, orientation: 'landscape' };
     return worksheet;
 }
 
