@@ -42,7 +42,7 @@ export function apiPrismaFeatures({
       }
 
       if(typeof value === 'string') {
-        return { contains: value.toLowerCase() }
+        return { contains: value.toLowerCase(), mode: 'insensitive' }
       }
       
       if(typeof value === 'boolean' || typeof value === 'number') {

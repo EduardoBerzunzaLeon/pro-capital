@@ -31,7 +31,9 @@ export type BaseCreditI = BaseRepositoryI<
 export interface CreditRepositoryI{
     findAll: (paginationData: PaginationWithFilters ) => Promise<ResponseWithMetadata>,
     findByCurp: (curp: string) => Promise<Generic | undefined>,
-    findLastCredit: (curp: string) => Promise<Generic[] | undefined>,
+    findCredit: (id: number) => Promise<Generic | undefined>,
+    findCredits: (curp: string) => Promise<Generic[] | undefined>,
+    findByRenovate: (id: number, curp: string) => Promise<Generic | undefined>,
     createOne: (credit: CreditCreateI) => Promise<Generic | undefined>,
     exportLayout: (folderName: string, groupName: number) => Promise<Generic | undefined>,
     updateStatus: (id: number, status: Status) => Promise<Generic | undefined>,

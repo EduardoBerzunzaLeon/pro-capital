@@ -72,18 +72,33 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
             }
         });
     }
+    
+    async function findByRenovate(id: number, curp: string) {
+        return await base.findOne({ id, client: { curp } }, { 
+            id: true, 
+            client: {
+                select: { isDeceased: true }
+            }
+        });
+    }
 
-    async function findLastCredit(curp: string) {
+    async function findCredits(curp: string) {
+        return await base.findMany({
+            searchParams: { client: { curp } },
+            select: { id: true }
+        });
+    }
 
-        return await base.findMany({ 
-            searchParams: { client: { curp }},
-            select: {
+    async function findCredit(id: number) {
+
+        return await base.findOne({ id },{
                 id: true,
                 totalAmount: true,
                 currentDebt: true,
                 paymentAmount: true,
                 creditAt: true,
                 amount: true,
+                status: true,
                 folder: { 
                     select: {
                         id: true,
@@ -130,12 +145,7 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
                         folio: true
                     }
                 }
-            },
-            orderBy: {
-                creditAt: 'desc'
-            },
-            take: 1
-        });
+            }, true);
     }
 
     async function exportLayout(folderName: string, groupName: number) {
@@ -189,7 +199,9 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
     return {
         findAll,
         findByCurp,
-        findLastCredit,
+        findCredits,
+        findCredit,
+        findByRenovate,
         createOne,
         exportLayout,
         updateStatus,

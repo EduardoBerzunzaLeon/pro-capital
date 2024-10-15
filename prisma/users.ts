@@ -231,7 +231,7 @@ export const avals = [
         fullname: 'fatima bernes hermoxa',
         address: 'col bosque real',
         reference: 'atras de refaccionaria leon',
-        curp: 'AUAG840531MCCLVD01',
+        curp: 'AUAG840531MCCLVD01'.toLowerCase(),
     },
     {
         name: 'patricia',
@@ -240,7 +240,7 @@ export const avals = [
         fullname: 'patricia valencia ortiz',
         address: 'col bosque real',
         reference: 'acostado de ecomoda',
-        curp: 'PVOR290893MCCNRD01',
+        curp: 'PVOR290893MCCNRD01'.toLowerCase(),
     },
 ]
 
@@ -280,8 +280,8 @@ interface Credit {
 
 export const credits: Credit[] = [
     {
-        aval: 'AUAG840531MCCLVD01',
-        client: 'AUNI760709MCCYHV00',
+        aval: 'AUAG840531MCCLVD01'.toLowerCase(),
+        client: 'AUNI760709MCCYHV00'.toLowerCase(),
         group: 2,
         folder: 'champoton 1',
         clientGuarantee: 'television de 30 in',
@@ -291,12 +291,12 @@ export const credits: Credit[] = [
         paymentAmount: 150,
         captureAt:  new Date(2024, 6, 1).toISOString(),
         creditAt:  new Date(2024, 6, 1).toISOString(),
-        canRenovate: false,
+        canRenovate: true,
         nextPayment:  new Date(2024, 6, 1).toISOString(),
         lastPayment:  new Date(2024, 6, 1).toISOString(),
         currentDebt: 750,
         status: 'ACTIVO',
-        paymentForgivent: 0
+        paymentForgivent: 0,
     }
 ]
 
@@ -314,7 +314,7 @@ interface PaymentDetail {
 
 export const paymentDetail: PaymentDetail[] = [
     {
-        client: 'AUNI760709MCCYHV00',
+        client: 'AUNI760709MCCYHV00'.toLowerCase(),
         folder: 'champoton 1',
         group: 2,
         paymentAmount: 150,
@@ -325,7 +325,7 @@ export const paymentDetail: PaymentDetail[] = [
         status: 'ADELANTO'
     },
     {
-        client: 'AUNI760709MCCYHV00',
+        client: 'AUNI760709MCCYHV00'.toLowerCase(),
         folder: 'champoton 1',
         group: 2,
         paymentAmount: 150,
@@ -336,7 +336,7 @@ export const paymentDetail: PaymentDetail[] = [
         status: 'ADELANTO'
     },
     {
-        client: 'AUNI760709MCCYHV00',
+        client: 'AUNI760709MCCYHV00'.toLowerCase(),
         folder: 'champoton 1',
         group: 2,
         paymentAmount: 150,
@@ -347,7 +347,7 @@ export const paymentDetail: PaymentDetail[] = [
         status: 'ADELANTO'
     },
     {
-        client: 'AUNI760709MCCYHV00',
+        client: 'AUNI760709MCCYHV00'.toLowerCase(),
         folder: 'champoton 1',
         group: 2,
         paymentAmount: 1050, 
@@ -369,7 +369,7 @@ export const leaders = [
         anniversaryDate: new Date(2024, 6, 1).toISOString(),
         unsubscribeDate: new Date(2024, 6, 1).toISOString(),
         folder: 'champoton 1',
-        curp: 'BELE982038HCCRND01'
+        curp: 'BELE982038HCCRND01'.toLowerCase()
     },
     {
         name: 'Fatima Liset',
@@ -379,6 +379,6 @@ export const leaders = [
         birthday: new Date(1977, 10, 13).toISOString(),
         anniversaryDate: new Date(2024, 4, 9).toISOString(),
         folder: 'maxcanu 1',
-        curp: 'BERN771013HCCRND01'
+        curp: 'BERN771013HCCRND01'.toLowerCase()
     }
 ]

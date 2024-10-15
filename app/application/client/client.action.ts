@@ -9,7 +9,6 @@ export const clientAction: ActionFunction = async ({
     
     const formData = await request.formData();
     const url = new URL(request.url);
-    console.log({url});
     const data = Object.fromEntries(formData);
 
     try {
@@ -31,6 +30,7 @@ export const clientAction: ActionFunction = async ({
         }
 
     } catch (error) {
+        console.log({error})
         return handlerErrorWithToast(error, data);
     }
 

@@ -15,8 +15,9 @@ import { creditReadmissionSchema } from "~/schemas/creditSchema";
 export const loader: LoaderFunction = async ({ params }) => {
 
     try {
-        return  await Service.credit.validationToRenovate(params.curp);
+        return  await Service.credit.validationToRenovate(params.curp, params.creditId);
     } catch (err) {
+        console.log(err);
         const { error, status } = handlerError(err);
         throw new Response(error, { status });
     }
@@ -46,7 +47,7 @@ export function ErrorBoundary() {
     />)
 }
 
-export default function Test () {
+    export default function Test () {
     const loader = useLoaderData<any>();
     const navigate = useNavigate();
 
