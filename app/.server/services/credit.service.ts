@@ -35,7 +35,6 @@ export const verifyToCreate =  async ( form: FormData ) => {
         throw ServerError.badRequest('El cliente fallecio.');
     }
 
-
     const creditsDb = await Repository.credit.findCredits(curp.toLowerCase());
 
     if(!creditsDb || creditsDb.length === 0) {
@@ -59,9 +58,6 @@ export const validationToCreate = async (curp?: string) => {
     return curpValidated;
 } 
 
-
-
-
 //  =================== RENOVATE ==================
 
 export const validationToRenovate = async (curp?: string, creditId?: RequestId) => {
@@ -72,10 +68,9 @@ export const validationToRenovate = async (curp?: string, creditId?: RequestId) 
     } = validationZod({ curp, creditId }, renovateSchema);
     
     const clientDb = await Repository.credit.findByRenovate(creditIdValidated, curpValidated.toLowerCase());
-    console.log({ creditId, creditIdValidated, clientDb });
 
     if(!clientDb) {
-        throw ServerError.badRequest('El cliente no existe')
+        throw ServerError.badRequest('No se encontro el cliente asociado al crédito');
     }
 
     if(clientDb.client.isDeceased) {
@@ -97,7 +92,7 @@ export const validationToRenovate = async (curp?: string, creditId?: RequestId) 
     }
     
     if(creditDb.client.curp.toUpperCase() !== curpValidated.toUpperCase()) {
-        throw ServerError.badRequest('El cliente no coincide con el crédito, favor de verificar los datos');
+        throw ServerError.badRequest('El CURP del cliente no coincide con el crédito.');
     }
 
     const canRenovate =  verifyCanRenovate(creditDb as CreditI);
@@ -108,48 +103,12 @@ export const validationToRenovate = async (curp?: string, creditId?: RequestId) 
 
     const hasPaymentForgivent = canHavePaymentForgivent(creditDb.creditAt, creditDb.paymentAmount, creditDb.payment_detail); 
 
-
     return {
         credit: creditDb,
         hasPaymentForgivent,
         curp: curpValidated,
     };
 }
-// export const validationToRenovate = async (curp?: string) => {
-//     const { curp: curpValidated } = validationZod({ curp }, curpSchema);
-
-//     const clientDb = await Repository.credit.findByCurp(curpValidated);
-
-//     if(!clientDb) {
-//         throw ServerError.badRequest('El cliente no existe')
-//     }
-
-//     if(clientDb.client.isDeceased) {
-//         throw ServerError.badRequest('El cliente fallecio.');
-//     }
-
-//     const creditsDb = await Repository.credit.findLastCredit(curpValidated);
-
-//     if(!creditsDb || creditsDb.length !== 1) {
-//         throw ServerError.badRequest('El cliente existe pero no tiene creditos asignados, consultar al administrador');
-//     }
-
-//     const [ credit ] = creditsDb;
-//     const canRenovate =  verifyCanRenovate(credit as CreditI);
-
-//     if(!canRenovate) {
-//         throw ServerError.badRequest(`El cliente ${credit.client.fullname} no ha pagado el minimo para renovar`);
-//     }
-
-//     const hasPaymentForgivent = canHavePaymentForgivent(credit.creditAt, credit.paymentAmount, credit.payment_detail); 
-
-
-//     return {
-//         credit,
-//         hasPaymentForgivent,
-//         curp: curpValidated,
-//     };
-// }
 
 export const createClient = async ( client: Omit<ClientCreateI, 'fullname'>, fullname: string ) => {
 
@@ -213,8 +172,8 @@ export const verifyRenovateDates = async (payments: PaymentI[], creditAt: Date) 
     
 }
 
-export const renovate = async (form: FormData, curp?: string) => {
-    const { credit: creditDb, curp: curpValidated } =  await validationToRenovate(curp);
+export const renovate = async (form: FormData, curp?: string, creditId?: RequestId) => {
+    const { credit: creditDb, curp: curpValidated } =  await validationToRenovate(curp, creditId);
     const { aval, client, credit } =  validationConform(form, creditReadmissionSchema);
     
     if(curpValidated ===  aval.curp) {
@@ -326,8 +285,6 @@ export const create = async (form: FormData, curp?: string) => {
 
     return await createCredit(preCredit);
 }
-
-
 
 interface CreditI {
     id: number,

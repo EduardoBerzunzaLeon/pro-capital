@@ -89,6 +89,17 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
         });
     }
 
+    async function verifyCredit(id: number, folderId: number) {
+        return await base.findOne({
+            id: { not: id }, 
+            folder: { id: folderId },
+            status: { not: { in: [ 
+                'LIQUIDADO', 
+                'FALLECIDO' 
+            ]}}
+        })
+    } 
+
     async function findCredit(id: number) {
 
         return await base.findOne({ id },{
@@ -198,6 +209,7 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
 
     return {
         findAll,
+        verifyCredit,
         findByCurp,
         findCredits,
         findCredit,

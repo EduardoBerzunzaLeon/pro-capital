@@ -34,6 +34,7 @@ export interface CreditRepositoryI{
     findCredit: (id: number) => Promise<Generic | undefined>,
     findCredits: (curp: string) => Promise<Generic[] | undefined>,
     findByRenovate: (id: number, curp: string) => Promise<Generic | undefined>,
+    verifyCredit: (id: number, folderId: number) => Promise<Generic | undefined>,
     createOne: (credit: CreditCreateI) => Promise<Generic | undefined>,
     exportLayout: (folderName: string, groupName: number) => Promise<Generic | undefined>,
     updateStatus: (id: number, status: Status) => Promise<Generic | undefined>,
