@@ -39,5 +39,6 @@ export interface ClientRepositoryI{
     createOne: (client: ClientCreateI) => Promise<Generic | undefined>,
     deleteOne: (id: number) => Promise<Generic | undefined>,
     updateOne: (curp: string, data: ClientCreateI) => Promise<Generic | undefined>,
+    hasCredits: (id: number) => Promise<Generic | undefined>,
 }
 

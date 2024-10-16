@@ -14,9 +14,25 @@ export function ClientRepository(base: BaseClientI): ClientRepositoryI{
         return await base.deleteOne({id});
     }
 
+    async function hasCredits(id: number) {
+        return await base.findOne({ 
+           id,
+           credits: {
+               some: {
+                   totalAmount: {
+                       gte: 0
+                   }
+               }
+           } 
+       }, { 
+           id: true,
+        })
+   }
+
     return {
         createOne,
         deleteOne,
+        hasCredits,
         updateOne
     }
 }

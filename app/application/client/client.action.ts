@@ -18,6 +18,8 @@ export const clientAction: ActionFunction = async ({
     
             const { curp } = data;
             
+            console.log({status});
+
             if(status === 'new_record') {
                 return redirect(`/clients/${curp}/create`)
             }

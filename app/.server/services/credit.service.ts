@@ -27,6 +27,9 @@ export const findAll = async (props: PaginationWithFilters) => {
 export const verifyToCreate =  async ( form: FormData ) => {
     const { curp } = validationConform(form, curpSchema);
     const clientDb = await Repository.credit.findByCurp(curp.toLowerCase());
+    
+    console.log({curp, clientDb});
+
     if(!clientDb) {
         return { status: 'new_record' }
     }
@@ -131,6 +134,12 @@ export const updateStatus = async ( id: number, status: Status) => {
     return creditDb;
 }
 
+export const updateCanRenovate = async ( id: number, canRenovate: boolean) => {
+    const creditDb = await Repository.credit.updateCanRenovate(id, canRenovate);
+    if(!creditDb) throw ServerError.internalServer('No se pudo actualizar el estatus de renovación del crédito');
+    return creditDb;
+}
+
 export const createAval = async ( aval: Omit<AvalCreateI, 'fullname'>, fullname: string, idClient: number) => {
     const avalDb = await Service.aval.upsertOne({ ...aval, fullname });
 
@@ -148,13 +157,17 @@ export const createCredit = async (credit: CreditCreateI) => {
         return creditDb;
     }
 
-    const [ hasCredits ] = await Promise.all([
+    const [ hasCreditsAval, hasCreditsClient ] = await Promise.all([
         Repository.aval.hasCredits(credit.avalId),
-        Repository.client.deleteOne(credit.clientId)
+        Repository.client.hasCredits(credit.clientId),
     ]);
-
-    if(!hasCredits) {
+    
+    if(!hasCreditsAval) {
         Repository.aval.deleteOne(credit.avalId);
+    }
+
+    if(!hasCreditsClient) {
+        Repository.client.deleteOne(credit.clientId)
     }
 
     throw ServerError.internalServer('No se pudo crear el credito, favor de intentarlo de nuevo.');
@@ -199,14 +212,19 @@ export const renovate = async (form: FormData, curp?: string, creditId?: Request
         throw ServerError.badRequest('La carpeta y el grupo no son validos');
     }
 
+    const otherCreditInFolder = await Repository.credit.verifyCredit(creditDb.id, folderDb.id);
+
+    if(otherCreditInFolder) {
+        throw ServerError.badRequest('La carpeta a la que se desea asignar el crédito, ya tiene otro crédito asignado');
+    }
+
     const { guarantee: clientGuarantee , ...restClient } = client;
     const { guarantee: avalGuarantee , ...restAval } = aval;
 
     const paymentAmount = calculateAmount(Number(amount));
     const { totalAmount } = convertDebt(paymentAmount, type);
 
-    await updateStatus(creditDb.id, 'LIQUIDADO');
-    const clientDb = await updateClientToRenovate( curpValidated, { ...restClient, curp: curpValidated }, clientFullname );
+    const clientDb = await updateClientToRenovate( curpValidated.toLowerCase(), { ...restClient, curp: curpValidated.toLowerCase() }, clientFullname );
     const avalDb = await createAval(restAval, avalFullname, clientDb.id);
 
     const preCredit: CreditCreateI = {
@@ -226,7 +244,13 @@ export const renovate = async (form: FormData, curp?: string, creditId?: Request
         status: 'RENOVADO',
     }
 
-    return await createCredit(preCredit);
+    const newCredit = await createCredit(preCredit);
+    await Promise.all([
+        updateStatus(creditDb.id, 'LIQUIDADO'),
+        updateCanRenovate(creditDb.id, false),
+    ]); 
+
+    return newCredit;
 }
 
 export const create = async (form: FormData, curp?: string) => {

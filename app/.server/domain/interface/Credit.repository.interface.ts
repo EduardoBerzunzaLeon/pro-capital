@@ -38,5 +38,6 @@ export interface CreditRepositoryI{
     createOne: (credit: CreditCreateI) => Promise<Generic | undefined>,
     exportLayout: (folderName: string, groupName: number) => Promise<Generic | undefined>,
     updateStatus: (id: number, status: Status) => Promise<Generic | undefined>,
+    updateCanRenovate: (id: number, canRenovate: boolean) => Promise<Generic | undefined>,
     base: BaseCreditI
 }

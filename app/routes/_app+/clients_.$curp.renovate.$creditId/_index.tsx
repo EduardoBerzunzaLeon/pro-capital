@@ -13,9 +13,8 @@ import { ErrorCard } from "~/components/utils/ErrorCard";
 import { creditReadmissionSchema } from "~/schemas/creditSchema";
 
 export const loader: LoaderFunction = async ({ params }) => {
-
     try {
-        return  await Service.credit.validationToRenovate(params.curp, params.creditId);
+        return await Service.credit.validationToRenovate(params.curp, params.creditId);
     } catch (err) {
         console.log(err);
         const { error, status } = handlerError(err);
@@ -26,17 +25,14 @@ export const loader: LoaderFunction = async ({ params }) => {
 export const action: ActionFunction = async ({ request, params }) => {
     const formData = await request.formData();
     const data = Object.fromEntries(formData);
-
     try {
-        await Service.credit.renovate(formData, params?.curp)
+        await Service.credit.renovate(formData, params?.curp, params?.creditId);
         return redirectWithSuccess('/clients', 'El crédito se ha creado con éxito 🎉');
     } catch (error) {
-        console.log(error);
+        console.log({error});
         return handlerErrorWithToast(error, { data });
     }
-
 }
-
 
 export function ErrorBoundary() {
     const error = useRouteError();

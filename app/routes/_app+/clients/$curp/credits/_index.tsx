@@ -138,7 +138,11 @@ export default function ViewCreditsPage () {
       return columns.filter((column) => Array.from(visibleColumns).includes(column.key));
     }, [visibleColumns]);
 
-    
+
+    const handleAdditional = () => {
+      navigate(`/clients/${param.curp}/additional`);
+    }
+
   const topContent = useMemo(() => {
     return (<Select
       label="Columnas"
@@ -213,7 +217,7 @@ export default function ViewCreditsPage () {
                 <Button color="danger" variant="light" onPress={onClose} type='button'>
                   Close
                 </Button>
-                <Button color="primary" type='submit'>
+                <Button color="primary" type='button' onPress={handleAdditional}>
                   Crear nuevo crédito
                 </Button>
               </ModalFooter>

@@ -65,7 +65,10 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
     }
 
     async function findByCurp(curp: string) {
-        return await base.findOne({ client: { curp } }, { 
+        return await base.findOne({ client: { curp : {
+            equals: curp,
+            mode: 'insensitive'
+        },} }, { 
             id: true, 
             client: {
                 select: { isDeceased: true }
@@ -204,7 +207,11 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
     }
 
     async function updateStatus(id: number, status: Status) {
-        return await base.updateOne({id}, { status });
+        return await base.updateOne({ id }, { status });
+    }
+    
+    async function updateCanRenovate(id: number, canRenovate: boolean) {
+        return await base.updateOne({ id }, { canRenovate });
     }
 
     return {
@@ -217,6 +224,7 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
         createOne,
         exportLayout,
         updateStatus,
+        updateCanRenovate,
         base
     }
 
