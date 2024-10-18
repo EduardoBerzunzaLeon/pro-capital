@@ -39,5 +39,6 @@ export interface CreditRepositoryI{
     exportLayout: (folderName: string, groupName: number) => Promise<Generic | undefined>,
     updateStatus: (id: number, status: Status) => Promise<Generic | undefined>,
     updateCanRenovate: (id: number, canRenovate: boolean) => Promise<Generic | undefined>,
+    verifyFolderInCredit: (curp: string, folderId: number) => Promise<Generic | undefined>,
     base: BaseCreditI
 }

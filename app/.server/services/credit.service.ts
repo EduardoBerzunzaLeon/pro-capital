@@ -113,6 +113,24 @@ export const validationToRenovate = async (curp?: string, creditId?: RequestId) 
     };
 }
 
+//  ============= Additional ==================
+
+export const validationToAdditional = async (curp?: string) => {
+    
+    const { curp: curpValidated } = validationZod({ curp }, curpSchema);
+    const clientDb = await Repository.credit.findByCurp(curpValidated);
+
+    if(!clientDb) {
+        throw ServerError.badRequest(`No se encontro el CURP ${curpValidated}.`);
+    }
+
+    if(clientDb.client.isDeceased) {
+        throw ServerError.badRequest('El cliente fallecio.');
+    }
+
+    return clientDb.client;
+}
+
 export const createClient = async ( client: Omit<ClientCreateI, 'fullname'>, fullname: string ) => {
 
     const clientDb = await Service.client.createOne({ ...client, fullname });
@@ -253,6 +271,78 @@ export const renovate = async (form: FormData, curp?: string, creditId?: Request
     return newCredit;
 }
 
+export const additional =  async (form: FormData, curp?: string) => {
+    const { curp: curpValidated } = await validationToAdditional(curp);
+    const { aval, client, credit } =  validationConform(form, creditCreateSchema);
+
+    if(curpValidated ===  aval.curp) {
+        throw ServerError.badRequest('El curp del cliente no puede ser igual al curp del aval');
+    }  
+
+    const clientExists = await Repository.credit.findByCurp(curpValidated);
+    if(!clientExists) {
+        throw ServerError.badRequest('El cliente no existe')
+    }
+
+    const clientFullname = Service.utils.concatFullname({ ...client });
+    const avalFullname = Service.utils.concatFullname({ ...aval });
+
+    const { amount, type, creditAt } = credit;
+    const nextPayment = dayjs(creditAt).add(7, 'day').toDate();
+
+    const paymentAmount = amount / 10;
+    const types = {
+        'NORMAL': 15,
+        'EMPLEADO': 12,
+        'LIDER': 10,
+    }
+
+    const weeks = type in types ? types[type as keyof typeof types] : 15;
+    const totalAmount = paymentAmount * weeks;
+    
+    const folderDb = await Repository.folder.findByNameAndGroup(credit.folder, credit.group);
+  
+    if(!folderDb || !folderDb.groups || folderDb.groups.length != 1) {
+        throw ServerError.badRequest('La carpeta y el grupo no son validos');
+    }
+
+    const creditInFolder = await Repository.credit.verifyFolderInCredit(curpValidated, folderDb.id);
+
+    if(creditInFolder) {
+        throw ServerError.badRequest(`
+            La carpeta a la que se desea asignar el credito 
+            ya tiene un crédito vigente en estatus 
+            ${creditInFolder.status}, 
+            captura el dia ${creditInFolder.creditAt}`
+        );
+    }
+
+    const { guarantee: clientGuarantee , ...restClient } = client;
+    const { guarantee: avalGuarantee , ...restAval } = aval;
+
+    const clientDb = await updateClientToRenovate( curpValidated.toLowerCase(), { ...restClient, curp: curpValidated.toLowerCase() }, clientFullname );
+    const avalDb = await createAval(restAval, avalFullname, clientDb.id);
+
+    const preCredit: CreditCreateI = {
+        avalId: avalDb.id,
+        clientId: clientDb.id,
+        groupId: folderDb.groups[0].id,
+        folderId: folderDb.id,
+        type, 
+        amount,
+        paymentAmount,
+        totalAmount,
+        creditAt,
+        clientGuarantee: clientGuarantee ?? '',
+        avalGuarantee: avalGuarantee ?? '',
+        nextPayment,
+        currentDebt: totalAmount,
+        status: 'ACTIVO',
+    }
+
+    return await createCredit(preCredit);
+}
+
 export const create = async (form: FormData, curp?: string) => {
  
     const curpValidated =  await validationToCreate(curp);
@@ -351,11 +441,13 @@ const exportLayout = async (form: FormData) => {
 }
 
 export default{ 
+    additional,
+    create,
+    exportLayout,
     findAll,
-    verifyToCreate,
+    renovate,
+    validationToAdditional,
     validationToCreate,
     validationToRenovate,
-    exportLayout,
-    create,
-    renovate
+    verifyToCreate,
 }

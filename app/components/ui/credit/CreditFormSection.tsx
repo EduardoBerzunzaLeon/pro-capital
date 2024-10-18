@@ -171,7 +171,7 @@ export const CreditFormSection = ({ fields }: Props) => {
             name={credit.creditAt.name}
             isInvalid={!!credit.creditAt.errors}
             errorMessage={credit.creditAt.errors}
-            defaultValue={today(getLocalTimeZone()).subtract({ days: 1 })}
+            defaultValue={today(getLocalTimeZone()).add({ days: 1 }).subtract({ days: 1 })}
             granularity="day"
         />
     </div>

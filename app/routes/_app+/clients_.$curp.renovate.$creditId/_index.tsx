@@ -43,7 +43,7 @@ export function ErrorBoundary() {
     />)
 }
 
-    export default function Test () {
+    export default function RenovateFormPage () {
     const loader = useLoaderData<any>();
     const navigate = useNavigate();
 

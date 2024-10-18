@@ -65,15 +65,26 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
     }
 
     async function findByCurp(curp: string) {
-        return await base.findOne({ client: { curp : {
-            equals: curp,
-            mode: 'insensitive'
-        },} }, { 
-            id: true, 
-            client: {
-                select: { isDeceased: true }
-            }
-        });
+        return await base.findOne({ client: {
+            curp : {
+                equals: curp,
+                mode: 'insensitive'
+            },} }, { 
+                id: true, 
+                client: {
+                    select: { 
+                        isDeceased: true,
+                        name: true,
+                        lastNameFirst: true,
+                        lastNameSecond: true,
+                        address: true,
+                        phoneNumber: true,
+                        curp: true,
+                        reference: true,
+                        fullname: true,
+                    }
+                }
+            });
     }
     
     async function findByRenovate(id: number, curp: string) {
@@ -95,13 +106,31 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
     async function verifyCredit(id: number, folderId: number) {
         return await base.findOne({
             id: { not: id }, 
-            folder: { id: folderId },
+            folderId,
             status: { not: { in: [ 
                 'LIQUIDADO', 
                 'FALLECIDO' 
             ]}}
-        })
+        }, { id: true })
     } 
+
+
+    async function verifyFolderInCredit(curp: string, folderId: number) {
+        return await base.findOne({
+            client: {
+                curp: {
+                    equals: curp,
+                    mode: 'insensitive'
+                }
+            }, 
+            folderId,
+            status: { not: { in: ['LIQUIDADO'] } }
+        }, { 
+            id: true,
+            status: true,
+            creditAt: true
+        });
+    }
 
     async function findCredit(id: number) {
 
@@ -215,16 +244,17 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
     }
 
     return {
-        findAll,
-        verifyCredit,
-        findByCurp,
-        findCredits,
-        findCredit,
-        findByRenovate,
         createOne,
         exportLayout,
-        updateStatus,
+        findAll,
+        findByCurp,
+        findByRenovate,
+        findCredit,
+        findCredits,
         updateCanRenovate,
+        updateStatus,
+        verifyCredit,
+        verifyFolderInCredit,
         base
     }
 
