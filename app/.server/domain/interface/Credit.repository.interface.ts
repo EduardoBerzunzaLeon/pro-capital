@@ -2,7 +2,7 @@ import { Prisma, Status, Type } from '@prisma/client';
 import { BaseRepositoryI, PaginationWithFilters, ResponseWithMetadata } from '.';
 import { Generic } from '~/.server/interfaces';
 
-export interface CreditCreateI {
+export type UpdateCreateI = {
     avalId: number,
     clientId: number,
     groupId: number, 
@@ -15,8 +15,18 @@ export interface CreditCreateI {
     clientGuarantee: string,
     avalGuarantee: string,
     nextPayment: Date,
-    currentDebt: number
+    currentDebt: number,
     status: Status
+    previousCreditId?: number,
+    paymentForgivent: number,
+}
+
+export type CreditCreateI = Omit<UpdateCreateI, 'paymentForgivent' | 'previousCreditId' >
+
+export interface UpdatePreviousData {
+    status: Status,
+    previousStatus: Status,
+    canRenovate: boolean
 }
 
 export type BaseCreditI = BaseRepositoryI<
@@ -37,8 +47,9 @@ export interface CreditRepositoryI{
     verifyCredit: (id: number, folderId: number) => Promise<Generic | undefined>,
     createOne: (credit: CreditCreateI) => Promise<Generic | undefined>,
     exportLayout: (folderName: string, groupName: number) => Promise<Generic | undefined>,
-    updateStatus: (id: number, status: Status) => Promise<Generic | undefined>,
-    updateCanRenovate: (id: number, canRenovate: boolean) => Promise<Generic | undefined>,
+    updatePrevious: (id: number, data: UpdatePreviousData) => Promise<Generic | undefined>,
     verifyFolderInCredit: (curp: string, folderId: number) => Promise<Generic | undefined>,
+    findCreditForDelete: (id: number) => Promise<Generic | undefined>,
+    deleteOne: (id: number) => Promise<Generic | undefined>
     base: BaseCreditI
 }

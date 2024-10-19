@@ -1,5 +1,4 @@
-import { Status } from "~/.server/domain/entity/credit.entity";
-import { BaseCreditI, CreditCreateI, CreditRepositoryI, PaginationWithFilters } from "~/.server/domain/interface";
+import { BaseCreditI, CreditCreateI, CreditRepositoryI, PaginationWithFilters, UpdatePreviousData } from "~/.server/domain/interface";
 
 export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
 
@@ -235,24 +234,52 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
         return await base.createOne(credit);
     }
 
-    async function updateStatus(id: number, status: Status) {
-        return await base.updateOne({ id }, { status });
+    async function updatePrevious(id: number, data: UpdatePreviousData) {
+        return await base.updateOne({ id }, { ...data });
     }
-    
-    async function updateCanRenovate(id: number, canRenovate: boolean) {
-        return await base.updateOne({ id }, { canRenovate });
+
+    async function findCreditForDelete(id: number) {
+        return await base.findOne({ id }, {
+            id: true,
+            status: true, 
+            previousStatus: true,
+            client: {
+                select: {
+                    id: true,
+                    curp: true,
+                }
+            },
+            aval: {
+                select: {
+                    id: true,
+                    curp: true,
+                }
+            },
+            previousCreditId: true,
+            payment_detail: {
+                select: {
+                    id: true
+                }
+            },
+        })
+    } 
+
+    async function deleteOne(id: number) {
+        return await base.deleteOne({ id });
     }
+
 
     return {
         createOne,
+        deleteOne,
         exportLayout,
         findAll,
         findByCurp,
         findByRenovate,
         findCredit,
+        findCreditForDelete,
         findCredits,
-        updateCanRenovate,
-        updateStatus,
+        updatePrevious,
         verifyCredit,
         verifyFolderInCredit,
         base

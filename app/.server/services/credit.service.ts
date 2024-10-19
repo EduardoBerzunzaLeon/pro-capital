@@ -1,8 +1,8 @@
-import { curpSchema } from "~/schemas/genericSchema";
+import { curpSchema, idSchema } from "~/schemas/genericSchema";
 import { Service } from ".";
 import { Repository } from "../adapter";
 import { Credit } from "../domain/entity";
-import { AvalCreateI, ClientCreateI, ClientUpdateI, CreditCreateI, PaginationWithFilters } from "../domain/interface";
+import { AvalCreateI, ClientCreateI, ClientUpdateI, CreditCreateI, PaginationWithFilters, UpdateCreateI, UpdatePreviousData } from "../domain/interface";
 import { validationConform, validationZod } from "./validation.service";
 import { ServerError } from "../errors";
 import { creditCreateSchema } from "~/schemas";
@@ -10,7 +10,6 @@ import dayjs from 'dayjs';
 import { PaymentI, RequestId } from "../interfaces";
 import { creditReadmissionSchema, exportLayoutSchema, renovateSchema } from "~/schemas/creditSchema";
 import { calculateAmount, convertDebt } from "~/application";
-import { Status } from "../domain/entity/credit.entity";
 import { CreditLayout, Layout } from "../domain/entity/layout.entity";
 
 export const findAll = async (props: PaginationWithFilters) => {
@@ -146,15 +145,9 @@ export const updateClientToRenovate = async ( curp: string, client: Omit<ClientU
     return clientDb;
 } 
 
-export const updateStatus = async ( id: number, status: Status) => {
-    const creditDb = await Repository.credit.updateStatus(id, status);
-    if(!creditDb) throw ServerError.internalServer('No se pudo actualizar el estatus del credito');
-    return creditDb;
-}
-
-export const updateCanRenovate = async ( id: number, canRenovate: boolean) => {
-    const creditDb = await Repository.credit.updateCanRenovate(id, canRenovate);
-    if(!creditDb) throw ServerError.internalServer('No se pudo actualizar el estatus de renovación del crédito');
+export const updatePrevious = async (id: number, data: UpdatePreviousData) => {
+    const creditDb = await Repository.credit.updatePrevious(id, data);
+    if(!creditDb) throw ServerError.internalServer('No se pudo actualizar los datos del crédito anterior');
     return creditDb;
 }
 
@@ -169,24 +162,34 @@ export const createAval = async ( aval: Omit<AvalCreateI, 'fullname'>, fullname:
     throw ServerError.internalServer('No se pudo crear el aval, favor de intentarlo de nuevo.');
 }
 
+ const deleteClient = async (clientId: number) => {
+
+    const hasCreditsClient = await Repository.client.hasCredits(clientId);
+
+    if(!hasCreditsClient) {
+        Repository.client.deleteOne(clientId)
+    }
+}
+
+const deleteAval = async (avalId: number) => {
+    
+    const hasCreditsAval = await Repository.aval.hasCredits(avalId);
+    
+    if(!hasCreditsAval) {
+        Repository.aval.deleteOne(avalId)
+    }
+ }
+
 export const createCredit = async (credit: CreditCreateI) => {
     const creditDb = await Repository.credit.createOne(credit);
     if(creditDb) {
         return creditDb;
     }
 
-    const [ hasCreditsAval, hasCreditsClient ] = await Promise.all([
-        Repository.aval.hasCredits(credit.avalId),
-        Repository.client.hasCredits(credit.clientId),
+    await Promise.all([
+        deleteClient(credit.clientId),
+        deleteAval(credit.avalId),
     ]);
-    
-    if(!hasCreditsAval) {
-        Repository.aval.deleteOne(credit.avalId);
-    }
-
-    if(!hasCreditsClient) {
-        Repository.client.deleteOne(credit.clientId)
-    }
 
     throw ServerError.internalServer('No se pudo crear el credito, favor de intentarlo de nuevo.');
 }
@@ -206,7 +209,7 @@ export const verifyRenovateDates = async (payments: PaymentI[], creditAt: Date) 
 export const renovate = async (form: FormData, curp?: string, creditId?: RequestId) => {
     const { credit: creditDb, curp: curpValidated } =  await validationToRenovate(curp, creditId);
     const { aval, client, credit } =  validationConform(form, creditReadmissionSchema);
-    
+
     if(curpValidated ===  aval.curp) {
         throw ServerError.badRequest('El curp del cliente no puede ser igual al curp del aval');
     }  
@@ -245,7 +248,7 @@ export const renovate = async (form: FormData, curp?: string, creditId?: Request
     const clientDb = await updateClientToRenovate( curpValidated.toLowerCase(), { ...restClient, curp: curpValidated.toLowerCase() }, clientFullname );
     const avalDb = await createAval(restAval, avalFullname, clientDb.id);
 
-    const preCredit: CreditCreateI = {
+    const preCredit: UpdateCreateI = {
         avalId: avalDb.id,
         clientId: clientDb.id,
         groupId: folderDb.groups[0].id,
@@ -260,13 +263,12 @@ export const renovate = async (form: FormData, curp?: string, creditId?: Request
         nextPayment,
         currentDebt: totalAmount,
         status: 'RENOVADO',
+        previousCreditId: creditDb.id,
+        paymentForgivent: credit?.paymentForgivent ? 1: 0
     }
 
     const newCredit = await createCredit(preCredit);
-    await Promise.all([
-        updateStatus(creditDb.id, 'LIQUIDADO'),
-        updateCanRenovate(creditDb.id, false),
-    ]); 
+    await updatePrevious(creditDb.id, { canRenovate: false, previousStatus: creditDb.status, status: 'LIQUIDADO' });
 
     return newCredit;
 }
@@ -440,6 +442,44 @@ const exportLayout = async (form: FormData) => {
     return Layout.mapper(data as CreditLayout[]); 
 }
 
+export const deleteOne = async (id?: RequestId) => {
+    const { id: idValidated } = validationZod({ id }, idSchema);
+    const creditDb = await Repository.credit.findCreditForDelete(idValidated);
+
+    if(!creditDb) {
+        throw ServerError.badRequest('No se encontro el crédito');
+    }
+    
+    if(creditDb.payment_detail.length > 0) {
+        throw ServerError.badRequest('No se puede eliminar un crédito con abonos realizados');
+    }
+    
+    if(creditDb.previousCreditId > 0) {
+
+        const previousCreditDb = await Repository.credit.findCreditForDelete(creditDb.previousCreditId);
+        if(!previousCreditDb) {
+            throw ServerError.badRequest('No se encontro el crédito anterior a la renovacion');
+        }
+
+        await updatePrevious(previousCreditDb.id, { 
+            canRenovate: true, 
+            previousStatus: previousCreditDb.status, 
+            status: previousCreditDb.previousStatus
+        });
+    }
+
+    const creditDeleted = await Repository.credit.deleteOne(idValidated);
+
+    if(!creditDeleted) {
+        throw ServerError.internalServer('No se pudo eliminar el credito solicitado');
+    }
+
+    await Promise.all([
+        deleteClient(creditDb.client.id),
+        deleteAval(creditDb.aval.id),
+    ]);
+}
+
 export default{ 
     additional,
     create,
@@ -450,4 +490,5 @@ export default{
     validationToCreate,
     validationToRenovate,
     verifyToCreate,
+    deleteOne,
 }

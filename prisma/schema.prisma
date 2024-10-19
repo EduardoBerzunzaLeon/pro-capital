@@ -207,6 +207,8 @@ model Credit {
   group Group @relation(fields: [groupId], references: [id])
   folderId Int
   folder Folder @relation(fields: [folderId], references: [id])
+  previousCreditId Int?
+  previousStatus Status?
   type Type @default(NORMAL)
   amount Decimal @db.Decimal(6,2)
   paymentAmount Decimal @db.Decimal(5,2)
@@ -216,7 +218,7 @@ model Credit {
   canRenovate Boolean @default(false)
   clientGuarantee String
   avalGuarantee String
-  paymentForgivent Int? // TODO: implement this, el pago perdonado, primer pago de la renovacion o el ultimo antes de renovar
+  paymentForgivent Int?
   nextPayment DateTime
   lastPayment DateTime?
   currentDebt Decimal @db.Decimal(6,2)
