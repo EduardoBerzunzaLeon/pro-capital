@@ -13,6 +13,7 @@ import { TableDetail, RowPerPage, Pagination, InputFilter, RangePickerDateFilter
 import { useDropdownBoolean, useParamsPaginator, useRenderCell } from "~/application";
 import { useDropdown } from "~/application/hook/useDropdown";
 import { clientAction } from '../../../application/client/client.action';
+import { CreditAction } from "~/components/ui/credit/CreditAction";
 
 export {
    clientLoader as loader,
@@ -133,7 +134,9 @@ export default function ClientsPage() {
     }
 
     if(columnKey === 'actions') {
-      return <span className='capitalize'>ACCIONES</span>
+      return <CreditAction 
+        creditId={credit.id}
+      />
     }
     
     if(columnKey === 'status') {
