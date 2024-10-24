@@ -1,8 +1,10 @@
 
 export { AvalFormSection } from "./AvalFormSection";
+export { ChipStatusCredit } from "./ChipStatusCredit";
 export { ClientFormSection } from "./ClientFormSection";
 export { CreditFormSection } from "./CreditFormSection";
+export { CreditPaymentsTable } from "./CreditPaymentsTable";
 export { CreditRenovateFormSection } from "./CreditRenovateFormSection";
 export { CurpForm } from "./CurpForm";
 export { ExportDropdown } from "./ExportDropdown";
-export { CreditPaymentsTable } from "./CreditPaymentsTable";
+export { PersonFormEdit } from "./PersonFormEdit";

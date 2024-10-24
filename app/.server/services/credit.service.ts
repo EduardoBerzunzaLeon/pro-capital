@@ -480,15 +480,51 @@ export const deleteOne = async (id?: RequestId) => {
     ]);
 }
 
+//  ============ VIEW CREDIT =================
+export const findDetailsCredit = async (id: RequestId) => {
+
+    const { id: idValidated } = validationZod({ id }, idSchema); 
+    const creditDb = await Repository.credit.findDetailsCredit(idValidated);
+
+    if(!creditDb) {
+        throw ServerError.badRequest('No se encontro el crédito solicitado');
+    }
+    return creditDb;
+    
+}
+
+export const verifyClientCurp = async (idClient: number, curp: string) => {
+
+    const avals = await Repository.credit.verifyClientCurp(idClient, curp);
+
+    if( avals && avals.length > 0 ) {
+        throw ServerError.badRequest(`Se encontró el aval ${avals[0].fullname} con la CURP: ${curp}`);
+    }
+
+}
+
+export const verifyAvalCurp = async (idAval: number, curp: string) => {
+
+    const clients = await Repository.credit.verifyAvalCurp(idAval, curp);
+
+    if( clients && clients.length > 0 ) {
+        throw ServerError.badRequest(`Se encontró el cliente ${clients[0].fullname} con la CURP: ${curp}`);
+    }
+
+}
+
 export default{ 
     additional,
     create,
     exportLayout,
     findAll,
+    findDetailsCredit,
     renovate,
     validationToAdditional,
     validationToCreate,
     validationToRenovate,
     verifyToCreate,
     deleteOne,
+    verifyAvalCurp,
+    verifyClientCurp,
 }

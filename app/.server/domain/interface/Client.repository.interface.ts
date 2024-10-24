@@ -25,6 +25,10 @@ export interface ClientUpdateI  {
     phoneNumber?: string
 }
 
+export interface ClientUpdateByID extends ClientUpdateI {
+    curp: string
+} 
+
 export type BaseClientI = BaseRepositoryI<
     Prisma.ClientDelegate, 
     Prisma.ClientWhereInput, 
@@ -39,6 +43,7 @@ export interface ClientRepositoryI{
     createOne: (client: ClientCreateI) => Promise<Generic | undefined>,
     deleteOne: (id: number) => Promise<Generic | undefined>,
     updateOne: (curp: string, data: ClientCreateI) => Promise<Generic | undefined>,
+    updateById: (id: number, data: ClientUpdateByID) => Promise<Generic | undefined>,
     hasCredits: (id: number) => Promise<Generic | undefined>,
 }
 

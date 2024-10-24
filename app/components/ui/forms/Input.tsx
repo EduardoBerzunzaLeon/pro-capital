@@ -12,7 +12,8 @@ interface Props {
     onValueChange?: (value: string) => void,
     inputType?: InputTypes,
     defaultValue?: string,
-    startContent?: React.ReactNode
+    startContent?: React.ReactNode,
+    isReadOnly?: boolean,
 }
 
 export const InputValidation = ({ inputType, metadata, ...restProps}: Props) => {

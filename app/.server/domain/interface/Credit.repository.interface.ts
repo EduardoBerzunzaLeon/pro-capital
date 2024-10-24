@@ -50,6 +50,9 @@ export interface CreditRepositoryI{
     updatePrevious: (id: number, data: UpdatePreviousData) => Promise<Generic | undefined>,
     verifyFolderInCredit: (curp: string, folderId: number) => Promise<Generic | undefined>,
     findCreditForDelete: (id: number) => Promise<Generic | undefined>,
+    findDetailsCredit: (id: number) => Promise<Generic | undefined>,
     deleteOne: (id: number) => Promise<Generic | undefined>
+    verifyClientCurp: (idClient: number, curp: string) => Promise<Generic[] | undefined>,
+    verifyAvalCurp: (idClient: number, curp: string) => Promise<Generic[] | undefined>
     base: BaseCreditI
 }

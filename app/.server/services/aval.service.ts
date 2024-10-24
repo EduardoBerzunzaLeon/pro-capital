@@ -1,8 +1,8 @@
-import { idSchema } from "~/schemas";
+import { ClientUpdateSchema, clientUpdateSchema, idSchema } from "~/schemas";
 import { Service } from ".";
 import { Repository } from "../adapter";
 import { RequestId } from "../interfaces";
-import { validationZod } from "./validation.service";
+import { validationConform, validationZod } from "./validation.service";
 import { ServerError } from "../errors";
 import { AvalCreateI } from "../domain/interface";
 
@@ -26,8 +26,24 @@ export const upsertOne = async (aval: AvalCreateI) => {
     return await Repository.aval.upsertOne(aval);
 }
 
+export const updateById = async (id: RequestId, form: FormData) => {
+ 
+    const { id: idValidated  } = validationZod({ id }, idSchema);
+    const dataToSave: ClientUpdateSchema = validationConform(form, clientUpdateSchema);
+    const avalFullname = Service.utils.concatFullname({ ...dataToSave });
+
+    await Service.credit.verifyAvalCurp(idValidated, dataToSave.curp.toLowerCase());
+
+    return await Repository.client.updateById(idValidated, { 
+        ...dataToSave, 
+        fullname: avalFullname, 
+        curp: dataToSave.curp.toLowerCase() 
+    });
+}
+
 export default {
     findAutocomplete, 
     findOne,
+    updateById,
     upsertOne
 }

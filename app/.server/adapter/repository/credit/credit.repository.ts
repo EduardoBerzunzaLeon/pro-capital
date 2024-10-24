@@ -113,7 +113,6 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
         }, { id: true })
     } 
 
-
     async function verifyFolderInCredit(curp: string, folderId: number) {
         return await base.findOne({
             client: {
@@ -188,6 +187,64 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
                     }
                 }
             }, true);
+    }
+
+    async function findDetailsCredit(id: number) {
+        return await base.findOne({ id }, {
+            id: true,
+            totalAmount: true,
+            currentDebt: true,
+            paymentAmount: true,
+            creditAt: true,
+            captureAt: true,
+            canRenovate: true,
+            paymentForgivent: true,
+            nextPayment: true,
+            lastPayment: true,
+            amount: true,
+            status: true,
+            type: true,
+            avalGuarantee: true,
+            clientGuarantee: true,
+            folder: { 
+                select: {
+                    id: true,
+                    name: true
+                }
+            },
+            group: {
+                select: {
+                    id: true,
+                    name: true
+                }
+            },
+            client: {
+                select: {
+                    id: true,
+                    name: true,
+                    lastNameFirst: true,
+                    lastNameSecond: true,
+                    address: true,
+                    phoneNumber: true,
+                    curp: true,
+                    reference: true,
+                    fullname: true,
+                }
+            },
+            aval: {
+                select: {
+                    id: true,
+                    name: true,
+                    lastNameFirst: true,
+                    lastNameSecond: true,
+                    address: true,
+                    phoneNumber: true,
+                    curp: true,
+                    reference: true,
+                    fullname: true,
+                }
+            },
+        })
     }
 
     async function exportLayout(folderName: string, groupName: number) {
@@ -269,6 +326,20 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
     }
 
 
+    async function verifyClientCurp(idClient: number, curp: string) {
+        return await base.findMany({ 
+            searchParams: { client: { id: idClient }, aval: { curp } },
+            select: { aval: { select: { fullname: true } } } 
+        });
+    }
+    
+    async function verifyAvalCurp(idAval: number, curp: string) {
+        return await base.findMany({ 
+            searchParams: { aval: { id: idAval }, client: { curp } },
+            select: { client: { select: { fullname: true } } } 
+        });
+    }
+
     return {
         createOne,
         deleteOne,
@@ -279,8 +350,11 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
         findCredit,
         findCreditForDelete,
         findCredits,
+        findDetailsCredit,
         updatePrevious,
         verifyCredit,
+        verifyClientCurp,
+        verifyAvalCurp,
         verifyFolderInCredit,
         base
     }

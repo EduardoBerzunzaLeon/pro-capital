@@ -1,5 +1,6 @@
 import { useFetcherAction } from "~/application";
 import { Action } from "../Action/Action";
+import { useNavigate } from "@remix-run/react";
 
 interface Props {
     creditId: number,
@@ -7,15 +8,17 @@ interface Props {
 
 export function CreditAction({ creditId }: Props)  {
 
+    const navigate = useNavigate();
     const { handleDelete, isDeleting } = useFetcherAction({ 
         key: 'getCredit', 
         route: 'clients', 
         id: creditId
      });
 
+     console.log({creditId})
+
      const handleView = () => {
-        // handleUpdate();
-        console.log('view')
+        navigate(`/clients/${creditId}`);
     }
        
     return (

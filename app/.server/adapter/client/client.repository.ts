@@ -1,4 +1,4 @@
-import { BaseClientI, ClientCreateI, ClientRepositoryI, ClientUpdateI } from "~/.server/domain/interface";
+import { BaseClientI, ClientCreateI, ClientRepositoryI, ClientUpdateByID, ClientUpdateI } from "~/.server/domain/interface";
 
 export function ClientRepository(base: BaseClientI): ClientRepositoryI{
 
@@ -29,10 +29,15 @@ export function ClientRepository(base: BaseClientI): ClientRepositoryI{
         })
    }
 
+   async function updateById(id: number, data: ClientUpdateByID) {
+        return await base.updateOne({ id }, data);
+   }
+
     return {
         createOne,
         deleteOne,
         hasCredits,
-        updateOne
+        updateOne,
+        updateById
     }
 }

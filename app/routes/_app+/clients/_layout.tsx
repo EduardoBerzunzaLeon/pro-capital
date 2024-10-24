@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
-import { Chip, Select, SelectItem } from "@nextui-org/react";
+import { Select, SelectItem } from "@nextui-org/react";
 import { Outlet, useLoaderData} from "@remix-run/react";
 
 import { clientLoader } from "~/application/client/client.loader";
@@ -7,9 +7,8 @@ import { Credit } from "~/.server/domain/entity";
 import { DropdownCanRenovate } from "~/components/ui/dropdowns/DropdownCanRenovate";
 import { DropdownCreditStatus } from "~/components/ui/dropdowns/DropdownCreditStatus";
 import { HandlerSuccess } from "~/.server/reponses";
-import { Key, SortDirection, Selection, Color } from "~/.server/interfaces";
-import { Status } from "~/.server/domain/entity/credit.entity";
-import { TableDetail, RowPerPage, Pagination, InputFilter, RangePickerDateFilter, SliderFilter, CurpForm, ExportDropdown } from "~/components/ui";
+import { Key, SortDirection, Selection } from "~/.server/interfaces";
+import { TableDetail, RowPerPage, Pagination, InputFilter, RangePickerDateFilter, SliderFilter, CurpForm, ExportDropdown, ChipStatusCredit } from "~/components/ui";
 import { useDropdownBoolean, useParamsPaginator, useRenderCell } from "~/application";
 import { useDropdown } from "~/application/hook/useDropdown";
 import { clientAction } from '../../../application/client/client.action';
@@ -79,14 +78,6 @@ const INITIAL_VISIBLE_COLUMNS = [
   'client.fullname', 'aval.fullname', 'folder.name', 'creditAt', 'status', 'canRenovate', 'actions'
 ];
 
-const statusRef: Record<Status, Color> = {
-  ACTIVO: 'warning',
-  VENCIDO: 'danger',
-  LIQUIDADO: 'success',
-  RENOVADO: 'primary',
-  FALLECIDO: 'secondary'
-}
-
 export default function ClientsPage() {
 
   const loader = useLoaderData<HandlerSuccess<Loader>>();
@@ -140,8 +131,7 @@ export default function ClientsPage() {
     }
     
     if(columnKey === 'status') {
-      const color = statusRef[credit.status] ?? 'secondary';
-      return ( <Chip color={color} variant="bordered">{credit.status}</Chip>)
+      return ( <ChipStatusCredit status={credit.status} /> )
     }
 
     return <span className='capitalize'>{render(credit, columnKey)}</span>

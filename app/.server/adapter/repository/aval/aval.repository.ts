@@ -1,4 +1,4 @@
-import { AvalCreateI, AvalRepositoryI, BaseAvalI } from "~/.server/domain/interface";
+import { AvalCreateI, AvalRepositoryI, BaseAvalI, ClientUpdateByID } from "~/.server/domain/interface";
 
 export function AvalRepository(base: BaseAvalI): AvalRepositoryI {
 
@@ -58,10 +58,15 @@ export function AvalRepository(base: BaseAvalI): AvalRepositoryI {
         return await base.deleteOne({id});
     }
 
+    async function updateById(id: number, data: ClientUpdateByID) {
+        return await base.updateOne({ id }, data);
+    }
+
     return {
         findAutocomplete,
         findOne,
         upsertOne,
+        updateById,
         hasCredits,
         deleteOne,
     }

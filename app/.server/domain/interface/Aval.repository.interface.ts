@@ -1,6 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { BaseRepositoryI } from "./Base.repository.interface";
 import { Generic } from "~/.server/interfaces";
+import { ClientUpdateByID } from "./Client.repository.interface";
 
 export interface AvalCreateI {
     name: string,
@@ -30,5 +31,6 @@ export interface AvalRepositoryI{
     upsertOne: (aval: AvalCreateI) => Promise<Generic | undefined>,
     hasCredits: (id: number) => Promise<Generic | undefined>,
     deleteOne: (id: number) => Promise<Generic | undefined>,
+    updateById: (id: number, data: ClientUpdateByID) => Promise<Generic | undefined>
 }
 
