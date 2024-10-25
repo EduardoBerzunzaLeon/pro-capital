@@ -50,6 +50,14 @@ export const creditRenovateSchema = z.object({
     paymentForgivent: active
 });
 
+export const creditEditSchema = z.object({
+    group,
+    amount, 
+    creditAt,
+    folder: stringSchema('Carpeta'),
+    types: z.enum(['NORMAL', 'EMPLEADO', 'LIDER']),
+});
+
 export const exportLayoutSchema = z.object({
     folder: stringSchema('Carpeta'),
     group,
