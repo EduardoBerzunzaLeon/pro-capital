@@ -11,6 +11,8 @@ import { InputValidation } from "../forms/Input";
 import XLSX from "xlsx-js-style";
 import saveAS from 'file-saver';
 
+import ExcelJS from 'exceljs';
+
 interface Props {
     isOpen: boolean,
     onOpenChange: () => void
@@ -21,6 +23,7 @@ interface ExportProps {
   group: number;
   folder: string;
   creditAt: string;
+
 }
 
 const fakeDuplicateData = (exportData: ExportProps) => {
@@ -28,6 +31,7 @@ const fakeDuplicateData = (exportData: ExportProps) => {
   const { data } = exportData;
 
   const values = data[0];
+
 
   return  [
     values,
@@ -43,7 +47,14 @@ const fakeDuplicateData = (exportData: ExportProps) => {
   ]
 } 
 
-const printSheet = (header: Omit<ExportProps, 'data'>, data: Generic[]) => {
+interface PrintSheetProps {
+  header: Omit<ExportProps, 'data'>,
+  data: Generic[],
+  workbook: ExcelJS.Workbook,
+  name: string
+}
+
+const printSheet = ({ header, data, workbook, name }: PrintSheetProps) => {
 
   const initialValue: number = 0;
 
@@ -52,105 +63,187 @@ const printSheet = (header: Omit<ExportProps, 'data'>, data: Generic[]) => {
     return acc;
   }, initialValue);
 
-  const numeral = data.map((_, index) => ([index+1])); 
+  const numeral = data.map((_, index) => ( [index+1].toString() )); 
 
-  const worksheet = XLSX.utils.aoa_to_sheet([ 
-    [ '', header.folder.toUpperCase() ],
-    [ '',`GRUPO ${header.group}`],
-    [ '',header.creditAt],
-    ['','','','','',1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
-    ['No.'],
-    ...numeral
-  ], { cellStyles: true  });
+  const worksheet =  workbook.addWorksheet(name, {
+    pageSetup:{ 
+      paperSize: undefined, 
+      orientation:'landscape',
+      margins: {
+        left: 0, 
+        right: 0,
+        top: 1, 
+        bottom: 0,
+        header: 0, 
+        footer: 0
+      },
+      fitToPage: true
+    },
+  });
 
-  XLSX.utils.sheet_add_json(worksheet, data, { origin: "B5" });
+  const headers =  worksheet.getRow(1);
+  headers.values = ['',header.folder.toUpperCase(), `GRUPO ${header.group}`, header.creditAt];
+  headers.eachCell((cell) => {
+    if(cell.value !== '') {
+      cell.font = { name: 'ARIAL', size: 10, bold: true };
+      cell.border = {
+        top: {style:'medium', color: { argb:'000000' }},
+        left: {style:'medium', color: { argb:'000000' }},
+        bottom: {style:'medium', color: { argb:'000000' }},
+        right: {style:'medium', color: { argb:'000000' }}
+      }
+    }
+  });
 
-    [1,2,3].forEach((value) => {
-      worksheet[`B${value}`].s = {
-        font: { bold: true },
-        border: { 
-          top: { style: 'thin'},
-          bottom: { style: 'thin' },
-          left: { style: 'thin' },
-          right: { style: 'thin' },  
-        },
-        alignment: {
-          wrapText: true,
-        },
+  const folderColumn = worksheet.getColumn(2);
+  folderColumn.width =  16;
+
+  const groupColumn = worksheet.getColumn(3);
+  groupColumn.width = 16;
+
+  const dateColumn = worksheet.getColumn(4);
+  dateColumn.width = 10;
+
+  const paymentColumn = worksheet.getColumn(5);
+  paymentColumn.width =  5;
+
+  const numbersTitle =  worksheet.getRow(2);
+  numbersTitle.values = ['','','','','',1,2,3,4,5,6,7,8,9,10,11,12,13,14,15];
+  numbersTitle.eachCell((cell) => {
+      cell.font = { name: 'ARIAL', size: 7.5 };
+      cell.border = {
+        top: {style:'thin', color: { argb:'000000' }},
+        left: {style:'thin', color: { argb:'000000' }},
+        bottom: {style:'thin', color: { argb:'000000' }},
+        right: {style:'thin', color: { argb:'000000' }}
+      }
+      cell.alignment = { horizontal: 'center', vertical: 'middle' }
+  });
+
+  const columns = Object.keys(data[0]);
+  
+  const columnsTitle =  worksheet.getRow(3);
+  columnsTitle.values = ['No.', ...columns];
+  columnsTitle.eachCell((cell) => {
+    cell.font = { name: 'ARIAL', size: 7.5 };
+    cell.border = {
+      top: {style:'thin', color: { argb:'000000' }},
+      left: {style:'thin', color: { argb:'000000' }},
+      bottom: {style:'thin', color: { argb:'000000' }},
+      right: {style:'thin', color: { argb:'000000' }}
+    }
+    cell.alignment = { horizontal: 'center', vertical: 'middle' }
+  });
+  
+  const size = data.length;
+  for (let row = 0; row < size; row++) {
+    const newRow  = worksheet.addRow(['', ...Object.keys(data[row]).map((val) => data[row][val].toString().toUpperCase())]);
+    newRow.eachCell((cell) => {
+      cell.font = { name: 'ARIAL', size: 10,  bold: true  };
+      cell.border = {
+        top: {style:'thin', color: { argb: '000000' }},
+        left: {style:'thin', color: { argb: '000000' }},
+        bottom: {style:'thin', color: { argb: '000000' }},
+        right: {style:'thin', color: { argb: '000000' }}
+      }
+      cell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true }
+  });
+      
+} 
+
+    const numerals = worksheet.getColumn(1);
+    numerals.width = 3;
+    numerals.values = ['', '', 'No.', ...numeral];
+
+    numerals.eachCell((cell) => {
+      if(cell.value !== '' ) {
+        cell.font = { name: 'ARIAL', size: 7.5 };
+        cell.border = {
+          top: {style:'thin', color: { argb:'000000' }},
+          left: {style:'thin', color: { argb:'000000' }},
+          bottom: {style:'thin', color: { argb:'000000' }},
+          right: {style:'thin', color: { argb:'000000' }}
+        }
+        cell.alignment = { horizontal: 'center', vertical: 'middle' }
       }
     });
+  //   XLSX.utils.sheet_add_aoa(worksheet, [['TOTAL', `$${total}`]], { origin: `C${data.length + 6}` });
 
-    const size = data.length+2;
-    const columns = Object.keys(data[0]).length+1;
-    
-
-    for (let col = 0; col < columns; col++) {
-      for (let row = 0; row < size; row++) {
-        
-        const cellRef = XLSX.utils.encode_cell({ r: row + 3, c: col });
-        
-        worksheet[cellRef].s = {
-          alignment: {
-              horizontal: "center",
-              vertical: "center",
-              wrapText: true,
-          },
-          border: { 
-            top: { style: 'thin'},
-            bottom: { style: 'thin' },
-            left: { style: 'thin' },
-            right: { style: 'thin' },  
-          }
-        }
-      }
-      
-    } 
-
-    XLSX.utils.sheet_add_aoa(worksheet, [['TOTAL', `$${total}`]], { origin: `C${data.length + 6}` });
-
-    worksheet["!margins"] = {
-      left: 0.25,
-      right: 0.25,
-      top: 0,
-      bottom: 0,
-      header: 0,
-      footer: 0
-    }
+  //   worksheet["!margins"] = {
+  //     left: 0.25,
+  //     right: 0.25,
+  //     top: 0,
+  //     bottom: 0,
+  //     header: 0,
+  //     footer: 0
+  //   }
 
     // worksheet.
     // worksheet['!pageSetup'] = { scale: 100, orientation: 'landscape' };
     return worksheet;
 }
 
-const exportToExcel = (exportData: ExportProps, fileName: string, folder: string) => {
+// const exportToExcel2 = (exportData: ExportProps, fileName: string, folder: string) => {
 
-  const data = fakeDuplicateData(exportData);
+//   const data = fakeDuplicateData(exportData);
  
-  const workbook = XLSX.utils.book_new();
+//   const workbook = XLSX.utils.book_new();
+
+//   let min = 0;
+//   let max = 5;
+//   let count = 1;
+
+//   while (min < data.length) {
+
+//     const credits =  data.slice(min, max);
+//     const worksheet = printSheet(exportData, credits);
+//     XLSX.utils.book_append_sheet(workbook, worksheet, `${folder}-${count}`);
+
+//     min += 5;
+//     max += 5;
+//     count++;
+
+//   }
+
+//   // XLSX.utils.book_append_sheet(workbook, worksheet, `${folder}-2`);
+
+
+//   const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+//   const blob = new Blob([excelBuffer], {type: 'application/octet-stream'});
+//   saveAS(blob, `${fileName}.xlsx`);
+// };
+
+const exportToExcel = async (exportData: ExportProps, fileName: string, folder: string) => {
+  const data = fakeDuplicateData(exportData);
+
+
+  const workbook = new ExcelJS.Workbook();
+
 
   let min = 0;
-  let max = 4;
+  let max = 5;
   let count = 1;
-
+  
   while (min < data.length) {
 
     const credits =  data.slice(min, max);
-    const worksheet = printSheet(exportData, credits);
-    XLSX.utils.book_append_sheet(workbook, worksheet, `${folder}-${count}`);
+    const worksheet = printSheet({ header: exportData, data: credits, name: `${folder}-${count}`, workbook });
+    
+    // XLSX.utils.book_append_sheet(workbook, worksheet, `${folder}-${count}`);
 
-    min += 4;
-    max += 4;
+    min += 5;
+    max += 5;
     count++;
 
   }
 
-  // XLSX.utils.book_append_sheet(workbook, worksheet, `${folder}-2`);
+  
 
-
-  const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-  const blob = new Blob([excelBuffer], {type: 'application/octet-stream'});
+  const buffer = await workbook.xlsx.writeBuffer();
+  const blob = new Blob([buffer], {type: 'application/octet-stream'});
   saveAS(blob, `${fileName}.xlsx`);
-};
+
+}
 
 export const ModalExportLayout = ({ isOpen, onOpenChange }: Props) => {
 
@@ -160,6 +253,7 @@ export const ModalExportLayout = ({ isOpen, onOpenChange }: Props) => {
 
     const [form, fields] = useForm({
         onValidate({ formData }) {
+
           return parseWithZod(formData, { schema: exportLayoutSchema });
         },
         shouldValidate: 'onSubmit',
