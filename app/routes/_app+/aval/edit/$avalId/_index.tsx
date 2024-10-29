@@ -10,6 +10,8 @@ export const action: ActionFunction = async ({ params, request }) => {
     const data = Object.fromEntries(formData);
     const id = params.avalId;
 
+    console.log({data, id});
+
     try {
         
         if(data._action === 'update') {

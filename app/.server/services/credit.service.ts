@@ -152,7 +152,10 @@ export const updatePrevious = async (id: number, data: UpdatePreviousData) => {
 }
 
 export const createAval = async ( aval: Omit<AvalCreateI, 'fullname'>, fullname: string, idClient: number) => {
-    const avalDb = await Service.aval.upsertOne({ ...aval, fullname });
+
+    const { curp, ...restAval } = aval;
+
+    const avalDb = await Service.aval.upsertOne({ curp: curp.toLowerCase(), fullname, ...restAval });
 
     if(avalDb) {
         return avalDb;
@@ -246,7 +249,7 @@ export const renovate = async (form: FormData, curp?: string, creditId?: Request
     const { totalAmount } = convertDebt(paymentAmount, type);
 
     const clientDb = await updateClientToRenovate( curpValidated.toLowerCase(), { ...restClient, curp: curpValidated.toLowerCase() }, clientFullname );
-    const avalDb = await createAval(restAval, avalFullname, clientDb.id);
+    const avalDb = await createAval(restAval , avalFullname, clientDb.id);
 
     const preCredit: UpdateCreateI = {
         avalId: avalDb.id,
@@ -379,6 +382,8 @@ export const create = async (form: FormData, curp?: string) => {
     const { guarantee: clientGuarantee , ...restClient } = client;
     const { guarantee: avalGuarantee , ...restAval } = aval;
  
+    console.log({ restClient, curpValidated });
+
     const clientDb = await createClient({...restClient, curp: curpValidated}, clientFullname);
     const avalDb = await createAval(restAval, avalFullname, clientDb.id);
 

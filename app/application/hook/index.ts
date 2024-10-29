@@ -13,3 +13,4 @@ export { useParamsPaginator } from './useParamsPaginator';
 export { useParamsSelect } from "./useParamsSelect";
 export { useRenderCell } from "./useRenderCell";
 export { useStatusMemo } from "./useStatusMemo";
+export { useCalculateDebt } from './useCalculateDebt';

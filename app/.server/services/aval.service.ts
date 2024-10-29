@@ -7,7 +7,7 @@ import { ServerError } from "../errors";
 import { AvalCreateI } from "../domain/interface";
 
 export const findAutocomplete = async (curp: string) => {
-    const aval = await Repository.aval.findAutocomplete(curp.toUpperCase());
+    const aval = await Repository.aval.findAutocomplete(curp.toLowerCase());
     return Service.dto.autocompleteMapper('id', 'curp', aval);
 }
 
@@ -34,7 +34,7 @@ export const updateById = async (id: RequestId, form: FormData) => {
 
     await Service.credit.verifyAvalCurp(idValidated, dataToSave.curp.toLowerCase());
 
-    return await Repository.client.updateById(idValidated, { 
+    return await Repository.aval.updateById(idValidated, { 
         ...dataToSave, 
         fullname: avalFullname, 
         curp: dataToSave.curp.toLowerCase() 

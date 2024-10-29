@@ -1,14 +1,13 @@
 import { today, getLocalTimeZone } from "@internationalized/date";
 import { DatePicker, Input, Select, SelectItem } from "@nextui-org/react"
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Autocomplete } from "~/.server/interfaces";
 import { useFetcher } from "@remix-run/react";
 import { FieldMetadata, getSelectProps, useInputControl } from "@conform-to/react";
 import { CreditSchema, CreditCreateSchema } from "~/schemas/creditSchema";
 import { InputValidation } from "../forms/Input";
 import { AutocompleteValidation } from "../forms/AutocompleteValidation";
-
-type Types = 'NORMAL' | 'EMPLEADO' | 'LIDER';
+import { useCalculateDebt } from "~/application";
 
 type Fields = FieldMetadata<CreditSchema, CreditCreateSchema, string[]>;
 
@@ -17,39 +16,6 @@ interface Props {
 }
 
 
-const convertDebt = (amount: number, type: Types = 'NORMAL') => {
-  const debt = { 
-    paymentAmount: amount / 10, 
-    totalAmount: 0 
-  }
-
-  const types = {
-    'NORMAL': 15,
-    'EMPLEADO': 12,
-    'LIDER': 10,
-  }
-
-  const weeks = type in types ? types[type] : 15;
-  debt.totalAmount = debt.paymentAmount * weeks;
-
-  return debt;
-}
-
-const handleChange = (amount: string, type: string) => {
-
-  const amountParsed =  Number(amount);
-  if(isNaN(amountParsed)) {
-    return { paymentAmount: 0, totalAmount: 0 }; 
-  }
-
-  const data =  {
-    amount: amountParsed,
-    type
-  }
-  
-  return convertDebt(data.amount, (data.type as Types));
-}
-
 export const CreditFormSection = ({ fields }: Props) => {
   const fetcher = useFetcher<any>();
   const credit = fields.getFieldset();
@@ -57,8 +23,8 @@ export const CreditFormSection = ({ fields }: Props) => {
   const amount = useInputControl(credit.amount);
   const type = useInputControl(credit.types);
   const folder = useInputControl(credit.folder);
-  const [payment, setPayment] = useState(0);
-  const [total, setTotal] = useState(0);
+
+  const { payment, total }  = useCalculateDebt(amount.value, type.value)
 
   useEffect(() => {
 
@@ -74,23 +40,14 @@ export const CreditFormSection = ({ fields }: Props) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetcher.state, fetcher.data]);
 
-  useEffect(() => {
-
-    const { paymentAmount, totalAmount } = handleChange(amount.value ?? '', type.value ?? '');
-
-    setPayment(paymentAmount);
-    setTotal(totalAmount)
-
-  }, [amount.value, type.value])
-
   const handleSelected = ({ id }: Autocomplete) => {
     fetcher.load(`/folder/group?id=${id}`);
   }
 
-
   const handleSelectedType = (e: React.ChangeEvent<HTMLSelectElement>) => {
     type.change(e.target.value);
   }
+
 
   return (
     <div>
@@ -171,7 +128,7 @@ export const CreditFormSection = ({ fields }: Props) => {
             name={credit.creditAt.name}
             isInvalid={!!credit.creditAt.errors}
             errorMessage={credit.creditAt.errors}
-            defaultValue={today(getLocalTimeZone()).add({ days: 1 }).subtract({ days: 1 })}
+            defaultValue={today(getLocalTimeZone())}
             granularity="day"
         />
     </div>

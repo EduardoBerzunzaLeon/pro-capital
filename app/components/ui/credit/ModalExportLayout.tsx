@@ -8,7 +8,6 @@ import { Autocomplete, Generic } from "~/.server/interfaces";
 import { useEffect } from "react";
 import { InputValidation } from "../forms/Input";
 
-import XLSX from "xlsx-js-style";
 import saveAS from 'file-saver';
 
 import ExcelJS from 'exceljs';
@@ -72,12 +71,13 @@ const printSheet = ({ header, data, workbook, name }: PrintSheetProps) => {
       margins: {
         left: 0, 
         right: 0,
-        top: 1, 
+        top: .75, 
         bottom: 0,
         header: 0, 
         footer: 0
       },
-      fitToPage: true
+      fitToPage: true,
+      printArea: `A1:T${data.length+4}`
     },
   });
 
@@ -138,6 +138,7 @@ const printSheet = ({ header, data, workbook, name }: PrintSheetProps) => {
   const size = data.length;
   for (let row = 0; row < size; row++) {
     const newRow  = worksheet.addRow(['', ...Object.keys(data[row]).map((val) => data[row][val].toString().toUpperCase())]);
+    // newRow.height = 140;
     newRow.eachCell((cell) => {
       cell.font = { name: 'ARIAL', size: 10,  bold: true  };
       cell.border = {
@@ -167,51 +168,18 @@ const printSheet = ({ header, data, workbook, name }: PrintSheetProps) => {
         cell.alignment = { horizontal: 'center', vertical: 'middle' }
       }
     });
-  //   XLSX.utils.sheet_add_aoa(worksheet, [['TOTAL', `$${total}`]], { origin: `C${data.length + 6}` });
 
-  //   worksheet["!margins"] = {
-  //     left: 0.25,
-  //     right: 0.25,
-  //     top: 0,
-  //     bottom: 0,
-  //     header: 0,
-  //     footer: 0
-  //   }
+    const totalRow =  worksheet.getRow(3+data.length+1);
 
-    // worksheet.
-    // worksheet['!pageSetup'] = { scale: 100, orientation: 'landscape' };
+    totalRow.values = ['','', 'TOTAL=', total];
+    
+    totalRow.eachCell((cell) => {
+      cell.font = { name: 'ARIAL', size: 10, bold: true };
+      cell.alignment = { horizontal: 'center', vertical: 'middle' }
+    });
+
     return worksheet;
 }
-
-// const exportToExcel2 = (exportData: ExportProps, fileName: string, folder: string) => {
-
-//   const data = fakeDuplicateData(exportData);
- 
-//   const workbook = XLSX.utils.book_new();
-
-//   let min = 0;
-//   let max = 5;
-//   let count = 1;
-
-//   while (min < data.length) {
-
-//     const credits =  data.slice(min, max);
-//     const worksheet = printSheet(exportData, credits);
-//     XLSX.utils.book_append_sheet(workbook, worksheet, `${folder}-${count}`);
-
-//     min += 5;
-//     max += 5;
-//     count++;
-
-//   }
-
-//   // XLSX.utils.book_append_sheet(workbook, worksheet, `${folder}-2`);
-
-
-//   const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-//   const blob = new Blob([excelBuffer], {type: 'application/octet-stream'});
-//   saveAS(blob, `${fileName}.xlsx`);
-// };
 
 const exportToExcel = async (exportData: ExportProps, fileName: string, folder: string) => {
   const data = fakeDuplicateData(exportData);
@@ -227,7 +195,7 @@ const exportToExcel = async (exportData: ExportProps, fileName: string, folder: 
   while (min < data.length) {
 
     const credits =  data.slice(min, max);
-    const worksheet = printSheet({ header: exportData, data: credits, name: `${folder}-${count}`, workbook });
+    printSheet({ header: exportData, data: credits, name: `${folder}-${count}`, workbook });
     
     // XLSX.utils.book_append_sheet(workbook, worksheet, `${folder}-${count}`);
 
@@ -240,7 +208,7 @@ const exportToExcel = async (exportData: ExportProps, fileName: string, folder: 
   
 
   const buffer = await workbook.xlsx.writeBuffer();
-  const blob = new Blob([buffer], {type: 'application/octet-stream'});
+  const blob = new Blob([buffer], { type: 'application/octet-stream' });
   saveAS(blob, `${fileName}.xlsx`);
 
 }

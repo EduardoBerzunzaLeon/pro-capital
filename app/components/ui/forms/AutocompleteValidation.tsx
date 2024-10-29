@@ -62,7 +62,6 @@ export const AutocompleteValidation = ({
         submit({ data: query }, { action: actionRoute });
    }, [actionRoute, query, submit]);
 
-
     // TODO: Hay un brinco mientras espera que se ejecute este useeffect en los formularios de edicion  
    useEffect(() => {
     if(selectedItem?.value && selectedItem.value.toLowerCase() !== displayValue.toLowerCase()) {

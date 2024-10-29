@@ -59,6 +59,11 @@ export const CreditRenovateFormSection = ({ fields, paymentForgivent, paymentAmo
   }, [fetcher.state, fetcher.data]);
 
   useEffect(() => {
+    fetcher.load(`/folder/group?id=${folderId}`);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ folderId ])
+
+  useEffect(() => {
 
     const { paymentAmount, totalAmount } = handleChange(amount.value ?? '', type.value ?? '');
     setPayment(paymentAmount);
@@ -66,10 +71,7 @@ export const CreditRenovateFormSection = ({ fields, paymentForgivent, paymentAmo
 
   }, [amount.value, type.value]);
 
-  useEffect(() => {
-    fetcher.load(`/folder/group?id=${folderId}`);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ folderId ])
+
 
   const handleSelected = ({ id, value }: Autocomplete) => {
     setIdFolder(id);
@@ -88,6 +90,9 @@ export const CreditRenovateFormSection = ({ fields, paymentForgivent, paymentAmo
 
     isForgivent.change(isSelected ? 'true' : 'false');
   }
+
+
+  console.log(today(getLocalTimeZone()));
 
   return (
     <div>
@@ -191,7 +196,7 @@ export const CreditRenovateFormSection = ({ fields, paymentForgivent, paymentAmo
             name={credit.creditAt.name}
             isInvalid={!!credit.creditAt.errors}
             errorMessage={credit.creditAt.errors}
-            defaultValue={today(getLocalTimeZone()).subtract({ days: 1 })}
+            defaultValue={today(getLocalTimeZone())}
             granularity="day"
         />
     </div>

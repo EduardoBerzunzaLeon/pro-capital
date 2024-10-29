@@ -11,6 +11,7 @@ import {
 } from "~/.server/reponses";
 import { Service } from "~/.server/services";
 import { ChipStatusCredit, PersonFormEdit } from "~/components/ui";
+import { CreditFormEdit } from "~/components/ui/credit/CreditFormEdit";
 
 
 export const loader: LoaderFunction = async ({ params }) => {
@@ -53,6 +54,10 @@ export const action: ActionFunction = async ({ params, request }) => {
 
 export default function CreditDetailPage() {
   const loader = useLoaderData<any>();
+
+  const { client, aval, ...credit } = loader.serverData;
+
+  console.log(credit)
 
   return (<>
     <Card className='w-full'>
@@ -98,16 +103,16 @@ export default function CreditDetailPage() {
       <Divider/>
       <CardBody className="flex flex-col gap-2">
           <PersonFormEdit 
-            { ...loader.serverData.client }
+            { ...client }
             urlAction="clients"
             title='Datos del cliente'
             />
           <PersonFormEdit 
-            { ...loader.serverData.aval }
+            { ...aval }
             urlAction="aval"
             title='Datos del aval'
           />
-
+{/* 
         <Card>
           <CardHeader>
             Datos del Crédito
@@ -198,7 +203,11 @@ export default function CreditDetailPage() {
               isReadOnly
             />
           </CardBody>
-        </Card>
+        </Card> */}
+
+        <CreditFormEdit 
+          { ...credit }
+        />
       </CardBody>
       <CardFooter>
           Visit source code on GitHub.

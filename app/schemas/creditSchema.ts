@@ -53,8 +53,9 @@ export const creditRenovateSchema = z.object({
 export const creditEditSchema = z.object({
     group,
     amount, 
-    creditAt,
     folder: stringSchema('Carpeta'),
+    avalGuarantee: stringSchema('Garantias del aval'),
+    clientGuarantee: stringSchema('Garantias del cliente'),
     types: z.enum(['NORMAL', 'EMPLEADO', 'LIDER']),
 });
 

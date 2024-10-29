@@ -85,8 +85,6 @@ export const AvalFormSection = ({ fields, avalId }: Props) => {
       lastNameSecond.change(fetcher.data.lastNameSecond);
       address.change(fetcher.data.address);
       reference.change(fetcher.data.reference);
-      // TODO: preguntar si cargo las garantias por defecto
-      // guarantee.change(fetcher.data.guarantee);
       phoneNumber.change(fetcher.data.phoneNumber);
     }
 
