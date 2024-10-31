@@ -8,7 +8,7 @@ import { ServerError } from "../errors";
 import { creditCreateSchema } from "~/schemas";
 import dayjs from 'dayjs';
 import { PaymentI, RequestId } from "../interfaces";
-import { creditReadmissionSchema, exportLayoutSchema, renovateSchema } from "~/schemas/creditSchema";
+import { creditEditSchema, creditReadmissionSchema, exportLayoutSchema, renovateSchema } from "~/schemas/creditSchema";
 import { calculateAmount, convertDebt } from "~/application";
 import { CreditLayout, Layout } from "../domain/entity/layout.entity";
 
@@ -209,6 +209,96 @@ export const verifyRenovateDates = async (payments: PaymentI[], creditAt: Date) 
     
 }
 
+export const updateOne = async (form: FormData, creditId?: RequestId) => {
+
+    const { id } = validationZod({ id: creditId }, idSchema);
+    const { 
+        folder, 
+        group, 
+        amount, 
+        avalGuarantee, 
+        clientGuarantee,
+        types 
+    } = validationConform(form, creditEditSchema);
+
+    const creditDb = await Repository.credit.findCreditToUpdate(id);
+
+    if(!creditDb) {
+        throw ServerError.badRequest('El crédito no exite');
+    }
+
+    if(creditDb.status === 'LIQUIDADO') {
+        throw ServerError.badRequest('El crédito ya esta liquidado, no se puede actualizar');
+    }
+
+    const previousCredit = await Repository.credit.findCreditToUpdate(creditDb.previousCreditId);
+    
+    if(previousCredit) {
+        const maxAmountAllowed = Number(previousCredit.amount) + 500;
+
+        if(maxAmountAllowed < amount) {
+            throw ServerError.badRequest(`El nuevo monto no puede superar los $${maxAmountAllowed}`);
+        }
+    }
+
+    const folderDb = await Repository.folder.findByNameAndGroup(folder, group);
+  
+    if(!folderDb || !folderDb.groups || folderDb.groups.length != 1) {
+        throw ServerError.badRequest('La carpeta y el grupo no son validos');
+    }
+
+    const otherCreditInFolder = await Repository.credit.verifyCredit(id, folderDb.id);
+
+    if(otherCreditInFolder) {
+        throw ServerError.badRequest('La carpeta a la que se desea asignar el crédito, ya tiene otro crédito asignado');
+    }
+
+    const paymentAmount = calculateAmount(Number(amount));
+    const { totalAmount } = convertDebt(paymentAmount, types);
+    const currentDebt = calculateDebt(creditDb.payment_detail, totalAmount);
+
+    if(currentDebt < 0) {
+        throw ServerError.badRequest('La deuda no pude ser negativa');
+    }
+
+    const canRenovate = verifyCanRenovate({ totalAmount, currentDebt, paymentAmount });
+
+    const data = {
+        amount,
+        avalGuarantee,
+        canRenovate,
+        clientGuarantee,
+        currentDebt,
+        folderId: folderDb.id,
+        groupId: folderDb.groups[0].id,
+        paymentAmount,
+        status: currentDebt === 0 ? 'LIQUIDADO' : creditDb.status,
+        totalAmount,
+        type: types,
+    }
+
+    const creditUpdated = await Repository.credit.updateOne(id, data);
+
+    if(!creditUpdated) {
+        throw ServerError.internalServer('No se pudo actualizar el crédito, favor de intentarlo más tarde');
+    }
+    
+    return creditUpdated;
+}
+
+interface PaymentAmount {
+    paymentAmount: number
+}
+
+const calculateDebt = (payments: PaymentAmount[], totalAmount: number) : number => {
+
+    const totalPaid = payments.reduce((acc, { paymentAmount }) => { 
+        return acc += paymentAmount
+    }, 0);
+
+    return totalAmount - totalPaid;
+}
+
 export const renovate = async (form: FormData, curp?: string, creditId?: RequestId) => {
     const { credit: creditDb, curp: curpValidated } =  await validationToRenovate(curp, creditId);
     const { aval, client, credit } =  validationConform(form, creditReadmissionSchema);
@@ -381,8 +471,6 @@ export const create = async (form: FormData, curp?: string) => {
 
     const { guarantee: clientGuarantee , ...restClient } = client;
     const { guarantee: avalGuarantee , ...restAval } = aval;
- 
-    console.log({ restClient, curpValidated });
 
     const clientDb = await createClient({...restClient, curp: curpValidated}, clientFullname);
     const avalDb = await createAval(restAval, avalFullname, clientDb.id);
@@ -408,7 +496,6 @@ export const create = async (form: FormData, curp?: string) => {
 }
 
 interface CreditI {
-    id: number,
     totalAmount: number,
     currentDebt: number,
     paymentAmount: number
@@ -525,6 +612,7 @@ export default{
     findAll,
     findDetailsCredit,
     renovate,
+    updateOne,
     validationToAdditional,
     validationToCreate,
     validationToRenovate,

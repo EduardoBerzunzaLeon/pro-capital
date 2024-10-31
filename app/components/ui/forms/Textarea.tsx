@@ -7,6 +7,7 @@ interface Props {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     metadata: FieldMetadata<unknown, any, any>,
     value?: string,
+    isReadOnly?: boolean,
     onValueChange?: (value: string) => void,
     defaultValue?: string,
 }

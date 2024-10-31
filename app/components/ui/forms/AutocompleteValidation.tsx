@@ -29,6 +29,7 @@ interface Props {
     defaultValue?: Autocomplete,
     selectedItem?: Autocomplete, 
     startContent?: React.ReactNode
+    isReadOnly?: boolean,
     onSelected?: (value: Autocomplete) =>  void,
     onChange?: (value: string)  => void
 }

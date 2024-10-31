@@ -1,4 +1,4 @@
-import { BaseCreditI, CreditCreateI, CreditRepositoryI, PaginationWithFilters, UpdatePreviousData } from "~/.server/domain/interface";
+import { BaseCreditI, CreditCreateI, CreditRepositoryI, PaginationWithFilters, UpdateOne, UpdatePreviousData } from "~/.server/domain/interface";
 
 export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
 
@@ -295,6 +295,10 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
         return await base.updateOne({ id }, { ...data });
     }
 
+    async function updateOne(id: number, data: UpdateOne) {
+        return await base.updateOne({ id }, { ...data });
+    }
+
     async function findCreditForDelete(id: number) {
         return await base.findOne({ id }, {
             id: true,
@@ -340,18 +344,41 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
         });
     }
 
+    async function findCreditToUpdate(id: number) {
+
+        return await base.findOne({ id }, { 
+            previousCreditId: true,
+            totalAmount: true,
+            currentDebt: true,
+            amount: true,
+            canRenovate: true,
+            type: true,
+            creditAt: true,
+            status: true,
+            payment_detail: {
+                select: {
+                    paymentAmount: true
+                }
+            },
+        });
+
+
+    }
+
     return {
         createOne,
         deleteOne,
         exportLayout,
         findAll,
         findByCurp,
+        findCreditToUpdate,
         findByRenovate,
         findCredit,
         findCreditForDelete,
         findCredits,
         findDetailsCredit,
         updatePrevious,
+        updateOne,
         verifyCredit,
         verifyClientCurp,
         verifyAvalCurp,

@@ -41,6 +41,11 @@ export const action: ActionFunction = async ({ params, request }) => {
         await Service.credit.deleteOne(id);
         return handlerSuccessWithToast('delete');
       }
+      
+      if(data._action === 'update') {
+        await Service.credit.updateOne(formData, id);
+        return handlerSuccessWithToast('update');
+      }
 
       return redirectWithWarning("/", "Entrada a una ruta de manera invalida");
 

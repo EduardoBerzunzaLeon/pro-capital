@@ -34,7 +34,6 @@ export const PersonFormEdit = ({
     title
 }: Props) => {
 
-
     const fetcher = useFetcher<typeof action>();
     const [ isEditable, setIsEditable ] = useState(false);
 
@@ -57,6 +56,7 @@ export const PersonFormEdit = ({
 
     const handleCancel = () => {
         setIsEditable(false);
+        form.reset();
     }
 
     const handleEnableEdit = () => {

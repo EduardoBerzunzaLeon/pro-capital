@@ -29,6 +29,20 @@ export interface UpdatePreviousData {
     canRenovate: boolean
 }
 
+export interface UpdateOne {
+    amount: number,
+    avalGuarantee: string,
+    canRenovate: boolean,
+    clientGuarantee: string,
+    currentDebt: number,
+    folderId: number,
+    groupId: number, 
+    paymentAmount: number,
+    status: Status,
+    totalAmount: number,
+    type: Type,
+}
+
 export type BaseCreditI = BaseRepositoryI<
     Prisma.CreditDelegate, 
     Prisma.CreditWhereInput, 
@@ -48,9 +62,11 @@ export interface CreditRepositoryI{
     createOne: (credit: CreditCreateI) => Promise<Generic | undefined>,
     exportLayout: (folderName: string, groupName: number) => Promise<Generic | undefined>,
     updatePrevious: (id: number, data: UpdatePreviousData) => Promise<Generic | undefined>,
+    updateOne: (id: number, data: UpdateOne) => Promise<Generic | undefined>,
     verifyFolderInCredit: (curp: string, folderId: number) => Promise<Generic | undefined>,
     findCreditForDelete: (id: number) => Promise<Generic | undefined>,
     findDetailsCredit: (id: number) => Promise<Generic | undefined>,
+    findCreditToUpdate: (id: number) => Promise<Generic | undefined>,
     deleteOne: (id: number) => Promise<Generic | undefined>
     verifyClientCurp: (idClient: number, curp: string) => Promise<Generic[] | undefined>,
     verifyAvalCurp: (idClient: number, curp: string) => Promise<Generic[] | undefined>
