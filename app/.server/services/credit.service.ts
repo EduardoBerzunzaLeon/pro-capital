@@ -11,6 +11,7 @@ import { PaymentI, RequestId } from "../interfaces";
 import { creditEditSchema, creditReadmissionSchema, exportLayoutSchema, renovateSchema } from "~/schemas/creditSchema";
 import { calculateAmount, convertDebt } from "~/application";
 import { CreditLayout, Layout } from "../domain/entity/layout.entity";
+import { Status } from "@prisma/client";
 
 export const findAll = async (props: PaginationWithFilters) => {
     const { data, metadata } = await Repository.credit.findAll({...props});
@@ -507,6 +508,25 @@ const verifyCanRenovate = ({ totalAmount, currentDebt, paymentAmount }: CreditI)
     return paidAmount >= minAmount;
 }
 
+type UpdateByPayment = CreditI & { status: Status };
+
+export const updateCreditByPayment = async (id: number, data: UpdateByPayment) => {
+
+    const canRenovate = verifyCanRenovate(data);
+    const currentDebt = data.currentDebt - data.paymentAmount;
+    const status = currentDebt === 0 ? 'LIQUIDADO' : data.status; 
+
+    const creditUpdated = await Repository.credit.updateCreditByPayment(id, {
+        currentDebt,
+        status,
+        canRenovate,
+    });
+
+    if(!creditUpdated) {
+        throw ServerError.internalServer('No se pudo actualizar el crédito');
+    }
+}
+
 const canHavePaymentForgivent = (creditAt: Date, paymentAmount: number, payments: PaymentI[]) => {
 
     const renovateDate =  dayjs(creditAt).add(70, 'day').toDate();
@@ -602,7 +622,27 @@ export const verifyAvalCurp = async (idAval: number, curp: string) => {
     if( clients && clients.length > 0 ) {
         throw ServerError.badRequest(`Se encontró el cliente ${clients[0].fullname} con la CURP: ${curp}`);
     }
+}
 
+export const findCreditToPay =  async (idCredit: RequestId) => {
+
+    const { id } = validationZod({ id: idCredit }, idSchema);
+
+    const creditDb = await Repository.credit.findCreditToPay(id);
+
+    if( !creditDb ) {
+        throw ServerError.badRequest('No se encontró el crédito');
+    }
+
+    if(creditDb.status === 'LIQUIDADO') {
+        throw ServerError.badRequest('El Crédito ya fue liquidado');
+    }
+
+    if(creditDb.client.isDeceased) {
+        throw ServerError.badRequest('El cliente fallecio');
+    }
+
+    return creditDb;
 }
 
 export default{ 
@@ -611,8 +651,10 @@ export default{
     exportLayout,
     findAll,
     findDetailsCredit,
+    findCreditToPay,
     renovate,
     updateOne,
+    updateCreditByPayment,
     validationToAdditional,
     validationToCreate,
     validationToRenovate,

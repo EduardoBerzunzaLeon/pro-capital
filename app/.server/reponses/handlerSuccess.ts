@@ -27,7 +27,7 @@ export const handlerSuccessWithToast = (type: TypeHandler, info?: string) => {
         },
         create: {
             result: 'Data created successfully',
-            message: `¡Creción exitosa${infoSanatized}! 🎉`,
+            message: `¡Creación exitosa${infoSanatized}! 🎉`,
         }
     }
 

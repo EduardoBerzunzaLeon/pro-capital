@@ -1,4 +1,4 @@
-import { ClientRepository } from "../client/client.repository";
+import { ClientRepository } from "./client/client.repository";
 import { db } from "../db";
 import { AgentRouteRepository } from "./agentRoute/agentRoute.repository";
 import { AuthRepository } from "./auth/auth.repository";
@@ -11,8 +11,8 @@ import { LeaderRepository } from "./leader/leader.repository";
 import { MunicipalityRepository } from "./municipality/municipality.repository";
 import { RouteRepository } from "./route/route.repository";
 import { TownRepository } from "./town/town.repository";
-
-
+import { UserRepository } from "./user/user.repository";
+import { PaymentRepository } from "./payment/payment.repository";
 
 function buildRepository() {
     return {
@@ -26,7 +26,9 @@ function buildRepository() {
         leader: { ...LeaderRepository(baseRepository(db.leader))},
         credit: { ...CreditRepository(baseRepository(db.credit))},
         aval: { ...AvalRepository(baseRepository(db.aval))},
-        client: { ...ClientRepository(baseRepository(db.client))}
+        client: { ...ClientRepository(baseRepository(db.client))},
+        user: { ...UserRepository(baseRepository(db.user))},
+        payment: { ...PaymentRepository(baseRepository(db.paymentDetail))},
     }
 }
 

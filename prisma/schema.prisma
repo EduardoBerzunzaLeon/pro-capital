@@ -233,12 +233,11 @@ model PaymentDetail {
   credit Credit @relation(fields: [creditId], references: [id])
   agent User @relation(fields: [agentId], references: [id])
   paymentAmount Decimal @db.Decimal(6,2)
-  paymentDate DateTime
+  paymentDate DateTime @db.Date
   captureAt DateTime @default(now())
   agentId Int
   folio Int?
   notes String?
   status PaymentStatus
-  isGuarentee Boolean @default(false)
 }
 

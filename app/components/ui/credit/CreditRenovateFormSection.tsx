@@ -91,9 +91,6 @@ export const CreditRenovateFormSection = ({ fields, paymentForgivent, paymentAmo
     isForgivent.change(isSelected ? 'true' : 'false');
   }
 
-
-  console.log(today(getLocalTimeZone()));
-
   return (
     <div>
       <AutocompleteValidation 

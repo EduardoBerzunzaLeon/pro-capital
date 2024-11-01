@@ -6,3 +6,4 @@ export { townCreateSchema } from './townSchema';
 export { folderCreateSchema } from './folderSchema';
 export { clientUpdateSchema } from './clientSchema';
 export type { ClientUpdateSchema } from './clientSchema';
+export * from './paymentSchema';

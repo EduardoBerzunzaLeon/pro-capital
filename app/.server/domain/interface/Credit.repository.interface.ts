@@ -43,6 +43,8 @@ export interface UpdateOne {
     type: Type,
 }
 
+export type UpdateAddPayment = Pick<UpdateOne, 'currentDebt' | 'status' | 'canRenovate'>
+
 export type BaseCreditI = BaseRepositoryI<
     Prisma.CreditDelegate, 
     Prisma.CreditWhereInput, 
@@ -63,9 +65,11 @@ export interface CreditRepositoryI{
     exportLayout: (folderName: string, groupName: number) => Promise<Generic | undefined>,
     updatePrevious: (id: number, data: UpdatePreviousData) => Promise<Generic | undefined>,
     updateOne: (id: number, data: UpdateOne) => Promise<Generic | undefined>,
+    updateCreditByPayment: (id: number, data: UpdateAddPayment) => Promise<Generic | undefined>,
     verifyFolderInCredit: (curp: string, folderId: number) => Promise<Generic | undefined>,
     findCreditForDelete: (id: number) => Promise<Generic | undefined>,
     findDetailsCredit: (id: number) => Promise<Generic | undefined>,
+    findCreditToPay: (id: number) => Promise<Generic | undefined>,
     findCreditToUpdate: (id: number) => Promise<Generic | undefined>,
     deleteOne: (id: number) => Promise<Generic | undefined>
     verifyClientCurp: (idClient: number, curp: string) => Promise<Generic[] | undefined>,

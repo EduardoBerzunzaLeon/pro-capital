@@ -3,7 +3,7 @@ import { motion, Variants } from "framer-motion";
 import { MenuItem } from "./MenuItem";
 import { FaHome, FaRoute, FaUsers, FaUsersCog } from "react-icons/fa";
 import { IoStatsChartSharp } from "react-icons/io5";
-import { FaPersonDressBurst, FaShield, FaUsersGear } from "react-icons/fa6";
+import { FaMoneyBillTrendUp, FaPersonDressBurst, FaShield, FaUsersGear } from "react-icons/fa6";
 
 const variants: Variants = {
   open: {
@@ -71,9 +71,15 @@ const items = [
     id: 9
   },
   {
+    icon: <FaMoneyBillTrendUp />,
+    text: "Reflejar Pagos",
+    to: "/pay",
+    id: 10
+  },
+  {
     icon: <IoStatsChartSharp />,
     text: "Reportes",
     to: "/reports",
-    id: 10
+    id: 11
   },
 ];

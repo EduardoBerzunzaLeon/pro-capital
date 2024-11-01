@@ -12,6 +12,8 @@ import utilsService from "./utils.service";
 import creditService from "./credit.service";
 import avalService from "./aval.service";
 import clientService from "./client.service";
+import userService from "./user.service";
+import paymentService from "./payment.service";
 
 
 function buildService() {
@@ -29,7 +31,9 @@ function buildService() {
         aval: { ...avalService },
         utils: { ...utilsService },
         credit: { ...creditService },
-        client: { ...clientService }
+        client: { ...clientService },
+        user: { ...userService },
+        payment: { ...paymentService },
     }
 }
 

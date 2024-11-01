@@ -72,7 +72,7 @@ export function Action ({ ariaLabel, onView, onUpdate, onDelete, isLoading }: Pr
                                 <BsThreeDotsVertical/>
                             </Button>
                         </DropdownTrigger>
-                        {  printDropdownMenus() }   
+                        {  printDropdownMenus() }    
                     </Dropdown>
                 )
             }

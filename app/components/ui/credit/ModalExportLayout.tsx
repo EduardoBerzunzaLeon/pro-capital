@@ -150,8 +150,7 @@ const printSheet = ({ header, data, workbook, name }: PrintSheetProps) => {
       cell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true }
   });
       
-} 
-
+  } 
     const numerals = worksheet.getColumn(1);
     numerals.width = 3;
     numerals.values = ['', '', 'No.', ...numeral];
@@ -183,10 +182,7 @@ const printSheet = ({ header, data, workbook, name }: PrintSheetProps) => {
 
 const exportToExcel = async (exportData: ExportProps, fileName: string, folder: string) => {
   const data = fakeDuplicateData(exportData);
-
-
   const workbook = new ExcelJS.Workbook();
-
 
   let min = 0;
   let max = 5;
@@ -196,16 +192,12 @@ const exportToExcel = async (exportData: ExportProps, fileName: string, folder: 
 
     const credits =  data.slice(min, max);
     printSheet({ header: exportData, data: credits, name: `${folder}-${count}`, workbook });
-    
-    // XLSX.utils.book_append_sheet(workbook, worksheet, `${folder}-${count}`);
 
     min += 5;
     max += 5;
     count++;
 
   }
-
-  
 
   const buffer = await workbook.xlsx.writeBuffer();
   const blob = new Blob([buffer], { type: 'application/octet-stream' });
@@ -250,6 +242,7 @@ export const ModalExportLayout = ({ isOpen, onOpenChange }: Props) => {
         exportToExcel(fetcher.data, `Reporte_${folder.value}`, folder.value);
       }
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ fetcher.state, fetcher.data ])
 
     const handleSelected = ({ id, value }: Autocomplete) => {

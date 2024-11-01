@@ -1,4 +1,4 @@
-import { BaseCreditI, CreditCreateI, CreditRepositoryI, PaginationWithFilters, UpdateOne, UpdatePreviousData } from "~/.server/domain/interface";
+import { BaseCreditI, CreditCreateI, CreditRepositoryI, PaginationWithFilters, UpdateAddPayment, UpdateOne, UpdatePreviousData } from "~/.server/domain/interface";
 
 export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
 
@@ -345,7 +345,6 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
     }
 
     async function findCreditToUpdate(id: number) {
-
         return await base.findOne({ id }, { 
             previousCreditId: true,
             totalAmount: true,
@@ -361,10 +360,39 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
                 }
             },
         });
-
-
     }
 
+    async function findCreditToPay(id: number) {
+        return await base.findOne({ id }, {
+            id: true,
+            totalAmount: true, 
+            currentDebt: true,
+            paymentAmount: true,
+            status: true,
+            client:  {
+                select: {
+                    fullname: true,
+                    isDeceased: true,
+                }
+            },
+            folder: {
+                select: {
+                    name: true,
+                }
+            },
+            group: {
+                select: {
+                    name: true
+                }
+            }
+        })
+    }
+
+    async function updateCreditByPayment(id: number, data: UpdateAddPayment) {
+        return await base.updateOne({id}, data);    
+    }
+
+    
     return {
         createOne,
         deleteOne,
@@ -376,9 +404,11 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
         findCredit,
         findCreditForDelete,
         findCredits,
+        findCreditToPay,
         findDetailsCredit,
         updatePrevious,
         updateOne,
+        updateCreditByPayment,
         verifyCredit,
         verifyClientCurp,
         verifyAvalCurp,
