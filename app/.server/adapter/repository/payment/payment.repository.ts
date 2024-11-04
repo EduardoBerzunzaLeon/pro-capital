@@ -22,18 +22,52 @@ export function PaymentRepository(base: BasePaymentDetailI) {
         })
     }
 
-    async function findByDate(creditId: number, paymentDate: Date) {
-        return await base.findOne({ creditId, paymentDate }, { id: true });
-    }
+    // async function findByDate(creditId: number, paymentDate: Date) {
+    //     return await base.findOne({ creditId, paymentDate }, { id: true });
+    // }
 
 
     async function createOne( data: CreatePayment) {
         return await base.createOne(data);
     }
 
+    async function findOne(id: number) {
+        return await base.findOne({ 
+            id,
+            credit: {
+                payment_detail: {
+                    some: { id: { not: id } }
+                }
+            } 
+        }, {
+            paymentAmount: true,
+            creditId: true,
+            paymentDate: true,
+            credit: {
+                select: {
+                    currentDebt: true,
+                    totalAmount: true,
+                    status: true,
+                    paymentAmount: true,
+                    creditAt: true,
+                    type: true,
+                    isRenovate: true,
+                    payment_detail: {
+                        select: {
+                            paymentDate: true,
+                            id: true,
+                            
+                        }
+                    }
+                }
+            }
+        }, true);
+    }
+
     return {
         findAll,
-        findByDate,
+        // findByDate,
+        findOne,
         createOne,
         base
     }

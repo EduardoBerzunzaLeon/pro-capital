@@ -23,7 +23,8 @@ export type BasePaymentDetailI = BaseRepositoryI<
 
 export interface PaymentRepositoryI {
     findAll: (paginationData: PaginationWithFilters ) => Promise<ResponseWithMetadata>,
-    findByDate: (creditId: number, paymentDate: Date) => Promise<Generic | undefined>
+    findOne: (id: number) => Promise<Generic | undefined>,
+    // findByDate: (creditId: number, paymentDate: Date) => Promise<Generic | undefined>
     createOne: (data: CreatePayment) => Promise<Generic | undefined>,
     base: BasePaymentDetailI
 }

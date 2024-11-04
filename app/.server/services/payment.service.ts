@@ -30,19 +30,14 @@ export const createOne =  async (form: FormData, creditId?: RequestId) => {
     if(currentDebt < paymentAmount) {
         throw ServerError.badRequest('El monto abonado no puede ser mayor que la deuda actual');
     }
-    
-    if(currentDebt !== paymentAmount && status === 'LIQUIDADO') {
-        throw ServerError.badRequest('No puede asignar el estatus liquidado a un credito con deuda');
+
+    if(paymentDate < creditDb.creditAt) {
+        throw ServerError.badRequest('La fecha de pago no puede ser menor a la fecha de alta del crédito');
     }
 
-    const paymentDb = await Repository.payment.findByDate(id, paymentDate);
-
-    if(paymentDb) {
-        throw ServerError.badRequest(`Ya existe un pago con la fecha de ${paymentDate}`);
+    if(creditDb.lastPayment && paymentDate <= creditDb.lastPayment) {
+        throw ServerError.badRequest(`Ya existe un pago con la fecha igual o inferior a ${paymentDate}`);
     }
-
-    //  ======= La fecha de pago no puede ser menor a la fecha de alta ============
-    //  ======= No puede crear un pago menor o igual al ultimo pago ==========
 
     const paymentCreated =  await Repository.payment.createOne({
         agentId,
@@ -60,10 +55,14 @@ export const createOne =  async (form: FormData, creditId?: RequestId) => {
 
     //  RECALCULAR SI TIENE DERECHO A RENOVACION
      await Service.credit.updateCreditByPayment(id, {
+        currentDebt: currentDebt - paymentAmount,
+        paymentDate,
         status: creditDb.status,
         totalAmount: creditDb.totalAmount,
-        currentDebt: currentDebt - paymentAmount,
         paymentAmount: creditDb.paymentAmount,
+        creditAt: creditDb.creditAt,
+        type: creditDb.type,
+        isRenovate: creditDb.isRenovate,
      });
 
      
@@ -72,6 +71,21 @@ export const createOne =  async (form: FormData, creditId?: RequestId) => {
 
 
 //  =============== No puede eliminar un pago ya que este renovado, pero liquidado si se puede ================
+
+export const deleteOne = async (idPayment: RequestId) => {
+
+    const { id } = validationZod({ id: idPayment }, idSchema);
+
+    // Traer los datos del pago, verificar que exista el pago
+    const paymentDb = await Repository.payment.findOne(id);
+
+    if(!paymentDb) {
+        throw ServerError.notFound('El pago no existe');
+    }
+    // Traer el credito con sus pagos, verificar que el credito no tenga una renovación asignada
+    // Recalcular Renovacion, lastpayment, nextPayemnt, status, currentDebt
+
+}
 
 export default {
     createOne

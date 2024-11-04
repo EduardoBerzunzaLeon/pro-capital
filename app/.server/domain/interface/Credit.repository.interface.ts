@@ -19,9 +19,10 @@ export type UpdateCreateI = {
     status: Status
     previousCreditId?: number,
     paymentForgivent: number,
+    isRenovate: boolean
 }
 
-export type CreditCreateI = Omit<UpdateCreateI, 'paymentForgivent' | 'previousCreditId' >
+export type CreditCreateI = Omit<UpdateCreateI, 'paymentForgivent' | 'previousCreditId' | 'isRenovate' >
 
 export interface UpdatePreviousData {
     status: Status,
@@ -43,7 +44,7 @@ export interface UpdateOne {
     type: Type,
 }
 
-export type UpdateAddPayment = Pick<UpdateOne, 'currentDebt' | 'status' | 'canRenovate'>
+export type UpdateAddPayment = Pick<UpdateOne, 'currentDebt' | 'status' | 'canRenovate'> & { lastPayment: Date, nextPayment: Date }
 
 export type BaseCreditI = BaseRepositoryI<
     Prisma.CreditDelegate, 

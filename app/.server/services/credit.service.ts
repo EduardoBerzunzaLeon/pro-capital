@@ -7,7 +7,7 @@ import { validationConform, validationZod } from "./validation.service";
 import { ServerError } from "../errors";
 import { creditCreateSchema } from "~/schemas";
 import dayjs from 'dayjs';
-import { PaymentI, RequestId } from "../interfaces";
+import { PaymentI, RequestId, Types } from "../interfaces";
 import { creditEditSchema, creditReadmissionSchema, exportLayoutSchema, renovateSchema } from "~/schemas/creditSchema";
 import { calculateAmount, convertDebt } from "~/application";
 import { CreditLayout, Layout } from "../domain/entity/layout.entity";
@@ -357,6 +357,7 @@ export const renovate = async (form: FormData, curp?: string, creditId?: Request
         nextPayment,
         currentDebt: totalAmount,
         status: 'RENOVADO',
+        isRenovate: true,
         previousCreditId: creditDb.id,
         paymentForgivent: credit?.paymentForgivent ? 1: 0
     }
@@ -508,23 +509,6 @@ const verifyCanRenovate = ({ totalAmount, currentDebt, paymentAmount }: CreditI)
     return paidAmount >= minAmount;
 }
 
-type UpdateByPayment = CreditI & { status: Status };
-
-export const updateCreditByPayment = async (id: number, data: UpdateByPayment) => {
-
-    const canRenovate = verifyCanRenovate(data);
-    const status = data.currentDebt === 0 ? 'LIQUIDADO' : data.status; 
-
-    const creditUpdated = await Repository.credit.updateCreditByPayment(id, {
-        currentDebt: data.currentDebt,
-        status,
-        canRenovate,
-    });
-
-    if(!creditUpdated) {
-        throw ServerError.internalServer('No se pudo actualizar el crédito');
-    }
-}
 
 const canHavePaymentForgivent = (creditAt: Date, paymentAmount: number, payments: PaymentI[]) => {
 
@@ -644,6 +628,123 @@ export const findCreditToPay =  async (idCredit: RequestId) => {
     return creditDb;
 }
 
+export const calculateWeeks = (creditAt: Date, paymentAmount: number, weeksQuantity: number) => {
+
+    return Array.from({ length: weeksQuantity }).map((_, index) => {
+        const multiplier = index + 1;
+        return {
+            date: dayjs(creditAt).add(7 * multiplier, 'day').toDate(),
+            amount: paymentAmount * multiplier
+        }
+    });
+
+}
+
+
+export const calculateWeeksByType  = (type: Types) => {
+
+    const reference: Record<Types, number> = {
+        'NORMAL':  15,
+        'EMPLEADO': 12,
+        'LIDER': 10
+    }
+
+    return reference[type] ?? 15;
+}
+
+type UpdateByPayment = CreditI & { 
+    status: Status, 
+    creditAt: Date, 
+    type: Types,
+    paymentDate: Date,
+    isRenovate: boolean
+};
+
+interface FindStatusI {
+    isOverdue: boolean, 
+    isBeforeFirst: boolean, 
+    currentDebt: number,
+    isRenovate: boolean
+}
+
+const findStatus = ({ isOverdue, isBeforeFirst, currentDebt, isRenovate }: FindStatusI ) => {
+    if(isBeforeFirst)  return isRenovate ? 'RENOVADO' : 'ACTIVO';
+    if(isOverdue)  return 'VENCIDO';
+    if(currentDebt === 0) return 'LIQUIDADO';
+    return 'ACTIVO';
+}
+
+export const updateCreditByPayment = async (id: number, data: UpdateByPayment) => {
+
+    const canRenovate = verifyCanRenovate(data);
+    const weekQuantity = calculateWeeksByType(data.type);
+
+    const weeks = calculateWeeks(data.creditAt, data.paymentAmount, weekQuantity);
+    const { amount, isBeforeFirst, position } = findCurrentWeek(weeks, data.paymentDate);
+    const isOverdue = isOverdueCredit(amount, data.currentDebt, data.totalAmount);
+
+    const status = data.status === 'FALLECIDO' 
+        ? data.status
+        : findStatus({ isOverdue, isBeforeFirst, currentDebt: data.currentDebt, isRenovate: data.isRenovate });
+
+    const nextPayment = data.paymentDate > weeks[weeks.length - 1].date 
+        ? weeks[weeks.length - 1].date
+        : weeks[position].date;
+
+    const creditUpdated = await Repository.credit.updateCreditByPayment(id, {
+        currentDebt: data.currentDebt,
+        status,
+        canRenovate,
+        lastPayment: data.paymentDate,
+        nextPayment
+    });
+
+    if(!creditUpdated) {
+        throw ServerError.internalServer('No se pudo actualizar el crédito');
+    }
+
+    return creditUpdated;
+}
+
+
+interface WeekPayment {
+    date: Date,
+    amount: number
+}
+
+export const findCurrentWeek = (weeks: WeekPayment[], currentDate: Date) => {
+    let week, amount = 0, position = 0, isBeforeFirst = false;
+
+    for (let index = 0; index < weeks.length; index++) {
+        
+        week = weeks[index].date;
+        amount = weeks[index].amount;   
+        position = index;     
+
+        if(index + 1 === weeks.length) {
+            break;
+        }
+
+        if(currentDate >= weeks[index].date && currentDate < weeks[index + 1].date) {
+            break;
+        }
+    
+        if(index === 0 && currentDate < weeks[index].date) {
+            isBeforeFirst = true;
+            break;
+        }
+        
+    }
+
+    return  { week, amount, isBeforeFirst, position };
+}
+
+export const isOverdueCredit = (amount: number, currentDebt: number, totalLoanAmount: number) => {
+    const paymentAmount =  totalLoanAmount - currentDebt;
+    return (amount > paymentAmount);
+}
+
+
 export default{ 
     additional,
     create,
@@ -661,4 +762,7 @@ export default{
     deleteOne,
     verifyAvalCurp,
     verifyClientCurp,
+    calculateWeeks,
+    findCurrentWeek,
+    isOverdueCredit
 }

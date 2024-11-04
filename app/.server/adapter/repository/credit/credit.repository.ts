@@ -369,6 +369,11 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
             currentDebt: true,
             paymentAmount: true,
             status: true,
+            creditAt: true,
+            isRenovate: true,
+            lastPayment: true,
+            nextPayment: true,
+            type: true,
             client:  {
                 select: {
                     fullname: true,
@@ -392,6 +397,14 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
         return await base.updateOne({id}, data);    
     }
 
+
+    async function findByPreviousCreditId(id: number)  {
+        return await base.findOne({ previousCreditId: id }, {
+            id: true, 
+            status: true,
+            isRenovate: true,
+        })
+    }
     
     return {
         createOne,

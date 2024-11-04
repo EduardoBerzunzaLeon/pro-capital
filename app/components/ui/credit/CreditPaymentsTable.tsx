@@ -33,7 +33,6 @@ const statusRef: Record<PaymentStatus, Color> = {
     PAGO_INCOMPLETO: 'warning',
     NO_PAGO: 'danger',
     ADELANTO: 'primary',
-    LIQUIDO: 'success',
     GARANTIA: 'secondary',
 }
 
