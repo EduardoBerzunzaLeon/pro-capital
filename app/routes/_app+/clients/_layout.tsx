@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
-import { Select, SelectItem } from "@nextui-org/react";
-import { Outlet, useLoaderData} from "@remix-run/react";
+import { Button, Select, SelectItem } from "@nextui-org/react";
+import { Outlet, useLoaderData, useNavigate} from "@remix-run/react";
 
 import { clientLoader } from "~/application/client/client.loader";
 import { Credit } from "~/.server/domain/entity";
@@ -82,6 +82,9 @@ export default function ClientsPage() {
 
   const loader = useLoaderData<HandlerSuccess<Loader>>();
   const [visibleColumns, setVisibleColumns] = useState<Selection>(new Set(INITIAL_VISIBLE_COLUMNS)); 
+  const navigate = useNavigate();
+
+  console.log({ loader });
 
   const { 
     defaultStatus: defaultCanRenovate, 
@@ -120,8 +123,8 @@ export default function ClientsPage() {
 
   const renderCell = useCallback((credit: Credit, columnKey: Key) => {
     
-    if(columnKey === 'canRenovate') {
-      return <span className='capitalize'>{credit.canRenovate}</span>
+    if(columnKey === 'canRenovate' && credit.canRenovate) {
+      return <Button variant='ghost' color='primary' onPress={() => { navigate(`/clients/${credit.client.curp}/renovate/${credit.id}`) }}>Renovar</Button>
     }
 
     if(columnKey === 'actions') {

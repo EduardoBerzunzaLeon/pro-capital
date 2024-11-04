@@ -42,6 +42,8 @@ export const CreditPaymentsTable = ({ payments }: Props) => {
 
     const { render } = useRenderCell({ isMoney: true }); 
 
+    console.log(payments);
+
     const renderCell = useCallback((payment: PaymentI, columnKey: Key) => {
              
     if(columnKey === 'status') {
@@ -50,7 +52,7 @@ export const CreditPaymentsTable = ({ payments }: Props) => {
     }
 
     if(columnKey === 'paymentDate') {
-        return <span>{dayjs(payment.paymentDate).format('YYYY-MM-DD')}</span>
+        return <span>{dayjs(payment.paymentDate).add(1,'day').format('YYYY-MM-DD')}</span>
     }
 
     return <span className='capitalize'>{render(payment, columnKey)}</span>

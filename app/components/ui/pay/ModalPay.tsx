@@ -19,7 +19,7 @@ interface Props {
 export const ModalPay = ({ isOpen, onOpenChange }: Props) => {
 
     const fetcherGet = useFetcher<typeof loader>({ key:  'getSinglePayment' });
-    const fetcher = useFetcher({ key:  'addPayment' });
+    const fetcher = useFetcher();
     const isVisible = fetcherGet.state === 'idle' && fetcherGet.data?.serverData?.id;
     const isCreating = fetcher.state !== 'idle' || fetcherGet.state !== 'idle';
 

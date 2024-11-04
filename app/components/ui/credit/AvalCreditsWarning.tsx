@@ -14,6 +14,8 @@ interface Props {
 
 export const AvalCreditsWarning = ({ credits }: Props) => {
 
+    if(credits.length === 0) return (<></>);
+
   return (
     <Card className='border-warning-100 border-2'>
         <CardHeader>

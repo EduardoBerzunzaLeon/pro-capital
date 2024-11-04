@@ -86,9 +86,9 @@ export const validationToRenovate = async (curp?: string, creditId?: RequestId) 
         throw ServerError.badRequest('No se encontro el crédito solicitado, favor de verificarlo');
     }
     
-    if(creditDb.status === 'LIQUIDADO') {
-        throw ServerError.badRequest('El crédito ya ha sido liquidado');
-    }
+    // if(creditDb.status === 'LIQUIDADO') {
+    //     throw ServerError.badRequest('El crédito ya ha sido liquidado');
+    // }
     
     if(creditDb.status === 'FALLECIDO') {
         throw ServerError.badRequest('El cliente ya fallecio.');
@@ -198,14 +198,14 @@ export const createCredit = async (credit: CreditCreateI) => {
     throw ServerError.internalServer('No se pudo crear el credito, favor de intentarlo de nuevo.');
 }
 
-export const verifyRenovateDates = async (payments: PaymentI[], creditAt: Date) => {
+export const verifyRenovateDates = (payments: PaymentI[], creditAt: Date) => {
     
     const dates = payments.map(({ paymentDate }) => paymentDate.getTime());
     const lastDate = Math.max(...dates);
     const newCreditAt = creditAt.getTime();
 
-    if(newCreditAt <= lastDate) {
-        throw ServerError.badRequest('El nuevo credito no puedo ser menor o igual al ultimo pago');
+    if(newCreditAt < lastDate) {
+        throw ServerError.badRequest('El nuevo credito no puedo ser menor  al ultimo pago');
     }
     
 }
@@ -513,11 +513,10 @@ type UpdateByPayment = CreditI & { status: Status };
 export const updateCreditByPayment = async (id: number, data: UpdateByPayment) => {
 
     const canRenovate = verifyCanRenovate(data);
-    const currentDebt = data.currentDebt - data.paymentAmount;
-    const status = currentDebt === 0 ? 'LIQUIDADO' : data.status; 
+    const status = data.currentDebt === 0 ? 'LIQUIDADO' : data.status; 
 
     const creditUpdated = await Repository.credit.updateCreditByPayment(id, {
-        currentDebt,
+        currentDebt: data.currentDebt,
         status,
         canRenovate,
     });

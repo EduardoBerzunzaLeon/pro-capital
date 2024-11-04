@@ -1,4 +1,5 @@
 import { ButtonGroup, Tooltip, Button } from "@nextui-org/react";
+import { useNavigate } from "@remix-run/react";
 import { FaEye, FaTrashAlt } from "react-icons/fa";
 import { FaMoneyBill1Wave } from "react-icons/fa6";
 import { useFetcherAction } from "~/application";
@@ -17,9 +18,15 @@ export const PayAction = ({ idCredit, onOpen }: Props) => {
         id: idCredit
      });
 
+     const navigate = useNavigate();
+
     const handleUpdateWithModal = () => {
         onOpen();
         handleUpdate()
+    }
+
+    const handleView = () => {
+        navigate(`/clients/${idCredit}`);
     }
 
   return (
@@ -39,6 +46,7 @@ export const PayAction = ({ idCredit, onOpen }: Props) => {
                 color='success' 
                 isIconOnly
                 variant='ghost'
+                onPress={handleView}
                 ><FaEye />
             </Button>
         </Tooltip>

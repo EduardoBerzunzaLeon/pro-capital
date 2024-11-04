@@ -3,7 +3,7 @@ import { LoaderFunction } from "@remix-run/node";
 import { Form, useLoaderData, useNavigate, useParams, useSearchParams } from "@remix-run/react";
 import { useState, useCallback, useMemo } from "react";
 import { Credit, Status } from "~/.server/domain/entity/credit.entity";
-import { Color , Key, SortDirection, Selection} from "~/.server/interfaces";
+import { Color , Key, Selection} from "~/.server/interfaces";
 import { handlerSuccess } from "~/.server/reponses";
 import { Service } from "~/.server/services";
 import { useParamsPaginator, useRenderCell } from "~/application";
@@ -68,7 +68,6 @@ const columns = [
   { key: 'lastPayment', label: 'ULTIMO PAGO', sortable: true},
   { key: 'currentDebt', label: 'DEUDA ACTUAL', sortable: true},
   { key: 'status', label: 'ESTATUS', sortable: true},
-  { key: 'actions', label: 'ACCIONES'},
 ]
 
 const INITIAL_VISIBLE_COLUMNS = [
@@ -117,10 +116,6 @@ export default function ViewCreditsPage () {
         return <span>{credit.aval.curp?.toUpperCase()}</span>
       }
   
-      if(columnKey === 'actions') {
-        return <span className='capitalize'>ACCIONES</span>
-      }
-      
       if(columnKey === 'status') {
         const color = statusRef[credit.status] ?? 'secondary';
         return ( <Chip color={color} variant="bordered">{credit.status}</Chip>)

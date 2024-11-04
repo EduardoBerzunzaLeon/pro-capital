@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { dateSchema, decimalBuilder, integerBuilder, stringSchema } from "./genericSchema";
 
-export const paymentStatus: string[] = ['PAGO', 'PAGO_INCOMPLETO', 'NO_PAGO', 'ADELANTO', 'LIQUIDO', 'GARANTIA'];
+export const paymentStatus: string[] = ['PAGO', 'PAGO_INCOMPLETO', 'NO_PAGO', 'ADELANTO', 'LIQUIDADO', 'GARANTIA'];
 
 const folioSchema = z.coerce.number({
     required_error: `Folio es requerido`,

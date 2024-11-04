@@ -49,7 +49,7 @@ enum PaymentStatus {
   PAGO_INCOMPLETO
   NO_PAGO
   ADELANTO
-  LIQUIDO
+  LIQUIDADO
   GARANTIA
 }
 

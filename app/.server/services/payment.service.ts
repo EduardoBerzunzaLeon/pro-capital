@@ -4,8 +4,6 @@ import { RequestId } from "../interfaces";
 import { ServerError } from "../errors";
 import { Repository } from "../adapter";
 import { Service } from ".";
-import { CreatePayment } from '~/.server/domain/interface';
-import { CreditI } from "../domain/entity";
 
 export const createOne =  async (form: FormData, creditId?: RequestId) => {
     const { id } = validationZod({ id: creditId }, idSchema);
@@ -18,25 +16,33 @@ export const createOne =  async (form: FormData, creditId?: RequestId) => {
         notes
     } = validationConform(form, paymentServerSchema);
 
-    if(status === 'GARANTÍA' && notes === '') {
+    if(status === 'GARANTIA' && (notes === '' || !notes )) {
         throw ServerError.badRequest('El campo notas tiene que incluir la garantía')
     }
 
-    const creditDb = await Service.credit.findCreditToPay(id);
+    if(form.get('agent[value]') !== form.get('agent')) {
+        throw ServerError.badRequest('El agente es invalido, favor de seleccionar una opción del autocomplete');
+    }
 
-    if(creditDb.currentDebt < paymentAmount) {
+    const creditDb = await Service.credit.findCreditToPay(id);
+    const currentDebt = Number(creditDb.currentDebt);
+
+    if(currentDebt < paymentAmount) {
         throw ServerError.badRequest('El monto abonado no puede ser mayor que la deuda actual');
     }
     
-    if(creditDb.currentDebt !== paymentAmount && status === 'LIQUIDADO') {
+    if(currentDebt !== paymentAmount && status === 'LIQUIDADO') {
         throw ServerError.badRequest('No puede asignar el estatus liquidado a un credito con deuda');
     }
 
     const paymentDb = await Repository.payment.findByDate(id, paymentDate);
 
-    if(paymentDb && paymentDb.length > 0) {
+    if(paymentDb) {
         throw ServerError.badRequest(`Ya existe un pago con la fecha de ${paymentDate}`);
     }
+
+    //  ======= La fecha de pago no puede ser menor a la fecha de alta ============
+    //  ======= No puede crear un pago menor o igual al ultimo pago ==========
 
     const paymentCreated =  await Repository.payment.createOne({
         agentId,
@@ -52,31 +58,20 @@ export const createOne =  async (form: FormData, creditId?: RequestId) => {
         throw ServerError.badRequest('No se pudo crear el pago');
     }
 
-    // RECALCULAR SI TIENE DERECHO A RENOVACION
+    //  RECALCULAR SI TIENE DERECHO A RENOVACION
      await Service.credit.updateCreditByPayment(id, {
         status: creditDb.status,
         totalAmount: creditDb.totalAmount,
-        currentDebt: creditDb.currentDebt,
+        currentDebt: currentDebt - paymentAmount,
         paymentAmount: creditDb.paymentAmount,
      });
 
      
-
-
-    // id: 2,
-    // data: {
-    //   agentId: 1,
-    //   paymentAmount: 200,
-    //   paymentDate: 2024-11-01T00:00:00.000Z,
-    //   folio: 0,
-    //   status: 'PAGO',
-    //   notes: undefined
-    // }
-
-
-
-    return 'holiwis';
+    return paymentCreated;
 }
+
+
+//  =============== No puede eliminar un pago ya que este renovado, pero liquidado si se puede ================
 
 export default {
     createOne
