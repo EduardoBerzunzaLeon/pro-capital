@@ -44,7 +44,7 @@ export interface UpdateOne {
     type: Type,
 }
 
-export type UpdateAddPayment = Pick<UpdateOne, 'currentDebt' | 'status' | 'canRenovate'> & { lastPayment: Date, nextPayment: Date }
+export type UpdateAddPayment = Pick<UpdateOne, 'currentDebt' | 'status' | 'canRenovate'> & { nextPayment: Date, lastPayment?: Date }
 
 export type BaseCreditI = BaseRepositoryI<
     Prisma.CreditDelegate, 
@@ -74,6 +74,8 @@ export interface CreditRepositoryI{
     findCreditToUpdate: (id: number) => Promise<Generic | undefined>,
     deleteOne: (id: number) => Promise<Generic | undefined>
     verifyClientCurp: (idClient: number, curp: string) => Promise<Generic[] | undefined>,
-    verifyAvalCurp: (idClient: number, curp: string) => Promise<Generic[] | undefined>
+    verifyAvalCurp: (idClient: number, curp: string) => Promise<Generic[] | undefined>,
+    findByPreviousCreditId: (id: number) => Promise<Generic | undefined>,
+    findInProcessCredits: () => Promise<Generic[] | undefined>,
     base: BaseCreditI
 }

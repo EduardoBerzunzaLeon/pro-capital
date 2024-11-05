@@ -405,6 +405,38 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
             isRenovate: true,
         })
     }
+
+    async function findInProcessCredits() {
+        return await base.findMany({
+            searchParams: {
+                status: {
+                    notIn: ['FALLECIDO', 'LIQUIDADO', 'VENCIDO']
+                }
+            },
+            select: {
+                id: true,
+                totalAmount: true,
+                currentDebt: true,
+                paymentAmount: true,
+                status: true,
+                creditAt: true,
+                isRenovate: true,
+                lastPayment: true,
+                nextPayment: true,
+                type: true,
+                payment_detail: {
+                    select: {
+                        paymentDate: true,
+                        id: true,
+                    },
+                    orderBy: {
+                        paymentDate: 'desc'
+                    },
+                    take: 1
+                }
+            }
+        })
+    }
     
     return {
         createOne,
@@ -426,6 +458,8 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
         verifyClientCurp,
         verifyAvalCurp,
         verifyFolderInCredit,
+        findByPreviousCreditId,
+        findInProcessCredits,
         base
     }
 

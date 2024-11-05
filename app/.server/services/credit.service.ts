@@ -656,7 +656,7 @@ type UpdateByPayment = CreditI & {
     status: Status, 
     creditAt: Date, 
     type: Types,
-    paymentDate: Date,
+    paymentDate?: Date,
     isRenovate: boolean
 };
 
@@ -674,22 +674,33 @@ const findStatus = ({ isOverdue, isBeforeFirst, currentDebt, isRenovate }: FindS
     return 'ACTIVO';
 }
 
+const findNextPayment = (weeks: WeekPayment[], position: number, paymentDate?: Date) => {
+
+    if(!paymentDate) {
+       return weeks[0].date;
+    }
+
+    if( paymentDate > weeks[weeks.length - 1].date ) {
+        return weeks[weeks.length - 1].date;
+    }
+
+    return weeks[position].date;
+}
+
 export const updateCreditByPayment = async (id: number, data: UpdateByPayment) => {
 
     const canRenovate = verifyCanRenovate(data);
     const weekQuantity = calculateWeeksByType(data.type);
 
     const weeks = calculateWeeks(data.creditAt, data.paymentAmount, weekQuantity);
-    const { amount, isBeforeFirst, position } = findCurrentWeek(weeks, data.paymentDate);
+    const { amount, isBeforeFirst, position } = findCurrentWeek(weeks, data?.paymentDate);
     const isOverdue = isOverdueCredit(amount, data.currentDebt, data.totalAmount);
 
     const status = data.status === 'FALLECIDO' 
         ? data.status
         : findStatus({ isOverdue, isBeforeFirst, currentDebt: data.currentDebt, isRenovate: data.isRenovate });
 
-    const nextPayment = data.paymentDate > weeks[weeks.length - 1].date 
-        ? weeks[weeks.length - 1].date
-        : weeks[position].date;
+    const nextPayment = findNextPayment(weeks, position, data.paymentDate);
 
     const creditUpdated = await Repository.credit.updateCreditByPayment(id, {
         currentDebt: data.currentDebt,
@@ -712,7 +723,7 @@ interface WeekPayment {
     amount: number
 }
 
-export const findCurrentWeek = (weeks: WeekPayment[], currentDate: Date) => {
+export const findCurrentWeek = (weeks: WeekPayment[], currentDate?: Date) => {
     let week, amount = 0, position = 0, isBeforeFirst = false;
 
     for (let index = 0; index < weeks.length; index++) {
@@ -720,6 +731,11 @@ export const findCurrentWeek = (weeks: WeekPayment[], currentDate: Date) => {
         week = weeks[index].date;
         amount = weeks[index].amount;   
         position = index;     
+
+        if(!currentDate) {
+            isBeforeFirst = true;
+            break;
+        }
 
         if(index + 1 === weeks.length) {
             break;
@@ -745,24 +761,56 @@ export const isOverdueCredit = (amount: number, currentDebt: number, totalLoanAm
 }
 
 
+export const findByPreviousCreditId = async (id: number) => {
+    return await Repository.credit.findByPreviousCreditId(id);
+}
+
+export const calculateOverdueCredits = async () => {
+
+    const credits = await Repository.credit.findInProcessCredits();
+
+    if(!credits || credits.length === 0) {
+        return
+    }
+
+    const newPromises = credits.map(credit => {
+
+        return Service.credit.updateCreditByPayment(credit.id, {
+            currentDebt: credit.currentDebt,
+            paymentDate: credit.lastPayment,
+            status: credit.status,
+            totalAmount: credit.totalAmount,
+            paymentAmount: credit.paymentAmount,
+            creditAt: credit.creditAt,
+            type: credit.type,
+            isRenovate: credit.isRenovate,
+        })
+
+    })
+
+    await Promise.all(newPromises);
+}
+
+
 export default{ 
     additional,
+    calculateWeeks,
     create,
+    deleteOne,
     exportLayout,
     findAll,
-    findDetailsCredit,
+    findByPreviousCreditId,
     findCreditToPay,
+    findCurrentWeek,
+    findDetailsCredit,
+    isOverdueCredit,
     renovate,
-    updateOne,
     updateCreditByPayment,
+    updateOne,
     validationToAdditional,
     validationToCreate,
     validationToRenovate,
-    verifyToCreate,
-    deleteOne,
     verifyAvalCurp,
     verifyClientCurp,
-    calculateWeeks,
-    findCurrentWeek,
-    isOverdueCredit
+    verifyToCreate,
 }

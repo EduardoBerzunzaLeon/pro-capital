@@ -1,4 +1,4 @@
-import { Card, CardHeader, Divider, CardBody, CardFooter, Dropdown, Button, DropdownItem, DropdownMenu, DropdownTrigger, ButtonGroup, Input } from "@nextui-org/react";
+import { Card, CardHeader, Divider, CardBody, CardFooter, Dropdown, Button, DropdownItem, DropdownMenu, DropdownTrigger, ButtonGroup } from "@nextui-org/react";
 import { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { FaEdit, FaPlus } from "react-icons/fa";

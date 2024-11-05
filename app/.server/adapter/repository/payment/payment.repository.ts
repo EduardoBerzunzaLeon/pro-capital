@@ -1,4 +1,4 @@
-import { BasePaymentDetailI, CreatePayment, PaginationWithFilters } from "~/.server/domain/interface";
+import { BasePaymentDetailI, CreatePayment, PaginationWithFilters, UpdatePayment } from "~/.server/domain/interface";
 
 
 export function PaymentRepository(base: BasePaymentDetailI) {
@@ -22,13 +22,20 @@ export function PaymentRepository(base: BasePaymentDetailI) {
         })
     }
 
-    // async function findByDate(creditId: number, paymentDate: Date) {
-    //     return await base.findOne({ creditId, paymentDate }, { id: true });
-    // }
-
+    async function findByDate(creditId: number, paymentDate: Date) {
+        return await base.findOne({ creditId, paymentDate }, { id: true });
+    }
 
     async function createOne( data: CreatePayment) {
         return await base.createOne(data);
+    }
+
+    async function updateOne(id: number, data: UpdatePayment) {
+        return await base.updateOne({id}, data);
+    }
+
+    async function deleteOne(id: number) {
+        return await base.deleteOne({id});
     }
 
     async function findOne(id: number) {
@@ -36,19 +43,23 @@ export function PaymentRepository(base: BasePaymentDetailI) {
             id,
             credit: {
                 payment_detail: {
-                    some: { id: { not: id } }
+                    some: { 
+                        id: { not: id },
+
+                    }
                 }
             } 
         }, {
             paymentAmount: true,
-            creditId: true,
             paymentDate: true,
             credit: {
                 select: {
+                    id: true,
                     currentDebt: true,
                     totalAmount: true,
                     status: true,
                     paymentAmount: true,
+                    lastPayment: true,
                     creditAt: true,
                     type: true,
                     isRenovate: true,
@@ -56,8 +67,11 @@ export function PaymentRepository(base: BasePaymentDetailI) {
                         select: {
                             paymentDate: true,
                             id: true,
-                            
-                        }
+                        },
+                        orderBy: {
+                            paymentDate: 'desc'
+                        },
+                        take: 1
                     }
                 }
             }
@@ -66,9 +80,11 @@ export function PaymentRepository(base: BasePaymentDetailI) {
 
     return {
         findAll,
-        // findByDate,
+        findByDate,
+        deleteOne,
         findOne,
         createOne,
+        updateOne,
         base
     }
 
