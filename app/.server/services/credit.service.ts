@@ -12,6 +12,7 @@ import { creditEditSchema, creditReadmissionSchema, exportLayoutSchema, renovate
 import { calculateAmount, convertDebt } from "~/application";
 import { CreditLayout, Layout } from "../domain/entity/layout.entity";
 import { Status } from "@prisma/client";
+import { getLocalTimeZone, today } from "@internationalized/date";
 
 export const findAll = async (props: PaginationWithFilters) => {
     const { data, metadata } = await Repository.credit.findAll({...props});
@@ -691,15 +692,17 @@ export const updateCreditByPayment = async (id: number, data: UpdateByPayment) =
 
     const canRenovate = verifyCanRenovate(data);
     const weekQuantity = calculateWeeksByType(data.type);
+    const now = today(getLocalTimeZone()).toDate("America/Santiago");
 
     const weeks = calculateWeeks(data.creditAt, data.paymentAmount, weekQuantity);
-    const { amount, isBeforeFirst, position } = findCurrentWeek(weeks, data?.paymentDate);
-    const isOverdue = isOverdueCredit(amount, data.currentDebt, data.totalAmount);
+    const { isBeforeFirst, position } = findCurrentWeek(weeks, data?.paymentDate);
+    const { amount: currentAmount } = findCurrentWeek(weeks, now);
+    const isOverdue = isOverdueCredit(currentAmount, data.currentDebt, data.totalAmount);
 
     const status = data.status === 'FALLECIDO' 
         ? data.status
         : findStatus({ isOverdue, isBeforeFirst, currentDebt: data.currentDebt, isRenovate: data.isRenovate });
-
+        
     const nextPayment = findNextPayment(weeks, position, data.paymentDate);
 
     const creditUpdated = await Repository.credit.updateCreditByPayment(id, {
@@ -742,6 +745,7 @@ export const findCurrentWeek = (weeks: WeekPayment[], currentDate?: Date) => {
         }
 
         if(currentDate >= weeks[index].date && currentDate < weeks[index + 1].date) {
+            position += 1;
             break;
         }
     

@@ -12,10 +12,11 @@ interface Props {
 
 export const PayAction = ({ idCredit, onOpen }: Props) => {
 
-    const { handleUpdate } = useFetcherAction({ 
+    const { handleUpdate, handleDelete, isDeleting } = useFetcherAction({ 
         key: 'getSinglePayment', 
         route:'pay', 
-        id: idCredit
+        id: idCredit,
+        deleteAction: 'deleteFast'
      });
 
      const navigate = useNavigate();
@@ -37,6 +38,7 @@ export const PayAction = ({ idCredit, onOpen }: Props) => {
                 color='success' 
                 variant='ghost'
                 startContent={<FaMoneyBill1Wave />}
+                isDisabled={isDeleting}
                 onPress={handleUpdateWithModal}
             >Pagar</Button>
         </Tooltip>
@@ -47,16 +49,22 @@ export const PayAction = ({ idCredit, onOpen }: Props) => {
                 isIconOnly
                 variant='ghost'
                 onPress={handleView}
+                isDisabled={isDeleting}
                 ><FaEye />
             </Button>
         </Tooltip>
-        <Tooltip showArrow={true} content="Eliminar Pago">
+        <Tooltip showArrow={true} content="Eliminar el pago de hoy">
             <Button 
                 size='sm' 
                 color='danger' 
                 variant='light'
                 isIconOnly
-            ><FaTrashAlt/></Button>
+                isDisabled={isDeleting}
+                isLoading={isDeleting}
+                onPress={handleDelete}
+            >
+                <FaTrashAlt/>
+            </Button>
         </Tooltip>
     </ButtonGroup>
   )

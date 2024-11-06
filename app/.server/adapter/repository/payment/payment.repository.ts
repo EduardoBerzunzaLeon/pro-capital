@@ -38,18 +38,26 @@ export function PaymentRepository(base: BasePaymentDetailI) {
         return await base.deleteOne({id});
     }
 
-    async function findOne(id: number) {
-        return await base.findOne({ 
-            id,
-            credit: {
-                payment_detail: {
-                    some: { 
-                        id: { not: id },
+    async function findLastPayment(creditId: number, paymentId: number) {
 
-                    }
-                }
-            } 
-        }, {
+        return await base.findMany({
+            searchParams: { creditId, id: { not: paymentId } },
+            select: {
+                id: true,
+                paymentDate: true,
+            },
+            orderBy: {
+                paymentDate: 'desc'
+            },
+            take: 1
+        });
+
+    }
+
+    async function findOne(id: number) {
+        return await base.findOne({ id }, 
+        {
+            id: true,
             paymentAmount: true,
             paymentDate: true,
             credit: {
@@ -63,16 +71,6 @@ export function PaymentRepository(base: BasePaymentDetailI) {
                     creditAt: true,
                     type: true,
                     isRenovate: true,
-                    payment_detail: {
-                        select: {
-                            paymentDate: true,
-                            id: true,
-                        },
-                        orderBy: {
-                            paymentDate: 'desc'
-                        },
-                        take: 1
-                    }
                 }
             }
         }, true);
@@ -85,6 +83,7 @@ export function PaymentRepository(base: BasePaymentDetailI) {
         findOne,
         createOne,
         updateOne,
+        findLastPayment,
         base
     }
 

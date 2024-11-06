@@ -4,10 +4,11 @@ interface Props {
     key: string,
     route: string,
     id: number,
+    deleteAction?: string
 }
 
 
-export const useFetcherAction = ({ key, route, id }: Props) => {
+export const useFetcherAction = ({ key, route, id, deleteAction }: Props) => {
 
     const fetcherDelete = useFetcher();
     const fetcherGet = useFetcher({ key });
@@ -16,7 +17,7 @@ export const useFetcherAction = ({ key, route, id }: Props) => {
     const handleDelete = () => {
         fetcherDelete.submit({
             id, 
-            _action: 'delete'
+            _action: deleteAction || 'delete'
         }, {
           method: 'POST', 
           action:`/${route}/${id}`,

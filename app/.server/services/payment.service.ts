@@ -3,8 +3,8 @@ import { validationConform, validationZod } from "./validation.service";
 import { RequestId } from "../interfaces";
 import { ServerError } from "../errors";
 import { Repository } from "../adapter";
-import dayjs from 'dayjs';
 import { Service } from ".";
+import { getLocalTimeZone, today } from "@internationalized/date";
 
 const validateAgent = (form: FormData ) => {
     if(form.get('agent[value]') !== form.get('agent')) {
@@ -93,19 +93,29 @@ const findOne = async (idPayment: RequestId ) => {
     const paymentDb = await Repository.payment.findOne(id);
 
     if(!paymentDb) {
-        throw ServerError.notFound('El pago no existe');
+        throw ServerError.notFound('No existe un pago del dia de hoy');
     }
 
     return paymentDb;
 }
 
-export const deleteOne = async (idPayment: RequestId, isFastDelete?: boolean) => {
+export const deleteFastOne = async (idCredit: RequestId) => {
+    const { id } = validationZod({ id: idCredit }, idSchema);
+    const now = today(getLocalTimeZone()).toDate("America/Santiago");
+    const paymentDb = await Repository.payment.findByDate(id, now);
 
-    const paymentDb = await findOne(idPayment);
-
-    if(isFastDelete && paymentDb?.paymentDate !== dayjs().date()) {
+    if(!paymentDb) {
         throw ServerError.badRequest('No se puede eliminar un pago, que no se haya agregado hoy');
     }
+
+    console.log(paymentDb.id);
+
+    await deleteOne(paymentDb.id);
+}
+
+export const deleteOne = async (idPayment: RequestId) => {
+
+    const paymentDb = await findOne(idPayment);
     
     const { credit } = paymentDb;
 
@@ -121,22 +131,25 @@ export const deleteOne = async (idPayment: RequestId, isFastDelete?: boolean) =>
         throw ServerError.internalServer('No se pudo eliminar el pago');
     }
 
-    const paymentDate = (paymentDb.credit.payment_detail.length === 0) 
-        ?  undefined
-        : paymentDb.credit.payment_detail[0].paymentDate;
+    const lastPayment = await findLastPayment(credit.id, paymentDb.id);
 
     await Service.credit.updateCreditByPayment(credit.id, {
-        currentDebt: credit.currentDebt + paymentDb.paymentAmount,
-        paymentDate,
+        paymentDate: lastPayment,
         status: credit.status,
-        totalAmount: credit.totalAmount,
-        paymentAmount: credit.paymentAmount,
+        currentDebt: Number(credit.currentDebt) + Number(paymentDb.paymentAmount),
+        totalAmount: Number(credit.totalAmount),
+        paymentAmount: Number(credit.paymentAmount),
         creditAt: credit.creditAt,
         type: credit.type,
         isRenovate: credit.isRenovate,
      });
-
 }
+
+    const findLastPayment = async (creditId: number, paymentId: number) => {
+     
+        const paymentDb = await Repository.payment.findLastPayment(creditId, paymentId);
+        return (paymentDb && paymentDb.length > 0) ? paymentDb[0].paymentDate : undefined;
+    }
 
 
 export const updateOne = async (form: FormData, idPayment: RequestId) => {
@@ -192,11 +205,11 @@ export const updateOne = async (form: FormData, idPayment: RequestId) => {
 
 
     await Service.credit.updateCreditByPayment(credit.id, {
-        currentDebt: currentDebt - paymentAmount,
+        currentDebt: currentDebt - Number(paymentAmount),
         paymentDate: lastPayment,
         status: credit.status,
-        totalAmount: credit.totalAmount,
-        paymentAmount: credit.paymentAmount,
+        totalAmount: Number(credit.totalAmount),
+        paymentAmount: Number(credit.paymentAmount),
         creditAt: credit.creditAt,
         type: credit.type,
         isRenovate: credit.isRenovate,
@@ -207,5 +220,6 @@ export const updateOne = async (form: FormData, idPayment: RequestId) => {
 export default {
     createOne,
     deleteOne,
+    deleteFastOne,
     updateOne,
 }
