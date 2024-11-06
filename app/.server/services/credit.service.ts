@@ -9,10 +9,9 @@ import { creditCreateSchema } from "~/schemas";
 import dayjs from 'dayjs';
 import { PaymentI, RequestId, Types } from "../interfaces";
 import { creditEditSchema, creditReadmissionSchema, exportLayoutSchema, renovateSchema } from "~/schemas/creditSchema";
-import { calculateAmount, convertDebt } from "~/application";
+import { calculateAmount, convertDebt, findNow } from "~/application";
 import { CreditLayout, Layout } from "../domain/entity/layout.entity";
 import { Status } from "@prisma/client";
-import { getLocalTimeZone, today } from "@internationalized/date";
 
 export const findAll = async (props: PaginationWithFilters) => {
     const { data, metadata } = await Repository.credit.findAll({...props});
@@ -28,8 +27,6 @@ export const findAll = async (props: PaginationWithFilters) => {
 export const verifyToCreate =  async ( form: FormData ) => {
     const { curp } = validationConform(form, curpSchema);
     const clientDb = await Repository.credit.findByCurp(curp.toLowerCase());
-    
-    console.log({curp, clientDb});
 
     if(!clientDb) {
         return { status: 'new_record' }
@@ -86,10 +83,6 @@ export const validationToRenovate = async (curp?: string, creditId?: RequestId) 
     if(!creditDb) {
         throw ServerError.badRequest('No se encontro el crédito solicitado, favor de verificarlo');
     }
-    
-    // if(creditDb.status === 'LIQUIDADO') {
-    //     throw ServerError.badRequest('El crédito ya ha sido liquidado');
-    // }
     
     if(creditDb.status === 'FALLECIDO') {
         throw ServerError.badRequest('El cliente ya fallecio.');
@@ -263,7 +256,20 @@ export const updateOne = async (form: FormData, creditId?: RequestId) => {
         throw ServerError.badRequest('La deuda no pude ser negativa');
     }
 
+    const weekQuantity = calculateWeeksByType(creditDb.type);
+    const weeks = calculateWeeks(creditDb.creditAt, creditDb.paymentAmount, weekQuantity);
+    const now = findNow();
+    const { amount: currentAmount, isBeforeFirst } = findCurrentWeek(weeks, now);
     const canRenovate = verifyCanRenovate({ totalAmount, currentDebt, paymentAmount });
+
+    const newStatus = calculateStatus({
+        currentAmount,
+        currentDebt,
+        totalAmount,
+        status: creditDb.status,
+        isBeforeFirst,
+        isRenovate: creditDb.isRenovate,
+    });
 
     const data = {
         amount,
@@ -274,7 +280,7 @@ export const updateOne = async (form: FormData, creditId?: RequestId) => {
         folderId: folderDb.id,
         groupId: folderDb.groups[0].id,
         paymentAmount,
-        status: currentDebt === 0 ? 'LIQUIDADO' : creditDb.status,
+        status: newStatus,
         totalAmount,
         type: types,
     }
@@ -669,9 +675,9 @@ interface FindStatusI {
 }
 
 const findStatus = ({ isOverdue, isBeforeFirst, currentDebt, isRenovate }: FindStatusI ) => {
-    if(isBeforeFirst)  return isRenovate ? 'RENOVADO' : 'ACTIVO';
-    if(isOverdue)  return 'VENCIDO';
     if(currentDebt === 0) return 'LIQUIDADO';
+    if(isOverdue)  return 'VENCIDO';
+    if(isBeforeFirst)  return isRenovate ? 'RENOVADO' : 'ACTIVO';
     return 'ACTIVO';
 }
 
@@ -688,26 +694,53 @@ const findNextPayment = (weeks: WeekPayment[], position: number, paymentDate?: D
     return weeks[position].date;
 }
 
+interface  CalculateStatusI {
+    currentAmount: number,
+    currentDebt: number, 
+    totalAmount: number,
+    status: Status,
+    isBeforeFirst: boolean,
+    isRenovate: boolean
+}
+
+const calculateStatus = ({
+    currentAmount,
+    currentDebt,
+    totalAmount,
+    status,
+    isBeforeFirst,
+    isRenovate,
+}: CalculateStatusI): Status => {
+    const isOverdue = isOverdueCredit(currentAmount, currentDebt, totalAmount);
+
+    return  status === 'FALLECIDO' 
+        ? status
+        : findStatus({ isOverdue, isBeforeFirst, currentDebt, isRenovate });
+}
+
 export const updateCreditByPayment = async (id: number, data: UpdateByPayment) => {
 
     const canRenovate = verifyCanRenovate(data);
     const weekQuantity = calculateWeeksByType(data.type);
-    const now = today(getLocalTimeZone()).toDate("America/Santiago");
-
+    
     const weeks = calculateWeeks(data.creditAt, data.paymentAmount, weekQuantity);
     const { isBeforeFirst, position } = findCurrentWeek(weeks, data?.paymentDate);
+    const now = findNow();
     const { amount: currentAmount } = findCurrentWeek(weeks, now);
-    const isOverdue = isOverdueCredit(currentAmount, data.currentDebt, data.totalAmount);
+    const newStatus = calculateStatus({
+        currentAmount,
+        currentDebt: data.currentDebt,
+        totalAmount: data.totalAmount,
+        status: data.status,
+        isBeforeFirst,
+        isRenovate: data.isRenovate,
+    });
 
-    const status = data.status === 'FALLECIDO' 
-        ? data.status
-        : findStatus({ isOverdue, isBeforeFirst, currentDebt: data.currentDebt, isRenovate: data.isRenovate });
-        
     const nextPayment = findNextPayment(weeks, position, data.paymentDate);
 
     const creditUpdated = await Repository.credit.updateCreditByPayment(id, {
         currentDebt: data.currentDebt,
-        status,
+        status: newStatus,
         canRenovate,
         lastPayment: data.paymentDate,
         nextPayment

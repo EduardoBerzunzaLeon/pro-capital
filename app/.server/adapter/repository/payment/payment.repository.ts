@@ -3,7 +3,6 @@ import { BasePaymentDetailI, CreatePayment, PaginationWithFilters, UpdatePayment
 
 export function PaymentRepository(base: BasePaymentDetailI) {
 
-    // TODO: make this for other propuses
     async function findAll(paginationData: PaginationWithFilters) {
         return await base.findManyPaginator({
             paginatonWithFilter: paginationData,
@@ -18,6 +17,52 @@ export function PaymentRepository(base: BasePaymentDetailI) {
                 },
                 paymentAmount: true,
                 paymentDate: true,
+                captureAt: true,
+                folio: true,
+                notes: true,
+                status: true,
+                credit: {
+                    select: {
+                        currentDebt: true,
+                        client: {
+                            select: {
+                                fullname: true,
+                                curp: true
+                            }
+                        },
+                        aval: {
+                            select: {
+                                fullname: true,
+                                curp: true
+                            }
+                        },
+                        group: {
+                            select: {
+                                name: true
+                            }
+                        },
+                        folder: {
+                            select: {
+                                name: true,
+                                town: {
+                                    select: {
+                                        name: true,
+                                        municipality: {
+                                            select: {
+                                                name: true
+                                            }
+                                        }
+                                    }
+                                },
+                                route: {
+                                    select: {
+                                        name: true
+                                    }
+                                },
+                            }
+                        }
+                    }
+                }
             }
         })
     }

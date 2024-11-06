@@ -354,6 +354,7 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
             type: true,
             creditAt: true,
             status: true,
+            isRenovate: true,
             payment_detail: {
                 select: {
                     paymentAmount: true

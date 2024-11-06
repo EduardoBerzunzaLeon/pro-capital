@@ -4,7 +4,7 @@ import { RequestId } from "../interfaces";
 import { ServerError } from "../errors";
 import { Repository } from "../adapter";
 import { Service } from ".";
-import { getLocalTimeZone, today } from "@internationalized/date";
+import { findNow } from "~/application";
 
 const validateAgent = (form: FormData ) => {
     if(form.get('agent[value]') !== form.get('agent')) {
@@ -101,14 +101,12 @@ const findOne = async (idPayment: RequestId ) => {
 
 export const deleteFastOne = async (idCredit: RequestId) => {
     const { id } = validationZod({ id: idCredit }, idSchema);
-    const now = today(getLocalTimeZone()).toDate("America/Santiago");
+    const now = findNow()
     const paymentDb = await Repository.payment.findByDate(id, now);
 
     if(!paymentDb) {
         throw ServerError.badRequest('No se puede eliminar un pago, que no se haya agregado hoy');
     }
-
-    console.log(paymentDb.id);
 
     await deleteOne(paymentDb.id);
 }
