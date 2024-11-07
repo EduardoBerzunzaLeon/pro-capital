@@ -5,6 +5,19 @@ import { ServerError } from "../errors";
 import { Repository } from "../adapter";
 import { Service } from ".";
 import { findNow } from "~/application";
+import { PaginationWithFilters } from "../domain/interface";
+import { Payment } from "../domain/entity";
+
+
+export const findAll = async (props: PaginationWithFilters) => {
+    const { data, metadata } = await Repository.payment.findAll({...props});
+    return Service.paginator.mapper({
+        metadata,
+        data,
+        mapper: Payment.mapper,
+        errorMessage: 'No se encontraron pagos'
+    });
+}
 
 const validateAgent = (form: FormData ) => {
     if(form.get('agent[value]') !== form.get('agent')) {
@@ -216,6 +229,7 @@ export const updateOne = async (form: FormData, idPayment: RequestId) => {
 }
 
 export default {
+    findAll,
     createOne,
     deleteOne,
     deleteFastOne,

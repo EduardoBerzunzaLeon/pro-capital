@@ -1,6 +1,6 @@
 import { json, LoaderFunction } from '@remix-run/node';
 import { Generic } from '~/.server/interfaces';
-import { handlerSuccess, parseArray, parseBoolean, parseRangeDate, parseRangeInt } from '~/.server/reponses';
+import { handlerSuccess, parseArray, parseBoolean, parseNumber, parseRangeDate, parseRangeInt } from '~/.server/reponses';
 import { getEmptyPagination } from '~/.server/reponses/handlerError';
 import { handlerPaginationParams } from '~/.server/reponses/handlerSuccess';
 import { Service } from '~/.server/services';
@@ -33,9 +33,6 @@ const columnSortNames: Generic = {
     const aval = url.searchParams.get('aval') || '';
     const client = url.searchParams.get('client') || '';
     const folder = url.searchParams.get('folder') || '';
-    const municipality = url.searchParams.get('municipality') || '';
-    const town = url.searchParams.get('town') || '';
-    const group = url.searchParams.get('group') || '';
     const creditStart = url.searchParams.get('creditStart') || '';
     const creditEnd = url.searchParams.get('creditEnd') || '';
     const captureStart = url.searchParams.get('captureStart') || '';
@@ -44,22 +41,31 @@ const columnSortNames: Generic = {
     const canRenovate = url.searchParams.get('canRenovate') || '';
     const debt = url.searchParams.get('debt') || '';
 
+    const municipality = url.searchParams.get('municipality') || '';
+    const town = url.searchParams.get('town') || '';
+    const group = url.searchParams.get('group') || '';
+
     const canRenovateParsed = parseBoolean(canRenovate);
     const statusParsed =  parseArray(status);
     const creditAtParsed = parseRangeDate(creditStart, creditEnd)
     const captureAtParsed = parseRangeDate(captureStart, captureEnd);
     const debtParsed = parseRangeInt(debt);
+    const groupParsed = parseNumber(group);
     
     try {
       
       const curpParsed = { column: 'client.curp', value: curp };
       const folderParsed = { column: 'folder.name', value: folder };
       const fullnameParsed = { column: 'client.fullname', value: client };
+      const fullnameAvalParsed = { column: 'aval.fullname', value: aval };
       const statusFormatted = { column: 'status', value: statusParsed };
       const canRenovateFormatted = { column: 'canRenovate', value: canRenovateParsed };
       const creditAtFormatted = { column: ' creditAt', value:  creditAtParsed };
       const captureAtFormatted = { column: 'captureAt', value: captureAtParsed };
       const debtFormatted = { column: 'currentDebt', value: debtParsed };
+      const municipalityFormatted = { column: 'folder.town.municipality.name', value: municipality };
+      const townFormatted = { column: 'folder.town.name', value: town };
+      const groupFormatted  = { column: 'group.name', value: groupParsed };
       
       const {
         page, limit, column, direction
@@ -79,6 +85,10 @@ const columnSortNames: Generic = {
           debtFormatted,
           captureAtFormatted,
           creditAtFormatted,
+          fullnameAvalParsed,
+          municipalityFormatted,
+          townFormatted,
+          groupFormatted,
        ]
       });
       

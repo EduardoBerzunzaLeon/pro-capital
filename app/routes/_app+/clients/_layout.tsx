@@ -84,8 +84,6 @@ export default function ClientsPage() {
   const [visibleColumns, setVisibleColumns] = useState<Selection>(new Set(INITIAL_VISIBLE_COLUMNS)); 
   const navigate = useNavigate();
 
-  console.log({ loader });
-
   const { 
     defaultStatus: defaultCanRenovate, 
     handleStatusChange: handleCanRenovate
@@ -261,7 +259,7 @@ export default function ClientsPage() {
       />
     </div>
     <TableDetail 
-        aria-label="agents table"
+        aria-label="credits table"
         onSortChange={handleSort}
         sortDescriptor={sortDescriptor}
         headerColumns={headerColumns}

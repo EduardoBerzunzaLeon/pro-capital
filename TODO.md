@@ -11,29 +11,56 @@
     No aceptar decimal
 
 
-#order
-    telefono
-    direccion
-    referencia
-    garantia
 # UI:
     - Agregar el isActive en carpeta y en su tabla crud
     -- Bug en folder ya que lideres es un arreglo, debe traer solo la lider activo
     - Separar la logica de agents Page - falta solo el loader y el rendercell ?
-    - separar la logica del autocomplete multiple
+    - separar la logica del autocomplete multiple (Not is required)
     - añadir el breadcrumb
     - Acomodar la UI de la seccion de lideres
     - verificar el color de los dialogs
     - cambiar el color de todo la app segun el thema sin necesidad de forzarlo con red-dark
-    - ponerle un estilo de loader en el navlink cuando cambia de pagina
+    - ponerle un estilo de loader en el navlink mientras cambia de pagina
+    - Cerrar el navlink cuando cargue la otra pagina
+    - bug en el cual no pinta el estilo de navlink active cuando entras a una subruta
+    - Cambiar de action a loader al momento de descargar el layout
+    - Agregar el reporte de excel a todos las tablas
+    - Agregar el boton de autogenerar grupos
+    - Agregar boton de actualizar estatus de creditos
+    - Agregar el reporte de creditos nuevos y faltate
+    - Ver pagos
+    - Filtrar pagos
+    - Actualizar pagos
+    - Eliminar pagos
+    - Agregar pagos en credito detalle
+    - Agregar tabla dinamica con los pagos en credito detalle.
+    - Agregar opcion de eliminar, actualizar pagos en la tabla de credito detalle.
+    - Agregar paginar de pagos en la tabla de *Renovar credito form*
+    - Acomodar interfaz de usuario de todas las secciones, verificar que sea responsive
     -- add prettier
     -- Agregar titulo en cada pagina
-    -- Agregar conform en auto completes
     -- Agregar folder active autocomplete
     -- Agregar filter input solo numeros
     -- Agregar schema para telefono (cantidad de caracteres)
+    -- Agregar la opcion de Matar usuario (marcarlo como fallecido)
 
-    
+# MODULOS FALTANTES:
+    - Usuarios:
+        - Agregar Usuario (Subir archivos - NEW)
+        - Actualizar Usuario (Incluye el Role)
+        - Desactivar Usuario (soft delete)
+        - Ver Usuarios
+        - Filtros de Usuarios
+    - Perfil
+        - Ver mi perfil
+        - Actualizar mis datos personales
+    - Asignar Permisos a Roles
+        - Ver todos los roles
+        - Ver todos los permisos
+        - Asigar que permisos le pertenece a que rol
+            - Seleccionara el ROl, entonces le apareceran todos los permisos que existen
+                en el sistema, divido por secion / modulo, seran muchos checkboxes, el administrador
+                marcara y desmarcara los permisos segun el rol.
 
 # SERVER:
     - Agregar el user repository y service
@@ -44,8 +71,4 @@
 # Opciones de ampliacion
     - Controlar Ataque CSRF: https://github.com/sergiodxa/remix-utils#csrf
     - Hacer un reporte vacio con los datos, 
-
-# NOTES 
-    - Puede renovar siempre y cuando llegue al monto del pago numero 10 
-    - Si tiene algun retrazo en algun pago no se le condena ningun pago
 

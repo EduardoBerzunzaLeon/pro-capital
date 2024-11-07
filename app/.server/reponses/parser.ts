@@ -37,6 +37,12 @@ export const parseRangeDate = (start: string, end: string) => {
     }
 }
 
+export const parseNumber =  (value: string) => {
+    if(value === '') return '';
+    const valueFormatted = Number(value);
+    return (isNaN(valueFormatted)) ? 0 : valueFormatted;
+} 
+
 
 export const parseRangeInt = (value: string) => {
     const parsed = value
