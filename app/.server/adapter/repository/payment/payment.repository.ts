@@ -11,8 +11,8 @@ export function PaymentRepository(base: BasePaymentDetailI) {
                 agent: {
                     select: {
                         id: true,
-                        username: true,
                         avatar: true,
+                        fullName: true,
                     }
                 },
                 paymentAmount: true,

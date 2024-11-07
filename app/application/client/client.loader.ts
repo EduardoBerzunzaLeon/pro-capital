@@ -7,7 +7,7 @@ import { Service } from '~/.server/services';
 
 const columnsFilter = [
     'client.fullname', 'aval.fullname', 'captureAt', 'creditAt', 'folder.name',
-    'group.name.fullname', 'folder.town.name', 'status', 'currentDebt', 'folder.town.municipality.name'
+    'group.name', 'folder.town.name', 'status', 'currentDebt', 'folder.town.municipality.name'
   ];
   
 const columnSortNames: Generic = {
@@ -43,9 +43,9 @@ const columnSortNames: Generic = {
     const status = url.searchParams.get('status') || '';
     const canRenovate = url.searchParams.get('canRenovate') || '';
     const debt = url.searchParams.get('debt') || '';
-    
-    const statusParsed =  parseArray(status);
+
     const canRenovateParsed = parseBoolean(canRenovate);
+    const statusParsed =  parseArray(status);
     const creditAtParsed = parseRangeDate(creditStart, creditEnd)
     const captureAtParsed = parseRangeDate(captureStart, captureEnd);
     const debtParsed = parseRangeInt(debt);
