@@ -7,6 +7,7 @@ import { Service } from ".";
 import { findNow } from "~/application";
 import { PaginationWithFilters } from "../domain/interface";
 import { Payment } from "../domain/entity";
+import dayjs from 'dayjs';
 
 
 export const findAll = async (props: PaginationWithFilters) => {
@@ -64,6 +65,7 @@ export const createOne =  async (form: FormData, creditId?: RequestId) => {
     validatePaymentDate(paymentDate, creditDb.creditAt);
     validateDebt(currentDebt, paymentAmount);
 
+    // Si es administrador puede saltarse esto
     if(creditDb.lastPayment && paymentDate <= creditDb.lastPayment) {
         throw ServerError.badRequest(`Ya existe un pago con la fecha igual o inferior a ${paymentDate}`);
     }
@@ -101,7 +103,7 @@ export const createOne =  async (form: FormData, creditId?: RequestId) => {
 
 //  =============== No puede eliminar un pago ya que este renovado, pero liquidado si se puede ================
 
-const findOne = async (idPayment: RequestId ) => {
+export const findOne = async (idPayment: RequestId ) => {
     const { id } = validationZod({ id: idPayment }, idSchema);
     const paymentDb = await Repository.payment.findOne(id);
 
@@ -190,9 +192,9 @@ export const updateOne = async (form: FormData, idPayment: RequestId) => {
     const currentDebt = Number(credit.currentDebt) + Number(paymentDb.paymentAmount);
     validateDebt(currentDebt, paymentAmount);
 
-    if(paymentDb.paymentDate !== paymentDate) {
+    if(dayjs(paymentDate).isSame(dayjs(paymentDb.paymentDate))) {
         const paymentInDate = await Repository.payment.findByDate(credit.id, paymentDate);
-        if(paymentInDate) {
+        if(paymentInDate && paymentInDate.id !== paymentDb.id) {
             throw ServerError.badRequest(`Ya existe un pago el dia ${paymentDate}`);
         }
     }
@@ -210,10 +212,8 @@ export const updateOne = async (form: FormData, idPayment: RequestId) => {
         throw ServerError.badRequest('No se pudo actualizar el pago');
     }
 
-    const lastPayment = paymentDb.credit.payment_detail[0].paymentDate > paymentDate 
-        ? paymentDb.credit.payment_detail[0].paymentDate
-        : paymentDate;
-
+    const lastPayment = await findLastPayment(credit.id, paymentDb.id);
+    console.log(lastPayment);
 
     await Service.credit.updateCreditByPayment(credit.id, {
         currentDebt: currentDebt - Number(paymentAmount),
@@ -234,4 +234,5 @@ export default {
     deleteOne,
     deleteFastOne,
     updateOne,
+    findOne
 }

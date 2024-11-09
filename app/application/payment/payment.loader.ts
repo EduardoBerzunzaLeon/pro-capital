@@ -42,7 +42,7 @@ const columnsFilter = [
     const captureEnd = url.searchParams.get('captureEnd') || '';
     const status = url.searchParams.get('status') || '';
     const debt = url.searchParams.get('debt') || '';
-    const paymentAmount = url.searchParams.get('amount') || '';
+    const paymentAmount = url.searchParams.get('paymentAmount') || '';
     const paymentStart = url.searchParams.get('paymentStart') || '';
     const paymentEnd = url.searchParams.get('paymentEnd') || '';
 
@@ -52,6 +52,8 @@ const columnsFilter = [
     const debtParsed = parseRangeInt(debt);
     const paymentAmountParsed = parseRangeInt(paymentAmount);
     const groupParsed = parseNumber(group);
+
+    
 
     try {
       
@@ -69,6 +71,7 @@ const columnsFilter = [
       const townFormatted = { column: 'credit.folder.town.name', value: town };
       const groupFormatted = { column: 'credit.group.name', value: groupParsed };
 
+      console.log({debtParsed, debtFormatted, as: typeof debtFormatted.value === 'string'});
       const {
         page, limit, column, direction
       } = handlerPaginationParams(request.url, 'captureAt', columnsFilter);

@@ -7,13 +7,15 @@ interface Props {
     label: string,
     maxValue: number,
     param: string,
-    value?: number | number[],
+    value?: { start: number, end: number},
 }
 
 
 export const SliderFilter = ({label, maxValue, param, value}: Props) => {
     const [ , setSearchParams] = useSearchParams();
     const [debt, setDebt] = useState<number | number[]>([0, maxValue]);
+
+    console.log(value);
 
     useEffect(() => {
 
@@ -26,20 +28,13 @@ export const SliderFilter = ({label, maxValue, param, value}: Props) => {
           setDebt([0, value]);
           return;
         }
-    
-        const areNumbers = value.every((element) => !isNaN(element));
-    
-        if(!areNumbers) {
-          setDebt([0, maxValue]);
+  
+        if(!isNaN(value.start) && !isNaN(value.end)) {
+          setDebt([value.start, value.end]);
           return;
         }
-    
-        if(value.length !== 2) {
-          setDebt([0, maxValue]);
-          return;
-        }
-    
-        setDebt([value[0], value[1]]);
+
+        setDebt([0, maxValue]);
     
       }, [maxValue, value])
 

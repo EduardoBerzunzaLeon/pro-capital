@@ -13,10 +13,10 @@ export function TownAction({ idTown, onOpenEdit }: Props)  {
         id: idTown
      });
         
-       const handleUpdateWithModal = () => {
+    const handleUpdateWithModal = () => {
         onOpenEdit();
         handleUpdate();
-       }
+    }
     
     return (
         <Action 

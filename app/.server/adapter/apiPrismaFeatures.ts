@@ -40,7 +40,7 @@ export function apiPrismaFeatures({
       if(Array.isArray(value)) {
         return { in: value }
       }
-
+      
       if(typeof value === 'string') {
         return { contains: value.toLowerCase(), mode: 'insensitive' }
       }
@@ -49,13 +49,13 @@ export function apiPrismaFeatures({
         return { equals: value }
       }
       
-      if(value?.start && value?.end)  {
+      if(value.end !== 'undefined' && value.start !== 'undefined')  {
         return {
-          gte: value['start'],
-          lte: value['end'],
+          gte: value.start,
+          lte: value.end,
         }
       }
-
+  
       return { contains: value };
     }
 

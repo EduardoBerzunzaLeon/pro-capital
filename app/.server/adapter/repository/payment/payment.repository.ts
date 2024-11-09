@@ -105,6 +105,15 @@ export function PaymentRepository(base: BasePaymentDetailI) {
             id: true,
             paymentAmount: true,
             paymentDate: true,
+            agent: {
+                select: {
+                    id: true,
+                    fullName: true,
+                    avatar: true
+                }
+            },
+            folio: true,
+            status: true,
             credit: {
                 select: {
                     id: true,
@@ -116,6 +125,22 @@ export function PaymentRepository(base: BasePaymentDetailI) {
                     creditAt: true,
                     type: true,
                     isRenovate: true,
+                    client: {
+                        select: {
+                            fullname: true,
+                        }
+                    },
+                    folder: {
+                        select: {
+                            name: true,
+                        }
+                    },
+                    group: {
+                        select: {
+                            name: true
+                        }
+                    }
+
                 }
             }
         }, true);

@@ -5,8 +5,8 @@ import { useLoaderData } from '@remix-run/react';
 import { useCallback, useMemo, useState } from 'react';
 import { HandlerSuccess } from '~/.server/reponses';
 import { useParamsPaginator, useRenderCell } from '~/application';
-import { Select, SelectItem, } from '@nextui-org/react';
-import { InputFilter, Pagination, RangePickerDateFilter, RowPerPage, SliderFilter, TableDetail } from '~/components/ui';
+import { Select, SelectItem, useDisclosure, } from '@nextui-org/react';
+import { InputFilter, ModalPaymentEdit, Pagination, PaymentAction, RangePickerDateFilter, RowPerPage, SliderFilter, TableDetail } from '~/components/ui';
 import { DropdownPaymentStatus } from '~/components/ui/dropdowns/DropDownPaymentStatus';
 import { useDropdown } from '~/application/hook/useDropdown';
 
@@ -34,10 +34,10 @@ interface Loader {
     group: string,
     captureStart: string,
     captureEnd: string,
-    debt: number | number[],
+    debt: { start: number, end: number },
     total: number,
     status: string[],
-    paymentAmount: number,
+    paymentAmount: { start: number, end: number },
     paymentStart: string,
     paymentEnd: string,
     pageCount: number,
@@ -70,9 +70,10 @@ interface Loader {
   ]
 
 export default function PaymentPage( ) {
-    const loader = useLoaderData<HandlerSuccess<Loader>>();
-  const [visibleColumns, setVisibleColumns] = useState<Selection>(new Set(INITIAL_VISIBLE_COLUMNS)); 
-
+  const loader = useLoaderData<HandlerSuccess<Loader>>();
+  const [visibleColumns, setVisibleColumns] = useState<Selection>(new Set(INITIAL_VISIBLE_COLUMNS));
+  const { isOpen, onOpenChange, onOpen } = useDisclosure();
+  
   const { 
     loadingState, 
     handlePagination, 
@@ -96,11 +97,9 @@ export default function PaymentPage( ) {
     //   return <Button variant='ghost' color='primary' onPress={() => { navigate(`/clients/${credit.client.curp}/renovate/${credit.id}`) }}>Renovar</Button>
     // }
 
-    // if(columnKey === 'actions') {
-    //   return <CreditAction 
-    //     creditId={credit.id}
-    //   />
-    // }
+    if(columnKey === 'actions') {
+      return <PaymentAction paymentId={payment.id} onOpenEdit={onOpen}/>
+    }
     
     // if(columnKey === 'status') {
     //   return ( <ChipStatusCredit status={credit.status} /> )
@@ -140,6 +139,7 @@ export default function PaymentPage( ) {
   }, [visibleColumns]);
 
   return (<>
+    <ModalPaymentEdit isOpen={isOpen} onOpenChange={onOpenChange}/>
    <div className='w-full flex gap-2 mt-5 mb-3 flex-wrap justify-between items-center'>
       <InputFilter 
         param="client" 
@@ -242,7 +242,7 @@ export default function PaymentPage( ) {
       <SliderFilter 
         label='Monto del Pago'
         maxValue={10000}
-        param='debt'
+        param='paymentAmount'
         value={loader?.serverData?.paymentAmount}
       />
     </div>
