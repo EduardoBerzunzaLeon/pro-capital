@@ -35,9 +35,9 @@ const columnsFilter = [
     const client = url.searchParams.get('client') || '';
     const agent = url.searchParams.get('agent') || '';
     const folder = url.searchParams.get('folder') || '';
+    const group = url.searchParams.get('group') || '';
     const municipality = url.searchParams.get('municipality') || '';
     const town = url.searchParams.get('town') || '';
-    const group = url.searchParams.get('group') || '';
     const captureStart = url.searchParams.get('captureStart') || '';
     const captureEnd = url.searchParams.get('captureEnd') || '';
     const status = url.searchParams.get('status') || '';
@@ -46,7 +46,7 @@ const columnsFilter = [
     const paymentStart = url.searchParams.get('paymentStart') || '';
     const paymentEnd = url.searchParams.get('paymentEnd') || '';
 
-    const statusParsed =  parseArray(status);
+    const statusParsed = parseArray(status);
     const paymentDate = parseRangeDate(paymentStart, paymentEnd)
     const captureAtParsed = parseRangeDate(captureStart, captureEnd);
     const debtParsed = parseRangeInt(debt);
@@ -106,7 +106,7 @@ const columnsFilter = [
         s: [curpParsed, folderParsed, fullnameParsed],
         curp,
         folder,
-        aval: 
+        aval,
         client,
         agent,
         municipality,
@@ -126,7 +126,7 @@ const columnsFilter = [
       return json(getEmptyPagination({
         curp,
         folder,
-        aval: 
+        aval,
         client,
         agent,
         municipality,

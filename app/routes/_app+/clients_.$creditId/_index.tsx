@@ -1,6 +1,6 @@
 import { Card, CardHeader, Divider, CardBody, CardFooter, useDisclosure } from "@nextui-org/react";
 import { ActionFunction, LoaderFunction } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { Outlet, useLoaderData } from "@remix-run/react";
 import { redirectWithWarning } from "remix-toast";
 import { 
   handlerSuccess, 
@@ -107,6 +107,6 @@ export default function CreditDetailPage() {
           Visit source code on GitHub.
       </CardFooter>
     </Card>
-    
+    <Outlet />
   </>)
 }
