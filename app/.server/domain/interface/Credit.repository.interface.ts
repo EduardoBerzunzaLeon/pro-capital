@@ -44,7 +44,7 @@ export interface UpdateOne {
     type: Type,
 }
 
-export type UpdateAddPayment = Pick<UpdateOne, 'currentDebt' | 'status' | 'canRenovate'> & { nextPayment: Date, lastPayment?: Date }
+export type UpdateAddPayment = Pick<UpdateOne, 'currentDebt' | 'status' | 'canRenovate'> & { nextPayment: Date, lastPayment?: Date, countPayments: number }
 
 export type BaseCreditI = BaseRepositoryI<
     Prisma.CreditDelegate, 

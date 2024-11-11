@@ -259,11 +259,11 @@ export const updateOne = async (form: FormData, creditId?: RequestId) => {
     const weekQuantity = calculateWeeksByType(creditDb.type);
     const weeks = calculateWeeks(creditDb.creditAt, creditDb.paymentAmount, weekQuantity);
     const now = findNow();
-    const { amount: currentAmount, isBeforeFirst } = findCurrentWeek(weeks, now);
+    const { amount: minAmount, isBeforeFirst } = findCurrentWeek(weeks, now);
     const canRenovate = verifyCanRenovate({ totalAmount, currentDebt, paymentAmount });
 
     const newStatus = calculateStatus({
-        currentAmount,
+        minAmount,
         currentDebt,
         totalAmount,
         status: creditDb.status,
@@ -659,11 +659,10 @@ export const calculateWeeksByType  = (type: Types) => {
     return reference[type] ?? 15;
 }
 
-type UpdateByPayment = CreditI & { 
+type UpdateByPayment = Omit<CreditI, 'currentDebt'> & { 
     status: Status, 
     creditAt: Date, 
     type: Types,
-    paymentDate?: Date,
     isRenovate: boolean
 };
 
@@ -695,7 +694,7 @@ const findNextPayment = (weeks: WeekPayment[], position: number, paymentDate?: D
 }
 
 interface  CalculateStatusI {
-    currentAmount: number,
+    minAmount: number,
     currentDebt: number, 
     totalAmount: number,
     status: Status,
@@ -704,14 +703,14 @@ interface  CalculateStatusI {
 }
 
 const calculateStatus = ({
-    currentAmount,
+    minAmount,
     currentDebt,
     totalAmount,
     status,
     isBeforeFirst,
     isRenovate,
 }: CalculateStatusI): Status => {
-    const isOverdue = isOverdueCredit(currentAmount, currentDebt, totalAmount);
+    const isOverdue = isOverdueCredit(minAmount, currentDebt, totalAmount);
 
     return  status === 'FALLECIDO' 
         ? status
@@ -720,30 +719,37 @@ const calculateStatus = ({
 
 export const updateCreditByPayment = async (id: number, data: UpdateByPayment) => {
 
-    const canRenovate = verifyCanRenovate(data);
+    const [{ sum, count }, lastPayment ] = await Promise.all([
+        Service.payment.findTotalPayment(id),
+        Service.payment.findLastPayment(id)
+    ])
+
+    const currentDebt = data.totalAmount - Number(sum);
+    const canRenovate = verifyCanRenovate({ totalAmount: data.totalAmount, currentDebt, paymentAmount: data.paymentAmount });
     const weekQuantity = calculateWeeksByType(data.type);
     
     const weeks = calculateWeeks(data.creditAt, data.paymentAmount, weekQuantity);
-    const { isBeforeFirst, position } = findCurrentWeek(weeks, data?.paymentDate);
+    const { isBeforeFirst, position } = findCurrentWeek(weeks, lastPayment);
     const now = findNow();
-    const { amount: currentAmount } = findCurrentWeek(weeks, now);
+    const { amount: minAmount } = findCurrentWeek(weeks, now);
     const newStatus = calculateStatus({
-        currentAmount,
-        currentDebt: data.currentDebt,
+        minAmount,
+        currentDebt,
         totalAmount: data.totalAmount,
         status: data.status,
         isBeforeFirst,
         isRenovate: data.isRenovate,
     });
 
-    const nextPayment = findNextPayment(weeks, position, data.paymentDate);
+    const nextPayment = findNextPayment(weeks, position, lastPayment);
 
     const creditUpdated = await Repository.credit.updateCreditByPayment(id, {
-        currentDebt: data.currentDebt,
+        currentDebt,
         status: newStatus,
         canRenovate,
-        lastPayment: data.paymentDate,
-        nextPayment
+        lastPayment,
+        nextPayment,
+        countPayments: count
     });
 
     if(!creditUpdated) {
@@ -792,9 +798,9 @@ export const findCurrentWeek = (weeks: WeekPayment[], currentDate?: Date) => {
     return  { week, amount, isBeforeFirst, position };
 }
 
-export const isOverdueCredit = (amount: number, currentDebt: number, totalLoanAmount: number) => {
+export const isOverdueCredit = (minAmount: number, currentDebt: number, totalLoanAmount: number) => {
     const paymentAmount =  totalLoanAmount - currentDebt;
-    return (amount > paymentAmount);
+    return (minAmount > paymentAmount);
 }
 
 
@@ -813,8 +819,6 @@ export const calculateOverdueCredits = async () => {
     const newPromises = credits.map(credit => {
 
         return Service.credit.updateCreditByPayment(credit.id, {
-            currentDebt: credit.currentDebt,
-            paymentDate: credit.lastPayment,
             status: credit.status,
             totalAmount: credit.totalAmount,
             paymentAmount: credit.paymentAmount,

@@ -23,7 +23,11 @@ export function PaymentRepository(base: BasePaymentDetailI) {
                 status: true,
                 credit: {
                     select: {
+                        id: true,
                         currentDebt: true,
+                        nextPayment: true,
+                        lastPayment: true,
+                        status: true,
                         client: {
                             select: {
                                 fullname: true,
@@ -83,10 +87,10 @@ export function PaymentRepository(base: BasePaymentDetailI) {
         return await base.deleteOne({id});
     }
 
-    async function findLastPayment(creditId: number, paymentId: number) {
+    async function findLastPayment(creditId: number) {
 
         return await base.findMany({
-            searchParams: { creditId, id: { not: paymentId } },
+            searchParams: { creditId },
             select: {
                 id: true,
                 paymentDate: true,
@@ -146,6 +150,19 @@ export function PaymentRepository(base: BasePaymentDetailI) {
         }, true);
     }
 
+    async function findTotalPayment(creditId: number) {
+        return await base.entity.groupBy({
+            by: ['creditId'],
+            where: { creditId },
+            _sum: {
+                paymentAmount: true
+            },
+            _count: {
+                paymentAmount: true
+            }
+        })
+    }
+
     return {
         findAll,
         findByDate,
@@ -154,6 +171,7 @@ export function PaymentRepository(base: BasePaymentDetailI) {
         createOne,
         updateOne,
         findLastPayment,
+        findTotalPayment,
         base
     }
 

@@ -41,7 +41,7 @@ interface Loader {
   captureStart: string,
   captureEnd: string,
   canRenovate: string,
-  debt: number | number[],
+  debt: { start: number, end: number },
   total: number,
   status: string[],
   pageCount: number,
@@ -63,6 +63,7 @@ const columns = [
   { key: 'folder.route.name', label: 'RUTA'},
   { key: 'group.name', label: 'GRUPO'},
   { key: 'amount', label: 'PRESTAMO'},
+  { key: 'countPayments', label: 'TOTAL DE PAGOS' },
   { key: 'paymentAmount', label: 'PAGO DE PRESTAMO'},
   { key: 'captureAt', label: 'FECHA DE CAPTURA', sortable: true},
   { key: 'creditAt', label: 'FECHA DEL CREDITO', sortable: true},
@@ -131,6 +132,11 @@ export default function ClientsPage() {
       />
     }
     
+ 
+    if(columnKey === 'countPayments') {
+      return <span className='capitalize'>{credit.countPayments}</span>
+    }
+
     if(columnKey === 'status') {
       return ( <ChipStatusCredit status={credit.status} /> )
     }

@@ -222,6 +222,7 @@ model Credit {
   nextPayment DateTime @db.Date
   lastPayment DateTime? @db.Date
   currentDebt Decimal @db.Decimal(6,2)
+  countPayments Int @default(0)
   status Status @default(ACTIVO)
   payment_detail PaymentDetail[]
   @@unique([clientId, groupId, folderId])

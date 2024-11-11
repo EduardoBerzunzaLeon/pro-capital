@@ -6,9 +6,10 @@ import { useCallback, useMemo, useState } from 'react';
 import { HandlerSuccess } from '~/.server/reponses';
 import { useParamsPaginator, useRenderCell } from '~/application';
 import { Select, SelectItem, useDisclosure, } from '@nextui-org/react';
-import { InputFilter, ModalPaymentEdit, Pagination, PaymentAction, RangePickerDateFilter, RowPerPage, SliderFilter, TableDetail } from '~/components/ui';
+import { ChipStatusCredit, ChipStatusPayment, InputFilter, ModalPaymentEdit, Pagination, PaymentAction, RangePickerDateFilter, RowPerPage, SliderFilter, TableDetail } from '~/components/ui';
 import { DropdownPaymentStatus } from '~/components/ui/dropdowns/DropDownPaymentStatus';
 import { useDropdown } from '~/application/hook/useDropdown';
+import { ModalPay } from '~/components/ui/pay';
 
 export {
     paymentLoader as loader
@@ -57,8 +58,11 @@ interface Loader {
     { key: 'paymentAmount', label: 'PAGO'},
     { key: 'captureAt', label: 'FECHA DE CAPTURA', sortable: true},
     { key: 'paymentDate', label: 'FECHA DEL PAGO', sortable: true},
+    { key: 'credit.nextPayment', label: 'PROXIMO PAGO', sortable: true},
+    { key: 'credit.lastPayment', label: 'ULTIMO PAGO', sortable: true},
     { key: 'credit.currentDebt', label: 'DEUDA ACTUAL', sortable: true},
     { key: 'status', label: 'ESTATUS', sortable: true},
+    { key: 'credit.status', label: 'ESTATUS CRÉDITO'},
     { key: 'folio', label: 'FOLIO', sortable: true},
     { key: 'notes', label: 'NOTAS' },
     { key: 'agent.fullName', label: 'AGENTE' },
@@ -73,6 +77,7 @@ export default function PaymentPage( ) {
   const loader = useLoaderData<HandlerSuccess<Loader>>();
   const [visibleColumns, setVisibleColumns] = useState<Selection>(new Set(INITIAL_VISIBLE_COLUMNS));
   const { isOpen, onOpenChange, onOpen } = useDisclosure();
+  const { isOpen: isOpenCreate, onOpenChange: onOpenChangeCreate, onOpen: onOpenCreate } = useDisclosure();
   
   const { 
     loadingState, 
@@ -93,17 +98,23 @@ export default function PaymentPage( ) {
 
   const renderCell = useCallback((payment: Payment, columnKey: Key) => {
     
-    // if(columnKey === 'canRenovate' && credit.canRenovate) {
-    //   return <Button variant='ghost' color='primary' onPress={() => { navigate(`/clients/${credit.client.curp}/renovate/${credit.id}`) }}>Renovar</Button>
-    // }
-
     if(columnKey === 'actions') {
-      return <PaymentAction paymentId={payment.id} onOpenEdit={onOpen}/>
+      return <PaymentAction 
+        paymentId={payment.id} 
+        onOpenEdit={onOpen}
+        onOpenCreate={onOpenCreate}
+        currentDebt={payment.credit.currentDebt}
+        creditId={payment.credit.id}
+      />
+    }
+
+    if(columnKey === 'credit.status') {
+      return ( <ChipStatusCredit status={payment.credit.status} /> )
     }
     
-    // if(columnKey === 'status') {
-    //   return ( <ChipStatusCredit status={credit.status} /> )
-    // }
+    if(columnKey === 'status') {
+      return ( <ChipStatusPayment status={payment.status} /> )
+    }
 
     return <span className='capitalize'>{render(payment, columnKey)}</span>
 
@@ -140,6 +151,7 @@ export default function PaymentPage( ) {
 
   return (<>
     <ModalPaymentEdit isOpen={isOpen} onOpenChange={onOpenChange}/>
+    <ModalPay isOpen={isOpenCreate} onOpenChange={onOpenChangeCreate} />
    <div className='w-full flex gap-2 mt-5 mb-3 flex-wrap justify-between items-center'>
       <InputFilter 
         param="client" 

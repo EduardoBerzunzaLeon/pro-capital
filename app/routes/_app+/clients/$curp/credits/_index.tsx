@@ -61,6 +61,7 @@ const columns = [
   { key: 'group.name', label: 'GRUPO'},
   { key: 'amount', label: 'PRESTAMO'},
   { key: 'paymentAmount', label: 'PAGO DE PRESTAMO'},
+  { key: 'countPayments', label: 'TOTAL DE PAGOS' },
   { key: 'captureAt', label: 'FECHA DE CAPTURA', sortable: true},
   { key: 'creditAt', label: 'FECHA DEL CREDITO', sortable: true},
   { key: 'canRenovate', label: 'RENOVACIÓN'},

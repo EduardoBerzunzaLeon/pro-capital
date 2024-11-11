@@ -1,7 +1,6 @@
-import { Card, CardHeader, Divider, CardBody, CardFooter, Dropdown, Button, DropdownItem, DropdownMenu, DropdownTrigger, ButtonGroup } from "@nextui-org/react";
+import { Card, CardHeader, Divider, CardBody, CardFooter, useDisclosure } from "@nextui-org/react";
 import { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import { FaEdit, FaPlus } from "react-icons/fa";
 import { redirectWithWarning } from "remix-toast";
 import { 
   handlerSuccess, 
@@ -12,6 +11,7 @@ import {
 import { Service } from "~/.server/services";
 import { ChipStatusCredit, PersonFormEdit } from "~/components/ui";
 import { CreditFormEdit } from "~/components/ui/credit/CreditFormEdit";
+import { ButtonAddPayment, ModalPay } from "~/components/ui/pay";
 
 
 export const loader: LoaderFunction = async ({ params }) => {
@@ -61,8 +61,7 @@ export default function CreditDetailPage() {
   const loader = useLoaderData<any>();
 
   const { client, aval, ...credit } = loader.serverData;
-
-  console.log(credit)
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   return (<>
     <Card className='w-full'>
@@ -76,29 +75,11 @@ export default function CreditDetailPage() {
             <ChipStatusCredit 
               status={loader.serverData.status}
             />
-            <ButtonGroup>
-              <Dropdown className="red-dark text-foreground bg-content1">
-              <DropdownTrigger>
-                <Button 
-                  variant="ghost" 
-                  endContent={<FaEdit />}
-                >
-                  Editar
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu aria-label="Static Actions">
-                <DropdownItem key="new">Datos del cliente</DropdownItem>
-                <DropdownItem key="copy">Datos del aval</DropdownItem>
-                <DropdownItem key="edit">Datos del crédito</DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
-            <Button
-              variant='ghost'
-              endContent={<FaPlus />} 
-            >
-              Agregar Pago
-            </Button>
-            </ButtonGroup>
+            {
+              (credit.currentDebt > 0) && (
+                <ButtonAddPayment creditId={credit.id} onPress={onOpen}  />
+              ) 
+            }
           </div>
           <p className="text-small text-default-500 capitalize">
             { loader.serverData.folder.name } - { `Grupo ${loader.serverData.group.name}` }
@@ -107,6 +88,7 @@ export default function CreditDetailPage() {
       </CardHeader>
       <Divider/>
       <CardBody className="flex flex-col gap-2">
+        <ModalPay isOpen={isOpen} onOpenChange={onOpenChange} />
           <PersonFormEdit 
             { ...client }
             urlAction="clients"

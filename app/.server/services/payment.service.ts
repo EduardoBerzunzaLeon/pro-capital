@@ -12,6 +12,7 @@ import dayjs from 'dayjs';
 
 export const findAll = async (props: PaginationWithFilters) => {
     const { data, metadata } = await Repository.payment.findAll({...props});
+
     return Service.paginator.mapper({
         metadata,
         data,
@@ -65,12 +66,12 @@ export const createOne =  async (form: FormData, creditId?: RequestId) => {
     validatePaymentDate(paymentDate, creditDb.creditAt);
     validateDebt(currentDebt, paymentAmount);
 
-    // Si es administrador puede saltarse esto
+    // TODO: Si tiene los roles requeridos puede saltarse esta validación
     if(creditDb.lastPayment && paymentDate <= creditDb.lastPayment) {
         throw ServerError.badRequest(`Ya existe un pago con la fecha igual o inferior a ${paymentDate}`);
     }
 
-    const paymentCreated =  await Repository.payment.createOne({
+    const paymentCreated = await Repository.payment.createOne({
         agentId,
         paymentAmount,
         paymentDate,
@@ -86,8 +87,6 @@ export const createOne =  async (form: FormData, creditId?: RequestId) => {
 
     //  RECALCULAR SI TIENE DERECHO A RENOVACION
      await Service.credit.updateCreditByPayment(id, {
-        currentDebt: currentDebt - paymentAmount,
-        paymentDate,
         status: creditDb.status,
         totalAmount: creditDb.totalAmount,
         paymentAmount: creditDb.paymentAmount,
@@ -144,12 +143,8 @@ export const deleteOne = async (idPayment: RequestId) => {
         throw ServerError.internalServer('No se pudo eliminar el pago');
     }
 
-    const lastPayment = await findLastPayment(credit.id, paymentDb.id);
-
     await Service.credit.updateCreditByPayment(credit.id, {
-        paymentDate: lastPayment,
         status: credit.status,
-        currentDebt: Number(credit.currentDebt) + Number(paymentDb.paymentAmount),
         totalAmount: Number(credit.totalAmount),
         paymentAmount: Number(credit.paymentAmount),
         creditAt: credit.creditAt,
@@ -158,9 +153,8 @@ export const deleteOne = async (idPayment: RequestId) => {
      });
 }
 
-    const findLastPayment = async (creditId: number, paymentId: number) => {
-     
-        const paymentDb = await Repository.payment.findLastPayment(creditId, paymentId);
+export const findLastPayment = async (creditId: number) => {
+        const paymentDb = await Repository.payment.findLastPayment(creditId);
         return (paymentDb && paymentDb.length > 0) ? paymentDb[0].paymentDate : undefined;
     }
 
@@ -212,12 +206,7 @@ export const updateOne = async (form: FormData, idPayment: RequestId) => {
         throw ServerError.badRequest('No se pudo actualizar el pago');
     }
 
-    const lastPayment = await findLastPayment(credit.id, paymentDb.id);
-    console.log(lastPayment);
-
     await Service.credit.updateCreditByPayment(credit.id, {
-        currentDebt: currentDebt - Number(paymentAmount),
-        paymentDate: lastPayment,
         status: credit.status,
         totalAmount: Number(credit.totalAmount),
         paymentAmount: Number(credit.paymentAmount),
@@ -228,11 +217,34 @@ export const updateOne = async (form: FormData, idPayment: RequestId) => {
 
 }
 
+
+export const findTotalPayment = async (creditId: number) => {
+    const stadistics =  await Repository.payment.findTotalPayment(creditId);
+
+    if(!stadistics) {
+        throw ServerError.internalServer('Ocurrio un error al momento de calcular los pagos.');
+    }
+
+    if(stadistics.length === 0) {
+        return {
+            sum: 0,
+            count: 0
+        }
+    }
+
+    return {
+        sum: stadistics[0]._sum.paymentAmount ?? 0,
+        count: stadistics[0]._count.paymentAmount,
+    }
+}
+
 export default {
     findAll,
     createOne,
     deleteOne,
     deleteFastOne,
     updateOne,
-    findOne
+    findTotalPayment,
+    findOne,
+    findLastPayment
 }

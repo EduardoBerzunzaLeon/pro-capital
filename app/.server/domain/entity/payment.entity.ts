@@ -2,6 +2,7 @@ import dayjs from 'dayjs';
 
 import { ServerError } from "~/.server/errors"
 import { PaymentStatus } from "~/.server/interfaces"
+import { Status } from './credit.entity';
 
 interface AgentI {
     id: number,
@@ -27,10 +28,14 @@ interface CreditFolderI extends Name {
 }
 
 interface CreditPaymentI {
+    id: number,
     currentDebt: number,
+    lastPayment: Date,
+    nextPayment: Date,
     client: SimplePersonI,
     aval: SimplePersonI,
     group: Name,
+    status: Status
     folder: CreditFolderI
 }
 
@@ -55,7 +60,7 @@ export class Payment {
     public readonly folio?: number;
     public readonly notes: string;
     public readonly status: PaymentStatus;
-    public readonly credit: CreditPaymentI;
+    public readonly credit: Omit<CreditPaymentI, 'lastPayment' | 'nextPayment'> & { lastPayment: string, nextPayment: string };
 
     private constructor({
         id,
@@ -100,7 +105,6 @@ export class Payment {
         if(!paymentAmount) throw ServerError.badRequest('La cantidad de pago es requerida');
         if(!paymentDate || !(paymentDate instanceof Date)) throw ServerError.badRequest('La fecha de pago es requerida');
         if(!captureAt || !(captureAt instanceof Date)) throw ServerError.badRequest('La fecha de captura es requerida');
-        if(!notes) throw ServerError.badRequest('Las notas es requerida');
         if(!status) throw ServerError.badRequest('El estatus es requerida');
         if(!credit) throw ServerError.badRequest('El crédito es requerida');
         if(!credit.folder) throw ServerError.badRequest('La carpeta es requerida');
@@ -111,11 +115,14 @@ export class Payment {
         if(!credit.aval || !credit.aval.fullname) throw ServerError.badRequest('El aval es requerida');
         if(!credit.client || !credit.client.fullname) throw ServerError.badRequest('el client es requerida');
         if(!agent?.fullName) throw ServerError.badRequest('El agente es requerido');
+        if(!credit.nextPayment || !(credit.nextPayment instanceof Date) ) throw ServerError.badRequest('La fecha del siguiente pago es requerida');
         const captureAtFormatted = dayjs(captureAt).add(1, 'day').format('YYYY-MM-DD'); 
         const paymentDateFormatted = dayjs(paymentDate).add(1, 'day').format('YYYY-MM-DD'); 
         credit.folder.route.name = `Ruta ${credit.folder.route.name}`;
         credit.group.name = `Grupo ${credit.group.name}`;
 
+        const nextPaymentFormatted = dayjs(credit.nextPayment).add(1, 'day').format('YYYY-MM-DD'); 
+        const lastPaymentFormatted = credit.lastPayment ? dayjs(credit.lastPayment).add(1, 'day').format('YYYY-MM-DD') : 'Sin cobrar'; 
 
         return {
             id,
@@ -124,9 +131,13 @@ export class Payment {
             paymentDate: paymentDateFormatted,
             captureAt: captureAtFormatted,
             folio: folio ?? '',
-            notes,
+            notes: notes ?? '',
             status,
-            credit
+            credit: { 
+                ...credit, 
+                lastPayment: lastPaymentFormatted, 
+                nextPayment: nextPaymentFormatted
+            }
         }
     }
 

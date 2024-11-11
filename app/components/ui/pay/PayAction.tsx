@@ -1,8 +1,8 @@
 import { ButtonGroup, Tooltip, Button } from "@nextui-org/react";
 import { useNavigate } from "@remix-run/react";
 import { FaEye, FaTrashAlt } from "react-icons/fa";
-import { FaMoneyBill1Wave } from "react-icons/fa6";
 import { useFetcherAction } from "~/application";
+import { ButtonAddPayment } from "./ButtonAddPayment";
 
 interface Props {
     idCredit: number
@@ -12,7 +12,7 @@ interface Props {
 
 export const PayAction = ({ idCredit, onOpen }: Props) => {
 
-    const { handleUpdate, handleDelete, isDeleting } = useFetcherAction({ 
+    const { handleDelete, isDeleting } = useFetcherAction({ 
         key: 'getSinglePayment', 
         route:'pay', 
         id: idCredit,
@@ -21,27 +21,17 @@ export const PayAction = ({ idCredit, onOpen }: Props) => {
 
      const navigate = useNavigate();
 
-    const handleUpdateWithModal = () => {
-        onOpen();
-        handleUpdate()
-    }
-
     const handleView = () => {
         navigate(`/clients/${idCredit}`);
     }
 
   return (
-    <ButtonGroup className='flex justify-center items-center'>
-        <Tooltip showArrow={true} content="Agregar Nuevo Pago">
-            <Button 
-                size='sm' 
-                color='success' 
-                variant='ghost'
-                startContent={<FaMoneyBill1Wave />}
-                isDisabled={isDeleting}
-                onPress={handleUpdateWithModal}
-            >Pagar</Button>
-        </Tooltip>
+    <ButtonGroup className='flex justify-center items-center' isDisabled={isDeleting}>
+        <ButtonAddPayment 
+            creditId={idCredit}
+            onPress={onOpen}
+            isDisabled={isDeleting}
+        />
         <Tooltip showArrow={true} content="Ver Crédito">
             <Button 
                 size='sm' 
@@ -49,7 +39,6 @@ export const PayAction = ({ idCredit, onOpen }: Props) => {
                 isIconOnly
                 variant='ghost'
                 onPress={handleView}
-                isDisabled={isDeleting}
                 ><FaEye />
             </Button>
         </Tooltip>
@@ -59,7 +48,6 @@ export const PayAction = ({ idCredit, onOpen }: Props) => {
                 color='danger' 
                 variant='light'
                 isIconOnly
-                isDisabled={isDeleting}
                 isLoading={isDeleting}
                 onPress={handleDelete}
             >

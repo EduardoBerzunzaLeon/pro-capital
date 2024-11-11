@@ -35,6 +35,7 @@ export interface CreditI {
     nextPayment: Date,
     lastPayment: Date,
     currentDebt: number,
+    countPayments: number,
     status: Status
 }
 
@@ -59,6 +60,7 @@ export class Credit {
     public readonly nextPayment: string;
     public readonly lastPayment: string;
     public readonly currentDebt: number;
+    public readonly countPayments: number;
     public readonly status: Status
 
 
@@ -76,6 +78,7 @@ export class Credit {
         nextPayment,
         lastPayment,
         currentDebt,
+        countPayments,
         status,
     }: Credit) {
         this.id =  id;
@@ -91,6 +94,7 @@ export class Credit {
         this.nextPayment =  nextPayment;
         this.lastPayment =  lastPayment;
         this.currentDebt =  currentDebt;
+        this.countPayments =  countPayments;
         this.status =  status;
     }
 
@@ -114,6 +118,7 @@ export class Credit {
             nextPayment,
             lastPayment,
             currentDebt,
+            countPayments,
             status,
         } = credit;
 
@@ -130,6 +135,7 @@ export class Credit {
         // if( typeof canRenovate !== 'boolean' ) throw ServerError.badRequest('La estatus es requerido');
 
         if(!folder) throw ServerError.badRequest('La carpeta es requerida');
+        if(typeof countPayments === 'undefined' || isNaN(countPayments)) throw ServerError.badRequest('El total de pagos es requerido');
         if(!group?.name) throw ServerError.badRequest('El grupo es requerido');
         if(!folder.town) throw ServerError.badRequest('La localidad es requerida');
         if(!folder.route) throw ServerError.badRequest('La ruta es requerida');
@@ -158,12 +164,9 @@ export class Credit {
             lastPayment: lastPaymentFormatted,
             canRenovate: !!canRenovate,
             currentDebt,
+            countPayments,
             status,
         })
-
-        
-
-
     }
 
 }

@@ -28,10 +28,6 @@
     - Agregar el boton de autogenerar grupos
     - Agregar boton de actualizar estatus de creditos
     - Agregar el reporte de creditos nuevos y faltate
-    - Ver pagos
-    - Filtrar pagos
-    - Actualizar pagos
-    - Eliminar pagos
     - Agregar pagos en credito detalle
     - Agregar tabla dinamica con los pagos en credito detalle.
     - Agregar opcion de eliminar, actualizar pagos en la tabla de credito detalle.
@@ -72,3 +68,13 @@
     - Controlar Ataque CSRF: https://github.com/sergiodxa/remix-utils#csrf
     - Hacer un reporte vacio con los datos, 
 
+# TODO: 
+    Agregar contador de pagos en tablas de credito - DONE
+    Agregar contador de pagos en la actualizacion de datos - DONE
+    Agregar pago en historial de pago y en detalle credito - DONE
+    Agregar los pagos y filtro por localidad y grupo en detalle credito 
+    Agregar boton "Actualizar estatus de las cuentas" 
+    Reporte de excel por fecha de cuentas vencidas, y nuevas cuentas por carpeta
+    Agregar boton de "Generar grupos"
+    Agregar el estatus a la carpeta
+    Definir todos los permisos 

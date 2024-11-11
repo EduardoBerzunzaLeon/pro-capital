@@ -1,5 +1,5 @@
-import { Select, SelectItem,  useDisclosure } from "@nextui-org/react";
-import { useLoaderData } from "@remix-run/react";
+import { Button, Select, SelectItem,  useDisclosure } from "@nextui-org/react";
+import { useLoaderData, useNavigate } from "@remix-run/react";
 import { useCallback, useMemo, useState } from "react";
 import { Credit } from "~/.server/domain/entity"
 import { SortDirection, Selection, Key } from "~/.server/interfaces"
@@ -49,13 +49,16 @@ const columns = [
     { key: 'canRenovate', label: 'RENOVACIÓN'},
     { key: 'nextPayment', label: 'PROXIMO PAGO', sortable: true},
     { key: 'lastPayment', label: 'ULTIMO PAGO', sortable: true},
+    { key: 'countPayments', label: 'TOTAL DE PAGOS' },
     { key: 'currentDebt', label: 'DEUDA ACTUAL', sortable: true},
     { key: 'status', label: 'ESTATUS', sortable: true},
     { key: 'actions', label: 'ACCIONES'},
   ]
 
 const INITIAL_VISIBLE_COLUMNS = [
-    'client.fullname', 'folder.name', 'group.name', 'actions'
+    'client.fullname', 'folder.name', 'group.name', 
+    'countPayments', 'paymentAmount', 'currentDebt',
+    'creditAt', 'nextPayment',  'actions', 
 ];
 
 export {
@@ -66,6 +69,7 @@ export default function PayPage() {
     const loader = useLoaderData<HandlerSuccess<Loader>>();
     const [visibleColumns, setVisibleColumns] = useState<Selection>(new Set(INITIAL_VISIBLE_COLUMNS)); 
     const {isOpen, onOpen, onOpenChange} = useDisclosure();
+    const navigate = useNavigate();
 
     const { 
         loadingState, 
@@ -87,7 +91,16 @@ export default function PayPage() {
     const renderCell = useCallback((credit: Credit, columnKey: Key) => {
     
         if(columnKey === 'canRenovate') {
-            return <span className='capitalize'>{credit.canRenovate}</span>
+          return <span className='capitalize'>{credit.canRenovate}</span>
+        }
+
+        if(columnKey === 'countPayments') {
+          return <span className='capitalize'>{credit.countPayments}</span>
+        }
+
+            
+        if(columnKey === 'canRenovate' && credit.canRenovate) {
+          return <Button variant='ghost' color='primary' onPress={() => { navigate(`/clients/${credit.client.curp}/renovate/${credit.id}`) }}>Renovar</Button>
         }
 
         if(columnKey === 'actions') {
