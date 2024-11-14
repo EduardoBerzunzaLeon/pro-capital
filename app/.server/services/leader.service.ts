@@ -40,7 +40,6 @@ const verifyIfHasFolder = async (folderId: number) => {
 
 const verifyIfHasOwnFolder = async (folderId: number, leaderId: number) => {
     const leader = await Repository.leader.findIfHasOwnFolder(folderId, leaderId);
-    console.log({leader});
     return !!leader;
 }
 
@@ -110,6 +109,13 @@ export const findAllBirthday = async () => {
 export const resubscribe = async (id: RequestId, folderId: RequestId) => {
     const { id: leaderIdVal } = validationZod({ id }, idSchema);
     const { id: folderIdVal } = validationZod({ id: folderId }, idSchema);
+
+    // TODO: comprobar el metodo que no exista otra líder activa en la carpeta
+    const leaderActive = await Repository.leader.findIfHasOtherLeader(folderIdVal, leaderIdVal);
+    
+    if(leaderActive?.id) {
+        throw ServerError.badRequest('La carpeta ya tiene asignada una lider activa');
+    }
 
     return await Repository.leader.resubscribe(leaderIdVal, folderIdVal);
 } 

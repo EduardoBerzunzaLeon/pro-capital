@@ -1,16 +1,18 @@
 
 import { Generic } from "~/.server/interfaces";
-import { apiPrismaFeatures } from "../";
+import { apiPrismaFeatures, db } from "../";
 import { BaseRepositoryI, FindManyProps, FindManyWithPaginatorProps } from "~/.server/domain/interface";
+import { Prisma, PrismaClient } from "@prisma/client";
+import { DefaultArgs, PrismaClientOptions } from "@prisma/client/runtime/library";
+
 
 export function baseRepository<
-    T extends Generic, 
     P extends Generic, 
     S,
     D extends Generic,
     C extends Generic,
     O extends Generic
->(entity: T): BaseRepositoryI<T, P, S, D, C, O> {
+>(entity: Prisma.ModelName): BaseRepositoryI<P, S, D, C, O> {
 
     function prepareParams(searchParams?: P, select?: S) {
 
@@ -33,7 +35,7 @@ export function baseRepository<
     async function findOne(searchParams: P, select?: S, isUnique: boolean = false) {
         const params = prepareParams(searchParams, select);
         if(isUnique) {
-            return await entity.findUnique(params);
+            return await db['user'].findUnique(params);
         }
         return await entity.findFirst(params); 
     }
@@ -94,7 +96,14 @@ export function baseRepository<
     }
     
     async function createMany(data: C[], skipDuplicates: boolean = false) {
-        return await entity.createMany({ 
+        return await entity.createManyAndReturn({ 
+            data,
+            skipDuplicates
+        });
+    }
+
+    async function createManyAndReturn(data: C[], skipDuplicates: boolean = false) {
+        return await entity.createManyAndReturn({ 
             data,
             skipDuplicates
         });
@@ -110,6 +119,7 @@ export function baseRepository<
         deleteMany,
         createOne,
         createMany,
+        createManyAndReturn,
         entity
     }
 }

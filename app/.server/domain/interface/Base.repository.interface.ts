@@ -37,6 +37,7 @@ export interface BaseRepositoryI<T, P, S, D, C, O> {
     deleteMany: (searchParams: P) => Promise<Generic | undefined>,
     createOne: (data: C) => Promise<Generic | undefined>,
     createMany: (data: C[], skipDuplicates: boolean) => Promise<Generic | undefined>,
+    createManyAndReturn: (data: C[], skipDuplicates: boolean) => Promise<Generic[] | undefined>,
     entity: T
 }
 

@@ -2,6 +2,13 @@ import { Generic } from '~/.server/interfaces';
 import { Prisma } from '@prisma/client';
 import { BaseRepositoryI } from '.';
 
+export interface Group {
+    id: number,
+    name: number,
+    folderId: number
+}
+
+export type CreateGroup = Omit<Group, 'id'> & { predecessorId: number };
 
 export type BaseGroupI = BaseRepositoryI<
     Prisma.GroupDelegate, 
@@ -15,6 +22,9 @@ export type BaseGroupI = BaseRepositoryI<
 export interface GroupRepositoryI {
     deleteMany: (groupsId:number[]) => Promise<Generic | undefined>
     createOne: (name: number, folderId: number) => Promise<Generic | undefined>,
+    findGroupWithCredits: () => Promise<Generic[] | undefined>,
+    updateSuccessor: (id: number, successorId: number) => Promise<Generic | undefined>,
+    createMany: (groups: CreateGroup[]) => Promise<Generic[] | undefined>,
     base: BaseGroupI
 }
 

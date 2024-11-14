@@ -26,7 +26,7 @@ export interface FolderI {
     town: Pick<TownI, 'name' | 'municipality'>;
     route: RouteI;
     groups?: string[] //TODO: add group interface
-    leader?: LeaderI | null;
+    leaders?: LeaderI[] | [];
     credits?: string[]; //TODO: add credit Interface
     _count?: Count;
 }
@@ -77,7 +77,7 @@ export class Folder {
             town,
             route,
             groups,
-            leader,
+            leaders,
             credits,
             _count,
         } =  folder;
@@ -91,7 +91,8 @@ export class Folder {
         const townName = town.name;
         const municipalityName = town.municipality.name;
         const routeName = route.name;
-        const leaderName = leader?.name ? `${leader?.name} ${leader?.lastNameFirst}` : '';
+        const leaderName = (leaders && leaders.length > 0) ? `${leaders[0]?.name} ${leaders[0]?.lastNameFirst}` : '';
+        
         const countGroup = _count?.groups || 0; 
 
 

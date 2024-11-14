@@ -42,9 +42,10 @@ export interface LeaderRepositoryI{
     createOne: (props: CreateLeaderProps) => Promise<Generic | undefined>,
     findIfHasFolder: (folderId: number) => Promise<Generic | undefined>,
     findIfHasOwnFolder: (folderId: number, leaderId: number) => Promise<Generic | undefined>,
+    findIfHasOtherLeader: (folderId: number, leaderId: number) => Promise<Generic | undefined>,
     findAllBirthday: (month: number, day: number) => Promise<Generic[] | undefined>
     deleteOne: (id: number) => Promise<Generic | undefined>,
     updateOne: (id: number, props: UpdateLeaderProps) => Promise<Generic | undefined>,
     unsubscribe: (id: number, date: Date, reason?: string) => Promise<Generic | undefined>,
-    resubscribe: (id: number, folderId: number) => Promise<Generic | undefined>,
+    resubscribe: <T>(id: number, folderId: number) => Promise<T>,
 }

@@ -38,12 +38,17 @@ export function FolderRepository(base: BaseFolderI) : FolderRepositoryI {
                         }
                     },
                     route: { select: { name: true } },
-                    leader: {
+                    leaders: {
+                        where: {
+                            isActive: true
+                        },
                         select: {
                             name: true,
                             lastNameFirst: true,
                             lastNameSecond: true,
-                        }
+                            isActive: true,
+                        },
+                        take: 1
                     },
                     _count: {
                         select: {
