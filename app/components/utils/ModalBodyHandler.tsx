@@ -17,7 +17,7 @@ export const ModalBodyHandler = ({ error, state, loadingMessage }: Props) => {
         {
             (hasError) && (
                 <ModalBody >
-                <ErrorCard error={error} />
+                    <ErrorCard error={error} />
                 </ModalBody>
             )
         }

@@ -1,6 +1,7 @@
-import { json, LoaderFunction } from "@remix-run/node";
+import { LoaderFunction } from "@remix-run/node";
+import { ServerError } from "~/.server/errors";
 import { Generic } from "~/.server/interfaces";
-import { getEmptyPagination, handlerPaginationParams, handlerSuccess, parseNumber } from "~/.server/reponses";
+import { handlerError, handlerPaginationParams, handlerSuccess, parseNumber } from "~/.server/reponses";
 import { Service } from "~/.server/services";
 
 const columnsFilter = [
@@ -25,18 +26,36 @@ const columnsFilter = [
     agent: 'agent.fullName'
   }
 
-
   export const paymentClientLoader: LoaderFunction = async ({ request, params }) => {
     const url = new URL(request.url);
-    const group = url.searchParams.get('group') || '';
+    const group = url.searchParams.get('g') || '';
+    const folder = url.searchParams.get('f') || '';
+    const client = url.searchParams.get('cl') || '';
     const { creditId } = params;
 
     try {
         const groupParsed = parseNumber(group);
-        const idParsed = { column: 'credit.id', value: Number(creditId) };
+        const clientParsed = parseNumber(client);
+
         // TODO: PASS CLIENTID, AND GROUPiD, IF EXITS IGNORE IDPARSED
         const groupFormatted = { column: 'credit.group.id', value: groupParsed };
+        const clientFormatted = { column: 'credit.client.id', value: clientParsed };
+        
+        let creditValue: number | string = Number(creditId);
 
+        const areEmpty = group === '' && folder === '' && client === '';
+        
+        if(group && folder && client) {
+          creditValue = '';
+        }
+
+        if(!areEmpty && creditValue !== '') {
+          console.log('error perra');
+          throw ServerError.badRequest('La solicitud a la URL es incorrecta, favor de verificar la ruta de acceso');
+          // ?g=2&cl=1&f=
+        }
+        
+        const idParsed = { column: 'credit.id', value: creditValue };
         const {
           page, limit, column, direction
         } = handlerPaginationParams(request.url, 'captureAt', columnsFilter);
@@ -49,6 +68,7 @@ const columnsFilter = [
           search: [
             idParsed,
             groupFormatted,
+            clientFormatted
           ]
         });
 
@@ -59,10 +79,12 @@ const columnsFilter = [
           c: column,
           d: direction,
           s: [groupFormatted],
-          group
+          group,
+          folder
         });
 
     } catch (e) {
-        return json(getEmptyPagination({ group }));
+      const { error, status } = handlerError(e);
+      throw new Response(error, { status });
     }
   }

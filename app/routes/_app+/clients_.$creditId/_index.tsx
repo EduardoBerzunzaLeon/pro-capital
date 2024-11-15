@@ -63,8 +63,6 @@ export default function CreditDetailPage() {
   const { client, aval, ...credit } = loader.serverData;
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
-  console.log({ client, credit });
-
   return (<>
     <Card className='w-full'>
       <CardHeader>

@@ -1,4 +1,4 @@
-import { Select, SelectItem, Skeleton } from "@nextui-org/react";
+import { Select, SelectItem } from "@nextui-org/react";
 import { useFetcher, useSearchParams } from "@remix-run/react";
 import { useEffect, useState } from "react";
 
@@ -10,17 +10,44 @@ interface Props {
 
 export const SelectGroup = ({ clientId, folderId, groupId }: Props) => {
 
-    const fetcher = useFetcher<{ id: number, name: string }[]>({ key: 'getGroups' });
-    const [value, setValue] = useState(groupId.toString());
+    const fetcher = useFetcher<{ serverData: {id: number, name: string }[], folderId: number }>({ key: 'getGroups' });
+    const [value, setValue] = useState<string | undefined>(undefined);
     const isLoading = fetcher.state !== 'idle' || fetcher.data === undefined;
-    const [ , setSearchParams] = useSearchParams();
+    const [params , setSearchParams] = useSearchParams();
 
-    console.log({fetcher: fetcher})
+    useEffect(() => {
+
+        if(fetcher.state === 'idle' && fetcher.data) {
+            const newValue = fetcher.data?.serverData.length > 0 
+                ? fetcher.data?.serverData[0].id.toString()
+                : undefined;
+            setValue(newValue);
+        } 
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [fetcher.state, fetcher.data])
+    console.log({ data: fetcher.data, value });
+
+    useEffect(() => { 
+        // NOTE: Avoid rerender in the first call
+        if(value === groupId.toString() && params.size === 0) return;
+
+        if(value) {
+            setSearchParams(prev => {
+                prev.set('g', value ?? '')
+                prev.set('cl', clientId.toString())
+                prev.set('f', fetcher.data?.folderId.toString() ?? prev.get('f')?.toString() ?? '')
+                return prev;
+            })
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [value])
+
     useEffect(() => {
 
         fetcher.submit({
             clientId,
-            folderId
+            folderId: params.get('f')?.toString() ?? folderId
         }, {
             method: 'GET',
             action: '/clients/filter/group'
@@ -31,17 +58,11 @@ export const SelectGroup = ({ clientId, folderId, groupId }: Props) => {
 
     const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setValue(e.target.value);
-        setSearchParams(prev => {
-            prev.set('group', e.target.value)
-            return prev;
-        })
     }
 
-    // TODO: DELETE DEFAULTsELECTED AND 
   return (
-    <Skeleton isLoaded={!isLoading} className="w-3/5">
         <Select
-            items={fetcher.data ?? []}
+            items={fetcher.data?.serverData ?? []}
             label="Ruta"
             placeholder="Seleccione una carpeta"
             className={`red-dark text-foreground bg-content1`}
@@ -50,8 +71,9 @@ export const SelectGroup = ({ clientId, folderId, groupId }: Props) => {
             name="route"
             id='route'
             isLoading={isLoading}
-            value={[value.toString()]}
-            defaultSelectedKeys={[groupId.toString()]}
+            value={ value ? [value.toString()] : [] }
+            selectedKeys={value ? [value.toString()] : []}
+            defaultSelectedKeys={[params.get('g')?.toString() ?? groupId.toString()]}
             onChange={handleChange}
             disallowEmptySelection
         >
@@ -63,6 +85,5 @@ export const SelectGroup = ({ clientId, folderId, groupId }: Props) => {
                 </SelectItem>
             )}
         </Select>
-        </Skeleton>
   )
 }
