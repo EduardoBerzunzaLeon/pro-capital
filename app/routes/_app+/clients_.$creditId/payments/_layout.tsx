@@ -1,11 +1,11 @@
 import { Select, SelectItem, useDisclosure } from "@nextui-org/react";
-import { useLoaderData, useOutletContext, useRouteError } from "@remix-run/react";
+import { useLoaderData, useOutletContext, useRouteError, useSearchParams } from "@remix-run/react";
 import { useState, useMemo, useCallback } from "react";
 import { Payment } from "~/.server/domain/entity";
 import { Key, SortDirection, Selection, Generic } from "~/.server/interfaces";
 import { HandlerSuccess } from "~/.server/reponses";
 import { useParamsPaginator, useRenderCell } from "~/application";
-import { PaymentAction, ChipStatusCredit, ChipStatusPayment, ModalPaymentEdit, TableDetail, Pagination, RowPerPage, SelectFolder } from "~/components/ui";
+import { PaymentAction, ChipStatusCredit, ChipStatusPayment, ModalPaymentEdit, TableDetail, Pagination, RowPerPage, SelectFolder, Alert } from "~/components/ui";
 import { ModalPay } from "~/components/ui/pay";
 import { SelectGroup } from '../../../../components/ui/payment/SelectGroup';
 import { paymentClientLoader } from "~/application/payment/payment.client.loader";
@@ -96,6 +96,7 @@ export default function ClientPaymentsPage() {
   const [visibleColumns, setVisibleColumns] = useState<Selection>(new Set(INITIAL_VISIBLE_COLUMNS));
   const { isOpen, onOpenChange, onOpen } = useDisclosure();
   const { isOpen: isOpenCreate, onOpenChange: onOpenChangeCreate, onOpen: onOpenCreate } = useDisclosure();
+  const [params] = useSearchParams()
 
   const { 
     loadingState, 
@@ -160,6 +161,9 @@ export default function ClientPaymentsPage() {
   }, [visibleColumns]);
   
     return (<>
+      { (params.get('f') && params.get('f') !== folder.toString()  )
+        && (<Alert title="ADVERTENCIA" notes="La carpeta no es la carpeta del crédito actual, tenga cuidado al realizar un pago por este medio" />)
+      }
       <SelectFolder  clientId={client} folderId={folder} />
       <SelectGroup clientId={client} folderId={folder} groupId={group}/>
       <ModalPaymentEdit isOpen={isOpen} onOpenChange={onOpenChange}/>

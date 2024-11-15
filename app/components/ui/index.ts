@@ -5,6 +5,7 @@ export { InputValidation } from './forms/Input';
 export { Pagination } from './pagination/Pagination';
 export { RowPerPage } from './rowPerPage/RowPerPage';
 export { Action } from './Action/Action';
+export { Alert } from './alert';
 
 export * from './animation';
 export * from './municipality';
@@ -15,6 +16,5 @@ export * from './filters';
 export * from './table';
 export * from './credit';
 export * from './payment';
-
 
 
