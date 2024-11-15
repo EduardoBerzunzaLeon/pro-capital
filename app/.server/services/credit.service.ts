@@ -833,6 +833,31 @@ export const calculateOverdueCredits = async () => {
 }
 
 
+export const findFoldersByClient = async (clientId: RequestId) => {
+    const { id } = validationZod({ id: clientId }, idSchema);
+    const creditDb = await Repository.credit.findFoldersByClient(id);
+
+    if(!creditDb || creditDb.length === 0) {
+        throw ServerError.badRequest('No se encontraron carpetas asignadas a creditos del usuario');
+    }
+
+    return creditDb.map(({ folder }) => folder ); 
+}
+
+export const findGroupsByFolder = async (clientId: RequestId, folderId: RequestId) => {
+    const { id } = validationZod({ id: clientId }, idSchema);
+    const { id: folderIdVal } = validationZod({ id: folderId }, idSchema);
+    const creditDb = await Repository.credit.findGroupsByFolder(id, folderIdVal);
+
+    if(!creditDb || creditDb.length === 0) {
+        throw ServerError.badRequest('No se encontraron grupos asignadas a la carpeta');
+    }
+
+    return creditDb.map(({ group }) => group ); 
+}
+
+
+
 export default{ 
     additional,
     calculateWeeks,
@@ -844,6 +869,8 @@ export default{
     findCreditToPay,
     findCurrentWeek,
     findDetailsCredit,
+    findFoldersByClient,
+    findGroupsByFolder,
     isOverdueCredit,
     renovate,
     updateCreditByPayment,

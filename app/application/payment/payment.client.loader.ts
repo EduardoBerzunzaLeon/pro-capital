@@ -43,31 +43,31 @@ const columnsFilter = [
         const groupFormatted = { column: 'credit.group.name', value: group };
 
         const {
-            page, limit, column, direction
-          } = handlerPaginationParams(request.url, 'captureAt', columnsFilter);
+          page, limit, column, direction
+        } = handlerPaginationParams(request.url, 'captureAt', columnsFilter);
           
-          const data = await Service.payment.findAll({
-            page, 
-            limit, 
-            column: columnSortNames[column] ?? 'captureAt', 
-            direction,
-            search: [
-              folderParsed,
-              idParsed,
-              groupFormatted,
-           ]
-          });
+        const data = await Service.payment.findAll({
+          page, 
+          limit, 
+          column: columnSortNames[column] ?? 'captureAt', 
+          direction,
+          search: [
+            folderParsed,
+            idParsed,
+            groupFormatted,
+          ]
+        });
 
-          return handlerSuccess(200, { 
-            ...data,
-            p: page,
-            l: limit,
-            c: column,
-            d: direction,
-            s: [folderParsed, groupFormatted],
-            folder,
-            group
-          });
+        return handlerSuccess(200, { 
+          ...data,
+          p: page,
+          l: limit,
+          c: column,
+          d: direction,
+          s: [folderParsed, groupFormatted],
+          folder,
+          group
+        });
 
     } catch (e) {
         console.log(e);

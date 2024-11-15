@@ -63,6 +63,8 @@ export default function CreditDetailPage() {
   const { client, aval, ...credit } = loader.serverData;
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
+  console.log({ client, credit });
+
   return (<>
     <Card className='w-full'>
       <CardHeader>
@@ -107,6 +109,6 @@ export default function CreditDetailPage() {
           Visit source code on GitHub.
       </CardFooter>
     </Card>
-    <Outlet />
+    <Outlet context={{ client: client.id, folder: credit.folder.id, group:  credit.group.id }}/>
   </>)
 }

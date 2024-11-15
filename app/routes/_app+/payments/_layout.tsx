@@ -249,7 +249,7 @@ export default function PaymentPage( ) {
         maxValue={10000}
         param='debt'
         value={loader?.serverData?.debt}
-        />
+      />
         {/* TODO: traer de la base de datos el pago mas grande */}
       <SliderFilter 
         label='Monto del Pago'

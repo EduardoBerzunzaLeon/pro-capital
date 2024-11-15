@@ -56,26 +56,28 @@ export type BaseCreditI = BaseRepositoryI<
 >;
 
 export interface CreditRepositoryI{
+    createOne: (credit: CreditCreateI) => Promise<Generic | undefined>,
+    deleteOne: (id: number) => Promise<Generic | undefined>
+    exportLayout: (folderName: string, groupName: number) => Promise<Generic | undefined>,
     findAll: (paginationData: PaginationWithFilters ) => Promise<ResponseWithMetadata>,
     findByCurp: (curp: string) => Promise<Generic | undefined>,
-    findCredit: (id: number) => Promise<Generic | undefined>,
-    findCredits: (curp: string) => Promise<Generic[] | undefined>,
+    findByPreviousCreditId: (id: number) => Promise<Generic | undefined>,
     findByRenovate: (id: number, curp: string) => Promise<Generic | undefined>,
-    verifyCredit: (id: number, folderId: number) => Promise<Generic | undefined>,
-    createOne: (credit: CreditCreateI) => Promise<Generic | undefined>,
-    exportLayout: (folderName: string, groupName: number) => Promise<Generic | undefined>,
-    updatePrevious: (id: number, data: UpdatePreviousData) => Promise<Generic | undefined>,
-    updateOne: (id: number, data: UpdateOne) => Promise<Generic | undefined>,
-    updateCreditByPayment: (id: number, data: UpdateAddPayment) => Promise<Generic | undefined>,
-    verifyFolderInCredit: (curp: string, folderId: number) => Promise<Generic | undefined>,
+    findCredit: (id: number) => Promise<Generic | undefined>,
     findCreditForDelete: (id: number) => Promise<Generic | undefined>,
-    findDetailsCredit: (id: number) => Promise<Generic | undefined>,
+    findCredits: (curp: string) => Promise<Generic[] | undefined>,
     findCreditToPay: (id: number) => Promise<Generic | undefined>,
     findCreditToUpdate: (id: number) => Promise<Generic | undefined>,
-    deleteOne: (id: number) => Promise<Generic | undefined>
-    verifyClientCurp: (idClient: number, curp: string) => Promise<Generic[] | undefined>,
-    verifyAvalCurp: (idClient: number, curp: string) => Promise<Generic[] | undefined>,
-    findByPreviousCreditId: (id: number) => Promise<Generic | undefined>,
+    findDetailsCredit: (id: number) => Promise<Generic | undefined>,
     findInProcessCredits: () => Promise<Generic[] | undefined>,
+    findFoldersByClient: (clientId: number) => Promise<Generic[] | undefined>,
+    findGroupsByFolder: (clientId: number, folderId: number) => Promise<Generic[] | undefined>,
+    updateCreditByPayment: (id: number, data: UpdateAddPayment) => Promise<Generic | undefined>,
+    updateOne: (id: number, data: UpdateOne) => Promise<Generic | undefined>,
+    updatePrevious: (id: number, data: UpdatePreviousData) => Promise<Generic | undefined>,
+    verifyAvalCurp: (idClient: number, curp: string) => Promise<Generic[] | undefined>,
+    verifyClientCurp: (idClient: number, curp: string) => Promise<Generic[] | undefined>,
+    verifyCredit: (id: number, folderId: number) => Promise<Generic | undefined>,
+    verifyFolderInCredit: (curp: string, folderId: number) => Promise<Generic | undefined>,
     base: BaseCreditI
 }

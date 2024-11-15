@@ -439,6 +439,36 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
             }
         })
     }
+
+    async function findFoldersByClient(clientId: number) {
+        return await base.findMany({
+            searchParams: { clientId },
+            select: {
+                id: true,
+                folder: {
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                }
+            }
+        })
+    }
+
+    async function findGroupsByFolder(clientId: number, folderId: number) {
+        return await base.findMany({
+            searchParams: { clientId, folderId },
+            select: {
+                id: true,
+                group: {
+                    select: {
+                        id: true, 
+                        name: true
+                    }
+                }
+            }
+        })
+    }
     
     return {
         createOne,
@@ -446,22 +476,24 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
         exportLayout,
         findAll,
         findByCurp,
-        findCreditToUpdate,
+        findByPreviousCreditId,
         findByRenovate,
         findCredit,
         findCreditForDelete,
         findCredits,
         findCreditToPay,
+        findCreditToUpdate,
         findDetailsCredit,
-        updatePrevious,
-        updateOne,
-        updateCreditByPayment,
-        verifyCredit,
-        verifyClientCurp,
-        verifyAvalCurp,
-        verifyFolderInCredit,
-        findByPreviousCreditId,
+        findFoldersByClient,
+        findGroupsByFolder,
         findInProcessCredits,
+        updateCreditByPayment,
+        updateOne,
+        updatePrevious,
+        verifyAvalCurp,
+        verifyClientCurp,
+        verifyCredit,
+        verifyFolderInCredit,
         base
     }
 

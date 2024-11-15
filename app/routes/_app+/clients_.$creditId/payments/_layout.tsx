@@ -1,12 +1,12 @@
 import { Select, SelectItem, useDisclosure } from "@nextui-org/react";
-import { useLoaderData } from "@remix-run/react";
+import { useLoaderData, useOutletContext } from "@remix-run/react";
 import { useState, useMemo, useCallback } from "react";
 import { Payment } from "~/.server/domain/entity";
 import { Key, SortDirection, Selection } from "~/.server/interfaces";
 import { HandlerSuccess } from "~/.server/reponses";
 import { useParamsPaginator, useRenderCell } from "~/application";
 import { paymentLoader } from "~/application/payment/payment.loader"
-import { PaymentAction, ChipStatusCredit, ChipStatusPayment, ModalPaymentEdit, TableDetail, Pagination, RowPerPage } from "~/components/ui";
+import { PaymentAction, ChipStatusCredit, ChipStatusPayment, ModalPaymentEdit, TableDetail, Pagination, RowPerPage, SelectFolder } from "~/components/ui";
 import { ModalPay } from "~/components/ui/pay";
 
 export {
@@ -72,10 +72,16 @@ interface Loader {
     'credit.client.fullname', 'credit.folder.name','credit.group.name', 'paymentAmount', 'folio', 'actions'
   ]
 
+interface OutletContextProps {
+  client: number,
+  folder: number,
+  group: number,
+}
 
 export default function ClientPaymentsPage() {
 
-    const loader = useLoaderData<HandlerSuccess<Loader>>();
+  const loader = useLoaderData<HandlerSuccess<Loader>>();
+  const { client, folder, group } = useOutletContext<OutletContextProps>();
   const [visibleColumns, setVisibleColumns] = useState<Selection>(new Set(INITIAL_VISIBLE_COLUMNS));
   const { isOpen, onOpenChange, onOpen } = useDisclosure();
   const { isOpen: isOpenCreate, onOpenChange: onOpenChangeCreate, onOpen: onOpenCreate } = useDisclosure();
@@ -143,9 +149,10 @@ export default function ClientPaymentsPage() {
   }, [visibleColumns]);
   
     return (<>
-         <ModalPaymentEdit isOpen={isOpen} onOpenChange={onOpenChange}/>
-         <ModalPay isOpen={isOpenCreate} onOpenChange={onOpenChangeCreate} />
-        <TableDetail 
+      <SelectFolder  clientId={client} folderId={folder} />
+      <ModalPaymentEdit isOpen={isOpen} onOpenChange={onOpenChange}/>
+      <ModalPay isOpen={isOpenCreate} onOpenChange={onOpenChangeCreate} />
+      <TableDetail 
         aria-label="payments table"
         onSortChange={handleSort}
         sortDescriptor={sortDescriptor}
