@@ -5,12 +5,13 @@ import { Payment } from "~/.server/domain/entity";
 import { Key, SortDirection, Selection } from "~/.server/interfaces";
 import { HandlerSuccess } from "~/.server/reponses";
 import { useParamsPaginator, useRenderCell } from "~/application";
-import { paymentLoader } from "~/application/payment/payment.loader"
 import { PaymentAction, ChipStatusCredit, ChipStatusPayment, ModalPaymentEdit, TableDetail, Pagination, RowPerPage, SelectFolder } from "~/components/ui";
 import { ModalPay } from "~/components/ui/pay";
+import { SelectGroup } from '../../../../components/ui/payment/SelectGroup';
+import { paymentClientLoader } from "~/application/payment/payment.client.loader";
 
 export {
-    paymentLoader as loader
+  paymentClientLoader as loader
 }
 
 
@@ -86,6 +87,8 @@ export default function ClientPaymentsPage() {
   const { isOpen, onOpenChange, onOpen } = useDisclosure();
   const { isOpen: isOpenCreate, onOpenChange: onOpenChangeCreate, onOpen: onOpenCreate } = useDisclosure();
   
+  console.log({loader});
+
   const { 
     loadingState, 
     handlePagination, 
@@ -150,6 +153,7 @@ export default function ClientPaymentsPage() {
   
     return (<>
       <SelectFolder  clientId={client} folderId={folder} />
+      <SelectGroup clientId={client} folderId={folder} groupId={group}/>
       <ModalPaymentEdit isOpen={isOpen} onOpenChange={onOpenChange}/>
       <ModalPay isOpen={isOpenCreate} onOpenChange={onOpenChangeCreate} />
       <TableDetail 

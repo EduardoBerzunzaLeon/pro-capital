@@ -71,7 +71,6 @@ const columnsFilter = [
       const townFormatted = { column: 'credit.folder.town.name', value: town };
       const groupFormatted = { column: 'credit.group.name', value: groupParsed };
 
-      console.log({debtParsed, debtFormatted, as: typeof debtFormatted.value === 'string'});
       const {
         page, limit, column, direction
       } = handlerPaginationParams(request.url, 'captureAt', columnsFilter);

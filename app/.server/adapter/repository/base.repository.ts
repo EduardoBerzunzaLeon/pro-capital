@@ -1,18 +1,19 @@
 
 import { Generic } from "~/.server/interfaces";
-import { apiPrismaFeatures, db } from "../";
+import { apiPrismaFeatures } from "../";
 import { BaseRepositoryI, FindManyProps, FindManyWithPaginatorProps } from "~/.server/domain/interface";
-import { Prisma, PrismaClient } from "@prisma/client";
-import { DefaultArgs, PrismaClientOptions } from "@prisma/client/runtime/library";
+// import { Prisma, PrismaClient } from "@prisma/client";
+// import { DefaultArgs, PrismaClientOptions } from "@prisma/client/runtime/library";
 
 
 export function baseRepository<
+    T extends Generic, 
     P extends Generic, 
     S,
     D extends Generic,
     C extends Generic,
     O extends Generic
->(entity: Prisma.ModelName): BaseRepositoryI<P, S, D, C, O> {
+>(entity: T): BaseRepositoryI<T,P, S, D, C, O> {
 
     function prepareParams(searchParams?: P, select?: S) {
 
@@ -35,7 +36,7 @@ export function baseRepository<
     async function findOne(searchParams: P, select?: S, isUnique: boolean = false) {
         const params = prepareParams(searchParams, select);
         if(isUnique) {
-            return await db['user'].findUnique(params);
+            return await entity.findUnique(params);
         }
         return await entity.findFirst(params); 
     }

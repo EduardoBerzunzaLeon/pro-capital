@@ -43,5 +43,5 @@ const prepareToUpdate = (oldGroups: Group[], groups: Group[]) => {
 }
 
 export default  {
-    generateGroups
+    generateGroups,
 }

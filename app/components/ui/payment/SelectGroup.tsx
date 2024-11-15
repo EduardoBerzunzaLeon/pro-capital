@@ -1,26 +1,29 @@
 import { Select, SelectItem, Skeleton } from "@nextui-org/react";
-import { useFetcher } from "@remix-run/react";
+import { useFetcher, useSearchParams } from "@remix-run/react";
 import { useEffect, useState } from "react";
 
 interface Props {
     clientId: number,
     folderId: number,
+    groupId: number,
 }
 
-export const SelectFolder = ({ clientId, folderId }: Props) => {
+export const SelectGroup = ({ clientId, folderId, groupId }: Props) => {
 
-    const fetcher = useFetcher<{ id: number, name: string }[]>({ key: 'getFolder' });
-    const fetcherGroup = useFetcher<{ id: number, name: string }[]>({ key: 'getGroups' });
-    const [value, setValue] = useState(folderId.toString());
+    const fetcher = useFetcher<{ id: number, name: string }[]>({ key: 'getGroups' });
+    const [value, setValue] = useState(groupId.toString());
     const isLoading = fetcher.state !== 'idle' || fetcher.data === undefined;
+    const [ , setSearchParams] = useSearchParams();
 
+    console.log({fetcher: fetcher})
     useEffect(() => {
 
         fetcher.submit({
-            clientId
+            clientId,
+            folderId
         }, {
             method: 'GET',
-            action: '/clients/filter/folder'
+            action: '/clients/filter/group'
         })
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -28,15 +31,13 @@ export const SelectFolder = ({ clientId, folderId }: Props) => {
 
     const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setValue(e.target.value);
-        fetcherGroup.submit({
-            clientId,
-            folderId: e.target.value
-        }, {
-            method: 'GET',
-            action: '/clients/filter/group'
+        setSearchParams(prev => {
+            prev.set('group', e.target.value)
+            return prev;
         })
     }
 
+    // TODO: DELETE DEFAULTsELECTED AND 
   return (
     <Skeleton isLoaded={!isLoading} className="w-3/5">
         <Select
@@ -50,7 +51,7 @@ export const SelectFolder = ({ clientId, folderId }: Props) => {
             id='route'
             isLoading={isLoading}
             value={[value.toString()]}
-            defaultSelectedKeys={[folderId.toString()]}
+            defaultSelectedKeys={[groupId.toString()]}
             onChange={handleChange}
             disallowEmptySelection
         >

@@ -1,6 +1,6 @@
 import { json, LoaderFunction } from "@remix-run/node";
 import { Generic } from "~/.server/interfaces";
-import { getEmptyPagination, handlerPaginationParams, handlerSuccess } from "~/.server/reponses";
+import { getEmptyPagination, handlerPaginationParams, handlerSuccess, parseNumber } from "~/.server/reponses";
 import { Service } from "~/.server/services";
 
 const columnsFilter = [
@@ -28,19 +28,14 @@ const columnsFilter = [
 
   export const paymentClientLoader: LoaderFunction = async ({ request, params }) => {
     const url = new URL(request.url);
-    const folder = url.searchParams.get('folder') || '';
     const group = url.searchParams.get('group') || '';
     const { creditId } = params;
-    // PASS CLIENT CURP
 
-    // const curp = 
-
-    // IF FOLDER OR GROUP IS EMPTY GET THE FOLDER AND GROUP OF CREDIT ID
-    
     try {
-        const folderParsed = { column: 'credit.folder.name', value: folder };
+        const groupParsed = parseNumber(group);
         const idParsed = { column: 'credit.id', value: Number(creditId) };
-        const groupFormatted = { column: 'credit.group.name', value: group };
+        // TODO: PASS CLIENTID, AND GROUPiD, IF EXITS IGNORE IDPARSED
+        const groupFormatted = { column: 'credit.group.id', value: groupParsed };
 
         const {
           page, limit, column, direction
@@ -52,7 +47,6 @@ const columnsFilter = [
           column: columnSortNames[column] ?? 'captureAt', 
           direction,
           search: [
-            folderParsed,
             idParsed,
             groupFormatted,
           ]
@@ -64,16 +58,11 @@ const columnsFilter = [
           l: limit,
           c: column,
           d: direction,
-          s: [folderParsed, groupFormatted],
-          folder,
+          s: [groupFormatted],
           group
         });
 
     } catch (e) {
-        console.log(e);
-        return json(getEmptyPagination({
-          folder,
-          group,
-        }));
+        return json(getEmptyPagination({ group }));
     }
   }

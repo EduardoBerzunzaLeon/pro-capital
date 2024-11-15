@@ -1,6 +1,7 @@
+import { BaseRepositoryI } from '.';
+
 import { Generic } from '~/.server/interfaces';
 import { Prisma } from '@prisma/client';
-import { BaseRepositoryI } from '.';
 
 export interface Group {
     id: number,
