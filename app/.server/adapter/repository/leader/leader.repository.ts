@@ -68,6 +68,14 @@ export function LeaderRepository(base: BaseLeaderI): LeaderRepositoryI {
             id: leaderId 
         }, { name: true, id: true, folder: true });
     }
+    
+    async function findIfHasOtherLeader(folderId: number, leaderId: number) {
+        return await base.findOne({
+            isActive: true,
+            folderId,
+            id: { not: leaderId } 
+        }, { name: true, id: true, folder: true });
+    }
 
     async function deleteOne( id: number) {
         return await base.deleteOne({ id });
@@ -96,11 +104,19 @@ export function LeaderRepository(base: BaseLeaderI): LeaderRepositoryI {
     }
 
     async function resubscribe(id: number, folderId: number) {        
-        return await base.updateOne({ id }, {
+        // const data =  await base.updateOne({ id }, {
+        //     folderId,
+        //     isActive: true,
+        //     unsubscribeReason: ''
+        // });
+
+        const test = await base.entity.update({ where: { id }, data: {
             folderId,
             isActive: true,
             unsubscribeReason: ''
-        });
+        }});
+
+        return test;
     }
     
     return  {
@@ -109,6 +125,7 @@ export function LeaderRepository(base: BaseLeaderI): LeaderRepositoryI {
         createOne,
         findIfHasFolder,
         findIfHasOwnFolder,
+        findIfHasOtherLeader,
         findAllBirthday,
         deleteOne,
         updateOne,

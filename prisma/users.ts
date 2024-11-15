@@ -104,19 +104,11 @@ export const folders = [
 
 export const groups = [
     {
-        name: 10,
+        name: 1,
         folder: 'maxcanu 1'
     },
     {
         name: 1,
-        folder: 'champoton 1'
-    },
-    {
-        name: 2,
-        folder: 'champoton 1'
-    },
-    {
-        name: 3,
         folder: 'champoton 1'
     },
 ]
@@ -282,7 +274,7 @@ export const credits: Credit[] = [
     {
         aval: 'AUAG840531MCCLVD01'.toLowerCase(),
         client: 'AUNI760709MCCYHV00'.toLowerCase(),
-        group: 2,
+        group: 1,
         folder: 'champoton 1',
         clientGuarantee: 'television de 30 in',
         avalGuarantee: 'aifon 16',
@@ -316,7 +308,7 @@ export const paymentDetail: PaymentDetail[] = [
     {
         client: 'AUNI760709MCCYHV00'.toLowerCase(),
         folder: 'champoton 1',
-        group: 2,
+        group: 1,
         paymentAmount: 150,
         paymentDate: new Date(2024, 6, 7).toISOString(),
         captureAt: new Date(2024, 6, 7).toISOString(),
@@ -327,7 +319,7 @@ export const paymentDetail: PaymentDetail[] = [
     {
         client: 'AUNI760709MCCYHV00'.toLowerCase(),
         folder: 'champoton 1',
-        group: 2,
+        group: 1,
         paymentAmount: 150,
         paymentDate: new Date(2024, 6, 8).toISOString(),
         captureAt: new Date(2024, 6, 8).toISOString(),
@@ -338,7 +330,7 @@ export const paymentDetail: PaymentDetail[] = [
     {
         client: 'AUNI760709MCCYHV00'.toLowerCase(),
         folder: 'champoton 1',
-        group: 2,
+        group: 1,
         paymentAmount: 150,
         paymentDate: new Date(2024, 6, 9).toISOString(),
         captureAt: new Date(2024, 6, 9).toISOString(),
@@ -349,7 +341,7 @@ export const paymentDetail: PaymentDetail[] = [
     {
         client: 'AUNI760709MCCYHV00'.toLowerCase(),
         folder: 'champoton 1',
-        group: 2,
+        group: 1,
         paymentAmount: 1050, 
         paymentDate: new Date(2024, 6, 10).toISOString(),
         captureAt: new Date(2024, 6, 10).toISOString(),

@@ -135,8 +135,9 @@ model Folder {
  town Town @relation(fields: [townId], references: [id])
  routeId Int
  route Route @relation(fields: [routeId], references: [id])
+ isActive Boolean @default(true)
  groups Group[]
- leader Leader?
+ leaders Leader[]
  credits Credit[]
 }
 
@@ -147,6 +148,9 @@ model Group {
  folderId Int
  folder Folder @relation(fields: [folderId], references: [id])
  credits Credit[]
+ successor  Group?  @relation("GroupHistory")
+ predecessorId Int? @unique
+ predecessor Group? @relation("GroupHistory", fields: [predecessorId], references: [id])
  @@unique([name, folderId])
 }
 
@@ -206,7 +210,9 @@ model Credit {
   group Group @relation(fields: [groupId], references: [id])
   folderId Int
   folder Folder @relation(fields: [folderId], references: [id])
-  previousCreditId Int?
+  previousCreditId Int? @unique
+  previousCredit  Credit?  @relation("RenovateOwnerHistory", fields: [previousCreditId], references: [id])
+  renovateCredit Credit? @relation("RenovateOwnerHistory")
   previousStatus Status?
   type Type @default(NORMAL)
   amount Decimal @db.Decimal(6,2)
