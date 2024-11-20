@@ -8,7 +8,7 @@ import { DropdownCanRenovate } from "~/components/ui/dropdowns/DropdownCanRenova
 import { DropdownCreditStatus } from "~/components/ui/dropdowns/DropdownCreditStatus";
 import { HandlerSuccess } from "~/.server/reponses";
 import { Key, SortDirection, Selection } from "~/.server/interfaces";
-import { TableDetail, RowPerPage, Pagination, InputFilter, RangePickerDateFilter, SliderFilter, CurpForm, ExportDropdown, ChipStatusCredit } from "~/components/ui";
+import { TableDetail, RowPerPage, Pagination, InputFilter, RangePickerDateFilter, SliderFilter, CurpForm, ExportDropdown, ChipStatusCredit, ButtonSetEstatus } from "~/components/ui";
 import { useDropdownBoolean, useParamsPaginator, useRenderCell } from "~/application";
 import { useDropdown } from "~/application/hook/useDropdown";
 import { clientAction } from '../../../application/client/client.action';
@@ -170,6 +170,7 @@ export default function ClientsPage() {
     <Outlet />
     <CurpForm />
     <ExportDropdown />
+    <ButtonSetEstatus />
     <div className='w-full flex gap-2 mt-5 mb-3 flex-wrap justify-between items-center'>
       <InputFilter 
         param="client" 

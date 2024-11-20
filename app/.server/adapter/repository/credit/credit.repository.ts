@@ -1,4 +1,5 @@
 import { BaseCreditI, CreditCreateI, CreditRepositoryI, PaginationWithFilters, UpdateAddPayment, UpdateOne, UpdatePreviousData } from "~/.server/domain/interface";
+import { db } from "../../db";
 
 export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
 
@@ -436,7 +437,8 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
                     },
                     take: 1
                 }
-            }
+            },
+            take: 100000
         })
     }
 
@@ -469,6 +471,88 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
             }
         })
     }
+
+    async function findByDates(start: Date, end: Date) {
+        return await base.findMany({
+            searchParams: { 
+                creditAt: { lt: end },
+                NOT: {
+                   AND: {
+                        status: 'LIQUIDADO',
+                        lastPayment: {
+                            lt: start
+                        }
+                   }
+                }
+            }, 
+            select: {
+                id: true,
+                totalAmount: true,
+                currentDebt: true,
+                paymentAmount: true,
+                creditAt: true,
+                type: true,
+                folder: {
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                },
+                payment_detail: {
+                    select: {
+                        paymentAmount: true,
+                        paymentDate: true
+                    }
+                }
+            }, take: 100000
+        })
+
+        // return await db.paymentDetail.groupBy({
+        //     by: ['creditId'],
+        //     where: {
+        //         credit: {
+        //             creditAt: { lt: end },
+        //             NOT: {
+        //                 AND: {
+        //                     status: 'LIQUIDADO',
+        //                     lastPayment: {
+        //                         lt: start
+        //                     }
+        //                 }
+        //             }
+        //         },
+        //         paymentDate: {
+        //             lte: end
+        //         }
+        //     },
+        //     _sum: {
+        //         paymentAmount: true
+        //     }
+        // })
+
+        // return db.paymentDetail.aggregate({
+        //     where: {
+        //         credit: {
+        //             creditAt: { lt: end },
+        //             NOT: {
+        //                 AND: {
+        //                     status: 'LIQUIDADO',
+        //                     lastPayment: {
+        //                         lt: start
+        //                     }
+        //                 }
+        //             }
+        //         },
+        //         paymentDate: {
+        //             lte: end
+        //         }
+        //     },
+        //     _sum: {
+        //         paymentAmount: true
+        //     },
+        //     selec
+        // })
+    }
     
     return {
         createOne,
@@ -487,6 +571,7 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
         findFoldersByClient,
         findGroupsByFolder,
         findInProcessCredits,
+        findByDates,
         updateCreditByPayment,
         updateOne,
         updatePrevious,

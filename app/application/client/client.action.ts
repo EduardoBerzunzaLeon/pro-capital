@@ -1,4 +1,5 @@
 import { redirect, type ActionFunction, type ActionFunctionArgs } from "@remix-run/node";
+import { handlerSuccessWithToast } from "~/.server/reponses";
 import { handlerErrorWithToast } from "~/.server/reponses/handlerError";
 // import { redirect } from "@remix-run/node";
 import { Service } from "~/.server/services";
@@ -17,8 +18,6 @@ export const clientAction: ActionFunction = async ({
             const { status } = await Service.credit.verifyToCreate(formData);
     
             const { curp } = data;
-            
-            console.log({status});
 
             if(status === 'new_record') {
                 return redirect(`/clients/${curp}/create`)
@@ -29,6 +28,11 @@ export const clientAction: ActionFunction = async ({
             }
 
             return status;
+        }
+
+        if(data._action === 'generate') {
+            await Service.credit.calculateOverdueCredits();
+            return handlerSuccessWithToast('update', 'las cuentas vencidas');
         }
 
     } catch (error) {

@@ -32,6 +32,11 @@ const group = integerBuilder('grupo');
 const amount = integerBuilder('cantidad');
 const creditAt = dateSchema('Fecha de alta del credito');
 
+export const rangeDatesCreditSchema = z.object({
+    start: dateSchema('Fecha de inicio'),
+    end: dateSchema('Fecha de fin'),
+});
+
 export const creditSchema = z.object({
     group,
     amount, 

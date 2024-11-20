@@ -1,16 +1,22 @@
 import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, useDisclosure } from "@nextui-org/react"
 import { AiFillLayout } from "react-icons/ai";
-import { FaDatabase, FaFileExcel } from "react-icons/fa"
+import { FaChartBar, FaFileExcel } from "react-icons/fa"
 import { ModalExportLayout } from "./ModalExportLayout";
 import { Key } from "~/.server/interfaces";
+import { ModalExportStatistics } from './ModalExportStatistics';
 
 export const ExportDropdown = () => {
 
     const { isOpen, onOpenChange } = useDisclosure();
+    const { isOpen: isOpenStatistics, onOpenChange: onOpenChangeStatistics } = useDisclosure();
 
     const handleAction = (key: Key) => {
         if(key === 'layout') {
             onOpenChange();
+        }
+
+        if(key === 'statistics') {
+            onOpenChangeStatistics();
         }
     }
 
@@ -34,11 +40,12 @@ export const ExportDropdown = () => {
                     startContent={<AiFillLayout />}
                 >Plantilla</DropdownItem>
                 <DropdownItem 
-                    key="data"
-                    startContent={<FaDatabase />}
-                >Datos</DropdownItem>
+                    key="statistics"
+                    startContent={<FaChartBar />}
+                >Estadisticas</DropdownItem>
             </DropdownMenu>
         </Dropdown>
         <ModalExportLayout isOpen={isOpen} onOpenChange={onOpenChange} />
+        <ModalExportStatistics isOpen={isOpenStatistics} onOpenChange={onOpenChangeStatistics}/>
     </>)
 }

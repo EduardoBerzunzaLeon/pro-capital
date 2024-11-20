@@ -8,7 +8,7 @@ import { ServerError } from "../errors";
 import { creditCreateSchema } from "~/schemas";
 import dayjs from 'dayjs';
 import { PaymentI, RequestId, Types } from "../interfaces";
-import { creditEditSchema, creditReadmissionSchema, exportLayoutSchema, renovateSchema } from "~/schemas/creditSchema";
+import { creditEditSchema, creditReadmissionSchema, exportLayoutSchema, rangeDatesCreditSchema, renovateSchema } from "~/schemas/creditSchema";
 import { calculateAmount, convertDebt, findNow } from "~/application";
 import { CreditLayout, Layout } from "../domain/entity/layout.entity";
 import { Status } from "@prisma/client";
@@ -60,7 +60,6 @@ export const validationToCreate = async (curp?: string) => {
 } 
 
 //  =================== RENOVATE ==================
-
 export const validationToRenovate = async (curp?: string, creditId?: RequestId) => {
 
     const { 
@@ -830,6 +829,7 @@ export const calculateOverdueCredits = async () => {
     })
 
     await Promise.all(newPromises);
+    return;
 }
 
 
@@ -856,12 +856,52 @@ export const findGroupsByFolder = async (clientId: RequestId, folderId: RequestI
     return creditDb.map(({ group }) => group ); 
 }
 
+export const findOverdueCredits = async (rangeDate: { start: Date, end: Date }) => {
+    const { start, end } = validationZod(rangeDate, rangeDatesCreditSchema);
+    
+    if(end < start) {
+        throw ServerError.badRequest('La fecha de inicio no puede ser menor a la fecha actual');
+    }
+
+    //  comparar si la fecha end es mayor o igual a la fecha actual
+
+    const data = await Repository.credit.findByDates(start, end);
+
+    if(!data || data.length === 0) {
+        return;
+    }
+
+    let overDueCredits = 0;
+
+    for (let index = 0; index < data.length; index++) {
+        
+         data[index].total = 0;
+
+         for (let j = 0; j < data[index].payment_detail.length; j++) {
+            data[index].total += Number(data[index].payment_detail[j].paymentAmount);
+         }
+        
+        const weekQuantity = calculateWeeksByType(data[index].type);
+        const weeks = calculateWeeks(data[index].creditAt, data[index].paymentAmount, weekQuantity);
+        const { amount: minAmount } = findCurrentWeek(weeks, end);
+        const currentDebt = Number(data[index].totalAmount) - data[index].total;
+        const  isOverdue = isOverdueCredit(minAmount, currentDebt, data[index].total)
+
+        if(isOverdue) {
+            overDueCredits += 1;
+        }
+
+    }
+
+    return overDueCredits;
+}
 
 
 export default{ 
     additional,
     calculateWeeks,
     create,
+    calculateOverdueCredits,
     deleteOne,
     exportLayout,
     findAll,
@@ -871,6 +911,7 @@ export default{
     findDetailsCredit,
     findFoldersByClient,
     findGroupsByFolder,
+    findOverdueCredits,
     isOverdueCredit,
     renovate,
     updateCreditByPayment,

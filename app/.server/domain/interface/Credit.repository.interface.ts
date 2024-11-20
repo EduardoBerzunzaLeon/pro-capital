@@ -72,6 +72,7 @@ export interface CreditRepositoryI{
     findInProcessCredits: () => Promise<Generic[] | undefined>,
     findFoldersByClient: (clientId: number) => Promise<Generic[] | undefined>,
     findGroupsByFolder: (clientId: number, folderId: number) => Promise<Generic[] | undefined>,
+    findByDates: (start: Date, end: Date) => Promise<Generic[] | undefined>,
     updateCreditByPayment: (id: number, data: UpdateAddPayment) => Promise<Generic | undefined>,
     updateOne: (id: number, data: UpdateOne) => Promise<Generic | undefined>,
     updatePrevious: (id: number, data: UpdatePreviousData) => Promise<Generic | undefined>,

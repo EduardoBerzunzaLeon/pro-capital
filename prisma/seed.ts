@@ -46,6 +46,7 @@ async function seed() {
       insertMunicipalities(prisma),
       insertRoutes(prisma),
       insertAvals(prisma),
+      // insertStressClients(prisma, 100000)
       insertClients(prisma)
     ]);
 
@@ -60,6 +61,7 @@ async function seed() {
     await insertGroups(prisma);
 
     await insertLeaders(prisma);
+    // await insertStressCredits(prisma, 100000);
     await insertCredits(prisma);
     await insertPaymentDetails(prisma);
     await insertAgentRoutes(prisma);
@@ -259,6 +261,23 @@ async function insertUsers(prisma: PrismaClient) {
   }
 }
 
+async function insertStressClients(prisma: PrismaClient, interations: number) {
+
+  for (let index = 0; index < interations; index++) {
+      clients.push(clients[0]);
+  }
+  await insertClients(prisma);
+}
+
+async function insertStressCredits(prisma: PrismaClient, interations: number) {
+
+  for (let index = 0; index < interations; index++) {
+    credits.push(credits[0]);
+  }
+
+  await insertCredits(prisma);
+}
+
 async function insertClients(prisma: PrismaClient) {
   return await prisma.client.createMany({
     data: [...clients]
@@ -275,8 +294,8 @@ async function insertCredits(prisma: PrismaClient) {
 
   for (const credit of credits) {
     const { aval, client, folder, group, ...restCredit } = credit;
-    const avalDb = await prisma.aval.findUnique({ where: { curp: aval }});
-    const clientDb = await prisma.client.findUnique({ where: { curp: client }});
+    const avalDb = await prisma.aval.findFirst({ where: { curp: aval }});
+    const clientDb = await prisma.client.findFirst({ where: { curp: client }});
     const folderDb = await prisma.folder.findUnique({ where: { name: folder }});
     const groupDb = await prisma.group.findFirst({ where: { 
       name: group, 
