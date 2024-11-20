@@ -675,7 +675,7 @@ interface FindStatusI {
 const findStatus = ({ isOverdue, isBeforeFirst, currentDebt, isRenovate }: FindStatusI ) => {
     if(currentDebt === 0) return 'LIQUIDADO';
     if(isOverdue)  return 'VENCIDO';
-    if(isBeforeFirst)  return isRenovate ? 'RENOVADO' : 'ACTIVO';
+    if(isBeforeFirst && isRenovate)  return 'RENOVADO';
     return 'ACTIVO';
 }
 
@@ -856,22 +856,29 @@ export const findGroupsByFolder = async (clientId: RequestId, folderId: RequestI
     return creditDb.map(({ group }) => group ); 
 }
 
-export const findOverdueCredits = async (rangeDate: { start: Date, end: Date }) => {
+export const findOverdueCredits = async (rangeDate: { start: Date, end: Date }, folderId: RequestId) => {
     const { start, end } = validationZod(rangeDate, rangeDatesCreditSchema);
     
     if(end < start) {
         throw ServerError.badRequest('La fecha de inicio no puede ser menor a la fecha actual');
     }
 
-    //  comparar si la fecha end es mayor o igual a la fecha actual
+    // Verificar el folder ID
+    const folderIdVal = folderId ? validationZod({ id: folderId }, idSchema).id : undefined;
 
-    const data = await Repository.credit.findByDates(start, end);
+    //  TRAER CREDITOS DADO DE ALTA ENTRE START AND END
+    const [ newCreditsCount, newPayments, data ] = await Promise.all([
+        Repository.credit.findNewCredits(start, end),
+        Repository.payment.findByRangeDates(start, end),
+        Repository.credit.findByDates(start, end)
+    ]);
 
     if(!data || data.length === 0) {
         return;
     }
 
     let overDueCredits = 0;
+    let currentDebtTotal = 0;
 
     for (let index = 0; index < data.length; index++) {
         
@@ -885,15 +892,27 @@ export const findOverdueCredits = async (rangeDate: { start: Date, end: Date }) 
         const weeks = calculateWeeks(data[index].creditAt, data[index].paymentAmount, weekQuantity);
         const { amount: minAmount } = findCurrentWeek(weeks, end);
         const currentDebt = Number(data[index].totalAmount) - data[index].total;
-        const  isOverdue = isOverdueCredit(minAmount, currentDebt, data[index].total)
+        const isOverdue = isOverdueCredit(minAmount, currentDebt, data[index].total);
 
         if(isOverdue) {
+            const debt = minAmount - data[index].total;
+            currentDebtTotal += debt;
             overDueCredits += 1;
         }
 
     }
 
-    return overDueCredits;
+    const retuncito = { 
+        overDueCredits, 
+        currentDebtTotal,  
+        newCreditsCount, 
+        newPaymentsCount: newPayments._count, 
+        newPaymentsSum: newPayments._sum.paymentAmount ?? 0
+    };
+
+    console.log({ retuncito });
+
+    return retuncito;
 }
 
 

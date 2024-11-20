@@ -1,7 +1,7 @@
-import { BasePaymentDetailI, CreatePayment, PaginationWithFilters, UpdatePayment } from "~/.server/domain/interface";
+import { BasePaymentDetailI, CreatePayment, PaginationWithFilters, PaymentRepositoryI, UpdatePayment } from "~/.server/domain/interface";
 
 
-export function PaymentRepository(base: BasePaymentDetailI) {
+export function PaymentRepository(base: BasePaymentDetailI): PaymentRepositoryI {
 
     async function findAll(paginationData: PaginationWithFilters) {
         return await base.findManyPaginator({
@@ -163,6 +163,25 @@ export function PaymentRepository(base: BasePaymentDetailI) {
         })
     }
 
+    async function findByRangeDates(start: Date, end: Date, folderId?: number) {
+        const data = await base.entity.aggregate({
+            where: {
+                paymentDate: {
+                    gte: start,
+                    lte: end
+                },
+                credit: {
+                    folderId,
+                }
+            },
+            _count: true,
+            _sum: {
+                paymentAmount: true
+            }
+        })
+        return data;
+    }
+
     return {
         findAll,
         findByDate,
@@ -172,6 +191,7 @@ export function PaymentRepository(base: BasePaymentDetailI) {
         updateOne,
         findLastPayment,
         findTotalPayment,
+        findByRangeDates,
         base
     }
 

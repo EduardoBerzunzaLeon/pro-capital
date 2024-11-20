@@ -1,6 +1,7 @@
 import { PaymentStatus, Prisma } from "@prisma/client"
 import { BaseRepositoryI, PaginationWithFilters, ResponseWithMetadata } from ".";
 import { Generic } from "~/.server/interfaces";
+import { Decimal } from "@prisma/client/runtime/library";
 
 export interface CreatePayment {
     creditId: number,
@@ -29,6 +30,12 @@ export interface PaymentRepositoryI {
     findByDate: (creditId: number, paymentDate: Date) => Promise<Generic | undefined>,
     findLastPayment: (creditId: number) => Promise<Generic | undefined>,
     findTotalPayment: (creditId: number) => Promise<Generic | undefined>,
+    findByRangeDates: (start: Date, end: Date, folderId?: number) => Promise<{
+        _count: number;
+        _sum: {
+            paymentAmount: Decimal | null;
+        };
+    }>,
     deleteOne: (id: number) => Promise<Generic | undefined>,
     createOne: (data: CreatePayment) => Promise<Generic | undefined>,
     updateOne: (id: number, data: UpdatePayment) => Promise<Generic | undefined>,

@@ -1,5 +1,5 @@
 import { parseWithZod } from "@conform-to/zod";
-import { Schema } from "zod";
+import { Schema, z } from "zod";
 import { ValidationConformError } from "../errors";
 import { Intent } from "@conform-to/react";
 import { Generic } from "../interfaces";
@@ -20,7 +20,7 @@ export const validationConform = (
 }
 
 
-export const validationZod = (data: Generic, schema: Schema) => {
+export const validationZod = <T extends Schema>(data: Generic, schema: T): z.infer<typeof schema> => {
     return schema.parse(data);    
 }
 
