@@ -864,13 +864,15 @@ export const findOverdueCredits = async (rangeDate: { start: Date, end: Date }, 
     }
 
     // Verificar el folder ID
-    const folderIdVal = folderId ? validationZod({ id: folderId }, idSchema).id : undefined;
+    const folderIdVal = (folderId && folderId !== 0) 
+        ? validationZod({ id: folderId }, idSchema).id 
+        : undefined;
 
     //  TRAER CREDITOS DADO DE ALTA ENTRE START AND END
     const [ newCreditsCount, newPayments, data ] = await Promise.all([
-        Repository.credit.findNewCredits(start, end),
-        Repository.payment.findByRangeDates(start, end),
-        Repository.credit.findByDates(start, end)
+        Repository.credit.findNewCredits(start, end, folderIdVal),
+        Repository.payment.findByRangeDates(start, end, folderIdVal),
+        Repository.credit.findByDates(start, end, folderIdVal)
     ]);
 
     if(!data || data.length === 0) {
