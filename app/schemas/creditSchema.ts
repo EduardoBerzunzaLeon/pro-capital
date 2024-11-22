@@ -35,6 +35,7 @@ const creditAt = dateSchema('Fecha de alta del credito');
 export const rangeDatesCreditSchema = z.object({
     start: dateSchema('Fecha de inicio'),
     end: dateSchema('Fecha de fin'),
+    folder: z.string().optional(),
 });
 
 export const creditSchema = z.object({

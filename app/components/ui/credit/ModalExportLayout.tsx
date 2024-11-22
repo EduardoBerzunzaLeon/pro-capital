@@ -9,7 +9,6 @@ import { useEffect } from "react";
 import { InputValidation } from "../forms/Input";
 
 import saveAS from 'file-saver';
-
 import ExcelJS from 'exceljs';
 
 interface Props {
@@ -25,26 +24,27 @@ interface ExportProps {
 
 }
 
-const fakeDuplicateData = (exportData: ExportProps) => {
+// TODO: delete this
+// const fakeDuplicateData = (exportData: ExportProps) => {
 
-  const { data } = exportData;
+//   const { data } = exportData;
 
-  const values = data[0];
+//   const values = data[0];
 
 
-  return  [
-    values,
-    values,
-    values,
-    values,
-    values,
-    values,
-    values,
-    values,
-    values,
-    values,
-  ]
-} 
+//   return  [
+//     values,
+//     values,
+//     values,
+//     values,
+//     values,
+//     values,
+//     values,
+//     values,
+//     values,
+//     values,
+//   ]
+// } 
 
 interface PrintSheetProps {
   header: Omit<ExportProps, 'data'>,
@@ -181,7 +181,7 @@ const printSheet = ({ header, data, workbook, name }: PrintSheetProps) => {
 }
 
 const exportToExcel = async (exportData: ExportProps, fileName: string, folder: string) => {
-  const data = fakeDuplicateData(exportData);
+  const { data } = exportData;
   const workbook = new ExcelJS.Workbook();
 
   let min = 0;

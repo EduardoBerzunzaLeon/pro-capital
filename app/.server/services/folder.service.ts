@@ -125,6 +125,10 @@ export const findLastGroup = async (folderId: RequestId) => {
     return await Repository.folder.findLastGroup(id);
 }
 
+export const findSampleAll = async () => {
+    return await Repository.folder.findSampleAll()
+}
+
 export default {
     findAll,
     findOne,
@@ -133,5 +137,6 @@ export default {
     createOne,
     findNextConsecutive,
     findAutocomplete,
-    findLastGroup
+    findLastGroup,
+    findSampleAll
 }

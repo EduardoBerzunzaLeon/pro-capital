@@ -36,6 +36,7 @@ export interface PaymentRepositoryI {
             paymentAmount: Decimal | null;
         };
     }>,
+    findAllPaymentsByFolders: (start: Date, end: Date) => Promise<{folderId: number, counter: number, sumatory: number}[]>,
     deleteOne: (id: number) => Promise<Generic | undefined>,
     createOne: (data: CreatePayment) => Promise<Generic | undefined>,
     updateOne: (id: number, data: UpdatePayment) => Promise<Generic | undefined>,

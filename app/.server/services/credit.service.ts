@@ -7,7 +7,7 @@ import { validationConform, validationZod } from "./validation.service";
 import { ServerError } from "../errors";
 import { creditCreateSchema } from "~/schemas";
 import dayjs from 'dayjs';
-import { PaymentI, RequestId, Types } from "../interfaces";
+import { Generic, PaymentI, RequestId, Types } from "../interfaces";
 import { creditEditSchema, creditReadmissionSchema, exportLayoutSchema, rangeDatesCreditSchema, renovateSchema } from "~/schemas/creditSchema";
 import { calculateAmount, convertDebt, findNow } from "~/application";
 import { CreditLayout, Layout } from "../domain/entity/layout.entity";
@@ -856,27 +856,154 @@ export const findGroupsByFolder = async (clientId: RequestId, folderId: RequestI
     return creditDb.map(({ group }) => group ); 
 }
 
-export const findOverdueCredits = async (rangeDate: { start: Date, end: Date }, folderId: RequestId) => {
-    const { start, end } = validationZod(rangeDate, rangeDatesCreditSchema);
-    
-    if(end < start) {
-        throw ServerError.badRequest('La fecha de inicio no puede ser menor a la fecha actual');
+export const getDefaultStatistics = (name?: string) => {
+    const folder = name || 'TOTAL';
+    return {
+        folder,
+        overDueCredits:  0,
+        currentDebtTotal: 0,
+        newCreditsCount: 0,
+        newPaymentsCount: 0,
+        newPaymentsSum: 0,
+    }
+}
+
+const getNewCredits = (id: number, credits?: {folderId: number, _count: number}[]) => {
+
+    if(!credits || credits.length === 0) {
+        return 0;
+    } 
+
+    for (let j = 0; j < credits.length; j++) {
+        const { folderId, _count } = credits[j];
+        if(id === folderId) {
+            credits.splice(j,1);
+            return _count;
+        }
     }
 
-    // Verificar el folder ID
-    const folderIdVal = (folderId && folderId !== 0) 
-        ? validationZod({ id: folderId }, idSchema).id 
-        : undefined;
+    return 0;
+}
 
-    //  TRAER CREDITOS DADO DE ALTA ENTRE START AND END
+const getPayments = (id: number, payments: { folderId: number, counter: number, sumatory: number }[]) => {
+
+    if(!payments || payments.length === 0) {
+        return {
+            newPaymentsCount: 0,
+            newPaymentsSum: 0,
+        }
+    }
+
+    for (let index = 0; index < payments.length; index++) {
+        const { folderId, counter, sumatory } = payments[index];
+        if(folderId === id) {
+            payments.splice(index,1);
+            return {
+                newPaymentsCount: Number(counter),
+                newPaymentsSum: sumatory,
+            }
+        }
+    }
+
+    return {
+        newPaymentsCount: 0,
+        newPaymentsSum: 0,
+    }
+
+}
+
+const getOverdueCredits = (id: number, end: Date, credits?: Generic[]) => {
+    let overDueCredits = 0;
+    let currentDebtTotal = 0;
+    const indexToDelete: number[] = [];
+
+    if(!credits || credits.length === 0) {
+        return {
+            overDueCredits,
+            currentDebtTotal
+        }
+    }
+
+    for (let index = 0; index < credits.length; index++) {
+        
+         credits[index].total = 0;
+
+         if(credits[index].folder.id !== id) continue;
+
+         indexToDelete.push(index);
+
+         for (let j = 0; j < credits[index].payment_detail.length; j++) {
+            credits[index].total += Number(credits[index].payment_detail[j].paymentAmount);
+         }
+        
+        const weekQuantity = calculateWeeksByType(credits[index].type);
+        const weeks = calculateWeeks(credits[index].creditAt, credits[index].paymentAmount, weekQuantity);
+        const { amount: minAmount } = findCurrentWeek(weeks, end);
+        const currentDebt = Number(credits[index].totalAmount) - Number(credits[index].total);
+        const isOverdue = isOverdueCredit(minAmount, currentDebt, credits[index].total);
+
+        if(isOverdue) {
+            const debt = minAmount - credits[index].total;
+            currentDebtTotal += debt;
+            overDueCredits += 1;
+
+            if(index === 0 || index === 1) {
+                console.log({ currentDebtTotal, overDueCredits, debt, minAmount, total: credits[index].total });
+            }
+        }
+
+    }
+
+    for (let index = 0; index < indexToDelete.length; index++) {
+        credits.splice(indexToDelete[index], 1);
+    }
+    
+    return {
+        overDueCredits,
+        currentDebtTotal
+    }
+}
+
+const findAllStatistics = async (start: Date, end: Date) => {
+
+    const [ newCredits, folders, payments, allCredits ] = await Promise.all([
+        Repository.credit.findNewCreditsByFolders(start, end),
+        Service.folder.findSampleAll(),
+        Repository.payment.findAllPaymentsByFolders(start, end),
+        Repository.credit.findByDates(start, end)
+    ]);
+
+    if(!folders || folders.length === 0) {
+        return getDefaultStatistics();
+    }
+    
+    const data = [];
+
+    for (let i = 0; i < folders.length; i++) {
+        const { id, name } = folders[i];    
+        let item = getDefaultStatistics(name);
+        item.newCreditsCount = getNewCredits(id, newCredits as { folderId: number, _count: number}[]);
+        item = {
+            ...item,
+            ...getPayments(id, payments),
+            ...getOverdueCredits(id, end, allCredits)
+        }
+        data.push(item);
+    }
+
+    return data;
+}
+
+const findStatisticsByFolder = async (start: Date, end: Date, folderId: number, folderName: string) => {
+
     const [ newCreditsCount, newPayments, data ] = await Promise.all([
-        Repository.credit.findNewCredits(start, end, folderIdVal),
-        Repository.payment.findByRangeDates(start, end, folderIdVal),
-        Repository.credit.findByDates(start, end, folderIdVal)
+        Repository.credit.findNewCredits(start, end, folderId),
+        Repository.payment.findByRangeDates(start, end, folderId),
+        Repository.credit.findByDates(start, end, folderId)
     ]);
 
     if(!data || data.length === 0) {
-        return;
+        return  [getDefaultStatistics(folderName)];
     }
 
     let overDueCredits = 0;
@@ -901,28 +1028,39 @@ export const findOverdueCredits = async (rangeDate: { start: Date, end: Date }, 
             currentDebtTotal += debt;
             overDueCredits += 1;
         }
-
     }
 
-    const retuncito = { 
+    return [{ 
+        folder: folderName,
         overDueCredits, 
         currentDebtTotal,  
         newCreditsCount, 
         newPaymentsCount: newPayments._count, 
         newPaymentsSum: newPayments._sum.paymentAmount ?? 0
-    };
+    }];
+}
 
-    console.log({ retuncito });
+export const findOverdueCredits = async (rangeDate: { start: Date, end: Date }, folderId: RequestId, folderName?: string) => {
+    const { start, end } = validationZod(rangeDate, rangeDatesCreditSchema);
+    
+    if(end < start) {
+        throw ServerError.badRequest('La fecha de inicio no puede ser menor a la fecha actual');
+    }
 
-    return retuncito;
+    if(folderId && folderId !== 0 && folderId !== '0') {
+        const folderIdVal =  validationZod({ id: folderId }, idSchema).id;
+        return await findStatisticsByFolder(start, end, folderIdVal, folderName || 'TODOS');
+    }
+
+    return await findAllStatistics(start, end);
 }
 
 
 export default{ 
     additional,
+    calculateOverdueCredits,
     calculateWeeks,
     create,
-    calculateOverdueCredits,
     deleteOne,
     exportLayout,
     findAll,
@@ -933,6 +1071,7 @@ export default{
     findFoldersByClient,
     findGroupsByFolder,
     findOverdueCredits,
+    getDefaultStatistics,
     isOverdueCredit,
     renovate,
     updateCreditByPayment,

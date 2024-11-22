@@ -471,15 +471,6 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
         })
     }
 
-    // async function findByDatesCurrent(end: Date) {
-    //     return await db.credit.count({
-    //        where: {
-    //             creditAt: { lt: end },
-    //             status: 'VENCIDO',
-    //        }
-    //     });
-    // }
-
     async function findNewCredits(start: Date, end: Date, folderId?: number) {
         return await base.entity.count({
             where: {
@@ -492,6 +483,19 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
         });
     }
 
+    async function findNewCreditsByFolders(start: Date, end: Date) {
+        return await base.entity.groupBy({
+            by: ['folderId'],
+            where: {
+                creditAt: { 
+                    gte: start,
+                    lte: end
+                },
+            },
+            _count: true
+        })
+    }
+ 
     async function findByDates(start: Date, end: Date, folderId?: number) {
         return await base.findMany({
             searchParams: { 
@@ -524,8 +528,12 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
                         paymentAmount: true,
                         paymentDate: true
                     }
-                }
-            }, take: 100000
+                },
+            }, 
+            take: 100000, 
+            orderBy: {
+                folderId: 'asc',
+            }
         });
     }
     
@@ -548,6 +556,7 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
         findInProcessCredits,
         findByDates,
         findNewCredits,
+        findNewCreditsByFolders,
         updateCreditByPayment,
         updateOne,
         updatePrevious,

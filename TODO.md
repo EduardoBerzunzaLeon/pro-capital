@@ -40,6 +40,9 @@
     -- Agregar schema para telefono (cantidad de caracteres)
     -- Agregar la opcion de Matar usuario (marcarlo como fallecido)
 
+# SERVER
+    - Agregar flash message para errores con toast en loader (en el momento de descargar un excel).
+
 # MODULOS FALTANTES:
     - Usuarios:
         - Agregar Usuario (Subir archivos - NEW)

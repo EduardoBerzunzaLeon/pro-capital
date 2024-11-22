@@ -70,6 +70,7 @@ export interface CreditRepositoryI{
     findCreditToUpdate: (id: number) => Promise<Generic | undefined>,
     findDetailsCredit: (id: number) => Promise<Generic | undefined>,
     findInProcessCredits: () => Promise<Generic[] | undefined>,
+    findNewCreditsByFolders: (start: Date, end: Date) => Promise<Generic[] | undefined>,
     findFoldersByClient: (clientId: number) => Promise<Generic[] | undefined>,
     findGroupsByFolder: (clientId: number, folderId: number) => Promise<Generic[] | undefined>,
     findByDates: (start: Date, end: Date, folderId?: number) => Promise<Generic[] | undefined>,

@@ -162,7 +162,8 @@ model Client {
   fullname String
   address String
   reference String
-  curp String @unique
+  // curp String @unique
+  curp String
   phoneNumber String?
   isActive Boolean @default(true)
   credits Credit[]
@@ -195,7 +196,8 @@ model Aval {
   fullname String
   address String
   reference String
-  curp String @unique
+  // curp String @unique
+  curp String
   phoneNumber String?
   credits Credit[]
 }
@@ -231,7 +233,7 @@ model Credit {
   countPayments Int @default(0)
   status Status @default(ACTIVO)
   payment_detail PaymentDetail[]
-  @@unique([clientId, groupId, folderId])
+  // @@unique([clientId, groupId, folderId])
 }
 
 model PaymentDetail {

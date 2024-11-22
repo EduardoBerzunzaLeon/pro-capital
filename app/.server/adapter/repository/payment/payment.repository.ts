@@ -1,4 +1,5 @@
 import { BasePaymentDetailI, CreatePayment, PaginationWithFilters, PaymentRepositoryI, UpdatePayment } from "~/.server/domain/interface";
+import { db } from "../../db";
 
 
 export function PaymentRepository(base: BasePaymentDetailI): PaymentRepositoryI {
@@ -177,9 +178,27 @@ export function PaymentRepository(base: BasePaymentDetailI): PaymentRepositoryI 
             _count: true,
             _sum: {
                 paymentAmount: true
-            }
+            },
         })
+
         return data;
+    }
+
+    async function findAllPaymentsByFolders(start: Date, end: Date) {
+        const data = await db.$queryRaw`SELECT
+                    b."folderId",
+                    COUNT(a."id") as counter,
+                    sum(a."paymentAmount") as sumatory
+                FROM
+                    "PaymentDetail" as a
+                    LEFT JOIN "Credit" as b on b.id = a."creditId"
+                WHERE
+                    a."paymentDate" 
+                    BETWEEN ${start} AND ${end}
+                GROUP BY
+                b."folderId"`;
+
+        return data as { folderId: number, counter: number, sumatory: number }[];
     }
 
     return {
@@ -192,6 +211,7 @@ export function PaymentRepository(base: BasePaymentDetailI): PaymentRepositoryI 
         findLastPayment,
         findTotalPayment,
         findByRangeDates,
+        findAllPaymentsByFolders,
         base
     }
 

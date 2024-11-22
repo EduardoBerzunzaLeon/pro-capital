@@ -247,7 +247,6 @@ type PaymentStatus =
 'PAGO_INCOMPLETO' |
 'NO_PAGO' |
 'ADELANTO' |
-'LIQUIDO' |
 'GARANTIA';
 
 interface Credit {

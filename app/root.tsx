@@ -35,7 +35,7 @@ export default function App() {
   const navigate = useNavigate();
   const { toast } = useLoaderData<typeof rootLoader>();
   const location = useLocation();
-  
+
   useEffect(() => {
     if(toast){
      notify(toast.message, { type: toast.type });

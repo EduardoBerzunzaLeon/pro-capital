@@ -22,7 +22,13 @@ export function FolderRepository(base: BaseFolderI) : FolderRepositoryI {
         });
     }
 
-    // TODO: traer solo las lideres activas
+    async function findSampleAll() {
+        return await base.findMany({
+            select: { id: true, name: true },
+            take: 10000
+        });
+    }
+
     async function findAll( paginationData: PaginationWithFilters ) {
         return await base.findManyPaginator({
                 paginatonWithFilter: paginationData,
@@ -151,6 +157,7 @@ export function FolderRepository(base: BaseFolderI) : FolderRepositoryI {
         findCountGroups,
         findByNameAndGroup,
         findLastGroup,
+        findSampleAll,
         updateOne,
         deleteOne,
         createOne
