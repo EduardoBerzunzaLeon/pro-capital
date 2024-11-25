@@ -16,14 +16,10 @@ export const parseArray = (value: string) => {
 export const parseBoolean = (value: string) => {
 
     let valueParsed = parseArray(value);
-
-    if(valueParsed.length === 1) {
-        valueParsed = Boolean(valueParsed[0]);
-    }
-
+    
     valueParsed = valueParsed.length === 1 
-        ? Boolean(valueParsed[0])
-        : 'notUndefined'
+    ? Boolean(valueParsed[0])
+    : 'notUndefined'
 
     return valueParsed;
 }

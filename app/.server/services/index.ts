@@ -1,19 +1,20 @@
-import authService from "./auth.service";
-import municipalityService from "./municipality.service";
-import townService from "./town.service";
-import folderService from "./folder.service";
-import validationService from "./validation.service";
-import dto from "./dto.service";
-import paginatorService from "./paginator.service";
-import routeService from "./route.service";
 import agentRouteService from "./agentRoute.service";
-import leaderService from "./leader.service";
-import utilsService from "./utils.service";
-import creditService from "./credit.service";
+import authService from "./auth.service";
 import avalService from "./aval.service";
 import clientService from "./client.service";
-import userService from "./user.service";
+import creditService from "./credit.service";
+import dto from "./dto.service";
+import folderService from "./folder.service";
+import leaderService from "./leader.service";
+import municipalityService from "./municipality.service";
+import paginatorService from "./paginator.service";
 import paymentService from "./payment.service";
+import roleService from "./role.service";
+import routeService from "./route.service";
+import townService from "./town.service";
+import userService from "./user.service";
+import utilsService from "./utils.service";
+import validationService from "./validation.service";
 
 
 function buildService() {
@@ -34,6 +35,7 @@ function buildService() {
         client: { ...clientService },
         user: { ...userService },
         payment: { ...paymentService },
+        role: { ...roleService },
     }
 }
 

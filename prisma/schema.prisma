@@ -15,11 +15,11 @@ datasource db {
 
 
 enum Sex {
-  MASCULINO
-  FEMENINO
+  masculino
+  femenino
 }
 
-enum Appointment {
+enum RoleTypes {
   ASESOR
   CAPTURISTA
   JEFE_CAPTURA
@@ -28,6 +28,7 @@ enum Appointment {
   GERENCIA
   SUBGERENTE
   DIRECTOR
+  ADMIN
 }
 
 enum Type {
@@ -67,14 +68,13 @@ model User {
   address String
   sex Sex
   avatar String?
-  appointment Appointment
   agentsRoutes AgentRoute[]
   payment_detail PaymentDetail[]
 }
 
 model Role {
   id Int @id @default(autoincrement())
-  role String @unique
+  role RoleTypes @unique
   users User[]
   permissions Permission[]
 }

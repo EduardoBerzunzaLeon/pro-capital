@@ -14,7 +14,7 @@ export const useDropdownBoolean = ({ value, trueField, falseField, param }: Prop
     
     const defaultStatus: Selection = useMemo(() => {
 
-      if(typeof value === 'undefined' || value === 'notUndefined') {
+      if(typeof value === 'undefined' || value === 'notUndefined' || value === '') {
         return 'all';
       }
   

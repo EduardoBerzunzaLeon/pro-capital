@@ -9,6 +9,7 @@ export type * from './Group.repository.interface';
 export type * from './Leader.repository.interface';
 export type * from './Municipality.repository.interface';
 export type * from './Pagination.interface';
-export type * from './Town.repository.interface';
 export type * from './Payment.repository.interface';
+export type * from './Role.repository.interface';
+export type * from './Town.repository.interface';
 export type * from './User.repository.interface';

@@ -46,8 +46,8 @@ async function seed() {
       insertMunicipalities(prisma),
       insertRoutes(prisma),
       insertAvals(prisma),
-      insertStressClients(prisma, 20000)
-      // insertClients(prisma)
+      // insertStressClients(prisma, 20000)
+      insertClients(prisma)
     ]);
 
     await Promise.all([
@@ -61,8 +61,8 @@ async function seed() {
     await insertGroups(prisma);
 
     await insertLeaders(prisma);
-    await insertStressCredits(prisma, 20000);
-    // await insertCredits(prisma);
+    // await insertStressCredits(prisma, 20000);
+    await insertCredits(prisma);
     await insertPaymentDetails(prisma);
     await insertAgentRoutes(prisma);
 

@@ -13,6 +13,7 @@ import { RouteRepository } from "./route/route.repository";
 import { TownRepository } from "./town/town.repository";
 import { UserRepository } from "./user/user.repository";
 import { PaymentRepository } from "./payment/payment.repository";
+import { RoleRepository } from "./role/role.repository";
 
 function buildRepository() {
     return {
@@ -29,6 +30,7 @@ function buildRepository() {
         client: { ...ClientRepository(baseRepository(db.client))},
         user: { ...UserRepository(baseRepository(db.user))},
         payment: { ...PaymentRepository(baseRepository(db.paymentDetail))},
+        role: { ...RoleRepository(baseRepository(db.role))},
     }
 }
 

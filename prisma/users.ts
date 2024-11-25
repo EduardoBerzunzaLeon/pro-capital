@@ -1,7 +1,19 @@
-export const roles = [
-    { role: 'ADMIN' },
-    { role: 'AGENT'},
-    { role: 'CAPTURIST'}
+import { RoleTypes } from "@prisma/client"
+
+interface Roles  {
+    role: RoleTypes
+}
+
+export const roles: Roles[] = [
+    { role: 'ASESOR' },
+    { role: 'CAPTURISTA'},
+    { role: 'JEFE_CAPTURA'},
+    { role: 'TITULAR_RUTA'},
+    { role: 'SUPERVISOR'},
+    { role: 'GERENCIA'},
+    { role: 'SUBGERENTE'},
+    { role: 'DIRECTOR'},
+    { role: 'ADMIN'},
 ]
 
 export const modules = [
@@ -19,24 +31,31 @@ export const modules = [
     },
 ]
 
-export const permissions = [
+interface PremissionsI {
+    name: string,
+    description: string,
+    module: string,
+    roles: RoleTypes[]
+}
+
+export const permissions: PremissionsI[] = [
     {
         name: 'ver clientes',
         description: 'permite ver los todos los clientes',
         module: 'clientes',
-        roles: ['ADMIN', 'AGENT', 'CAPTURIST']
+        roles: ['ADMIN', 'ASESOR', 'CAPTURISTA']
     },
     {
         name: 'actualizar cliente',
         description: 'permite actualizar los clientes',
         module: 'clientes',
-        roles: ['ADMIN', 'CAPTURIST']
+        roles: ['ADMIN', 'CAPTURISTA']
     },
     {
         name: 'renovar cliente',
         description: 'permite renovar los clientes',
         module: 'clientes',
-        roles: ['ADMIN', 'CAPTURIST']
+        roles: ['ADMIN', 'CAPTURISTA']
     }
 ]
 
@@ -113,16 +132,7 @@ export const groups = [
     },
 ]
 
-type Sex = 'MASCULINO' | 'FEMENINO';
-type Appointment = 
-'ASESOR'|
-'CAPTURISTA'|
-'JEFE_CAPTURA'|
-'TITULAR_RUTA'|
-'SUPERVISOR'|
-'GERENCIA'|
-'SUBGERENTE'|
-'DIRECTOR';
+type Sex = 'masculino' | 'femenino';
 
 export type Types = 'EMPLEADO' | 'LIDER' | 'NORMAL';
   
@@ -135,11 +145,10 @@ interface User {
     username: string,
     password: string,
     isActive: boolean,
-    role: string,
+    role: RoleTypes,
     address: string,
     sex: Sex,
     avatar?: string,
-    appointment: Appointment
 }
 
 export const users: User[] = [
@@ -153,9 +162,8 @@ export const users: User[] = [
         isActive: true,
         role: 'ADMIN',
         address: 'fraccionamiento la riviera',
-        sex: 'MASCULINO',
+        sex: 'masculino',
         avatar: '',
-        appointment: 'SUPERVISOR',
     },
     {
         email: 'carlos.berzunza@gmail.com',
@@ -165,11 +173,10 @@ export const users: User[] = [
         username: 'carlos.berzunza',
         password: '123456',
         isActive: true,
-        role: 'AGENT',
+        role: 'ASESOR',
         address: 'colonial jardines',
-        sex: 'MASCULINO',
+        sex: 'masculino',
         avatar: '',
-        appointment: 'ASESOR',
     },
 ]
 

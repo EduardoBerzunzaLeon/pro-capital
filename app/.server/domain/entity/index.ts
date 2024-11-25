@@ -1,12 +1,12 @@
-export { Payment } from './payment.entity';
 export { Credit } from './credit.entity';
+export { Folder } from './folder.entity';
 export { Leader } from './leader.entity';
 export { Municipality } from './municipality.entity';
-export { User } from './user.entity';
-export { Folder } from './folder.entity';
+export { Payment } from './payment.entity';
 export { Route } from './route.entity';
 export { Town } from './town.entity';
-
+export { User } from './user.entity';
+export { UserComplete } from './users.entity';
 
 
 export type { MunicipalityI } from './municipality.entity';
