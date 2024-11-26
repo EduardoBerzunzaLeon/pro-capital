@@ -2,7 +2,7 @@ import { Generic } from '~/.server/interfaces';
 import { Prisma } from '@prisma/client';
 import { BaseRepositoryI, PaginationWithFilters, ResponseWithMetadata } from '.';
 
-export type SexI = 'MASCULINO' | 'FEMENINO';
+export type SexI = 'masculino' | 'femenino';
 
 export interface CreateUserI {
     email: string,
@@ -36,6 +36,8 @@ export interface UserRepositoryI {
     findAll: (paginationData: PaginationWithFilters) => Promise<ResponseWithMetadata>,
     findAutocomplete: (name: string) => Promise<Generic[] | undefined>,
     findOne: (id: number) => Promise<Generic | undefined>,
+    findRole: (id: number) => Promise<Generic | undefined>,
+    updateIsActive: (id: number, isActive: boolean) => Promise<Generic | undefined>,
     createOne: (user: CreateUserI) => Promise<Generic | undefined>,
     updateOne: (id: number, user: UpdateUserI) => Promise<Generic | undefined>,
     updatePassword: (id: number, password: string) => Promise<Generic | undefined>,

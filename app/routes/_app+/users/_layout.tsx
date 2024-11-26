@@ -1,22 +1,23 @@
 import { useCallback, useMemo, useState } from "react";
-import { useLoaderData } from "@remix-run/react"
+import { Outlet, useLoaderData, useSearchParams } from "@remix-run/react"
 
 import { userLoader } from "~/application/user/user.loader";
 import { Key, Selection } from "~/.server/interfaces";
 import {  useParamsPaginator, useParamsSelect, useRenderCell } from "~/application";
 import { useDropdown } from "~/application/hook/useDropdown";
 import { UserComplete } from "~/.server/domain/entity";
-import { Chip, Select, SelectItem } from "@nextui-org/react";
-import { InputFilter, Pagination, RowPerPage, StatusFilter, TableDetail } from "~/components/ui";
+import { Button, Link, Select, SelectItem } from "@nextui-org/react";
+import { ChipStatus, InputFilter, Pagination, RowPerPage, StatusFilter, TableDetail, UserAction, UserToggleActive } from "~/components/ui";
 import { DropdownSex } from "~/components/ui/dropdowns/DropdownSex";
 import { SelectRoles } from "~/components/ui/role/SelectRoles";
+import { FaUserPlus } from "react-icons/fa";
 
 export {
   userLoader as loader
 }
 
 const INITIAL_VISIBLE_COLUMNS = [
-  'username', 'fullName', 'isActive', 'role'
+  'username', 'fullName', 'isActive', 'role', 'actions'
 ];
 
 const columns = [
@@ -27,18 +28,14 @@ const columns = [
   { key: 'role', label: 'ROL', sortable: true},
   { key: 'address', label: 'DIRECCIÓN', sortable: true},
   { key: 'sex', label: 'SEXO', sortable: true},
+  { key: 'actions', label: 'ACCIONES' },
 ]
 
 export default function  UsersPage()  {
   const loader = useLoaderData<typeof userLoader>();
 
   const [visibleColumns, setVisibleColumns] = useState<Selection>(new Set(INITIAL_VISIBLE_COLUMNS)); 
-
-  // const { defaultValue, handleValueChange } = useDropdown({
-  //   param: 'roleId',
-  //   type: 'string',
-  //   value: loader?.serverData?.roleId
-  // });
+  const [ searchParams ] = useSearchParams();
 
   const {
     defaultItems,
@@ -74,17 +71,18 @@ export default function  UsersPage()  {
   
   const renderCell = useCallback((user: UserComplete, columnKey: Key) => {
 
-    // if(columnKey === 'actions') {
-    //   return <CreditAction 
-    //     creditId={credit.id}
-    //   />
-    // }
+    if(columnKey === 'actions') {
+      return (
+        <div className='flex justify-center items-center gap-1'>
+          <UserToggleActive userId={user.id} isActive={user.isActive} />
+          <UserAction userId={user.id}/>
+        </div>
+      )
+    }
 
 
     if(columnKey == 'isActive') {
-      const status = user.isActive ? 'Activo' : 'Inactivo';
-      const color = user.isActive ? 'success' : 'danger' 
-      return ( <Chip color={color} variant="bordered" >{status}</Chip>)
+      return (<ChipStatus isActive={user.isActive} />)
     }
 
     return <span className='capitalize'>{render(user, columnKey)}</span>
@@ -172,6 +170,15 @@ export default function  UsersPage()  {
         topContent={
           <div className="flex justify-between items-center">
             {topContent}
+            <Button
+              href={`/users/create?${searchParams.toString()}`}
+              as={Link}
+              endContent={<FaUserPlus />}
+              variant="ghost"
+              color="secondary" 
+            >
+              Crear Usuario
+            </Button>
             <span className="text-default-400 text-small">
               Total {loader?.serverData.total || 0} Usuarios
             </span>
@@ -187,6 +194,7 @@ export default function  UsersPage()  {
         renderCell={renderCell} 
         data={loader?.serverData.data ?? []}    
       />
+      <Outlet />
     </>
   )
 }

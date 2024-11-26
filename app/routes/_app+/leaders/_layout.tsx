@@ -3,8 +3,8 @@ import { Leader } from "~/.server/domain/entity";
 import { useLoaderData, useOutlet, useSearchParams } from "@remix-run/react";
 import { HandlerSuccess } from "~/.server/reponses";
 import { useCallback, useState} from "react";
-import { Button, Chip, Link, useDisclosure } from "@nextui-org/react";
-import { InputFilter, LeaderAction, LeaderToggleActive, ModalLeaderEdit, ModalsToggle, Pagination, RangePickerDateFilter, RowPerPage, StatusFilter, TableDetail } from "~/components/ui";
+import { Button, Link, useDisclosure } from "@nextui-org/react";
+import { ChipStatus, InputFilter, LeaderAction, LeaderToggleActive, ModalLeaderEdit, ModalsToggle, Pagination, RangePickerDateFilter, RowPerPage, StatusFilter, TableDetail } from "~/components/ui";
 import { FaUserPlus } from "react-icons/fa";
 import { useParamsPaginator } from '../../../application';
 import { leaderLoader } from "~/application/leader/leader.loader";
@@ -83,9 +83,7 @@ export default function LeaderPage () {
     }
 
     if(columnKey == 'isActive') {
-      const status = leader.isActive ? 'Activo' : 'Inactivo';
-      const color = leader.isActive ? 'success' : 'danger' 
-      return ( <Chip color={color} variant="bordered" >{status}</Chip>)
+      return (<ChipStatus isActive={leader.isActive} />)
     }
 
     return <span className="capitalize">{leader[columnKey as never]}</span>

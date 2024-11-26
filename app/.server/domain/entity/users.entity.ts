@@ -3,7 +3,7 @@ import { SexI } from "../interface";
 import { ServerError } from "~/.server/errors";
 
 export interface UserI {
-    id: string,
+    id: number,
     email: string,
     username: string,
     fullName: string,
@@ -18,7 +18,7 @@ export interface UserI {
 
 export class UserComplete {
 
-    public readonly id: string;
+    public readonly id: number;
     public readonly email: string;
     public readonly username: string;
     public readonly fullName: string;
@@ -71,7 +71,7 @@ export class UserComplete {
         if(!email) throw ServerError.badRequest('El correo es requerido');
         if(!username) throw ServerError.badRequest('El nombre de usuario es requerido');
         if(!fullName) throw ServerError.badRequest('El nombre completo es requerido');
-        if(!isActive) throw ServerError.badRequest('El estatus es requerido');
+        if(typeof isActive === 'undefined') throw ServerError.badRequest('El estatus es requerido');
         if(!role || !role.role) throw ServerError.badRequest('El role es requerido');
         if(!address) throw ServerError.badRequest('La dirección es requerido');
         if(!sex) throw ServerError.badRequest('El sexo es requerido');

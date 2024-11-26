@@ -42,6 +42,14 @@ export function UserRepository(base: BaseUserI) : UserRepositoryI {
         })
     }
 
+    async function findRole(id: number) {
+        return await base.findOne({ id }, { id: true, role: true });
+    }
+
+    async function updateIsActive(id: number, isActive: boolean) {
+        return await base.updateOne({ id }, { isActive: isActive });
+    }
+
     async function createOne (user: CreateUserI) {
         return await base.createOne(user);
     }
@@ -68,6 +76,8 @@ export function UserRepository(base: BaseUserI) : UserRepositoryI {
         findAll,
         findAutocomplete,
         findOne,
+        findRole,
+        updateIsActive,
         createOne,
         updateOne,
         updatePassword,

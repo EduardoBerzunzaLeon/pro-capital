@@ -42,7 +42,6 @@ export const updateIsActive = async(id: RequestId, isActiveRoute?: boolean) => {
     
     const { isActive: isActiveValidated } = validationZod({ isActive: isActiveRoute }, activeSchema);
     const { id: routeId } = await findIsActive(id);
-    console.log({routeId, isActiveValidated});
     const routeUpdated =  await Repository.route.updateIsActive(routeId, isActiveValidated);
     if(!routeUpdated) {
         throw ServerError.internalServer('No se pudo actualizar la ruta');

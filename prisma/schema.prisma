@@ -13,7 +13,6 @@ datasource db {
   url      = env("POSTGRES_URL")
 }
 
-
 enum Sex {
   masculino
   femenino

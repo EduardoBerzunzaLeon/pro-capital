@@ -11,13 +11,14 @@ import {
 } from "@nextui-org/react";
 
 import logo from '../../../../img/icon_logo.png';
-import { useRouteLoaderData, useSubmit } from "@remix-run/react";
+import { useNavigate, useRouteLoaderData, useSubmit } from "@remix-run/react";
 import { User } from "~/.server/domain/entity";
 
 
 export default function Navbar() {
   const { user } = useRouteLoaderData('root') as { user: User};
   const submit  = useSubmit();
+  const navigate = useNavigate();
   // const [action, setAction] = useState<string | number>('');
   const onActionChange = (key: string | number) => {
 
@@ -26,6 +27,10 @@ export default function Navbar() {
          method: 'POST', 
          action:'logout'
       }); 
+    }
+
+    if(key === 'profile') {
+      navigate(`/users/${user.id}`); 
     }
 
     console.log({key: 'SETTINGS NOT IMPLEMENTATED'}); 
@@ -81,10 +86,6 @@ export default function Navbar() {
               <p className="font-semibold">inicio de sesión</p>
               <p className="font-semibold">{user?.username}</p>
             </DropdownItem>
-            <DropdownItem 
-              key="settings"
-              textValue="settings"
-            >Mis Opciones</DropdownItem>
             <DropdownItem 
               key="logout" 
               color="danger"

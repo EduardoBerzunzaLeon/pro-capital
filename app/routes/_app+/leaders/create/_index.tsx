@@ -126,7 +126,7 @@ export default function CreateLeader() {
               </ModalBody>
               <ModalFooter>
                 <Button color="danger" variant="light" onPress={onClose} type='button'>
-                  Close
+                  Cerrar
                 </Button>
                 <Button 
                   color="primary" 
