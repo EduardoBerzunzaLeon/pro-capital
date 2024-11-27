@@ -1,12 +1,29 @@
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Select, SelectItem } from "@nextui-org/react";
 import { Form,  useNavigate, useNavigation } from "@remix-run/react";
-import { getFormProps, useForm } from "@conform-to/react";
+import { getFormProps, getSelectProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 
 import { InputValidation } from "~/components/ui";
-import { CreateLeaderSchema } from "~/schemas/leaderSchema";
 import { SelectRoles } from "~/components/ui/role/SelectRoles";
+import { CreateUserSchema } from "~/schemas/userSchema";
+import { handlerErrorWithToast, handlerSuccessWithToast } from "~/.server/reponses";
+import { ActionFunction } from "@remix-run/node";
+import { Service } from "~/.server/services";
 
+export const action: ActionFunction = async({ request }) => {
+  const formData = await request.formData();
+  const data = Object.fromEntries(formData);
+
+  try {
+    // formData.set('folder', data['folder[id]']);
+    const password = await Service.user.createOne(formData);
+    return handlerSuccessWithToast('create', `La contraseña es: ${password}`);
+  } catch (error) {
+    console.log(error);
+    return handlerErrorWithToast(error, data);
+  }
+
+}
 
 export default function CreateUser() {
 
@@ -20,18 +37,21 @@ export default function CreateUser() {
     //   }
     // // eslint-disable-next-line react-hooks/exhaustive-deps
     // }, [lastResult])
+
+
     const onClose = () => {
         navigate(-1)
     }
     
     const [form, fields] = useForm({
         onValidate({ formData }) {
-          return parseWithZod(formData, { schema: CreateLeaderSchema });
+          return parseWithZod(formData, { schema: CreateUserSchema });
         },
         shouldValidate: 'onSubmit',
-        shouldRevalidate: 'onInput',
+        shouldRevalidate: 'onBlur',
     }); 
     
+    console.log(fields.sex.errors, fields.sex.value);
     return (
      <Modal 
         isOpen={true}
@@ -66,22 +86,37 @@ export default function CreateUser() {
                     metadata={fields.lastNameSecond}
                 />
                 <InputValidation
+                    label="Nombre de usuario"
+                    placeholder="Ingresa el nombre de usuario"
+                    metadata={fields.username}
+                />
+                <InputValidation
+                    label="Correo electronico"
+                    placeholder="Ingresa el correo electronico"
+                    inputType='email'
+                    metadata={fields.email}
+                />
+                <InputValidation
                     label="Dirección"
                     placeholder="Ingresa la dirección"
                     metadata={fields.address}
                 />
-
-                {/* TODO: Add conform validation in select roles */}
-                <SelectRoles />
+                <SelectRoles 
+                  {...getSelectProps(fields.role)}
+                  isInvalid={!!fields.role.errors}
+                  color={fields.role.errors ? "danger" : "default"}
+                  errorMessage={fields.role.errors}
+                />
                 <Select
-                    items={[{key: 'masculino', value:'masculino'}, {key: 'femenino', value:'femenino'}]}
+                    items={[{key: 'masculino', value:'MASCULINO'}, {key: 'femenino', value:'FEMENINO'}]}
                     label="Genero"
+                    {...getSelectProps(fields.sex)}
+                    isInvalid={!!fields.sex.errors}
+                    color={fields.sex.errors ? "danger" : "default"}
+                    errorMessage={fields.sex.errors}
                     placeholder="Seleccione un genero"
-                    className={`red-dark text-foreground bg-content1`}
                     labelPlacement="outside"
                     variant="bordered"
-                    name="sex"
-                    id='sex'
                 >
                     {
                         (sex) => <SelectItem key={sex.key} textValue={sex.value}>
@@ -103,6 +138,7 @@ export default function CreateUser() {
                   isLoading={navigation.state === 'submitting'}
                   isDisabled={navigation.state !== 'idle'}
                   name='_action'
+                  value='create'
                 >
                   Crear
                 </Button>

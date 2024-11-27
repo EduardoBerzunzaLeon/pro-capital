@@ -4,9 +4,11 @@ import { Repository } from "../adapter";
 import { UserComplete } from "../domain/entity";
 import { PaginationWithFilters } from "../domain/interface";
 import { RequestId } from "../interfaces";
-import { validationZod } from "./validation.service";
+import { validationConform, validationZod } from "./validation.service";
 import { ServerError } from "../errors";
 import { activeSchema } from "~/schemas/genericSchema";
+import { CreateUserSchema } from "~/schemas/userSchema";
+import { hash } from "../adapter/encryptor";
 
 export const findAll = async (props: PaginationWithFilters) => {
     const { data, metadata } = await Repository.user.findAll({...props});
@@ -57,6 +59,28 @@ export const updateIsActive = async (id: RequestId, isActive?: boolean) => {
     return  userUpdated;
 }
 
+export const createOne = async ( formData: FormData) => {
+    const { role, ...rest} = validationConform(formData, CreateUserSchema);
+    const fullName = Service.utils.concatFullname({...rest});
+    const password = Service.utils.generateString(8);
+    const passwordSalted = await hash(password, 10);
+
+    const dataToSave = {
+        ...rest,
+        fullName,
+        password: passwordSalted,
+        roleId: role
+    }
+
+    const userSaved =  await Repository.user.createOne(dataToSave);
+
+    if(!userSaved) {
+        throw ServerError.internalServer(`No se pudo crear el usuario ${fullName}`);
+    }
+
+    return password;
+}
+
 // export const updateOne = async (id: RequestId, formData: FormData) => {
 
 // }
@@ -67,4 +91,5 @@ export default {
     updateIsActive,
     findOne,
     findAll,
+    createOne,
 }

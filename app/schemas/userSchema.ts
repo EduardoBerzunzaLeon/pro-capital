@@ -1,22 +1,14 @@
 import { z } from "zod";
-import { lastNameFirst, lastNameLast, name, stringSchema } from "./genericSchema";
+import { email, integerBuilder, lastNameFirst, lastNameLast, name, stringSchema, userName } from "./genericSchema";
 
 
-export const CreateuserSchema = z.object({
+export const CreateUserSchema = z.object({
     name,
     lastNameFirst: lastNameFirst,
     lastNameSecond: lastNameLast,
     address: stringSchema('La dirección'),
+    username: userName,
+    email,
     sex: z.enum(['masculino', 'femenino']),
-    role: z.enum([
-        'ASESOR',
-        'CAPTURISTA',
-        'JEFE_CAPTURA',
-        'TITULAR_RUTA',
-        'SUPERVISOR',
-        'GERENCIA',
-        'SUBGERENTE',
-        'DIRECTOR',
-        'ADMIN'
-    ]), 
+    role: integerBuilder('El rol'), 
 }); 

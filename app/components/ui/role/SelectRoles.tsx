@@ -1,4 +1,4 @@
-import {  Select, SelectItem } from "@nextui-org/react";
+import {  Select, SelectItem, SelectProps } from "@nextui-org/react";
 import { useFetcher } from "@remix-run/react";
 import { useEffect, useState } from "react";
 import { Key, SelectionMode, Selection } from "~/.server/interfaces";
@@ -9,14 +9,14 @@ interface RolData {
     role: string,
 }
 
-interface Props {
+type Props  = Partial<SelectProps> & {
     defaultSelectedKeys?: "all" | Iterable<Key> | undefined,
     onSelectionChange?: (keys: Selection) => void,
     selectionMode?: SelectionMode,
     className?: string,
 }
 
-export const SelectRoles = ({ defaultSelectedKeys, onSelectionChange, selectionMode, className }: Props) => {
+export const SelectRoles = ({ defaultSelectedKeys, onSelectionChange, selectionMode, className, ...rest }: Props) => {
   
   const { load, data, state } = useFetcher<HandlerSuccess<RolData[]>>({ key: 'getSelectRoles' });
   const [selected, setSelected] = useState<"all" | Iterable<Key>>([]);
@@ -45,7 +45,6 @@ export const SelectRoles = ({ defaultSelectedKeys, onSelectionChange, selectionM
     <>
     
        <Select
-            items={data?.serverData ?? []}
             label="Rol"
             placeholder="Seleccione un rol"
             className={`red-dark text-foreground bg-content1 ${className}`}
@@ -57,12 +56,23 @@ export const SelectRoles = ({ defaultSelectedKeys, onSelectionChange, selectionM
             onSelectionChange={handleChange}
             selectedKeys={selected}
             selectionMode={selectionMode}
+            {...rest}
         >
-            {(rol) => <SelectItem  key={rol.id} textValue={`Rol ${rol.role}`}>
-                <div className="flex items-center justify-between">
-                    <span className='text-center'>{rol.role.replace('_', ' ')}</span>
-                </div>
-            </SelectItem>}
+            {
+              data?.serverData ? data?.serverData.map((role) => (
+                <SelectItem  key={role.id} textValue={role.role.replace('_', ' ')}>
+                  <div className="flex items-center justify-between">
+                      <span className='text-center'>{role.role.replace('_', ' ')}</span>
+                  </div>
+                </SelectItem>
+              )) : (
+                <SelectItem  key={0} textValue='NO ROLE'>
+                  <div className="flex items-center justify-between">
+                      <span className='text-center'>NO ROLE</span>
+                  </div>
+                </SelectItem>
+              )
+            }
         </Select>                
     </>
   )

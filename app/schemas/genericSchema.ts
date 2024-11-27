@@ -116,6 +116,17 @@ export const lastNameLast = alphabetBuilder({
     minText: 'El segundo apellido',
     extraText: 'El segundo apellido'
 });
+
+export const userName = z.string({
+    invalid_type_error: "Usuario invalido",
+    required_error: "Requerido",
+  }).min(5, { message: 'El usuario debe ser de 5 o más caracteres'});
+
+export const email = z.string({
+    invalid_type_error: "Correo invalido",
+    required_error: "Requerido",
+})
+.email("No tiene estructura de correo electronico.")
 // export const dateSchema = (requiredText?: string) => z.string().pipe(z.coerce.date())
 
 export const idSchema = z.object({ id });
