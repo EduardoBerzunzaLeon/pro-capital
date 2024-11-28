@@ -29,10 +29,14 @@ export function UserRepository(base: BaseUserI) : UserRepositoryI {
             id: true,
             email: true,
             username: true,
+            name: true,
+            lastNameFirst: true,
+            lastNameSecond: true,
             fullName: true,
             isActive: true,
             role: {
                 select: {
+                    id: true,
                     role: true
                 }
             },

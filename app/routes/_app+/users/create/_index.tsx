@@ -6,20 +6,22 @@ import { parseWithZod } from "@conform-to/zod";
 import { InputValidation } from "~/components/ui";
 import { SelectRoles } from "~/components/ui/role/SelectRoles";
 import { CreateUserSchema } from "~/schemas/userSchema";
-import { handlerErrorWithToast, handlerSuccessWithToast } from "~/.server/reponses";
+import { handlerErrorWithToast } from "~/.server/reponses";
 import { ActionFunction } from "@remix-run/node";
 import { Service } from "~/.server/services";
+import { redirectWithSuccess } from "remix-toast";
 
 export const action: ActionFunction = async({ request }) => {
   const formData = await request.formData();
   const data = Object.fromEntries(formData);
+  const url = new URL(request.url);
 
   try {
-    // formData.set('folder', data['folder[id]']);
     const password = await Service.user.createOne(formData);
-    return handlerSuccessWithToast('create', `La contraseña es: ${password}`);
+    return redirectWithSuccess(`/users${url.search}`, { 
+      message: `Creación exitosa, La contraseña es: ${password}`
+    });
   } catch (error) {
-    console.log(error);
     return handlerErrorWithToast(error, data);
   }
 
@@ -29,15 +31,6 @@ export default function CreateUser() {
 
     const navigate = useNavigate();
     const navigation = useNavigation();
-    // const lastResult = useActionData<typeof action>();
-
-    // useEffect(() => {
-    //   if(lastResult?.status === 'success' && form.value?.anniversaryDate) {
-    //     form.reset()
-    //   }
-    // // eslint-disable-next-line react-hooks/exhaustive-deps
-    // }, [lastResult])
-
 
     const onClose = () => {
         navigate(-1)
@@ -51,7 +44,6 @@ export default function CreateUser() {
         shouldRevalidate: 'onBlur',
     }); 
     
-    console.log(fields.sex.errors, fields.sex.value);
     return (
      <Modal 
         isOpen={true}

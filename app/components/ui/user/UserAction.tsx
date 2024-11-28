@@ -19,11 +19,16 @@ export function UserAction({ userId }: Props)  {
     const handleView = () => {
         navigate(`/users/${userId}`);
     }
+
+    const handleUpdate = () => {
+        navigate(`/users/${userId}/update`)
+    }
        
     return (
         <Action 
             ariaLabel="user actions"
             onView={handleView}
+            onUpdate={handleUpdate}
             // onDelete={handleDelete}
             // isLoading={isDeleting}
         />

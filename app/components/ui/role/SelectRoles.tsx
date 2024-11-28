@@ -28,13 +28,13 @@ export const SelectRoles = ({ defaultSelectedKeys, onSelectionChange, selectionM
   // eslint-disable-next-line react-hooks/exhaustive-deps
   } ,[data]);
 
-  useEffect(() => {
+  // useEffect(() => {
 
-    if(defaultSelectedKeys) {
-        setSelected(defaultSelectedKeys)
-    }
+  //   if(defaultSelectedKeys) {
+  //       setSelected(defaultSelectedKeys)
+  //   }
 
-  }, [defaultSelectedKeys])
+  // }, [defaultSelectedKeys])
 
   const handleChange = (keys: Selection) => {
     setSelected(keys);
@@ -45,6 +45,7 @@ export const SelectRoles = ({ defaultSelectedKeys, onSelectionChange, selectionM
     <>
     
        <Select
+            items={data?.serverData ?? []}
             label="Rol"
             placeholder="Seleccione un rol"
             className={`red-dark text-foreground bg-content1 ${className}`}
@@ -55,6 +56,7 @@ export const SelectRoles = ({ defaultSelectedKeys, onSelectionChange, selectionM
             isLoading={state !== 'idle'}
             onSelectionChange={handleChange}
             selectedKeys={selected}
+            defaultSelectedKeys={defaultSelectedKeys}
             selectionMode={selectionMode}
             {...rest}
         >
