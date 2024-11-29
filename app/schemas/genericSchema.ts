@@ -38,7 +38,7 @@ export const alphabetBuilder = ({
 .toLowerCase()
 .min(2, `${minText} debe tener minimo dos letras`)
 .refine(
-    (value) =>  /^[a-zA-Z ]*$/.test(value ?? ""), 
+    (value) =>  /^[a-zA-Záéíóú ]*$/.test(value ?? ""), 
     `${extraText} solo debe tener caracteres del alfabeto`);
 
 

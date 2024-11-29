@@ -13,6 +13,7 @@ interface Props {
     inputType?: InputTypes,
     defaultValue?: string,
     startContent?: React.ReactNode,
+    endContent?: React.ReactNode,
     isReadOnly?: boolean,
 }
 

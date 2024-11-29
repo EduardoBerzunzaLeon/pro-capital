@@ -1,7 +1,7 @@
 import {  Select, SelectItem, SelectProps } from "@nextui-org/react";
 import { useFetcher } from "@remix-run/react";
-import { useEffect, useState } from "react";
-import { Key, SelectionMode, Selection } from "~/.server/interfaces";
+import { useEffect } from "react";
+import { Selection } from "~/.server/interfaces";
 import { HandlerSuccess } from "~/.server/reponses";
 
 interface RolData {
@@ -10,16 +10,14 @@ interface RolData {
 }
 
 type Props  = Partial<SelectProps> & {
-    defaultSelectedKeys?: "all" | Iterable<Key> | undefined,
     onSelectionChange?: (keys: Selection) => void,
-    selectionMode?: SelectionMode,
     className?: string,
 }
 
-export const SelectRoles = ({ defaultSelectedKeys, onSelectionChange, selectionMode, className, ...rest }: Props) => {
+export const SelectRoles = ({ className, ...rest }: Props) => {
   
   const { load, data, state } = useFetcher<HandlerSuccess<RolData[]>>({ key: 'getSelectRoles' });
-  const [selected, setSelected] = useState<"all" | Iterable<Key>>([]);
+  const isLoading = state !== 'idle' || data === undefined;
 
   useEffect(() => {
     if(!data?.serverData) {
@@ -27,19 +25,6 @@ export const SelectRoles = ({ defaultSelectedKeys, onSelectionChange, selectionM
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   } ,[data]);
-
-  // useEffect(() => {
-
-  //   if(defaultSelectedKeys) {
-  //       setSelected(defaultSelectedKeys)
-  //   }
-
-  // }, [defaultSelectedKeys])
-
-  const handleChange = (keys: Selection) => {
-    setSelected(keys);
-    !!onSelectionChange && onSelectionChange(keys)
-  }
 
   return (
     <>
@@ -53,28 +38,16 @@ export const SelectRoles = ({ defaultSelectedKeys, onSelectionChange, selectionM
             variant="bordered"
             name="role"
             id='role'
-            isLoading={state !== 'idle'}
-            onSelectionChange={handleChange}
-            selectedKeys={selected}
-            defaultSelectedKeys={defaultSelectedKeys}
-            selectionMode={selectionMode}
+            isLoading={isLoading}
             {...rest}
         >
-            {
-              data?.serverData ? data?.serverData.map((role) => (
+              {(role) => (
                 <SelectItem  key={role.id} textValue={role.role.replace('_', ' ')}>
                   <div className="flex items-center justify-between">
                       <span className='text-center'>{role.role.replace('_', ' ')}</span>
                   </div>
-                </SelectItem>
-              )) : (
-                <SelectItem  key={0} textValue='NO ROLE'>
-                  <div className="flex items-center justify-between">
-                      <span className='text-center'>NO ROLE</span>
-                  </div>
-                </SelectItem>
-              )
-            }
+              </SelectItem>
+            )}
         </Select>                
     </>
   )

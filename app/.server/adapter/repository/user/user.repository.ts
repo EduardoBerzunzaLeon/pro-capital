@@ -1,4 +1,4 @@
-import { BaseUserI, CreateUserI, PaginationWithFilters, UpdateUserI, UserRepositoryI } from "~/.server/domain/interface";
+import { BaseUserI, CreateUserI, PaginationWithFilters, UpdatePersonalData, UserRepositoryI } from "~/.server/domain/interface";
 
 
 export function UserRepository(base: BaseUserI) : UserRepositoryI {
@@ -58,12 +58,20 @@ export function UserRepository(base: BaseUserI) : UserRepositoryI {
         return await base.createOne(user);
     }
 
-    async function updateOne(id: number, user: UpdateUserI) {
+    async function updatePersonalData(id: number, user: UpdatePersonalData) {
         return await base.updateOne({ id }, user);
     }
 
     async function updatePassword(id: number, password: string) {
         return await base.updateOne({ id }, { password });
+    }
+
+    async function updateRole(id: number, roleId: number) {
+        return await base.updateOne({id}, { roleId });
+    }
+
+    async function updateAvatar(id: number, avatar: string) {
+        return await base.updateOne({id}, { avatar });
     }
 
     async function findAutocomplete(name: string) {
@@ -83,8 +91,10 @@ export function UserRepository(base: BaseUserI) : UserRepositoryI {
         findRole,
         updateIsActive,
         createOne,
-        updateOne,
+        updatePersonalData,
         updatePassword,
+        updateRole,
+        updateAvatar,
         base
     };
 }

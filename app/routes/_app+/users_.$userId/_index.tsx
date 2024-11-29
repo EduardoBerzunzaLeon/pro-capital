@@ -50,7 +50,7 @@ export default function UserPage() {
                 isBordered 
                 radius="full"
                 className="w-20 h-20 text-large" 
-                src="https://nextui.org/avatars/avatar-1.png" 
+                src={`/img/${user.serverData.avatar}`} 
             />
             <h4 className="font-bold text-large capitalize">{ user.serverData.fullName }</h4>
             <small className="text-default-500"> { user.serverData.role.role  } </small>

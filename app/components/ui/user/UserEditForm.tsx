@@ -3,7 +3,7 @@ import { parseWithZod } from "@conform-to/zod";
 import { useFetcher } from "@remix-run/react"
 import { UpdateUserSchema } from "~/schemas/userSchema";
 import { InputValidation } from "../forms/Input";
-import { SelectRoles } from "../role/SelectRoles";
+import { Card, CardHeader, Select, SelectItem, CardBody, Button } from '@nextui-org/react';
 
 interface Props {
     id: number,
@@ -12,8 +12,6 @@ interface Props {
     name: string,
     lastNameFirst: string,
     lastNameSecond?: string,
-    isActive: boolean,
-    role: { id: number, role: string },
     address: string,
     sex: string,
 }
@@ -24,15 +22,12 @@ export const UserEditForm = ({
     name,
     lastNameFirst,
     lastNameSecond,
-    isActive,
-    role,
     address,
     sex,
 }: Props) => {
 
-    const { Form } = useFetcher();
+    const { Form, state } = useFetcher();
 
-        
     const [form, fields] = useForm({
         onValidate({ formData }) {
           return parseWithZod(formData, { schema: UpdateUserSchema });
@@ -50,48 +45,81 @@ export const UserEditForm = ({
     }); 
     
   return (
-    <Form 
-        method='post'
-        { ...getFormProps(form) }
-    >
-        <InputValidation
-            label="Nombre(s)"
-            placeholder="Ingresa el/los nombre(s)"
-            metadata={fields.name}
-        />
-        <InputValidation
-            label="Primer Apellido"
-            placeholder="Ingresa el primer apellido"
-            metadata={fields.lastNameFirst}
-        />
-        <InputValidation
-            label="Segundo Apellido"
-            placeholder="Ingresa el segundo apellido"
-            metadata={fields.lastNameSecond}
-        />
-        <InputValidation
-            label="Nombre de usuario"
-            placeholder="Ingresa el nombre de usuario"
-            metadata={fields.username}
-        />
-        <InputValidation
-            label="Correo electronico"
-            placeholder="Ingresa el correo electronico"
-            inputType='email'
-            metadata={fields.email}
-        />
-        <InputValidation
-            label="Dirección"
-            placeholder="Ingresa la dirección"
-            metadata={fields.address}
-        />
-        <SelectRoles 
-            {...getSelectProps(fields.role)}
-            isInvalid={!!fields.role.errors}
-            color={fields.role.errors ? "danger" : "default"}
-            errorMessage={fields.role.errors}
-            defaultSelectedKeys={[role.id]}
-        />
-    </Form>
+    <Card className="max-w-[600px] min-w-[300px]">
+        <Form 
+            method='post'
+            { ...getFormProps(form) }
+            action={`/users/${id}/update`}
+        >
+            <CardHeader>
+                <h2>Actualizar datos personales</h2>
+            </CardHeader>
+            <CardBody>
+                    <InputValidation
+                        label="Nombre(s)"
+                        placeholder="Ingresa el/los nombre(s)"
+                        metadata={fields.name}
+                    />
+                    <InputValidation
+                        label="Primer Apellido"
+                        placeholder="Ingresa el primer apellido"
+                        metadata={fields.lastNameFirst}
+                    />
+                    <InputValidation
+                        label="Segundo Apellido"
+                        placeholder="Ingresa el segundo apellido"
+                        metadata={fields.lastNameSecond}
+                    />
+                    <InputValidation
+                        label="Nombre de usuario"
+                        placeholder="Ingresa el nombre de usuario"
+                        metadata={fields.username}
+                    />
+                    <InputValidation
+                        label="Correo electronico"
+                        placeholder="Ingresa el correo electronico"
+                        inputType='email'
+                        metadata={fields.email}
+                    />
+                    <InputValidation
+                        label="Dirección"
+                        placeholder="Ingresa la dirección"
+                        metadata={fields.address}
+                    />
+                    <Select
+                                items={[{key: 'masculino', value:'MASCULINO'}, {key: 'femenino', value:'FEMENINO'}]}
+                                label="Genero"
+                                {...getSelectProps(fields.sex)}
+                                isInvalid={!!fields.sex.errors}
+                                color={fields.sex.errors ? "danger" : "default"}
+                                errorMessage={fields.sex.errors}
+                                placeholder="Seleccione un genero"
+                                labelPlacement="outside"
+                                variant="bordered"
+                                defaultSelectedKeys={[sex]}
+                            >
+                                {
+                            (sex) => <SelectItem key={sex.key} textValue={sex.value}>
+                                <div className="flex items-center justify-between">
+                                    <span className='text-center'>{sex.value}</span>
+                                </div>
+                            </SelectItem>
+                        }
+                    </Select>
+            </CardBody>
+            <CardHeader>
+                <Button 
+                    color="primary" 
+                    type='submit' 
+                    name='_action' 
+                    value='updatePersonalData' 
+                    isLoading={state !== 'idle'}
+                    isDisabled={state !== 'idle'}
+                    >
+                    Actualizar
+                </Button>
+            </CardHeader>
+        </Form>
+    </Card>
   )
 }

@@ -17,10 +17,8 @@ export interface CreateUserI {
     sex: SexI,
 }
 
-export type UpdateUserI  =  Omit<CreateUserI, 'password'> & { avatar?: string };
-export interface UpdatePasswordI {
-    password: string
-}
+export type UpdateRole = Pick<CreateUserI, 'roleId'>;
+export type UpdatePersonalData = Omit<CreateUserI, 'roleId'>;
 
 export type BaseUserI = BaseRepositoryI<
     Prisma.UserDelegate, 
@@ -39,8 +37,10 @@ export interface UserRepositoryI {
     findRole: (id: number) => Promise<Generic | undefined>,
     updateIsActive: (id: number, isActive: boolean) => Promise<Generic | undefined>,
     createOne: (user: CreateUserI) => Promise<Generic | undefined>,
-    updateOne: (id: number, user: UpdateUserI) => Promise<Generic | undefined>,
+    updatePersonalData: (id: number, user: UpdatePersonalData) => Promise<Generic | undefined>,
     updatePassword: (id: number, password: string) => Promise<Generic | undefined>,
+    updateRole: (id: number, roleId: number) => Promise<Generic | undefined>,
+    updateAvatar: (id: number, avatar: string) => Promise<Generic | undefined>,
     base: BaseUserI
 }
 

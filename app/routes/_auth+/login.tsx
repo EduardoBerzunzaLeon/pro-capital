@@ -86,7 +86,6 @@ export default function LoginPage() {
       placeholder="Ingresa tu usuario"
       labelPlacement="outside"
       autoComplete="off"
-      // defaultValue="eduardo.berzunza"
       isInvalid={!!fields.userName.errors}
       color={fields.userName.errors ? "danger" : "default"}
       errorMessage={fields.userName.errors}
@@ -98,7 +97,6 @@ export default function LoginPage() {
       isInvalid={!!fields.password.errors}
       color={fields.password.errors ? "danger" : "default"}
       errorMessage={fields.password.errors}
-      // defaultValue="123456"
       variant="bordered"
       placeholder="Ingresa tu contraseña"
       labelPlacement="outside"

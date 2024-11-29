@@ -7,7 +7,7 @@ import { RequestId } from "../interfaces";
 import { validationConform, validationZod } from "./validation.service";
 import { ServerError } from "../errors";
 import { activeSchema } from "~/schemas/genericSchema";
-import { CreateUserSchema } from "~/schemas/userSchema";
+import { CreateUserSchema, UpdatePasswordSchema, UpdateRoleSchema, UpdateUserSchema } from "~/schemas/userSchema";
 import { hash } from "../adapter/encryptor";
 
 export const findAll = async (props: PaginationWithFilters) => {
@@ -84,11 +84,60 @@ export const createOne = async ( formData: FormData) => {
 // export const updateOne = async (id: RequestId, formData: FormData) => {
 
 // }
+
+export const updatePersonalData = async (id: RequestId, formData: FormData) => {
+
+    const { id: idVal } = validationZod({ id }, idSchema);
+    const data =  validationConform(formData, UpdateUserSchema);
+
+    const userUpdated = await Repository.user.updatePersonalData(idVal, data);
+
+    if(!userUpdated) {
+        throw ServerError.internalServer('No se pudo actualizar el usuario');
+    }
+
+}
  
+export const updatePassword = async (id: RequestId, formData: FormData) => {
+    const { id: idVal } = validationZod({ id }, idSchema);
+    const { password } =  validationConform(formData, UpdatePasswordSchema);
+
+    const passwordSalted = await hash(password, 10);
+
+    const userUpdated =  await Repository.user.updatePassword(idVal, passwordSalted);
+
+    if(!userUpdated) {
+        throw ServerError.internalServer('No se pudo actualizar la contraseña');
+    }
+}
+
+export const updateRole = async (id: RequestId, formData: FormData) => {
+    const { id: idVal } = validationZod({ id }, idSchema);
+    const { role } =  validationConform(formData, UpdateRoleSchema);
+
+    const userUpdated = await Repository.user.updateRole(idVal, role);
+
+    if(!userUpdated) {
+        throw ServerError.internalServer('No se pudo actualizar el rol del usuario');
+    }
+}
+
+export const updateAvatar = async (id: RequestId, avatar: string) => {
+    const { id: idVal } = validationZod({ id }, idSchema);
+    const userUpdated = await Repository.user.updateAvatar(idVal, avatar);
+
+    if(!userUpdated) {
+        throw ServerError.internalServer('No se pudo actualizar el avatar del usuario');
+    }
+}
 
 export default {
     findAutocomplete,
     updateIsActive,
+    updatePersonalData,
+    updatePassword,
+    updateRole,
+    updateAvatar,
     findOne,
     findAll,
     createOne,
