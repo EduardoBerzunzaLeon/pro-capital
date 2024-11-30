@@ -1,4 +1,4 @@
-import { BaseRoleI, RoleRepositoryI } from "~/.server/domain/interface";
+import { BaseRoleI, PaginationWithFilters, RoleRepositoryI } from "~/.server/domain/interface";
 
 
 export function RoleRepository(base: BaseRoleI): RoleRepositoryI {
@@ -12,8 +12,19 @@ export function RoleRepository(base: BaseRoleI): RoleRepositoryI {
         })
     }
 
+    async function findAll( paginationData: PaginationWithFilters ) {
+        return await base.findManyPaginator({
+            paginatonWithFilter: paginationData,
+            select: {
+                id: true,
+                role: true
+            }
+        })
+    }
+
     return {
         findMany,
+        findAll,
         base
     }
 }

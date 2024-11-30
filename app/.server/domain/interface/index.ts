@@ -13,3 +13,4 @@ export type * from './Payment.repository.interface';
 export type * from './Role.repository.interface';
 export type * from './Town.repository.interface';
 export type * from './User.repository.interface';
+export type * from './Permission.repository.interface';

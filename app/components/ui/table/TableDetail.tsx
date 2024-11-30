@@ -56,7 +56,9 @@ export const TableDetail = <T extends Generic>({
           {(item) => {
               return (
               <TableRow key={item?.id}>
-                  {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
+                  {(columnKey) => <TableCell 
+                    className={columnKey === "actions" ? "text-center" : "text-start"}
+                  >{renderCell(item, columnKey)}</TableCell>}
               </TableRow>
           )}}
       </TableBody>

@@ -1,6 +1,6 @@
 import { Generic } from '~/.server/interfaces';
 import { Prisma } from '@prisma/client';
-import { BaseRepositoryI } from '.';
+import { BaseRepositoryI, PaginationWithFilters, ResponseWithMetadata } from '.';
 
 
 export type BaseRoleI = BaseRepositoryI<
@@ -14,8 +14,9 @@ export type BaseRoleI = BaseRepositoryI<
 
 
 export interface RoleRepositoryI{
-    // findAll: (paginationData: PaginationWithFilters ) => Promise<ResponseWithMetadata>,
+    findAll: (paginationData: PaginationWithFilters ) => Promise<ResponseWithMetadata>,
     findMany: () => Promise<Generic | undefined>,
     base: BaseRoleI
 }
+
 

@@ -1,19 +1,21 @@
-import { ClientRepository } from "./client/client.repository";
 import { db } from "../db";
+
 import { AgentRouteRepository } from "./agentRoute/agentRoute.repository";
 import { AuthRepository } from "./auth/auth.repository";
 import { AvalRepository } from "./aval/aval.repository";
 import { baseRepository } from "./base.repository";
+import { ClientRepository } from "./client/client.repository";
 import { CreditRepository } from "./credit/credit.repository";
 import { FolderRepository } from "./folder/folder.repository";
 import { GroupRepository } from "./group/group.repository";
 import { LeaderRepository } from "./leader/leader.repository";
 import { MunicipalityRepository } from "./municipality/municipality.repository";
+import { PaymentRepository } from "./payment/payment.repository";
+import { PermissionRepository } from "./permission/permission.repository";
+import { RoleRepository } from "./role/role.repository";
 import { RouteRepository } from "./route/route.repository";
 import { TownRepository } from "./town/town.repository";
 import { UserRepository } from "./user/user.repository";
-import { PaymentRepository } from "./payment/payment.repository";
-import { RoleRepository } from "./role/role.repository";
 
 function buildRepository() {
     return {
@@ -31,6 +33,7 @@ function buildRepository() {
         user: { ...UserRepository(baseRepository(db.user))},
         payment: { ...PaymentRepository(baseRepository(db.paymentDetail))},
         role: { ...RoleRepository(baseRepository(db.role))},
+        permission: { ...PermissionRepository(baseRepository(db.permission))},
     }
 }
 
