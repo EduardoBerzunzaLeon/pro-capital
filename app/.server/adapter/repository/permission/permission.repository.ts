@@ -1,6 +1,5 @@
 import { BasePermissionI, PaginationWithFilters, PermissionRepositoryI } from "~/.server/domain/interface";
 
-
 export function PermissionRepository(base: BasePermissionI): PermissionRepositoryI {
 
 
@@ -26,8 +25,36 @@ export function PermissionRepository(base: BasePermissionI): PermissionRepositor
         })
     }
 
+    async function unassignRole(roleId: number, permissionId: number) {
+        return await base.entity.update({
+            where: {
+                id: permissionId,
+            },
+            data: {
+                roles: {
+                    disconnect: [{ id: roleId }]
+                }
+            }
+        });
+    }
+    
+    async function assignRole(roleId: number, permissionId: number) {
+        return await base.entity.update({
+            where: {
+                id: permissionId,
+            },
+            data: {
+                roles: {
+                    connect: [{ id: roleId }]
+                }
+            }
+        });
+    }
+
     return {
         findAll,
+        unassignRole,
+        assignRole,
         base
     }
 

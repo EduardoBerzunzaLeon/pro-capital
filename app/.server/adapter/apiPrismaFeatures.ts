@@ -28,7 +28,7 @@ export function apiPrismaFeatures({
         if(!column || !direction) return {}
         const directionBy: SortOrder = direction === 'ascending' ? 'asc': 'desc';
         const columns = column.split('.');
-        return  convert(columns, directionBy);
+        return convert(columns, directionBy);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

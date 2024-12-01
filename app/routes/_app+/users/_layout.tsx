@@ -125,7 +125,7 @@ export default function  UsersPage()  {
         label="Correo electronico" 
         id="email"
         className='w-full md:max-w-[30%]' 
-        placeholder="Correco electronico"      
+        placeholder="Correo electronico"      
         defaultValue={loader?.serverData?.email}
     />
     <InputFilter 

@@ -18,3 +18,4 @@ export * from './credit';
 export * from './payment';
 export * from './user';
 export * from './common';
+export * from './security';

@@ -13,6 +13,11 @@ export const useRenderCell = ({ isMoney }: Props) => {
         if(result && !isNaN(Number(result)) && isMoney) {
             return `$${result}`;
         }
+
+        if(typeof result  === 'string') {
+            return result.replace('_', ' ');
+        }
+        
         return result;
     }, [isMoney]);
 

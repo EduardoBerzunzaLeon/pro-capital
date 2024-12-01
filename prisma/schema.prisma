@@ -81,7 +81,7 @@ model Role {
 model Module {
   id Int @id @default(autoincrement())
   name String
-  isActive Boolean
+  isActive Boolean @default(true)
   permissions Permission[]
 }
 

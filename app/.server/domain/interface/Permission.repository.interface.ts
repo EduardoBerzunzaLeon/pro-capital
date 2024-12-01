@@ -1,6 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { BaseRepositoryI, ResponseWithMetadata } from "./Base.repository.interface";
 import { PaginationWithFilters } from "./Pagination.interface";
+import { Generic } from "~/.server/interfaces";
 
 export type BasePermissionI = BaseRepositoryI<
     Prisma.PermissionDelegate, 
@@ -13,6 +14,8 @@ export type BasePermissionI = BaseRepositoryI<
 
 export interface PermissionRepositoryI{
     findAll: (paginationData: PaginationWithFilters) => Promise<ResponseWithMetadata>,
+    unassignRole: (roleId: number, permissionId: number) => Promise<Generic | undefined>,
+    assignRole: (roleId: number, permissionId: number) => Promise<Generic | undefined>,
     base: BasePermissionI
 }
 

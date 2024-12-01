@@ -50,7 +50,7 @@ export function baseRepository<
         const paginate = apiPrisma.paginate();
         const whereAssign = Object.assign({}, searchParams, filter );
         const params = prepareParams(whereAssign, select);
-
+        
         const [data, total] = await Promise.all([
             entity.findMany({...params, ...paginate, orderBy }),
             entity.count({ where: whereAssign })

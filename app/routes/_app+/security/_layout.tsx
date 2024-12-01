@@ -4,21 +4,29 @@ import { json, LoaderFunction } from "@remix-run/node"
 import { Outlet, useLoaderData, useNavigate } from "@remix-run/react";
 import { useCallback } from "react";
 import { FaEye } from "react-icons/fa";
+import { Filter } from "~/.server/domain/interface";
 import { Generic, Key } from "~/.server/interfaces";
 import { getEmptyPagination, handlerPaginationParams, handlerSuccess } from "~/.server/reponses";
 import { Service } from "~/.server/services";
-import { useParamsPaginator, useRenderCell } from "~/application";
-import { Pagination, RowPerPage, TableDetail } from "~/components/ui";
+import { useParamsPaginator, useParamsSelect, useRenderCell } from "~/application";
+import {  Pagination, RowPerPage, TableDetail } from "~/components/ui";
+import { SelectRoles } from "~/components/ui/role/SelectRoles";
 
 const columnsFilter = ['role'];
 const columnSortNames: Generic ={ role: 'role'};
+const convertRoutes = (routes: string) =>  {
+  return routes.split(',').map(r => parseInt(r));
+}
 
 export const loader: LoaderFunction = async ({ request }) => {
   const url = new URL(request.url);
-  const role = url.searchParams.get('role') || '';
+  const roles = url.searchParams.get('roles') || '';
+  const rolesParsed: Filter  = (roles && roles !== 'all') 
+  ? { column: 'id', value: convertRoutes(roles)}
+  : { column: 'id', value: '' };
 
   try {
-    const roleParsed = { column: 'role', value: role };
+    
 
     const {
       page, limit, column, direction
@@ -27,9 +35,9 @@ export const loader: LoaderFunction = async ({ request }) => {
     const data = await Service.role.findAll({
       page, 
       limit, 
-      column: columnSortNames[column] ?? 'captureAt', 
+      column: columnSortNames[column] ?? 'role', 
       direction,
-      search: [roleParsed],
+      search: [rolesParsed],
     });
 
     return handlerSuccess(200, { 
@@ -38,13 +46,13 @@ export const loader: LoaderFunction = async ({ request }) => {
       l: limit,
       c: column,
       d: direction,
-      s: [role],
-      role,
+      s: [rolesParsed],
+      roles: rolesParsed.value,
     })
 
   } catch (error) {
     console.log({error});
-    return json(getEmptyPagination({role}));
+    return json(getEmptyPagination({ roles: rolesParsed.value,}));
   }
 
 }
@@ -68,6 +76,14 @@ export default function  SecurityPage()  {
   } = useParamsPaginator({
     columnDefault: 'role'
   });
+  const {
+    defaultItems,
+    handleSelection,
+  } = useParamsSelect({
+    items: roles.serverData.roles,
+    param: 'roles',
+    mapper: (item: number) => String(item)
+  });
 
   const renderCell = useCallback((role: Role, columnKey: Key) => {
 
@@ -90,16 +106,23 @@ export default function  SecurityPage()  {
   
 
   return (
-    <>
+    <div className='w-full flex gap-2 flex.wrap'>
+      <div className='w-full flex gap-2 mt-5 mb-3 flex-wrap justify-between items-center'>
+      <SelectRoles 
+        onSelectionChange={handleSelection}
+        selectionMode='multiple'
+        className='w-full md:max-w-[25%]'
+        defaultSelectedKeys={defaultItems}
+      />
       <TableDetail 
           aria-label="roles table"
           onSortChange={handleSort}
           sortDescriptor={sortDescriptor}
           bottomContent={
             <Pagination
-              pageCount={roles?.serverData?.pageCount}
-              currentPage={roles?.serverData?.currentPage}
-              onChange={handlePagination} 
+            pageCount={roles?.serverData?.pageCount}
+            currentPage={roles?.serverData?.currentPage}
+            onChange={handlePagination} 
             />
           }
           topContent={
@@ -110,7 +133,7 @@ export default function  SecurityPage()  {
               <RowPerPage
                 onChange={handleRowPerPage} 
                 checkParams
-              />
+                />
             </div>
           } 
           columns={columns} 
@@ -118,8 +141,9 @@ export default function  SecurityPage()  {
           emptyContent="No se encontraron roles" 
           renderCell={renderCell} 
           data={roles?.serverData.data ?? []}    
-      />
+          />
+      </div>
       <Outlet />
-    </>
+    </div>
   )
 }

@@ -15,6 +15,8 @@ import townService from "./town.service";
 import userService from "./user.service";
 import utilsService from "./utils.service";
 import validationService from "./validation.service";
+import permissionService from "./permission.service";
+
 
 
 function buildService() {
@@ -36,6 +38,7 @@ function buildService() {
         user: { ...userService },
         payment: { ...paymentService },
         role: { ...roleService },
+        permission: { ...permissionService },
     }
 }
 
