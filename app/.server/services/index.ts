@@ -16,6 +16,7 @@ import userService from "./user.service";
 import utilsService from "./utils.service";
 import validationService from "./validation.service";
 import permissionService from "./permission.service";
+import groupService from "./group.service";
 
 
 
@@ -39,6 +40,7 @@ function buildService() {
         payment: { ...paymentService },
         role: { ...roleService },
         permission: { ...permissionService },
+        group: { ...groupService },       
     }
 }
 

@@ -8,6 +8,7 @@ import { FolderAction } from "./FolderAction";
 import { FolderButtonAdd } from "./FolderButtonAdd";
 import { useFetcherPaginator } from "~/application";
 import { ModalFolderEdit } from "./ModalFolderEdit";
+import { GroupGenerateButton } from "./GroupGenerateButton";
 
 export type Key = string | number;
 
@@ -110,6 +111,7 @@ return (
             variant='bordered'
         />
     </div>
+
   <ModalFolderEdit 
       isOpen={isOpen}
       onOpenChange={onOpenChange}
@@ -128,6 +130,7 @@ return (
         topContent={
             <div className="flex justify-between items-center">
                 <FolderButtonAdd />
+                <GroupGenerateButton />
                 <span className="text-default-400 text-small">Total {data?.serverData.total || 0 } Carpetas </span>
                 <RowPerPage 
                     onChange={handleRowPerPage}

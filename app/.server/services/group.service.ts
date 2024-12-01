@@ -2,6 +2,8 @@ import { Group } from "@prisma/client";
 import { Repository } from "../adapter"
 
 export const generateGroups = async () => {
+
+    console.log('inside groups');
     const groups = await Repository.group.findGroupWithCredits();
 
     if(!groups || groups.length === 0) return;

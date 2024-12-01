@@ -69,7 +69,7 @@ export function FolderButtonAdd() {
                 variant="ghost" 
                 color="secondary" 
                 endContent={<FaPlus />}
-                onClick={handleOpen}
+                onPress={handleOpen}
             >
                 Agregar Carpeta
             </Button>
