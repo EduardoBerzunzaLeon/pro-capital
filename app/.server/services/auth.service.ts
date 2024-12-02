@@ -59,22 +59,15 @@ export const signIn = async (username: string, password: string) => {
     throw ServerError.badRequest('Credenciales Incorrectas');
   }
 
-  const user = new User(userDb as UserI);
+  const { password: passwordBd, ...restUser } = new User(userDb as UserI);
 
-  const isValidPassword = await encriptor.compare(password, user.password);
+  const isValidPassword = await encriptor.compare(password, passwordBd);
 
   if(!isValidPassword) {
     throw ServerError.badRequest('Credenciales Incorrectas');
   }
 
-  return {
-    id: user.id,
-    email: user.email,
-    username: user.username,
-    name: user.name,
-    lastNameFirst: user.lastNameFirst,
-    lastNameSecond: user.lastNameSecond
-  };
+  return restUser;
 }
 
 export default {

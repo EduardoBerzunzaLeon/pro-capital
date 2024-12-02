@@ -4,11 +4,11 @@ import { Service } from '../../.server/services/index';
 
 export const rootLoader: LoaderFunction = async ({ request }) => {
 
-    const [user, { toast, headers }] = await Promise.all([
+    const [ user, { toast, headers } ] = await Promise.all([
         Service.auth.authenticator.isAuthenticated(request),
         getToast(request)
     ]);
-
+    
     return json({ user, toast }, { headers });
 };
   

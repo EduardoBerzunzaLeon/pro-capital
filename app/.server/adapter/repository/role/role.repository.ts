@@ -1,3 +1,4 @@
+import { RoleTypes } from "@prisma/client";
 import { BaseRoleI, PaginationWithFilters, RoleRepositoryI } from "~/.server/domain/interface";
 
 
@@ -22,9 +23,23 @@ export function RoleRepository(base: BaseRoleI): RoleRepositoryI {
         })
     }
 
+    async function findPermission(roleName: RoleTypes, permission: string) {
+        return await base.findMany(({
+            searchParams: {
+                role: roleName,
+                permissions: {
+                    some: {
+                        name: permission
+                    }
+                }
+            }
+        }))
+    }
+
     return {
         findMany,
         findAll,
+        findPermission,
         base
     }
 }
