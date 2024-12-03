@@ -24,16 +24,19 @@ export function RoleRepository(base: BaseRoleI): RoleRepositoryI {
     }
 
     async function findPermission(roleName: RoleTypes, permission: string) {
-        return await base.findMany(({
-            searchParams: {
-                role: roleName,
+        return await base.findOne({
+            role: roleName,
                 permissions: {
                     some: {
-                        name: permission
+                        servername: permission
                     }
                 }
+            },
+            {
+                id: true,
+                role: true,
             }
-        }))
+        )
     }
 
     return {

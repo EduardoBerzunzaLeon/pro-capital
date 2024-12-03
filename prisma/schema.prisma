@@ -88,6 +88,7 @@ model Module {
 model Permission {
   id Int @id @default(autoincrement())
   name String @unique
+  servername String @unique
   description String
   module Module @relation(fields: [moduleId], references: [id])
   moduleId Int

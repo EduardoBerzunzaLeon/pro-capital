@@ -105,7 +105,7 @@ async function insertAgentRoutes(prisma: PrismaClient) {
 
 async function insertPermissions(prisma: PrismaClient) {
   for (const permission of permissions) {
-    const { name, description, module, roles } = permission;
+    const { name, description, module, roles, servername } = permission;
     const moduleDb  = await prisma.module.findFirst({ where: { name: module } });
     const rolesDB = await prisma.role.findMany({ where: {
        role: {in : roles }
@@ -116,6 +116,7 @@ async function insertPermissions(prisma: PrismaClient) {
         data: {
           name, 
           description,
+          servername,
           moduleId,
           roles: {
             connect: [...rolesDB]

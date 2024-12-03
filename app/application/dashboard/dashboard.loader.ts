@@ -16,5 +16,6 @@ export const dashboardLoader: LoaderFunction = async ({ request }) => {
     headers.append('Set-Cookie', await flashSession.commitSession(session));
 
     return json({ message }, { headers });
+
 };
   

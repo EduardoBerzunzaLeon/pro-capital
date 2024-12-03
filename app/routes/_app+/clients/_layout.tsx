@@ -1,14 +1,14 @@
 import { useCallback, useMemo, useState } from "react";
 import { Button, Select, SelectItem } from "@nextui-org/react";
-import { Outlet, useLoaderData, useNavigate} from "@remix-run/react";
+import { Outlet, useLoaderData, useNavigate } from "@remix-run/react";
 
 import { clientLoader } from "~/application/client/client.loader";
 import { Credit } from "~/.server/domain/entity";
 import { DropdownCanRenovate } from "~/components/ui/dropdowns/DropdownCanRenovate";
 import { DropdownCreditStatus } from "~/components/ui/dropdowns/DropdownCreditStatus";
 import { HandlerSuccess } from "~/.server/reponses";
-import { Key, SortDirection, Selection } from "~/.server/interfaces";
-import { TableDetail, RowPerPage, Pagination, InputFilter, RangePickerDateFilter, SliderFilter, CurpForm, ExportDropdown, ChipStatusCredit, ButtonSetEstatus } from "~/components/ui";
+import { Key, SortDirection, Selection} from "~/.server/interfaces";
+import { TableDetail, RowPerPage, Pagination, InputFilter, RangePickerDateFilter, SliderFilter, CurpForm, ExportDropdown, ChipStatusCredit, ButtonSetEstatus, ErrorBoundary } from "~/components/ui";
 import { useDropdownBoolean, useParamsPaginator, useRenderCell } from "~/application";
 import { useDropdown } from "~/application/hook/useDropdown";
 import { clientAction } from '../../../application/client/client.action';
@@ -79,6 +79,7 @@ const INITIAL_VISIBLE_COLUMNS = [
   'client.fullname', 'aval.fullname', 'folder.name', 'creditAt', 'status', 'canRenovate', 'actions'
 ];
 
+export { ErrorBoundary }
 export default function ClientsPage() {
 
   const loader = useLoaderData<HandlerSuccess<Loader>>();

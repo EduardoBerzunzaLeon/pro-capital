@@ -38,7 +38,6 @@ export const action: ActionFunction = async ({ request, params }) => {
 
 export function ErrorBoundary() {
     const error = useRouteError();
-
     return (<ErrorCard 
         error={(error as Generic)?.data ?? 'Ocurrio un error inesperado'}
         description='Ocurrio un error al momento de renovar un credito, intentelo de nuevo, verifique el CURP o que exista el cliente'

@@ -33,6 +33,7 @@ export const modules = [
 
 interface PremissionsI {
     name: string,
+    servername: string,
     description: string,
     module: string,
     roles: RoleTypes[]
@@ -40,6 +41,7 @@ interface PremissionsI {
 
 export const permissions: PremissionsI[] = [
     {
+        servername: 'clients[view]',
         name: 'ver clientes',
         description: 'permite ver los todos los clientes',
         module: 'clientes',
@@ -47,13 +49,15 @@ export const permissions: PremissionsI[] = [
     },
     {
         name: 'actualizar cliente',
+        servername: 'clients[update]',
         description: 'permite actualizar los clientes',
         module: 'clientes',
         roles: ['ADMIN', 'CAPTURISTA']
     },
     {
-        name: 'renovar cliente',
-        description: 'permite renovar los clientes',
+        name: 'crear credito',
+        servername: 'credit[create]',
+        description: 'permite crear un credito',
         module: 'clientes',
         roles: ['ADMIN', 'CAPTURISTA']
     }

@@ -4,6 +4,7 @@ import { handlerSuccess, parseArray, parseBoolean, parseNumber, parseRangeDate, 
 import { getEmptyPagination } from '~/.server/reponses/handlerError';
 import { handlerPaginationParams } from '~/.server/reponses/handlerSuccess';
 import { Service } from '~/.server/services';
+import { requirePermission } from '~/.server/services/auth.service';
 
 const columnsFilter = [
     'client.fullname', 'aval.fullname', 'captureAt', 'creditAt', 'folder.name',
@@ -26,6 +27,8 @@ const columnSortNames: Generic = {
 }
   
   export const clientLoader: LoaderFunction = async ({ request }) => {
+  
+    await requirePermission(request, 'clients[view]');
     
     const url = new URL(request.url);
   
@@ -40,7 +43,6 @@ const columnSortNames: Generic = {
     const status = url.searchParams.get('status') || '';
     const canRenovate = url.searchParams.get('canRenovate') || '';
     const debt = url.searchParams.get('debt') || '';
-
     const municipality = url.searchParams.get('municipality') || '';
     const town = url.searchParams.get('town') || '';
     const group = url.searchParams.get('group') || '';

@@ -9,6 +9,7 @@ import { parseWithZod } from '@conform-to/zod';
 import { loginSchema } from '~/schemas';
 import { ServerError, ValidationConformError } from '../errors';
 import { encriptor } from '../adapter';
+import { Service } from '.';
 
 const sessionSecret = process.env.SESSION_SECRET
 
@@ -69,6 +70,46 @@ export const signIn = async (username: string, password: string) => {
 
   return restUser;
 }
+
+// export const requirePermission = (loader: LoaderFunction, permission: string) => {
+
+//   return async (args: LoaderFunctionArgs) => {
+//     const { request } = args;
+
+//     const user = await authenticator.isAuthenticated(request, {
+//       failureRedirect: "/login",
+//     });
+    
+//     if(!user || user instanceof Error) {
+//       throw ServerError.unauthorized('usuario no autenticado');          
+//     }
+
+//     await Service.role.hasPermission(user.role.role, permission);
+
+//     return loader({ ...args, user });
+//   }
+// } 
+
+export const requirePermission = async (request: Request, permission: string) => {
+      
+    const user = await authenticator.isAuthenticated(request, {
+      failureRedirect: "/login",
+    });
+    
+    if(!user) {
+      throw ServerError.unauthorized('usuario no autenticado');          
+    }
+
+    if(user instanceof Error) {
+      throw user;
+    }
+
+    await Service.role.hasPermission(user.role.role, permission);
+  
+    return user;
+}
+
+
 
 export default {
   signIn,

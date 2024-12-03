@@ -1,11 +1,12 @@
-export { AutocompleteMultiple } from './forms/AutoCompleteMultiple';
+export { Action } from './Action/Action';
 export { AgentRouteAction } from './agentRoute';
+export { Alert } from './alert';
+export { AutocompleteMultiple } from './forms/AutoCompleteMultiple';
 export { DropdownStatus }  from './dropdowns/DropdownStatus';
+export { ErrorBoundary } from './error/ErrorBoundary';
 export { InputValidation } from './forms/Input';
 export { Pagination } from './pagination/Pagination';
 export { RowPerPage } from './rowPerPage/RowPerPage';
-export { Action } from './Action/Action';
-export { Alert } from './alert';
 
 export * from './animation';
 export * from './municipality';

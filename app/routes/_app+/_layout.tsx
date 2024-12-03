@@ -7,10 +7,13 @@ import { dashboardLoader } from "~/application/dashboard/dashboard.loader";
 import Navbar from "~/components/ui/navbar/Narbar";
 import SideBar from "~/components/ui/sidebar/SideBar";
 import { User } from "@prisma/client";
+import { ErrorBoundary } from '../../components/ui/error/ErrorBoundary';
 
 export const meta: MetaFunction = () => {
   return [{ title: "Dashboard" }];
 };
+
+export { ErrorBoundary }
 
 export default function Dashboard() {
   

@@ -1,3 +1,5 @@
+import { RoleTypes } from "@prisma/client";
+
 export interface UserI {
     id: number,
     email: string,
@@ -5,7 +7,10 @@ export interface UserI {
     lastNameFirst: string,
     username: string,
     password: string,
-    role: string,
+    role: {
+        id: number,
+        role: RoleTypes,
+    },
     lastNameSecond: string | null,
     avatar?: string,
 }
@@ -18,7 +23,7 @@ export class User {
     readonly lastNameFirst: string;
     readonly username: string;
     readonly password: string;
-    readonly role: string;
+    readonly role: { id: number, role: RoleTypes };
     readonly avatar?: string;
     readonly lastNameSecond?: string;
 
