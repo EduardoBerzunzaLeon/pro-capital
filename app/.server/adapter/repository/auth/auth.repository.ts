@@ -15,7 +15,20 @@ export function AuthRepository(base: BaseAuthI): AuthRepositoryI {
             lastNameFirst: true,
             lastNameSecond: true,
             fullName: true,
-            role: true
+            role: {
+                select: {
+                    id: false,
+                    role: true,
+                    permissions: { select: { 
+                        servername: true,
+                        id: false,
+                        name: false,
+                        description: false,
+                        module: false,
+                        roles: false, 
+                    } }
+                }
+            }
         })
     }
 

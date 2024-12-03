@@ -12,8 +12,6 @@ export const action: ActionFunction = async({params, request}) => {
     
     try {
         
-    
-        
       if(data._action === 'update') {
         const isActive = data?.isActiveRoute === 'true';
         await Service.routes.updateIsActive(id, isActive);

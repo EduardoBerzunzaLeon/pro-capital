@@ -104,14 +104,17 @@ export const requirePermission = async (request: Request, permission: string) =>
       throw user;
     }
 
-    await Service.role.hasPermission(user.role.role, permission);
+    const hasPermission = await Service.role.hasPermission(user.role, permission);
+
+    if(!hasPermission) {
+      throw ServerError.forbidden('No tiene acceso a esta ruta');
+    } 
   
     return user;
 }
 
-
-
 export default {
   signIn,
-  authenticator
+  authenticator,
+  requirePermission
 }

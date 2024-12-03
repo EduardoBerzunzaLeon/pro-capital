@@ -16,7 +16,7 @@ export const CurpForm = () => {
         shouldValidate: 'onSubmit',
         shouldRevalidate: 'onInput',
     }); 
-
+// credit[create]
   return (
     <Card className='w-full'>
         <CardHeader>

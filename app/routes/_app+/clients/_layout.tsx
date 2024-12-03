@@ -13,6 +13,7 @@ import { useDropdownBoolean, useParamsPaginator, useRenderCell } from "~/applica
 import { useDropdown } from "~/application/hook/useDropdown";
 import { clientAction } from '../../../application/client/client.action';
 import { CreditAction } from "~/components/ui/credit/CreditAction";
+import { Permission } from '../../../components/ui/auth/Permission';
 
 export {
    clientLoader as loader,
@@ -169,7 +170,9 @@ export default function ClientsPage() {
 
   return <>
     <Outlet />
-    <CurpForm />
+    <Permission permission='credit[create]'>
+      <CurpForm />
+    </Permission>
     <ExportDropdown />
     <ButtonSetEstatus />
     <div className='w-full flex gap-2 mt-5 mb-3 flex-wrap justify-between items-center'>

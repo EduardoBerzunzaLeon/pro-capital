@@ -41,8 +41,6 @@ if(error.meta) {
   return { error: `El valor del campo ${errors[0]} ya existe`, status: 400, serverData};
 }
 
-console.log({prismaErrornotHandler: error});
-
 return { error: 'Algo salio mal, intentelo más tarde', status: 500, serverData};
 }
 

@@ -10,6 +10,9 @@ export interface UserI {
     role: {
         id: number,
         role: RoleTypes,
+        permissions: {
+            servername: string
+        } []
     },
     lastNameSecond: string | null,
     avatar?: string,
@@ -23,7 +26,8 @@ export class User {
     readonly lastNameFirst: string;
     readonly username: string;
     readonly password: string;
-    readonly role: { id: number, role: RoleTypes };
+    readonly role: RoleTypes;
+    readonly permissions: { servername: string }[];
     readonly avatar?: string;
     readonly lastNameSecond?: string;
 
@@ -44,11 +48,11 @@ export class User {
         this.lastNameFirst = lastNameFirst;
         this.username = username;
         this.password = password;
-        this.role = role;
+        this.role = role.role;
+        this.permissions = role.permissions,
         this.avatar = avatar;
         this.lastNameSecond = this.validateLastNameLast(lastNameSecond);
     }
-
 
     private validateLastNameLast(lastNameLast: string | null) {
         return lastNameLast || undefined
