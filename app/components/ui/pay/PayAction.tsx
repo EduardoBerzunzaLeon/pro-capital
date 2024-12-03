@@ -3,14 +3,16 @@ import { useNavigate } from "@remix-run/react";
 import { FaEye, FaTrashAlt } from "react-icons/fa";
 import { useFetcherAction } from "~/application";
 import { ButtonAddPayment } from "./ButtonAddPayment";
+import { ButtonAddNoPayment } from "./ButtonAddNoPayment";
 
 interface Props {
     idCredit: number
     onOpen: () => void,   
+    onOpenNoPay: () => void,   
 }
 
 
-export const PayAction = ({ idCredit, onOpen }: Props) => {
+export const PayAction = ({ idCredit, onOpen, onOpenNoPay }: Props) => {
 
     const { handleDelete, isDeleting } = useFetcherAction({ 
         key: 'getSinglePayment', 
@@ -30,6 +32,11 @@ export const PayAction = ({ idCredit, onOpen }: Props) => {
         <ButtonAddPayment 
             creditId={idCredit}
             onPress={onOpen}
+            isDisabled={isDeleting}
+        />
+        <ButtonAddNoPayment 
+            creditId={idCredit}
+            onPress={onOpenNoPay}
             isDisabled={isDeleting}
         />
         <Tooltip showArrow={true} content="Ver Crédito">

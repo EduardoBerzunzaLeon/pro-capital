@@ -7,7 +7,7 @@ import { HandlerSuccess } from "~/.server/reponses";
 import { useParamsPaginator, useRenderCell } from "~/application";
 import { payLoader } from "~/application/pay/pay.loader"
 import { ChipStatusCredit, InputFilter, Pagination, RowPerPage, TableDetail } from "~/components/ui";
-import { ModalPay } from "~/components/ui/pay";
+import { ModalNoPay, ModalPay } from "~/components/ui/pay";
 import { PayAction } from "~/components/ui/pay/PayAction";
 
 interface Loader {
@@ -69,6 +69,7 @@ export default function PayPage() {
     const loader = useLoaderData<HandlerSuccess<Loader>>();
     const [visibleColumns, setVisibleColumns] = useState<Selection>(new Set(INITIAL_VISIBLE_COLUMNS)); 
     const {isOpen, onOpen, onOpenChange} = useDisclosure();
+    const { isOpen: isOpenNoPay, onOpen: onOpenNoPay, onOpenChange: onOpenChangeNoPay } = useDisclosure();
     const navigate = useNavigate();
 
     const { 
@@ -90,14 +91,10 @@ export default function PayPage() {
     
     const renderCell = useCallback((credit: Credit, columnKey: Key) => {
     
-        if(columnKey === 'canRenovate') {
-          return <span className='capitalize'>{credit.canRenovate}</span>
-        }
 
         if(columnKey === 'countPayments') {
           return <span className='capitalize'>{credit.countPayments}</span>
         }
-
             
         if(columnKey === 'canRenovate' && credit.canRenovate) {
           return <Button variant='ghost' color='primary' onPress={() => { navigate(`/clients/${credit.client.curp}/renovate/${credit.id}`) }}>Renovar</Button>
@@ -108,6 +105,7 @@ export default function PayPage() {
                 <PayAction 
                     idCredit={credit.id}
                     onOpen={onOpen}
+                    onOpenNoPay={onOpenNoPay}
                 />
             )
         }
@@ -143,6 +141,7 @@ export default function PayPage() {
 
     return (<>
     <ModalPay isOpen={isOpen} onOpenChange={onOpenChange} />
+    <ModalNoPay isOpen={isOpenNoPay} onOpenChange={onOpenChangeNoPay} />
     <div className='w-full flex gap-2 mt-5 mb-3 flex-wrap justify-between items-center'>
         <InputFilter 
             param="folder" 

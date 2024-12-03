@@ -18,6 +18,8 @@ export const paymentSchema = z.object({
     notes: z.string().optional(),
 });
 
+export const noPaymentSchema = paymentSchema.omit({ paymentAmount: true, status: true });
+
 export const paymentServerSchema = z.object({
     agentId: integerBuilder('ID del agente'),
     paymentAmount: decimalBuilder('Monto Abonado'),
@@ -27,3 +29,4 @@ export const paymentServerSchema = z.object({
     notes: z.string().optional(),
 });
 
+export const noPaymentServerSchema = paymentServerSchema.omit({ paymentAmount: true, status: true });

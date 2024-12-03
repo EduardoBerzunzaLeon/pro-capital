@@ -8,6 +8,7 @@ import { findNow } from "~/application";
 import { PaginationWithFilters } from "../domain/interface";
 import { Payment } from "../domain/entity";
 import dayjs from 'dayjs';
+import { noPaymentServerSchema } from '../../schemas/paymentSchema';
 
 
 export const findAll = async (props: PaginationWithFilters) => {
@@ -45,6 +46,40 @@ const validateDebt = (currentDebt: number, paymentAmount: number) => {
     }
 }
 
+export const createNoPayment = async (form: FormData, creditId?: RequestId) => {
+    const { id } = validationZod({ id: creditId }, idSchema);
+    const { 
+        agentId, 
+        paymentDate,
+        folio,
+        notes
+    } = validationConform(form, noPaymentServerSchema);
+
+    validateAgent(form);
+
+    const creditDb = await Service.credit.findCreditToPay(id);
+    validatePaymentDate(paymentDate, creditDb.creditAt);
+
+    if(creditDb.lastPayment && paymentDate <= creditDb.lastPayment) {
+        throw ServerError.badRequest(`Ya existe un pago con la fecha igual o inferior a ${paymentDate}`);
+    }
+
+    const paymentCreated = await Repository.payment.createOne({
+        agentId,
+        paymentAmount: 0,
+        paymentDate,
+        folio,
+        status: 'NO_PAGO',
+        notes,
+        creditId: id
+    });
+
+    if(!paymentCreated) {
+        throw ServerError.badRequest('No se pudo crear el pago');
+    }
+
+}
+
 export const createOne =  async (form: FormData, creditId?: RequestId) => {
     const { id } = validationZod({ id: creditId }, idSchema);
     const { 
@@ -56,7 +91,6 @@ export const createOne =  async (form: FormData, creditId?: RequestId) => {
         notes
     } = validationConform(form, paymentServerSchema);
 
-    
     validateGuarentee(status, notes);
     validateAgent(form);
 
@@ -241,6 +275,7 @@ export const findTotalPayment = async (creditId: number) => {
 export default {
     findAll,
     createOne,
+    createNoPayment,
     deleteOne,
     deleteFastOne,
     updateOne,

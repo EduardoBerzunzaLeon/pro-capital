@@ -26,6 +26,12 @@ export const action: ActionFunction = async({ params, request }) => {
       await Service.payment.createOne(formData, id);
       return handlerSuccessWithToast('create', 'del pago');
     }
+    
+    if(data._action === 'addNoPayment') {
+      formData.append('agentId', data['agent[id]'] ?? '');
+      await Service.payment.createNoPayment(formData, id);
+      return handlerSuccessWithToast('create', 'del NO pago');
+    }
 
     if(data._action === 'deleteFast') {
       await Service.payment.deleteFastOne(id);
