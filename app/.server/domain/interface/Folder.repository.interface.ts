@@ -18,6 +18,7 @@ export interface FolderRepositoryI{
     findAll: (paginationData: PaginationWithFilters ) => Promise<ResponseWithMetadata>,
     findOne: (id: number) => Promise<Generic | undefined>,
     findAutocomplete: (name: string) => Promise<Generic[] | undefined>,
+    findByReport: (paginationData: PaginationWithFilters) => Promise<Generic[] | undefined>,
     findLastGroup: (id: number) => Promise<Generic | undefined>,
     findCountGroups: (id: number) => Promise<Generic | undefined>,
     findByNameAndGroup: (name: string, group: number) => Promise<Generic | undefined>,

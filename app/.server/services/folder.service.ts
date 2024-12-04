@@ -14,10 +14,14 @@ export const findAll = async (props: PaginationWithFilters) => {
 
     return Service.paginator.mapper({
         metadata,
-        data, 
+        data,  
         mapper: Folder.mapper,
         errorMessage: 'No se encontraron carpetas'
     });
+}
+
+export const findByReport = async (props:PaginationWithFilters) => {
+    return await Repository.folder.findByReport(props);
 }
 
 export const findAutocomplete = async (name: string) => {
@@ -138,5 +142,6 @@ export default {
     findNextConsecutive,
     findAutocomplete,
     findLastGroup,
+    findByReport,
     findSampleAll
 }

@@ -63,6 +63,18 @@ export function baseRepository<
             metadata
         }   
     }
+
+    async function findManyByReportExcel({ searchParams, select, paginatonWithFilter}: FindManyWithPaginatorProps<P,S>) {
+        const apiPrisma = apiPrismaFeatures(paginatonWithFilter);
+
+        const filter = apiPrisma.filter();
+        const orderBy = apiPrisma.orderBy();
+        const whereAssign = Object.assign({}, searchParams, filter );
+        const params = prepareParams(whereAssign, select);
+
+        return  entity.findMany({...params, orderBy });
+    }
+
     
     async function findMany({ searchParams, select, take, orderBy }: FindManyProps<P,S,O>) {
         const params =  prepareParams(searchParams, select);
@@ -121,6 +133,7 @@ export function baseRepository<
         createOne,
         createMany,
         createManyAndReturn,
+        findManyByReportExcel,
         entity
     }
 }

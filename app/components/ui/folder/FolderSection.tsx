@@ -39,8 +39,8 @@ export function FolderSection() {
         loadingState,
         handlePagination,
         handleRowPerPage,
-        onSubmit
-    } = useFetcherPaginator<Folder>({key: 'folder', route: 'folder'});
+        onSubmit,
+    } = useFetcherPaginator<Folder>({ key: 'folder', route: 'folder' });
 
 
   useEffect(() => {

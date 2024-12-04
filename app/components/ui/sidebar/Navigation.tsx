@@ -20,7 +20,7 @@ const variants: Variants = {
 export const Navigation = () => (
   <motion.ul variants={variants}>
     {items.map(({icon, text, to, id, permission}) => (
-      <Permission key={id} permission={permission}>
+      <Permission key={id} permission={'clients[view]'}>
         <MenuItem icon={icon} text={text} to={to} id={id}/>
       </Permission>
     ))}

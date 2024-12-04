@@ -3,85 +3,38 @@ import { json, LoaderFunction } from "@remix-run/node";
 import { useLoaderData, useOutlet, useSearchParams } from "@remix-run/react";
 import { useCallback  } from "react";
 import { AgentRoute } from "~/.server/domain/entity/agentRoute.entity";
-import { Filter } from "~/.server/domain/interface";
-import { Generic, Key, SortDirection } from "~/.server/interfaces";
+import { Key, SortDirection } from "~/.server/interfaces";
 import { HandlerSuccess, handlerSuccess } from "~/.server/reponses";
 import { getEmptyPagination } from "~/.server/reponses/handlerError";
-import { handlerPaginationParams } from "~/.server/reponses/handlerSuccess";
 import { Service } from "~/.server/services";
 import { AgentRouteAction, InputFilter, Pagination, RangePickerDateFilter, RowPerPage, TableDetail } from "~/components/ui";
 import { SelectRoutes } from "~/components/ui/route/SelectRoutes";
-import dayjs from 'dayjs';
 import { MdEditCalendar } from "react-icons/md";
-import { useParamsPaginator, useParamsSelect } from "~/application";
+import { useParamsPaginator, useParamsSelect } from '~/application';
+import { Params } from '../../../application/params/';
 
-const columnsFilter = ['route.name', 'user.fullName', 'assignAt' ];
-
-const convertRoutes = (routes: string) =>  {
-  return routes.split(',').map(r => parseInt(r));
-}
-
-const columnSortNames: Generic = {
-  route: 'route.id',
-  user: 'user.fullName',
-  assignAt: 'assignAt'
-}
 
 export const loader: LoaderFunction = async ({ request }) => {
   
-  const url = new URL(request.url);
-  const routes = url.searchParams.get('routes');
-  const agent = url.searchParams.get('agent') || '';
-  const start = url.searchParams.get('start') || '';
-  const end = url.searchParams.get('end') || '';
-
-  const routesParsed: Filter  = (routes && routes !== 'all') 
-    ? { column: 'route.id', value: convertRoutes(routes)}
-    : { column: 'route.id', value: '' };
-
-  const agentParsed: Filter = { column: 'user.fullName', value: agent };
-
-  const datesParsed = (!start || !end) 
-    ? { column: 'assignAt', value: ''}
-    : { column:  'assignAt', value: {
-      start: dayjs(start+'T00:00:00.000Z').toDate(),
-      end: dayjs(end).toDate()
-    }}
+  const { params, search } = Params.agent.getParams(request);
 
   try {
-    const { 
-      page, limit, column, direction
-    } = handlerPaginationParams(request.url, 'assignAt', columnsFilter);
 
-    const data = await Service.agent.findAll({
-      page, 
-      limit, 
-      column: columnSortNames[column] ?? 'assignAt', 
-      direction,
-      search: [routesParsed, agentParsed, datesParsed]
-    });
+    const { page, limit, column, direction } = params;
+    const data = await Service.agent.findAll(params);
 
     return handlerSuccess(200, { 
         ...data,
+        ...search,
         p: page,
         l: limit,
         c: column,
         d: direction,
-        s: [routesParsed, agentParsed],
-        agent,
-        routes: routesParsed.value,
-        start,
-        end
-      });
+    });
+
   } catch (error) {
-    console.log({error});
-      return json(getEmptyPagination({
-        agent,
-        routes: routesParsed.value,
-        start,
-        end
-      }));
-    }
+    return json(getEmptyPagination({...search}));
+  }
     
 }
 
@@ -91,7 +44,6 @@ interface Loader {
   l: number,
   c: string,
   d: SortDirection,
-  s: {column: string, value: string}[] ,
   start: string,
   end: string,
   routes?: number[],

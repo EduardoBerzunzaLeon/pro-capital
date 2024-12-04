@@ -21,6 +21,7 @@ export const useFetcherPaginator = <T extends Generic>({ key, route }: Props) =>
     const { load, state, data, submit } = useFetcher<HandlerSuccess<PaginationI<T>>>({ key });
     const [ limit, setLimit ] = useState(5);
     const [ page, setPage ] = useState(1);
+    const [ url, setUrl ] = useState(`/${route}/`);
     const [ sortDescriptor, setSortDescriptor ] = useState<SortDescriptor>({
         column: "name",
         direction: "ascending",
@@ -35,6 +36,10 @@ export const useFetcherPaginator = <T extends Generic>({ key, route }: Props) =>
         // eslint-disable-next-line react-hooks/exhaustive-deps
       },[route]);
 
+
+      useEffect(() => {
+            setUrl(`/${route}/?l=${limit}&p=${page}&d=${sortDescriptor.direction}&s=${sortDescriptor.column}`);
+      }, [limit, page, route, sortDescriptor.column, sortDescriptor.direction]);
 
     useEffect(() => {
         if(data?.serverData.data.length === 0 && data?.serverData.total > 0){
@@ -75,6 +80,7 @@ export const useFetcherPaginator = <T extends Generic>({ key, route }: Props) =>
         loadingState,
         handlePagination,
         handleRowPerPage,
+        url,
         onSubmit
     }
 

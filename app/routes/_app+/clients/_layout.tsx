@@ -26,7 +26,6 @@ interface Loader {
   l: number,
   c: string,
   d: SortDirection,
-  s: {column: string, value: string}[] ,
   start: string,
   end: string,
   isActive: string,

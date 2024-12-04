@@ -1,34 +1,18 @@
 import { ActionFunction, json, LoaderFunction } from "@remix-run/node";
-import { Generic } from "~/.server/interfaces";
 import { handlerSuccess } from "~/.server/reponses";
 import { getEmptyPagination, handlerErrorWithToast } from "~/.server/reponses/handlerError";
-import { handlerPaginationParams, handlerSuccessWithToast } from "~/.server/reponses/handlerSuccess";
+import { handlerSuccessWithToast } from "~/.server/reponses/handlerSuccess";
 import { Service } from "~/.server/services";
+import { Params } from '../../../application/params';
 
-const columnSortNames: Generic = {
-  town: 'town.name',
-  name: 'name',
-  municipality: 'town.municipality.name'
-}
-
-const columnsFilter = ['name', 'town.name', 'town.municipality.name'];
 
 export const loader: LoaderFunction = async ({ request }) => {
   
     try {
 
-      const { 
-        page, limit, column, direction, search
-      } = handlerPaginationParams(request.url, 'name', columnsFilter);
-
-      const data = await Service.folder.findAll({
-        page, 
-        limit, 
-        column: columnSortNames[column] ?? 'name', 
-        direction,
-        search
-      });
-      
+      const { params } = Params.folder.getParams(request);
+      const data = await Service.folder.findAll(params);
+       
       return handlerSuccess(200, data);
 
       } catch (error) {

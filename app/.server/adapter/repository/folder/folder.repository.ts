@@ -29,6 +29,38 @@ export function FolderRepository(base: BaseFolderI) : FolderRepositoryI {
         });
     }
 
+    async function findByReport(paginationData: PaginationWithFilters) {
+        return await base.findManyByReportExcel({
+            paginatonWithFilter: paginationData,
+            select: {
+                name: true,
+                town: {
+                    select: {
+                        name: true,
+                        municipality: {
+                            select: { name: true }
+                        }
+                    }
+                },
+                route: { select: { name: true } },
+                leaders: {
+                    where: {
+                        isActive: true
+                    },
+                    select: {
+                        fullname: true
+                    },
+                    take: 1
+                },
+                _count: {
+                    select: {
+                        groups: true
+                    }
+                }
+            }
+        })
+    }
+
     async function findAll( paginationData: PaginationWithFilters ) {
         return await base.findManyPaginator({
                 paginatonWithFilter: paginationData,
@@ -156,6 +188,7 @@ export function FolderRepository(base: BaseFolderI) : FolderRepositoryI {
         findAutocomplete,
         findCountGroups,
         findByNameAndGroup,
+        findByReport,
         findLastGroup,
         findSampleAll,
         updateOne,
