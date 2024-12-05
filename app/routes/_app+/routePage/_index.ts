@@ -1,38 +1,16 @@
 import { ActionFunction, json, LoaderFunction } from '@remix-run/node';
 import { redirectWithWarning } from 'remix-toast';
 import { getEmptyPagination, handlerErrorWithToast } from '~/.server/reponses/handlerError';
-import { handlerPaginationParams, handlerSuccess, handlerSuccessWithToast } from '~/.server/reponses/handlerSuccess';
+import { handlerSuccess, handlerSuccessWithToast } from '~/.server/reponses/handlerSuccess';
 import { Service } from '~/.server/services';
-
-const columnsFilter = ['isActive', 'name'];
+import { Params } from '../../../application/params/index';
 
 export const loader: LoaderFunction = async ({ request }) => {
 
+  const { params } = Params.route.getParams(request);
+
     try {
-        const { 
-            page, limit, column, direction, search
-          } = handlerPaginationParams(request.url, 'name', columnsFilter);
-
-          // TODO: Refactor this
-          let isActiveParsed = JSON.parse(search[0].value+'');
-          
-          if(Array.isArray(isActiveParsed) && isActiveParsed.length === 1) {
-            isActiveParsed = Boolean(isActiveParsed[0]);
-          }
-        
-          if(Array.isArray(isActiveParsed) && isActiveParsed.length === 2) {
-            isActiveParsed = 'notUndefined'
-          } 
-
-          search[0].value = isActiveParsed;
-
-          const data = await Service.routes.findAll({
-            page, 
-            limit, 
-            column, 
-            direction,
-            search
-          });
+          const data = await Service.routes.findAll(params);
           
           return handlerSuccess(200, data);
     } catch (error) {

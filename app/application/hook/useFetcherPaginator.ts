@@ -36,9 +36,8 @@ export const useFetcherPaginator = <T extends Generic>({ key, route }: Props) =>
         // eslint-disable-next-line react-hooks/exhaustive-deps
       },[route]);
 
-
       useEffect(() => {
-            setUrl(`/${route}/?l=${limit}&p=${page}&d=${sortDescriptor.direction}&s=${sortDescriptor.column}`);
+            setUrl(`/${route}/export/?l=${limit}&p=${page}&d=${sortDescriptor.direction}&s=${sortDescriptor.column}`);
       }, [limit, page, route, sortDescriptor.column, sortDescriptor.direction]);
 
     useEffect(() => {

@@ -9,6 +9,7 @@ import { FolderButtonAdd } from "./FolderButtonAdd";
 import { useFetcherPaginator } from "~/application";
 import { ModalFolderEdit } from "./ModalFolderEdit";
 import { GroupGenerateButton } from "./GroupGenerateButton";
+import { ExcelReport } from "../excelReports/ExcelReport";
 
 export type Key = string | number;
 
@@ -40,6 +41,7 @@ export function FolderSection() {
         handlePagination,
         handleRowPerPage,
         onSubmit,
+        url
     } = useFetcherPaginator<Folder>({ key: 'folder', route: 'folder' });
 
 
@@ -80,6 +82,7 @@ const renderCell = useCallback((folder: Folder, columnKey: Key) => {
 return (
   <div>
     <div className='w-full flex gap-2 mt-5 mb-3 flex-wrap justify-between'>
+        <ExcelReport url={url} name='carpetas' />
         <Input
             className="w-full sm:max-w-[30%]"
             isClearable

@@ -108,3 +108,5 @@ export const getEmptyPagination = (extraData?: Generic) => ({
     ...extraData
   }
 })
+
+export const getEmptyData = () => ({ serverData: { data: [] } });

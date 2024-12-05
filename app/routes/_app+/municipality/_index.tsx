@@ -1,24 +1,16 @@
 import { ActionFunction, json, LoaderFunction } from "@remix-run/node";
 import { redirectWithWarning } from "remix-toast";
 import { getEmptyPagination, handlerErrorWithToast } from "~/.server/reponses/handlerError";
-import { handlerPaginationParams, handlerSuccess, handlerSuccessWithToast } from "~/.server/reponses/handlerSuccess";
+import { handlerSuccess, handlerSuccessWithToast } from "~/.server/reponses/handlerSuccess";
 import { Service } from "~/.server/services";
+import { Params } from '../../../application/params';
 
 export const loader: LoaderFunction = async ({ request }) => {
   
+  const { params } = Params.municipality.getParams(request);
   try {
    
-      const { 
-        page, limit, column, direction, search
-      } = handlerPaginationParams(request.url, 'name', ['name']);
-
-      const data = await Service.municipality.findAll({
-        page, 
-        limit, 
-        column, 
-        direction,
-        search
-      });
+      const data = await Service.municipality.findAll(params);
 
       return handlerSuccess(200, data);
     } catch (error) {

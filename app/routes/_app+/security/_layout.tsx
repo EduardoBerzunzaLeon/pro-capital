@@ -4,55 +4,36 @@ import { json, LoaderFunction } from "@remix-run/node"
 import { Outlet, useLoaderData, useNavigate } from "@remix-run/react";
 import { useCallback } from "react";
 import { FaEye } from "react-icons/fa";
-import { Filter } from "~/.server/domain/interface";
-import { Generic, Key } from "~/.server/interfaces";
-import { getEmptyPagination, handlerPaginationParams, handlerSuccess } from "~/.server/reponses";
+import { getEmptyPagination, handlerSuccess } from "~/.server/reponses";
 import { Service } from "~/.server/services";
 import { useParamsPaginator, useParamsSelect, useRenderCell } from "~/application";
 import {  Pagination, RowPerPage, TableDetail } from "~/components/ui";
 import { SelectRoles } from "~/components/ui/role/SelectRoles";
-
-const columnsFilter = ['role'];
-const columnSortNames: Generic ={ role: 'role'};
-const convertRoutes = (routes: string) =>  {
-  return routes.split(',').map(r => parseInt(r));
-}
+import { Params } from '../../../application/params';
+import { Key } from '~/.server/interfaces';
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const url = new URL(request.url);
-  const roles = url.searchParams.get('roles') || '';
-  const rolesParsed: Filter  = (roles && roles !== 'all') 
-  ? { column: 'id', value: convertRoutes(roles)}
-  : { column: 'id', value: '' };
+  
+  const { params, search } = Params.security.getParams(request);
 
   try {
-    
 
-    const {
-      page, limit, column, direction
-    } = handlerPaginationParams(request.url, 'role', columnsFilter);
+    const data = await Service.role.findAll(params);
 
-    const data = await Service.role.findAll({
-      page, 
-      limit, 
-      column: columnSortNames[column] ?? 'role', 
-      direction,
-      search: [rolesParsed],
-    });
+    const { page, limit, column, direction } = params;
 
     return handlerSuccess(200, { 
       ...data,
+      ...search,
       p: page,
       l: limit,
       c: column,
       d: direction,
-      s: [rolesParsed],
-      roles: rolesParsed.value,
     })
 
   } catch (error) {
     console.log({error});
-    return json(getEmptyPagination({ roles: rolesParsed.value,}));
+    return json(getEmptyPagination(search));
   }
 
 }

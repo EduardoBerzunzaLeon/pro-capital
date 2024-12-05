@@ -20,7 +20,7 @@ export const findAll = async (props: PaginationWithFilters) => {
     });
 }
 
-export const findByReport = async (props:PaginationWithFilters) => {
+export const exportData = async (props:PaginationWithFilters) => {
     return await Repository.folder.findByReport(props);
 }
 
@@ -142,6 +142,6 @@ export default {
     findNextConsecutive,
     findAutocomplete,
     findLastGroup,
-    findByReport,
+    exportData,
     findSampleAll
 }
