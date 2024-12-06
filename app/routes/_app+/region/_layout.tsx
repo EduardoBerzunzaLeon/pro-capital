@@ -1,6 +1,15 @@
-import { MunicipalitySection, RouteSection, TownSection } from "~/components/ui";
+import { ErrorBoundary, MunicipalitySection, RouteSection, TownSection } from "~/components/ui";
 import { FolderSection } from "~/components/ui/folder";
+import { LoaderFunction } from '@remix-run/node';
+import { Service } from '~/.server/services';
+import { permissions } from '~/application';
 
+export const loader: LoaderFunction = async ({ request }) => {
+  await Service.auth.requirePermission(request, permissions.region.permissions.view); 
+  return '';
+}
+
+export { ErrorBoundary }
 export default function RegionPage() {
 
   return (

@@ -3,10 +3,11 @@ import { handlerSuccess } from '~/.server/reponses';
 import { getEmptyPagination } from '~/.server/reponses/handlerError';
 import { Service } from '~/.server/services';
 import { Params } from '../params/';
+import { permissions } from '../permissions';
 
   export const clientLoader: LoaderFunction = async ({ request }) => {
   
-    await Service.auth.requirePermission(request, 'clients[view]');
+    await Service.auth.requirePermission(request, permissions.credits.permissions.view);
     const { params, search } = Params.credit.getParams(request);
 
     try {

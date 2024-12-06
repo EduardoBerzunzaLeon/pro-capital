@@ -4,11 +4,14 @@ import { getEmptyPagination, handlerErrorWithToast } from "~/.server/reponses/ha
 import { handlerSuccessWithToast } from "~/.server/reponses/handlerSuccess";
 import { Service } from "~/.server/services";
 import { Params } from '../../../application/params';
+import { permissions } from "~/application";
 
 
 export const loader: LoaderFunction = async ({ request }) => {  
-  const { params } = Params.folder.getParams(request);
+  console.log({request: request.url});
   try {
+    await Service.auth.requirePermission(request, permissions.folder.permissions.view);
+    const { params } = Params.folder.getParams(request);
     const data = await Service.folder.findAll(params);
     return handlerSuccess(200, data);
   } catch (error) {

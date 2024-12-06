@@ -4,7 +4,7 @@ import { ServerError } from "../errors/ServerError";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { Generic, GenericUnknown } from "../interfaces";
 import { ZodError } from "zod";
-import { jsonWithError } from "remix-toast";
+import { jsonWithError } from 'remix-toast';
 
 const handlerConform = (error: ValidationConformError, serverData: GenericUnknown) => {
   const errors =  error.submission.error;
@@ -49,6 +49,27 @@ interface CustomError {
   status: number,
   serverData: Generic
 }
+
+// TODO: Maybe Implement this
+// export const handlerUpgradeRequired = async (request: Request, error: unknown) => {
+
+
+//   if(error instanceof ServerError && error.status ===  426) {
+//     const userUpdated = await Service.auth.findById(Number(error!.message));
+//     const { password, ...restUser } = new User(userUpdated as UserI);
+//     const session = await getSession(request.headers.get("cookie"));
+//     session.set(Service.auth.authenticator.sessionKey, restUser);
+//     const headers = new Headers();
+//     headers.append('Set-Cookie',await commitSession(session));
+//     // return redirect('/region', { headers });
+//     return redirectWithWarning('/', { 
+//       message: 'inconsistencias en los permisos', 
+//       description: 'Se encontro una inconsistencias en tus permisos, se te redirigio al dashboard'}, 
+//       { headers }
+//     );
+//   }
+
+// }
 
 export const handlerError = (error: unknown, data?: GenericUnknown): CustomError => {
 

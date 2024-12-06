@@ -28,6 +28,7 @@ enum RoleTypes {
   SUBGERENTE
   DIRECTOR
   ADMIN
+  RRHH
 }
 
 enum Type {

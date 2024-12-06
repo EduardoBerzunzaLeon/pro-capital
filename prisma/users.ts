@@ -13,22 +13,8 @@ export const roles: Roles[] = [
     { role: 'GERENCIA'},
     { role: 'SUBGERENTE'},
     { role: 'DIRECTOR'},
+    { role: 'RRHH'},
     { role: 'ADMIN'},
-]
-
-export const modules = [
-    {
-        name: 'clientes',
-        isActive: true
-    },
-    {
-        name: 'reportes',
-        isActive: true
-    },
-    {
-        name: 'rutas',
-        isActive: true
-    },
 ]
 
 interface PremissionsI {
@@ -39,28 +25,586 @@ interface PremissionsI {
     roles: RoleTypes[]
 }
 
-export const permissions: PremissionsI[] = [
-    {
-        servername: 'clients[view]',
-        name: 'ver clientes',
-        description: 'permite ver los todos los clientes',
-        module: 'clientes',
-        roles: ['ADMIN', 'ASESOR', 'CAPTURISTA']
+const allRoles: RoleTypes[] = [
+    'ASESOR',
+    'CAPTURISTA',
+    'JEFE_CAPTURA',
+    'TITULAR_RUTA',
+    'SUPERVISOR',
+    'GERENCIA',
+    'SUBGERENTE',
+    'DIRECTOR',
+    'RRHH',
+    'ADMIN',
+];
+
+const capture_chief: RoleTypes[] = ['JEFE_CAPTURA', 'GERENCIA', 'DIRECTOR', 'ADMIN'];
+const capture: RoleTypes[] = ['CAPTURISTA','JEFE_CAPTURA', 'GERENCIA', 'DIRECTOR', 'ADMIN'];
+const admins: RoleTypes[] = ['GERENCIA', 'DIRECTOR', 'ADMIN'];
+
+
+const info = {
+    folder: {
+        name: 'folders',
+        module: 'carpetas'
     },
-    {
-        name: 'actualizar cliente',
-        servername: 'clients[update]',
-        description: 'permite actualizar los clientes',
-        module: 'clientes',
-        roles: ['ADMIN', 'CAPTURISTA']
+    town: {
+        name: 'town',
+        module: 'localidad'
     },
-    {
-        name: 'crear credito',
-        servername: 'credit[create]',
-        description: 'permite crear un credito',
-        module: 'clientes',
-        roles: ['ADMIN', 'CAPTURISTA']
+    route: {
+        name: 'route',
+        module: 'rutas'
+    },
+    municipality: {
+        name: 'municipality',
+        module: 'municipio'
+    },
+    leaders: {
+        name: 'leaders',
+        module: 'lideres'
+    },
+    credits: {
+        name: 'credits',
+        module: 'creditos'
+    },
+    pays: {
+        name: 'pays',
+        module: 'pagos rápidos'
+    },
+    payments: {
+        name: 'payments',
+        module: 'pagos'
+    },
+    reports: {
+        name: 'reports',
+        module:  'reportes'
+    },
+    agents: {
+        name: 'agents',
+        module: 'asesores'
+    },
+    utils: {
+        name: 'utils',
+        module: 'utilidades'
+    },
+    users: {
+        name: 'users',
+        module: 'usuarios'
+    },
+    roles: {
+        name: 'roles',
+        module: 'roles'
     }
+}
+
+export const modules = [
+    {
+        name: 'region',
+        isActive: true,
+    },
+    {
+        name: info.credits.module,
+        isActive: true
+    },
+    {
+        name: info.folder.module,
+        isActive: true
+    },
+    {
+        name: info.agents.module,
+        isActive: true
+    },
+    {
+        name: info.leaders.module,
+        isActive: true
+    },
+    {
+        name: info.municipality.module,
+        isActive: true
+    },
+    {
+        name: info.payments.module,
+        isActive: true
+    },
+    {
+        name: info.pays.module,
+        isActive: true
+    },
+    {
+        name: info.reports.module,
+        isActive: true
+    },
+    {
+        name: info.roles.module,
+        isActive: true
+    },
+    {
+        name: info.route.module,
+        isActive: true
+    },
+    {
+        name: info.town.module,
+        isActive: true
+    },
+    {
+        name: info.users.module,
+        isActive: true
+    },
+    {
+        name: info.utils.module,
+        isActive: true
+    },
+]
+
+export const permissions: PremissionsI[] = [
+    //  ==================  FOLDER ===================
+    {
+        servername: info.folder.name+'[view]',
+        name: 'ver carpetas',
+        description: 'permite ver los todos las carpetas',
+        module: info.folder.module,
+        roles: allRoles
+    },
+    {
+        servername: info.folder.name+'[update]',
+        name: 'actualizar carpeta',
+        description: 'permite actualizar una carpeta',
+        module: info.folder.module,
+        roles: capture_chief
+    },
+    {
+        servername: info.folder.name+'[add]',
+        name: 'agregar carpeta',
+        description: 'permite agregar una carpeta',
+        module: info.folder.module,
+        roles: capture_chief
+    },
+    {
+        servername: info.folder.name+'[delete]',
+        name: 'eliminar carpeta',
+        description: 'permite eliminar una carpeta',
+        module: info.folder.module,
+        roles: admins
+    },
+    //  =============== TOWN ==============
+    {
+        servername: info.town.name+'[view]',
+        name: 'ver localidades',
+        description: 'permite ver todas las localidades',
+        module: info.town.module,
+        roles: allRoles
+    },
+    {
+        servername: info.town.name+'[update]',
+        name: 'actualizar localidad',
+        description: 'permite actualizar una localidad',
+        module: info.town.module,
+        roles: capture_chief
+    },
+    {
+        servername: info.town.name+'[add]',
+        name: 'agregar localidad',
+        description: 'permite agregar una localidad',
+        module: info.town.module,
+        roles: capture_chief
+    },
+    {
+        servername: info.town.name+'[delete]',
+        name: 'eliminar localidad',
+        description: 'permite eliminar una localidad',
+        module: info.town.module,
+        roles: admins
+    },
+    //  =============== ROUTE ==============
+    {
+        servername: info.route.name+'[view]',
+        name: 'ver rutas',
+        description: 'permite ver todas las rutas',
+        module: info.route.module,
+        roles: allRoles
+    },
+    {
+        servername: info.route.name+'[update]',
+        name: 'actualizar ruta',
+        description: 'permite actualizar una ruta',
+        module: info.route.module,
+        roles: admins
+    },
+    {
+        servername: info.route.name+'[add]',
+        name: 'agregar ruta',
+        description: 'permite agregar una ruta',
+        module: info.route.module,
+        roles: admins
+    },
+    {
+        servername: info.route.name+'[active]',
+        name: 'desactivar/activar ruta',
+        description: 'permite desactivar/activar una ruta',
+        module: info.route.module,
+        roles: admins
+    },
+    //  =============== MUNICIPALITY ==============
+    {
+        servername: info.municipality.name+'[view]',
+        name: 'ver municipios',
+        description: 'permite ver todos los municipios',
+        module: info.municipality.module,
+        roles: allRoles
+    },
+    {
+        servername: info.municipality.name+'[update]',
+        name: 'actualizar municipio',
+        description: 'permite actualizar un municipio',
+        module: info.municipality.module,
+        roles: capture_chief
+    },
+    {
+        servername: info.municipality.name+'[add]',
+        name: 'agregar municipio',
+        description: 'permite agregar un municipio',
+        module: info.municipality.module,
+        roles: admins
+    },
+    {
+        servername: info.municipality.name+'[delete]',
+        name: 'eliminar municipio',
+        description: 'permite eliminar un municipio',
+        module: info.municipality.module,
+        roles: admins
+    },
+    //  =============== LEADERS ==============
+    {
+        servername: info.leaders.name+'[view]',
+        name: 'ver lideres',
+        description: 'permite ver todas las lideres',
+        module: info.leaders.module,
+        roles: allRoles
+    },
+    {
+        servername: info.leaders.name+'[update]',
+        name: 'actualizar lider',
+        description: 'permite actualizar una líder',
+        module: info.leaders.module,
+        roles: admins
+    },
+    {
+        servername: info.leaders.name+'[add]',
+        name: 'agregar líder',
+        description: 'permite agregar una líder',
+        module: info.leaders.module,
+        roles: capture_chief
+    },
+    {
+        servername: info.leaders.name+'[delete]',
+        name: 'eliminar líder',
+        description: 'permite eliminar una líder',
+        module: info.leaders.module,
+        roles: admins
+    },
+    {
+        servername: info.leaders.name+'[active]',
+        name: 'desactivar/activar líder',
+        description: 'permite desactivar/activar una líder',
+        module: info.leaders.module,
+        roles: admins
+    },
+    // =============== CREDIT =================
+    {
+        servername: info.credits.name+'[view]',
+        name: 'ver créditos',
+        description: 'permite ver todas los créditos',
+        module: info.credits.module,
+        roles: allRoles
+    },
+    {
+        servername: info.credits.name+'[layout]',
+        name: 'descargar plantilla',
+        description: 'permite descargar la plantilla de los créditos',
+        module: info.credits.module,
+        roles: capture
+    },
+    {
+        servername: info.credits.name+'[statistics]',
+        name: 'descargar estadísticas',
+        description: 'permite descargar las estadísticas de los créditos',
+        module: info.credits.module,
+        roles: capture_chief
+    },
+    {
+        servername: info.credits.name+'[add]',
+        name: 'agregar crédito',
+        description: 'permite agregar un crédito',
+        module: info.credits.module,
+        roles: capture
+    },
+    {
+        servername: info.credits.name+'[add-additional]',
+        name: 'agregar crédito adicional',
+        description: 'permite agregar un crédito adicional',
+        module: info.credits.module,
+        roles: capture_chief
+    },
+    {
+        servername: info.credits.name+'[renovate]',
+        name: 'renovar crédito',
+        description: 'permite renovar un crédito',
+        module: info.credits.module,
+        roles: capture
+    },
+    {
+        servername: info.credits.name+'[delete]',
+        name: 'eliminar crédito',
+        description: 'permite eliminar un crédito',
+        module: info.credits.module,
+        roles: capture_chief
+    },
+    {
+        servername: info.credits.name+'[update-client]',
+        name: 'editar cliente',
+        description: 'permite editar los datos personales del cliente',
+        module: info.credits.module,
+        roles: capture
+    },
+    {
+        servername: info.credits.name+'[update-aval]',
+        name: 'editar aval',
+        description: 'permite editar los datos personales del aval',
+        module: info.credits.module,
+        roles: capture
+    },
+    {
+        servername: info.credits.name+'[update]',
+        name: 'editar crédito',
+        description: 'permite editar un crédito',
+        module: info.credits.module,
+        roles: admins
+    },
+    {
+        servername: info.credits.name+'[view-detail]',
+        name: 'ver detalles crédito',
+        description: 'permite ver los detalles del crédito',
+        module: info.credits.module,
+        roles: allRoles
+    },
+    //  ================== FAST PAYMENTS ==================
+    {
+        servername: info.pays.name+'[view]',
+        name: 'ver créditos para pagos',
+        description: 'permite ver los créditos para pagos',
+        module: info.pays.module,
+        roles: allRoles
+    },
+    {
+        servername: info.pays.name+'[add]',
+        name: 'agregar pago rápido',
+        description: 'permite agregar un pago rápido',
+        module: info.pays.module,
+        roles: capture
+    },
+    {
+        servername: info.pays.name+'[view-detail]',
+        name: 'ver crédito para pagos',
+        description: 'permite ver el detalle del crédito para pagos',
+        module: info.pays.module,
+        roles: allRoles
+    },
+    {
+        servername: info.pays.name+'[delete]',
+        name: 'eliminar pago rápido',
+        description: 'permite eliminar unicamente los pagos de hoy',
+        module: info.pays.module,
+        roles: capture_chief
+    },
+    //  ============= PAYMENTS HISTORY ========================
+    {
+        servername: info.payments.name+'[view]',
+        name: 'ver historial de pagos',
+        description: 'permite ver el historial de pagos',
+        module: info.payments.module,
+        roles: allRoles
+    },   
+    {
+        servername: info.payments.name+'[add]',
+        name: 'agregar pago',
+        description: 'permite agregar un pago',
+        module: info.payments.module,
+        roles: admins
+    },   
+    {
+        servername: info.payments.name+'[delete]',
+        name: 'eliminar pago',
+        description: 'permite eliminar un pago',
+        module: info.payments.module,
+        roles: admins
+    },   
+    {
+        servername: info.payments.name+'[update]',
+        name: 'editar pago',
+        description: 'permite editar un pago',
+        module: info.payments.module,
+        roles: admins
+    },   
+    // ================ REPORTS ================
+    {
+        servername: info.folder.name+'[report]',
+        name: 'descargar carpetas',
+        description: 'permite descargar en excel las carpetas',
+        module: info.folder.module,
+        roles: capture_chief
+    },
+    {
+        servername: info.town.name+'[report]',
+        name: 'descargar localidades',
+        description: 'permite descargar en excel las localidades',
+        module: info.town.module,
+        roles: capture_chief
+    },
+    {
+        servername: info.route.name+'[report]',
+        name: 'descargar rutas',
+        description: 'permite descargar en excel las rutas',
+        module: info.route.module,
+        roles: capture_chief
+    },
+    {
+        servername: info.municipality.name+'[report]',
+        name: 'descargar municipios',
+        description: 'permite descargar en excel los municipios',
+        module: info.municipality.module,
+        roles: capture_chief
+    },
+    {
+        servername: info.leaders.name+'[report]',
+        name: 'descargar lideres',
+        description: 'permite descargar en excel las lideres',
+        module: info.leaders.module,
+        roles: capture_chief
+    },
+    {
+        servername: info.credits.name+'[report]',
+        name: 'descargar creditos',
+        description: 'permite descargar en excel los creditos',
+        module: info.credits.module,
+        roles: capture_chief
+    },
+    {
+        servername: info.payments.name+'[report]',
+        name: 'descargar pagos',
+        description: 'permite descargar en excel los pagos',
+        module: info.payments.module,
+        roles: capture_chief
+    },
+    {
+        servername: info.agents.name+'[report]',
+        name: 'descargar rutas-asesores',
+        description: 'permite descargar en excel las asignaciones de rutas-asesores',
+        module: info.agents.module,
+        roles: admins
+    },
+    {
+        servername: info.users.name+'[report]',
+        name: 'descargar usuarios',
+        description: 'permite descargar en excel las usuarios',
+        module: info.users.module,
+        roles: admins
+    },
+    // ================== AGENTS =================
+    {
+        servername: info.agents.name+'[view]',
+        name: 'ver asesores-rutas',
+        description: 'permite ver los asesores-rutas',
+        module: info.agents.module,
+        roles: [...capture_chief, 'SUPERVISOR']
+    },
+    {
+        servername: info.agents.name+'[add]',
+        name: 'agregar asesores-rutas',
+        description: 'permite agregar asesores-rutas por fecha',
+        module: info.agents.module,
+        roles: admins
+    },
+    {
+        servername: info.agents.name+'[delete]',
+        name: 'eliminar asesor-ruta',
+        description: 'permite eliminar la asignación del asesor a la ruta por fecha',
+        module: info.agents.module,
+        roles: admins
+    },
+    {
+        servername: info.utils.name+'[generate-overdue]',
+        name: 'generar pagos vencidos',
+        description: 'permite generar los pagos vencidos',
+        module: info.utils.module,
+        roles: admins
+    },
+    {
+        servername: info.utils.name+'[generate-groups]',
+        name: 'generar grupos',
+        description: 'permite generar grupos',
+        module: info.utils.module,
+        roles: admins
+    },
+    // =============== USERS ===============
+    {
+        servername: info.users.name+'[view]',
+        name: 'ver usuarios',
+        description: 'permite ver los usuarios',
+        module: info.users.module,
+        roles: [...admins, 'RRHH']
+    },
+    {
+        servername: info.users.name+'[add]',
+        name: 'agregar usuario',
+        description: 'permite agregar un usuario',
+        module: info.users.module,
+        roles: [...admins, 'RRHH']
+    },
+    {
+        servername: info.users.name+'[update]',
+        name: 'editar usuario',
+        description: 'permite editar un usuario',
+        module: info.users.module,
+        roles: [...admins, 'RRHH']
+    },
+    {
+        servername: info.users.name+'[active]',
+        name: 'desactivar/activar usuario',
+        description: 'permite desactivar/activar a un usuario',
+        module: info.users.module,
+        roles: [...admins, 'RRHH']
+    },
+    {
+        servername: info.users.name+'[update-security]',
+        name: 'editar datos de seguridad',
+        description: 'permite editar los datos de seguridad de un usuario',
+        module: info.users.module,
+        roles: [...admins, 'RRHH']
+    },
+    // ================== ROLES =================
+    {
+        servername: info.roles.name+'[update]',
+        name: 'asigar permisos',
+        description: 'permite editar las asignaciones de permisos a los roles',
+        module: info.roles.module,
+        roles: admins
+    },
+    {
+        servername: info.roles.name+'[view]',
+        name: 'ver permisos',
+        description: 'permite ver los roles y los permisos asignados a estos',
+        module: info.roles.module,
+        roles: admins
+    },
+    //  =============== REGION ===============
+    {
+        servername: 'region[view]',
+        name: 'ver regiones',
+        description: 'permite mostrar el menu de region',
+        module: 'region',
+        roles: allRoles
+    },
 ]
 
 export const routes = [

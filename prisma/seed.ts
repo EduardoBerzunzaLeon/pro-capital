@@ -108,7 +108,7 @@ async function insertPermissions(prisma: PrismaClient) {
     const { name, description, module, roles, servername } = permission;
     const moduleDb  = await prisma.module.findFirst({ where: { name: module } });
     const rolesDB = await prisma.role.findMany({ where: {
-       role: {in : roles }
+       role: { in : roles }
     }})
     if(moduleDb) {
       const {id: moduleId} = moduleDb;
@@ -262,7 +262,7 @@ async function insertUsers(prisma: PrismaClient) {
   }
 }
 
-async function insertStressClients(prisma: PrismaClient, interations: number) {
+export async function insertStressClients(prisma: PrismaClient, interations: number) {
 
   for (let index = 0; index < interations; index++) {
       clients.push(clients[0]);
@@ -270,7 +270,7 @@ async function insertStressClients(prisma: PrismaClient, interations: number) {
   await insertClients(prisma);
 }
 
-async function insertStressCredits(prisma: PrismaClient, interations: number) {
+export async function insertStressCredits(prisma: PrismaClient, interations: number) {
 
   for (let index = 0; index < interations; index++) {
     credits.push(credits[0]);

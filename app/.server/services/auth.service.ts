@@ -6,10 +6,12 @@ import { FormStrategy } from "remix-auth-form";
 import { Repository } from '../adapter/repository';
 import { User, UserI } from '../domain/entity';
 import { parseWithZod } from '@conform-to/zod';
-import { loginSchema } from '~/schemas';
+import { idSchema, loginSchema } from '~/schemas';
 import { ServerError, ValidationConformError } from '../errors';
 import { encriptor } from '../adapter';
 import { Service } from '.';
+import { RequestId } from '../interfaces';
+import { validationZod } from './validation.service';
 
 const sessionSecret = process.env.SESSION_SECRET
 
@@ -70,7 +72,11 @@ export const signIn = async (username: string, password: string) => {
 
   return restUser;
 }
-
+export const findById = async (userId: RequestId) => {
+  const { id } = validationZod({ id: userId }, idSchema);
+  return await Repository.auth.findById(id); 
+}
+ 
 // export const requirePermission = (loader: LoaderFunction, permission: string) => {
 
 //   return async (args: LoaderFunctionArgs) => {
@@ -106,6 +112,40 @@ export const requirePermission = async (request: Request, permission: string) =>
 
     const hasPermission = await Service.role.hasPermission(user.role, permission);
 
+    // TODO: Implement this afther
+    // const findPermission = user.permissions.find(({ servername }) => servername === permission);
+
+    // console.log({ hasPermission, findPermission });
+
+    // authenticator.
+    // if(hasPermission && !findPermission) {
+      // const userUpdated = await Repository.auth.findById(user.id);
+
+      // const { password, ...restUser } = new User(userUpdated as UserI);
+
+      // return restUser;
+      // throw ServerError.upgradeRequired(user.id+'');
+
+      // const session = await getSession(request.headers.get("cookie"));
+      // session.set(Service.auth.authenticator.sessionKey, restUser);
+      // const headers = new Headers();
+      // headers.append('Set-Cookie',await commitSession(session));
+
+    // }
+
+    // if(!hasPermission && findPermission) {
+      
+      // throw ServerError.upgradeRequired(user.id+'');
+
+      // const session = await getSession(request.headers.get("cookie"));
+      // session.set(Service.auth.authenticator.sessionKey, restUser);
+      // const headers = new Headers();
+      // headers.append('Set-Cookie',await commitSession(session));
+
+    // }
+    
+    
+
     if(!hasPermission) {
       throw ServerError.forbidden('No tiene acceso a esta ruta');
     } 
@@ -116,5 +156,6 @@ export const requirePermission = async (request: Request, permission: string) =>
 export default {
   signIn,
   authenticator,
-  requirePermission
+  requirePermission,
+  findById
 }

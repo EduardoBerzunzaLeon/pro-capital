@@ -2,9 +2,9 @@
 import { motion, Variants } from "framer-motion";
 import { MenuItem } from "./MenuItem";
 import { FaHome, FaRoute, FaUsers, FaUsersCog } from "react-icons/fa";
-import { IoStatsChartSharp } from "react-icons/io5";
 import { FaMoneyBillTransfer, FaMoneyBillTrendUp, FaPersonDressBurst, FaShield, FaUsersGear } from "react-icons/fa6";
 import { Permission } from '../auth/Permission';
+import { permissions } from "~/application";
 
 const variants: Variants = {
   open: {
@@ -19,11 +19,16 @@ const variants: Variants = {
 
 export const Navigation = () => (
   <motion.ul variants={variants}>
-    {items.map(({icon, text, to, id, permission}) => (
-      <Permission key={id} permission={'clients[view]'}>
-        <MenuItem icon={icon} text={text} to={to} id={id}/>
-      </Permission>
-    ))}
+    {items.map(({icon, text, to, id, permission}) => {
+      return permission
+        ?  (
+            <Permission key={id} permission={permission}>
+              <MenuItem icon={icon} text={text} to={to} id={id}/>
+            </Permission>
+          )
+        : (<MenuItem key={id} icon={icon} text={text} to={to} id={id}/>)
+    }
+    )}
   </motion.ul>
 );
 
@@ -33,69 +38,61 @@ const items = [
     text: "Inicio",
     to: "/",
     id: 1,
-    permission: 'dashboard[view]',
   },
   {
     icon: <FaShield />,
     text: "Seguridad",
     to: "/security",
-    permission: 'security[view]',
+    permission: permissions.roles.permissions.view,
     id: 2
   },
   {
     icon: <FaUsersGear />,
     text: "Usuarios",
     to: "/users",
-    permission: 'users[view]',
+    permission: permissions.users.permissions.view,
     id: 5
   },
   {
     icon: <FaUsersCog />,
     text: "Asesores",
     to: "/agents",
-    permission: 'agents[view]',
+    permission: permissions.agents.permissions.view,
     id: 6
   },
   {
     icon: <FaRoute />,
     text: "Rutas",
     to: "/region",
-    permission: 'region[view]',
+    permission: permissions.region.permissions.view,
     id: 7
   },
   {
     icon: <FaPersonDressBurst />,
     text: "Líderes",
     to: "/leaders",
-    permission: 'leaders[view]',
+    permission: permissions.leaders.permissions.view,
     id: 8
   },
   {
     icon: <FaUsers />,
-    text: "Clientes",
+    text: "Créditos",
     to: "/clients",
-    permission: 'clients[view]',
+    permission: permissions.credits.permissions.view,
     id: 9
   },
   {
     icon: <FaMoneyBillTransfer />,
     text: "Reflejar Pagos",
     to: "/pay",
-    permission: 'pay[view]',
+    permission: permissions.pays.permissions.view,
     id: 10
   },
   {
     icon: <FaMoneyBillTrendUp />,
     text: "Historial de Pagos",
     to: "/payments",
-    permission: 'payments[view]',
+    permission: permissions.payments.permissions.view,
     id: 11
-  },
-  {
-    icon: <IoStatsChartSharp />,
-    text: "Reportes",
-    to: "/reports",
-    permission: 'reports[view]',
-    id: 12
-  },
+  }
 ];

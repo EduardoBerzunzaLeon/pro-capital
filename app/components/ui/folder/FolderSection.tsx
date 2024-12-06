@@ -6,10 +6,11 @@ import { FaSearch } from "react-icons/fa";
 import { Folder } from "~/.server/domain/entity/folder.entity";
 import { FolderAction } from "./FolderAction";
 import { FolderButtonAdd } from "./FolderButtonAdd";
-import { useFetcherPaginator } from "~/application";
+import { permissions, useFetcherPaginator } from "~/application";
 import { ModalFolderEdit } from "./ModalFolderEdit";
 import { GroupGenerateButton } from "./GroupGenerateButton";
 import { ExcelReport } from "../excelReports/ExcelReport";
+import { Permission } from "../auth/Permission";
 
 export type Key = string | number;
 
@@ -80,72 +81,74 @@ const renderCell = useCallback((folder: Folder, columnKey: Key) => {
 }, [])
 
 return (
-  <div>
-    <div className='w-full flex gap-2 mt-5 mb-3 flex-wrap justify-between'>
-        <ExcelReport url={url} name='carpetas' />
-        <Input
-            className="w-full sm:max-w-[30%]"
-            isClearable
-            onClear={handlerClose}
-            onValueChange={setSearch}
-            placeholder="Buscar por Carpeta"
-            startContent={<FaSearch />}
-            value={search}
-            variant='bordered'
-        />
-        <Input
-            className="w-full sm:max-w-[30%]"
-            isClearable
-            onClear={handlerCloseTown}
-            onValueChange={setSearchTown}
-            placeholder="Buscar por Localidad"
-            startContent={<FaSearch />}
-            value={searchTown}
-            variant='bordered'
-        />
-        <Input
-            className="w-full sm:max-w-[30%]"
-            isClearable
-            onClear={handlerCloseMunicipality}
-            onValueChange={setSearchMunicipality}
-            placeholder="Buscar por Municipio"
-            startContent={<FaSearch />}
-            value={searchMunicipality}
-            variant='bordered'
-        />
-    </div>
-
-  <ModalFolderEdit 
-      isOpen={isOpen}
-      onOpenChange={onOpenChange}
-  />
-    <TableDetail 
-        aria-label="folders table"
-        onSortChange={setSortDescriptor}
-        sortDescriptor={sortDescriptor}
-        bottomContent={
-            <Pagination 
-                pageCount={data?.serverData?.pageCount}
-                currentPage={data?.serverData?.currentPage}
-                onChange={handlePagination}
-            />
-        }
-        topContent={
-            <div className="flex justify-between items-center">
-                <FolderButtonAdd />
-                <GroupGenerateButton />
-                <span className="text-default-400 text-small">Total {data?.serverData.total || 0 } Carpetas </span>
-                <RowPerPage 
-                    onChange={handleRowPerPage}
+    <Permission permission={permissions.folder.permissions.view}>
+        <div>
+            <div className='w-full flex gap-2 mt-5 mb-3 flex-wrap justify-between'>
+                <ExcelReport url={url} name='carpetas' />
+                <Input
+                    className="w-full sm:max-w-[30%]"
+                    isClearable
+                    onClear={handlerClose}
+                    onValueChange={setSearch}
+                    placeholder="Buscar por Carpeta"
+                    startContent={<FaSearch />}
+                    value={search}
+                    variant='bordered'
+                />
+                <Input
+                    className="w-full sm:max-w-[30%]"
+                    isClearable
+                    onClear={handlerCloseTown}
+                    onValueChange={setSearchTown}
+                    placeholder="Buscar por Localidad"
+                    startContent={<FaSearch />}
+                    value={searchTown}
+                    variant='bordered'
+                />
+                <Input
+                    className="w-full sm:max-w-[30%]"
+                    isClearable
+                    onClear={handlerCloseMunicipality}
+                    onValueChange={setSearchMunicipality}
+                    placeholder="Buscar por Municipio"
+                    startContent={<FaSearch />}
+                    value={searchMunicipality}
+                    variant='bordered'
                 />
             </div>
-        }
-        columns={columns} 
-        loadingState={loadingState} 
-        emptyContent="No se encontraron carpetas" 
-        renderCell={renderCell} 
-        data={data?.serverData.data ?? []}    
-    />
-</div>
+
+        <ModalFolderEdit 
+            isOpen={isOpen}
+            onOpenChange={onOpenChange}
+        />
+            <TableDetail 
+                aria-label="folders table"
+                onSortChange={setSortDescriptor}
+                sortDescriptor={sortDescriptor}
+                bottomContent={
+                    <Pagination 
+                        pageCount={data?.serverData?.pageCount}
+                        currentPage={data?.serverData?.currentPage}
+                        onChange={handlePagination}
+                    />
+                }
+                topContent={
+                    <div className="flex justify-between items-center">
+                        <FolderButtonAdd />
+                        <GroupGenerateButton />
+                        <span className="text-default-400 text-small">Total {data?.serverData.total || 0 } Carpetas </span>
+                        <RowPerPage 
+                            onChange={handleRowPerPage}
+                        />
+                    </div>
+                }
+                columns={columns} 
+                loadingState={loadingState} 
+                emptyContent="No se encontraron carpetas" 
+                renderCell={renderCell} 
+                data={data?.serverData.data ?? []}    
+            />
+        </div>
+    </Permission>
 )
 }

@@ -31,4 +31,8 @@ export class ServerError extends Error {
         return new ServerError(message, 500);
     }
 
+    static upgradeRequired(message: string) {
+        return new ServerError(message, 426);
+    }
+
 }

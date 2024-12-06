@@ -19,7 +19,8 @@ export function AuthRepository(base: BaseAuthI): AuthRepositoryI {
                 select: {
                     id: false,
                     role: true,
-                    permissions: { select: { 
+                    permissions: { 
+                        select: { 
                         servername: true,
                         id: false,
                         name: false,
@@ -32,5 +33,37 @@ export function AuthRepository(base: BaseAuthI): AuthRepositoryI {
         })
     }
 
-    return { findByUserName, base };
+    async function findById(id: number) {
+        return await base.findOne({ 
+            id,
+            isActive: true 
+        }, { 
+            id: true,
+            avatar: true,
+            email: true,
+            password: true,
+            username: true,
+            name: true,
+            lastNameFirst: true,
+            lastNameSecond: true,
+            fullName: true,
+            role: {
+                select: {
+                    id: false,
+                    role: true,
+                    permissions: { 
+                        select: { 
+                        servername: true,
+                        id: false,
+                        name: false,
+                        description: false,
+                        module: false,
+                        roles: false, 
+                    } }
+                }
+            }
+        })
+    }
+
+    return { findByUserName, findById, base };
 } 

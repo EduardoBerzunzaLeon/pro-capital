@@ -14,5 +14,6 @@ export type BaseAuthI = BaseRepositoryI<
 
 export interface AuthRepositoryI {
     findByUserName: (username: string) => Promise<Generic | undefined>,
+    findById: (id: number) => Promise<Generic | undefined>,
     base: BaseAuthI
 }
