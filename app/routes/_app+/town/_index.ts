@@ -5,10 +5,12 @@ import { getEmptyPagination, handlerErrorWithToast } from "~/.server/reponses/ha
 import { handlerSuccessWithToast } from "~/.server/reponses/handlerSuccess";
 import { Service } from "~/.server/services";
 import { Params } from '../../../application/params';
+import { permissions } from '~/application';
 
 
 export const loader: LoaderFunction = async ({ request }) => {
 
+    await Service.auth.requirePermission(request, permissions.town.permissions.view); 
     const { params } = Params.town.getParams(request);
 
     try {
@@ -26,13 +28,14 @@ export const loader: LoaderFunction = async ({ request }) => {
 
     const formData = await request.formData();
     const data = Object.fromEntries(formData);
-
+    
     const municipalityId = data['municipality[id]']+'';
     const { name } = data;
-
+    
     try {
       if(data._action === 'create') {
-          await Service.town.createOne(municipalityId, name+'');
+        await Service.auth.requirePermission(request, permissions.town.permissions.add); 
+        await Service.town.createOne(municipalityId, name+'');
           return handlerSuccessWithToast('create', `de la carpeta ${data.name}`);
       }
       

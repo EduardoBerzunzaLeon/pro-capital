@@ -1,5 +1,5 @@
 import { Action } from "../Action/Action";
-import { useFetcherAction } from "~/application";
+import { useFetcherAction, permissions } from '~/application';
 
 interface Props {
     leaderId: number,
@@ -25,6 +25,8 @@ export function LeaderAction({ leaderId, onOpenEdit }: Props)  {
             onUpdate={handleUpdateWithModal}
             onDelete={handleDelete}
             isLoading={isDeleting}
+            permissionDelete={permissions.leaders.permissions.delete}
+            permissionUpdate={permissions.leaders.permissions.update}
         />
     )
 }

@@ -1,6 +1,6 @@
 import { Chip } from "@nextui-org/react";
 import { Route } from "@prisma/client";
-import { useFetcherPaginator, useStatusMemo } from "~/application";
+import { permissions, useFetcherPaginator, useStatusMemo } from "~/application";
 import { RowPerPage } from "../rowPerPage/RowPerPage";
 import { DropdownStatus, Pagination, TableDetail } from "..";
 import { useCallback, useEffect,  useState } from "react";
@@ -8,6 +8,8 @@ import { RouteButtonAdd } from "./RouteButtonAdd";
 import { RouteAction } from "./RouteAction";
 import RouteToggleActive from "./RouteToggleActive";
 import { Key, Selection} from "~/.server/interfaces";
+import { MultiplePermissions } from "../auth/MultiplePermissions";
+import { Permission } from "../auth/Permission";
 
 type Column = 'name' | 'id';
 
@@ -45,13 +47,22 @@ export function RouteSection() {
     const renderCell = useCallback((route: Route, columnKey: Key) => {
         if(columnKey === 'actions') {
           return (
-            <div className='flex justify-center items-center gap-1'>
-                <RouteToggleActive 
-                    routeId={route.id}
-                    isActive={route.isActive}
-                />
-                <RouteAction idRoute={route.id}/>
-            </div>
+            <MultiplePermissions permissions={[
+                permissions.route.permissions.active,
+                permissions.route.permissions.delete,
+            ]}>
+                <div className='flex justify-center items-center gap-1'>
+                    <Permission permission={permissions.route.permissions.active}>
+                        <RouteToggleActive 
+                            routeId={route.id}
+                            isActive={route.isActive}
+                        />
+                    </Permission>
+                    <Permission permission={permissions.route.permissions.delete}>
+                        <RouteAction idRoute={route.id}/>
+                    </Permission>
+                </div>
+            </MultiplePermissions>
           )
         } 
 
@@ -89,7 +100,9 @@ export function RouteSection() {
             }
             topContent={
                 <div className="flex justify-between items-center">
-                    <RouteButtonAdd />
+                    <Permission permission={permissions.route.permissions.add}>
+                        <RouteButtonAdd />
+                    </Permission>
                     <span className="text-default-400 text-small">Total {data?.serverData.total || 0 } rutas </span>
                     <RowPerPage 
                         onChange={handleRowPerPage}

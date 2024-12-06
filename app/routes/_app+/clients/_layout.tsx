@@ -9,11 +9,12 @@ import { DropdownCreditStatus } from "~/components/ui/dropdowns/DropdownCreditSt
 import { HandlerSuccess } from "~/.server/reponses";
 import { Key, SortDirection, Selection} from "~/.server/interfaces";
 import { TableDetail, RowPerPage, Pagination, InputFilter, RangePickerDateFilter, SliderFilter, CurpForm, ExportDropdown, ChipStatusCredit, ButtonSetEstatus, ErrorBoundary } from "~/components/ui";
-import { useDropdownBoolean, useParamsPaginator, useRenderCell } from "~/application";
+import { useDropdownBoolean, useParamsPaginator, useRenderCell, permissions } from '~/application';
 import { useDropdown } from "~/application/hook/useDropdown";
 import { clientAction } from '../../../application/client/client.action';
 import { CreditAction } from "~/components/ui/credit/CreditAction";
 import { Permission } from '../../../components/ui/auth/Permission';
+import { MultiplePermissions } from "~/components/ui/auth/MultiplePermissions";
 
 export {
    clientLoader as loader,
@@ -124,16 +125,24 @@ export default function ClientsPage() {
   const renderCell = useCallback((credit: Credit, columnKey: Key) => {
     
     if(columnKey === 'canRenovate' && credit.canRenovate) {
-      return <Button variant='ghost' color='primary' onPress={() => { navigate(`/clients/${credit.client.curp}/renovate/${credit.id}`) }}>Renovar</Button>
+      return <Permission permission={permissions.credits.permissions.renovate}>
+        <Button variant='ghost' color='primary' onPress={() => { navigate(`/clients/${credit.client.curp}/renovate/${credit.id}`) }}>Renovar</Button>
+      </Permission>
     }
 
     if(columnKey === 'actions') {
-      return <CreditAction 
-        creditId={credit.id}
-      />
+      return (
+        <MultiplePermissions permissions={[
+          permissions.credits.permissions.delete,
+          permissions.credits.permissions.view_detail,
+        ]}>
+          <CreditAction 
+            creditId={credit.id}
+          />
+        </MultiplePermissions>
+      )
     }
     
- 
     if(columnKey === 'countPayments') {
       return <span className='capitalize'>{credit.countPayments}</span>
     }
@@ -169,10 +178,15 @@ export default function ClientsPage() {
 
   return <>
     <Outlet />
-    <Permission permission='credit[create]'>
+    <Permission permission={permissions.credits.permissions.add}>
       <CurpForm />
     </Permission>
-    <ExportDropdown />
+    <MultiplePermissions permissions={[
+      permissions.credits.permissions.statistics,
+      permissions.credits.permissions.layout,
+    ]}>
+      <ExportDropdown />
+    </MultiplePermissions>
     <ButtonSetEstatus />
     <div className='w-full flex gap-2 mt-5 mb-3 flex-wrap justify-between items-center'>
       <InputFilter 

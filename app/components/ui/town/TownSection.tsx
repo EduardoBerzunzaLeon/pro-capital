@@ -7,7 +7,9 @@ import { FaSearch } from "react-icons/fa";
 import { TownAction } from "./TownAction";
 import { TownButtonAdd } from "./TownButtonAdd";
 import { ModalTownEdit } from "./ModalTownEdit";
-import { useFetcherPaginator } from "~/application";
+import { useFetcherPaginator, permissions } from '~/application';
+import { MultiplePermissions } from '../auth/MultiplePermissions';
+import { Permission } from "../auth/Permission";
 
 type Column = 'name' | 'id';
 
@@ -57,7 +59,14 @@ export function TownSection() {
 
     const renderCell = useCallback((town: Town, columnKey: Key) => {
         if(columnKey === 'actions') {
-          return (<TownAction onOpenEdit={onOpen} idTown={town.id}/>)
+          return (
+                <MultiplePermissions permissions={[
+                    permissions.town.permissions.delete,
+                    permissions.town.permissions.update,
+                ]}>
+                    <TownAction onOpenEdit={onOpen} idTown={town.id}/>
+                </MultiplePermissions>
+            )
         } 
 
         if(columnKey === 'municipality') {
@@ -112,7 +121,9 @@ export function TownSection() {
         }
         topContent={
             <div className="flex justify-between items-center">
-                <TownButtonAdd />
+                <Permission permission={permissions.town.permissions.add}>
+                    <TownButtonAdd />
+                </Permission>
                 <span className="text-default-400 text-small">
                     Total {data?.serverData.total || 0 } localidades
                 </span>

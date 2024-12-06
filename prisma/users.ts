@@ -225,9 +225,9 @@ export const permissions: PremissionsI[] = [
         roles: allRoles
     },
     {
-        servername: info.route.name+'[update]',
-        name: 'actualizar ruta',
-        description: 'permite actualizar una ruta',
+        servername: info.route.name+'[delete]',
+        name: 'eliminar ruta',
+        description: 'permite eliminar una ruta',
         module: info.route.module,
         roles: admins
     },

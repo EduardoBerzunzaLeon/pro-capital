@@ -3,6 +3,7 @@ import { handlerSuccessWithToast } from "~/.server/reponses";
 import { handlerErrorWithToast } from "~/.server/reponses/handlerError";
 // import { redirect } from "@remix-run/node";
 import { Service } from "~/.server/services";
+import { permissions } from '~/application';
 
 export const clientAction: ActionFunction = async ({
     request
@@ -15,6 +16,7 @@ export const clientAction: ActionFunction = async ({
     try {
         
         if(data._action === 'verify') {
+            await Service.auth.requirePermission(request, permissions.credits.permissions.add);
             const { status } = await Service.credit.verifyToCreate(formData);
     
             const { curp } = data;
@@ -24,6 +26,7 @@ export const clientAction: ActionFunction = async ({
             }
 
             if(status === 'renovate') {
+                await Service.auth.requirePermission(request, permissions.credits.permissions.renovate);
                 return redirect(`./${curp}/credits?${url.searchParams}`)
             }
 
@@ -31,6 +34,7 @@ export const clientAction: ActionFunction = async ({
         }
 
         if(data._action === 'generate') {
+            await Service.auth.requirePermission(request, permissions.utils.permissions.generate_overdue);
             await Service.credit.calculateOverdueCredits();
             return handlerSuccessWithToast('update', 'las cuentas vencidas');
         }

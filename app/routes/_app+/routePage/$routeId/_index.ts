@@ -3,6 +3,7 @@ import { redirectWithWarning } from "remix-toast";
 import { handlerErrorWithToast } from "~/.server/reponses/handlerError";
 import { handlerSuccessWithToast } from "~/.server/reponses/handlerSuccess";
 import { Service } from "~/.server/services";
+import { permissions } from '~/application';
 
 export const action: ActionFunction = async({params, request}) => {
     const formData = await request.formData();
@@ -13,12 +14,14 @@ export const action: ActionFunction = async({params, request}) => {
     try {
         
       if(data._action === 'update') {
+        await Service.auth.requirePermission(request, permissions.route.permissions.active);
         const isActive = data?.isActiveRoute === 'true';
         await Service.routes.updateIsActive(id, isActive);
         return handlerSuccessWithToast('update');
       }
       
       if(data._action === 'delete') {
+        await Service.auth.requirePermission(request, permissions.route.permissions.delete);
         await Service.routes.deleteOne(id);
         return handlerSuccessWithToast('delete');
       }

@@ -8,9 +8,9 @@ import { permissions } from "~/application";
 
 
 export const loader: LoaderFunction = async ({ request }) => {  
-  console.log({request: request.url});
+  await Service.auth.requirePermission(request, permissions.folder.permissions.view);
+  
   try {
-    await Service.auth.requirePermission(request, permissions.folder.permissions.view);
     const { params } = Params.folder.getParams(request);
     const data = await Service.folder.findAll(params);
     return handlerSuccess(200, data);
@@ -28,6 +28,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
     try {
       if(data._action === 'create') {
+          await Service.auth.requirePermission(request, permissions.folder.permissions.add);
           await Service.folder.createOne(townId, route+'');
           return handlerSuccessWithToast('create');
       }

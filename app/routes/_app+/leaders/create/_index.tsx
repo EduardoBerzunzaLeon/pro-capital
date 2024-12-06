@@ -8,11 +8,13 @@ import { useEffect } from "react";
 import { handlerErrorWithToast } from "~/.server/reponses/handlerError";
 import { handlerSuccessWithToast } from "~/.server/reponses/handlerSuccess";
 import { Service } from "~/.server/services";
-import { InputValidation } from "~/components/ui";
+import { InputValidation, ErrorBoundary } from '~/components/ui';
 import { AutocompleteCombobox } from "~/components/ui/forms/Autocomplete";
 import { CreateLeaderSchema } from "~/schemas/leaderSchema";
+import { permissions } from '~/application';
 
 export const action: ActionFunction = async({ request }) => {
+  await Service.auth.requirePermission(request, permissions.leaders.permissions.add);
   const formData = await request.formData();
   const data = Object.fromEntries(formData);
 
@@ -27,6 +29,7 @@ export const action: ActionFunction = async({ request }) => {
 
 }
 
+export { ErrorBoundary };
 export default function CreateLeader() {
     const navigate = useNavigate();
     const navigation = useNavigation();
@@ -52,14 +55,14 @@ export default function CreateLeader() {
     }
 
     return (
-        <Modal 
+      <Modal 
         isOpen={true}
         onClose={onClose}
         placement="top-center"
         className='red-dark text-foreground bg-content1'
         isDismissable={false}
         scrollBehavior='outside'
-    >
+      >
         <ModalContent>
           {(onClose) => (
             <>

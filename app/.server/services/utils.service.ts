@@ -66,7 +66,7 @@ export const flattenObj = (obj:  Generic, key: string = '') => {
         if(typeofattr === 'object' && obj[key] !== null) {
             // Do something with nested objects
             const objNested = flattenObj(obj[key], key);
-            
+
         }
 
         newKey += (newKey === '') ? key : `_${key}`;

@@ -1,5 +1,5 @@
 import { Action } from "../Action/Action";
-import { useFetcherAction } from "~/application";
+import { useFetcherAction, permissions } from '~/application';
 
 interface Props {
     idFolder: number,
@@ -25,6 +25,8 @@ export function FolderAction({ idFolder, onOpenEdit }: Props)  {
             onUpdate={handleUpdateWithModal}
             onDelete={handleDelete}
             isLoading={isDeleting}
+            permissionUpdate={permissions.folder.permissions.update}
+            permissionDelete={permissions.folder.permissions.delete}
         />
     )
 }

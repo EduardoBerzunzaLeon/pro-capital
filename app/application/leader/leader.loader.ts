@@ -4,9 +4,12 @@ import { getEmptyPagination } from "~/.server/reponses/handlerError";
 import { handlerSuccess } from "~/.server/reponses";
 import { Service } from "~/.server/services";
 import { Params } from '../params/index';
+import { permissions } from '~/application';
 
 
 export const leaderLoader: LoaderFunction = async ({ request }) => {
+  
+  await Service.auth.requirePermission(request, permissions.leaders.permissions.view);
   
   const { params, search } = Params.leader.getParams(request);
 

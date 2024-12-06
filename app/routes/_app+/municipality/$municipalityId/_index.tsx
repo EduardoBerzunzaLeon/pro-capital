@@ -4,6 +4,7 @@ import { redirectWithWarning } from "remix-toast";
 import { handlerError, handlerErrorWithToast } from "~/.server/reponses/handlerError";
 import { handlerSuccess, handlerSuccessWithToast } from "~/.server/reponses/handlerSuccess";
 import { Service } from "~/.server/services";
+import { permissions } from '~/application';
 
 export const loader: LoaderFunction = async ({ params }) => {
   
@@ -37,11 +38,13 @@ export const action: ActionFunction = async({params, request}) => {
     try {
       
       if(data._action === 'update') {
+        await Service.auth.requirePermission(request, permissions.municipality.permissions.update);
         await Service.municipality.updateOne({ id, form: formData });
         return handlerSuccessWithToast('update');
       }
       
       if(data._action === 'delete') {
+        await Service.auth.requirePermission(request, permissions.municipality.permissions.delete);
         await Service.municipality.deleteOne(id);
         return handlerSuccessWithToast('delete');
       }

@@ -6,11 +6,12 @@ import { FaSearch } from "react-icons/fa";
 import { Folder } from "~/.server/domain/entity/folder.entity";
 import { FolderAction } from "./FolderAction";
 import { FolderButtonAdd } from "./FolderButtonAdd";
-import { permissions, useFetcherPaginator } from "~/application";
+import { useFetcherPaginator, permissions } from '~/application';
 import { ModalFolderEdit } from "./ModalFolderEdit";
 import { GroupGenerateButton } from "./GroupGenerateButton";
 import { ExcelReport } from "../excelReports/ExcelReport";
-import { Permission } from "../auth/Permission";
+import { Permission } from '../auth/Permission';
+import { MultiplePermissions } from "../auth/MultiplePermissions";
 
 export type Key = string | number;
 
@@ -73,7 +74,14 @@ export function FolderSection() {
 
 const renderCell = useCallback((folder: Folder, columnKey: Key) => {
   if(columnKey === 'actions') {
-        return (<FolderAction onOpenEdit={onOpen} idFolder={folder.id}/>)
+        return (
+            <MultiplePermissions permissions={[
+                permissions.folder.permissions.delete,
+                permissions.folder.permissions.update,
+            ]}>
+                <FolderAction onOpenEdit={onOpen} idFolder={folder.id}/>
+            </MultiplePermissions>
+        )
   } 
 
     return <span className="capitalize">{folder[columnKey as keyof typeof folder]}</span>;
@@ -81,10 +89,11 @@ const renderCell = useCallback((folder: Folder, columnKey: Key) => {
 }, [])
 
 return (
-    <Permission permission={permissions.folder.permissions.view}>
         <div>
             <div className='w-full flex gap-2 mt-5 mb-3 flex-wrap justify-between'>
-                <ExcelReport url={url} name='carpetas' />
+                <Permission permission={permissions.folder.permissions.report}>
+                    <ExcelReport url={url} name='carpetas' />
+                </Permission>
                 <Input
                     className="w-full sm:max-w-[30%]"
                     isClearable
@@ -116,11 +125,11 @@ return (
                     variant='bordered'
                 />
             </div>
-
-        <ModalFolderEdit 
-            isOpen={isOpen}
-            onOpenChange={onOpenChange}
-        />
+        
+            <ModalFolderEdit 
+                isOpen={isOpen}
+                onOpenChange={onOpenChange}
+            />
             <TableDetail 
                 aria-label="folders table"
                 onSortChange={setSortDescriptor}
@@ -134,8 +143,12 @@ return (
                 }
                 topContent={
                     <div className="flex justify-between items-center">
-                        <FolderButtonAdd />
-                        <GroupGenerateButton />
+                        <Permission permission={permissions.folder.permissions.add}>
+                            <FolderButtonAdd />
+                        </Permission>
+                        <Permission permission={permissions.utils.permissions.generate_groups}>
+                            <GroupGenerateButton />
+                        </Permission>
                         <span className="text-default-400 text-small">Total {data?.serverData.total || 0 } Carpetas </span>
                         <RowPerPage 
                             onChange={handleRowPerPage}
@@ -149,6 +162,5 @@ return (
                 data={data?.serverData.data ?? []}    
             />
         </div>
-    </Permission>
-)
+    )
 }

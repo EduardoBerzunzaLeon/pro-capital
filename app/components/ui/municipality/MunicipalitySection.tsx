@@ -7,7 +7,9 @@ import { MunicipalityAction } from "./MunicipalityAction";
 import { ModalMunicipalityEdit } from './ModalMunicipalityEdit';
 import { MunicipalityButtonAdd } from "./MunicipalityButtonAdd";
 import { FaSearch } from "react-icons/fa";
-import { useFetcherPaginator } from "~/application";
+import { useFetcherPaginator, permissions } from '~/application';
+import { MultiplePermissions } from '../auth/MultiplePermissions';
+import { Permission } from '../auth/Permission';
 
 type Column = 'name' | 'id';
 
@@ -44,7 +46,14 @@ export  function MunicipalitySection() {
 
     const renderCell = useCallback((municipality: Municipality, columnKey: Key) => {
         if(columnKey === 'actions') {
-          return (<MunicipalityAction onOpenEdit={onOpen} idMunicipality={municipality.id}/>)
+          return (
+            <MultiplePermissions permissions={[
+                permissions.municipality.permissions.update,
+                permissions.municipality.permissions.delete,
+            ]}>
+                <MunicipalityAction onOpenEdit={onOpen} idMunicipality={municipality.id}/>
+            </MultiplePermissions>
+          )
         } 
 
         return <span className="capitalize">{municipality[(columnKey as Column)]}</span>;
@@ -80,7 +89,9 @@ export  function MunicipalitySection() {
             }
             topContent={
                 <div className="flex justify-between items-center">
-                    <MunicipalityButtonAdd />
+                    <Permission permission={permissions.municipality.permissions.add}>
+                        <MunicipalityButtonAdd />
+                    </Permission>
                     <span className="text-default-400 text-small">Total {data?.serverData.total || 0 } municipios </span>
                     <RowPerPage 
                         onChange={handleRowPerPage}

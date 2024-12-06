@@ -3,6 +3,7 @@ import { FolderSection } from "~/components/ui/folder";
 import { LoaderFunction } from '@remix-run/node';
 import { Service } from '~/.server/services';
 import { permissions } from '~/application';
+import { Permission } from '../../../components/ui/auth/Permission';
 
 export const loader: LoaderFunction = async ({ request }) => {
   await Service.auth.requirePermission(request, permissions.region.permissions.view); 
@@ -14,12 +15,20 @@ export default function RegionPage() {
 
   return (
     <div className='w-full flex gap-2 flex-col'>
-      <FolderSection />
-      <TownSection />
+      <Permission permission={permissions.folder.permissions.view}>
+        <FolderSection />
+      </Permission>
+      <Permission permission={permissions.town.permissions.view}>
+        <TownSection />
+      </Permission>
       
       <div className='flex gap-2 flex-wrap justify-between'>
-        <RouteSection />
-        <MunicipalitySection />
+        <Permission permission={permissions.route.permissions.view}>
+          <RouteSection />
+        </Permission>
+        <Permission permission={permissions.municipality.permissions.view}>
+          <MunicipalitySection />
+        </Permission>
       </div>
     </div>
   )

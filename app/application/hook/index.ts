@@ -1,4 +1,4 @@
-
+export { useCalculateDebt } from './useCalculateDebt';
 export { useComponentVisible } from "./useComponentVisible";
 export { useDimensions } from "./useDimensions";
 export { useDropdown } from "@nextui-org/react";
@@ -8,9 +8,10 @@ export { useFetcherPaginator } from "./useFetcherPaginator";
 export { useFetcherWithReset } from "./useFetcherWithReset";
 export { useMatchesData } from "./useMatchesData";
 export { useModalCreateForm } from "./useModalCreateForm";
+export { useMultiplePermissions } from "./useMultiplePermissions";
 export { useOptionalUser } from "./useOptionalUser";
 export { useParamsPaginator } from './useParamsPaginator';
 export { useParamsSelect } from "./useParamsSelect";
+export { usePermission } from "./usePermission";
 export { useRenderCell } from "./useRenderCell";
 export { useStatusMemo } from "./useStatusMemo";
-export { useCalculateDebt } from './useCalculateDebt';

@@ -28,8 +28,8 @@ export const permissions = {
         module: 'rutas',
         permissions: {
             add: 'route[add]',
-            update: 'route[update]',
             view: 'route[view]',
+            delete: 'route[delete]',
             active: 'route[active]',
             report: 'route[report]',
         }

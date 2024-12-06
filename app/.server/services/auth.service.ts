@@ -76,25 +76,6 @@ export const findById = async (userId: RequestId) => {
   const { id } = validationZod({ id: userId }, idSchema);
   return await Repository.auth.findById(id); 
 }
- 
-// export const requirePermission = (loader: LoaderFunction, permission: string) => {
-
-//   return async (args: LoaderFunctionArgs) => {
-//     const { request } = args;
-
-//     const user = await authenticator.isAuthenticated(request, {
-//       failureRedirect: "/login",
-//     });
-    
-//     if(!user || user instanceof Error) {
-//       throw ServerError.unauthorized('usuario no autenticado');          
-//     }
-
-//     await Service.role.hasPermission(user.role.role, permission);
-
-//     return loader({ ...args, user });
-//   }
-// } 
 
 export const requirePermission = async (request: Request, permission: string) => {
       
@@ -112,7 +93,7 @@ export const requirePermission = async (request: Request, permission: string) =>
 
     const hasPermission = await Service.role.hasPermission(user.role, permission);
 
-    // TODO: Implement this afther
+    // TODO: Implement this after
     // const findPermission = user.permissions.find(({ servername }) => servername === permission);
 
     // console.log({ hasPermission, findPermission });
@@ -129,8 +110,7 @@ export const requirePermission = async (request: Request, permission: string) =>
       // const session = await getSession(request.headers.get("cookie"));
       // session.set(Service.auth.authenticator.sessionKey, restUser);
       // const headers = new Headers();
-      // headers.append('Set-Cookie',await commitSession(session));
-
+      // headers.append('Set-Cookie',await commitSession(session));y
     // }
 
     // if(!hasPermission && findPermission) {
@@ -144,10 +124,9 @@ export const requirePermission = async (request: Request, permission: string) =>
 
     // }
     
-    
-
+  
     if(!hasPermission) {
-      throw ServerError.forbidden('No tiene acceso a esta ruta');
+      throw ServerError.forbidden('No tiene permisos para esta acción');
     } 
   
     return user;

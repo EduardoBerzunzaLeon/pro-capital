@@ -6,8 +6,10 @@ import { useCallback, useState} from "react";
 import { Button, Link, useDisclosure } from "@nextui-org/react";
 import { ChipStatus, InputFilter, LeaderAction, LeaderToggleActive, ModalLeaderEdit, ModalsToggle, Pagination, RangePickerDateFilter, RowPerPage, StatusFilter, TableDetail } from "~/components/ui";
 import { FaUserPlus } from "react-icons/fa";
-import { useParamsPaginator } from '../../../application';
+import { useParamsPaginator , permissions } from '../../../application';
 import { leaderLoader } from "~/application/leader/leader.loader";
+import { MultiplePermissions } from "~/components/ui/auth/MultiplePermissions";
+import { Permission } from '../../../components/ui/auth/Permission';
 
 export {
   leaderLoader as loader
@@ -63,15 +65,24 @@ export default function LeaderPage () {
     if(columnKey === 'actions') {
       return (
         <div className='flex justify-center items-center gap-1'>
-          <LeaderToggleActive 
-              leaderId={leader.id}
-              isActive={leader.isActive}
-              handlePress={setSelectedId}
-          />
-          <LeaderAction 
-            leaderId={leader.id} 
-            onOpenEdit={onOpen} 
-          />
+          <Permission permission={permissions.leaders.permissions.active}>
+            <LeaderToggleActive 
+                leaderId={leader.id}
+                isActive={leader.isActive}
+                handlePress={setSelectedId}
+              />
+          </Permission>
+          <MultiplePermissions 
+            permissions={[
+              permissions.leaders.permissions.update,
+              permissions.leaders.permissions.delete,
+            ]}
+          >
+            <LeaderAction 
+              leaderId={leader.id} 
+              onOpenEdit={onOpen} 
+            />
+          </MultiplePermissions>
         </div>
       )
     } 
@@ -140,6 +151,7 @@ export default function LeaderPage () {
       }
       topContent={
           <div className="flex justify-between items-center">
+            <Permission permission={permissions.leaders.permissions.add}>
               <Button
                 href={`/leaders/create?${searchParams.toString()}`}
                 as={Link}
@@ -149,6 +161,7 @@ export default function LeaderPage () {
               >
                 Crear Líder
               </Button>
+            </Permission>
               <span className="text-default-400 text-small">
                   Total {loader?.serverData.total || 0 } Líderes
               </span>

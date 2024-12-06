@@ -3,6 +3,7 @@ import { redirectWithWarning } from "remix-toast";
 import { handlerError, handlerErrorWithToast } from "~/.server/reponses/handlerError";
 import { handlerSuccess, handlerSuccessWithToast } from "~/.server/reponses/handlerSuccess";
 import { Service } from "~/.server/services";
+import { permissions } from '~/application';
 
 export const loader: LoaderFunction = async ({ params }) => {
     const { townId } = params;
@@ -22,6 +23,7 @@ export const action: ActionFunction = async({params, request}) => {
     try {
       
       if(data._action === 'update') {
+        await Service.auth.requirePermission(request, permissions.town.permissions.update); 
         const municipalityId = data['municipality[id]']+'';
         const name = data.name+'';
         await Service.town.updateOne( id, { name, municipalityId });
@@ -29,6 +31,7 @@ export const action: ActionFunction = async({params, request}) => {
       }
 
       if(data._action === 'delete') {
+        await Service.auth.requirePermission(request, permissions.town.permissions.delete); 
         await Service.town.deleteOne(id);
         return handlerSuccessWithToast('delete');
       }

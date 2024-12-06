@@ -2,6 +2,7 @@ import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Spinner 
 import { Key, useCallback } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { FaEdit, FaEye, FaTrashAlt } from "react-icons/fa";
+import { useActionPermission } from '../../../application/hook/useActionPermission';
 
 interface Props {
     ariaLabel: string,
@@ -9,20 +10,57 @@ interface Props {
     onView?: () => void,
     onUpdate?: () => void,
     onDelete?: () => void,
+    permissionUpdate?: string,
+    permissionView?: string,
+    permissionDelete?: string
+}
+
+
+export function Action ({ 
+    ariaLabel, 
+    onView, 
+    onUpdate, 
+    onDelete, 
+    isLoading,
+    permissionView,
+    permissionUpdate,
+    permissionDelete 
+}: Props) {
     
-}
-
-const dropdowns = {
-    'view': <DropdownItem key='view' startContent={<FaEye />} >Ver</DropdownItem>,
-    'update': <DropdownItem key='update' startContent={<FaEdit />} >Editar</DropdownItem>,
-    'delete': <DropdownItem key='delete' className="text-danger" color="danger" startContent={<FaTrashAlt/>}>Eliminar</DropdownItem>,
-}
-
-export function Action ({ ariaLabel, onView, onUpdate, onDelete, isLoading }: Props) {
+    const { 
+        hasViewPermission,
+        hasDeletePermission,
+        hasUpdatePermission
+     } = useActionPermission({ 
+        view: permissionView, 
+        update: permissionUpdate, 
+        destroy: permissionDelete 
+    });
 
     const canView = !!onView;
     const canUpdate = !!onUpdate;
     const canDelete = !!onDelete;
+
+    const items = [
+        {
+            key: 'view',
+            startContent: <FaEye />,
+            label: 'Ver',
+            permission: permissionView
+        },
+        {
+            key: 'update',
+            startContent: <FaEdit />,
+            label: 'Editar',
+            permission: permissionUpdate
+        },
+        {
+            key: 'delete',
+            startContent: <FaTrashAlt />,
+            label: 'Eliminar',
+            permission: permissionView
+        }
+    ]
 
     const handleAction = (key: Key) => {
 
@@ -42,17 +80,27 @@ export function Action ({ ariaLabel, onView, onUpdate, onDelete, isLoading }: Pr
     const printDropdownMenus = useCallback(() => {
         const elements = [];
 
-        if(canView) elements.push(dropdowns.view);
-        if(canUpdate) elements.push(dropdowns.update);
-        if(canDelete) elements.push(dropdowns.delete);
+        if(canView && hasViewPermission) elements.push(items[0]);
+        if(canUpdate && hasUpdatePermission) elements.push(items[1]);
+        if(canDelete && hasDeletePermission) elements.push(items[2]);
 
         return (
             <DropdownMenu
                 aria-label={`Action event ${ariaLabel}`}
                 onAction={handleAction}
                 emptyContent='No elementos'
+                items={elements}
             >
-                { elements.map((element) => element) }
+                {(item) => (
+                    <DropdownItem
+                        key={item.key}
+                        className={item.key === "delete" ? "text-danger" : ""}
+                        color={item.key === "delete" ? "danger" : "default"}
+                        startContent={item.startContent}
+                    >
+                        {item.label}
+                    </DropdownItem>
+                )}
             </DropdownMenu>
         )
 

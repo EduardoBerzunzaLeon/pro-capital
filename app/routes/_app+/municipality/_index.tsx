@@ -4,9 +4,11 @@ import { getEmptyPagination, handlerErrorWithToast } from "~/.server/reponses/ha
 import { handlerSuccess, handlerSuccessWithToast } from "~/.server/reponses/handlerSuccess";
 import { Service } from "~/.server/services";
 import { Params } from '../../../application/params';
+import { permissions } from '~/application';
 
 export const loader: LoaderFunction = async ({ request }) => {
   
+  await Service.auth.requirePermission(request, permissions.municipality.permissions.view);
   const { params } = Params.municipality.getParams(request);
   try {
    
@@ -24,6 +26,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
     try {
       if(data._action === 'create') {
+          await Service.auth.requirePermission(request, permissions.municipality.permissions.add);
           await Service.municipality.createOne(formData);
           return handlerSuccessWithToast('create', `del municipio ${data.name}`);
       }

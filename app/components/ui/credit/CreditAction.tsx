@@ -1,4 +1,4 @@
-import { useFetcherAction } from "~/application";
+import { permissions, useFetcherAction } from "~/application";
 import { Action } from "../Action/Action";
 import { useNavigate } from "@remix-run/react";
 
@@ -15,8 +15,6 @@ export function CreditAction({ creditId }: Props)  {
         id: creditId
      });
 
-     console.log({creditId})
-
      const handleView = () => {
         navigate(`/clients/${creditId}`);
     }
@@ -27,6 +25,8 @@ export function CreditAction({ creditId }: Props)  {
             onView={handleView}
             onDelete={handleDelete}
             isLoading={isDeleting}
+            permissionView={permissions.credits.permissions.view_detail}
+            permissionDelete={permissions.credits.permissions.delete}
         />
     )
 }

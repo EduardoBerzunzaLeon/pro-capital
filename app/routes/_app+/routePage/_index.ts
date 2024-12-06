@@ -4,9 +4,11 @@ import { getEmptyPagination, handlerErrorWithToast } from '~/.server/reponses/ha
 import { handlerSuccess, handlerSuccessWithToast } from '~/.server/reponses/handlerSuccess';
 import { Service } from '~/.server/services';
 import { Params } from '../../../application/params/index';
+import { permissions } from '~/application';
 
 export const loader: LoaderFunction = async ({ request }) => {
-
+  
+  await Service.auth.requirePermission(request, permissions.route.permissions.view);
   const { params } = Params.route.getParams(request);
 
     try {
@@ -29,6 +31,7 @@ export const action: ActionFunction = async({ request }) => {
   try {
     
     if(data._action === 'create') {
+      await Service.auth.requirePermission(request, permissions.route.permissions.add);
       await Service.routes.createOne();
       return handlerSuccessWithToast('create');
     }

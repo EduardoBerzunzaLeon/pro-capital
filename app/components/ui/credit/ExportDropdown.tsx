@@ -1,9 +1,11 @@
-import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, useDisclosure } from "@nextui-org/react"
+import { Button, Dropdown, DropdownMenu, DropdownTrigger, useDisclosure } from "@nextui-org/react"
 import { AiFillLayout } from "react-icons/ai";
 import { FaChartBar, FaFileExcel } from "react-icons/fa"
 import { ModalExportLayout } from "./ModalExportLayout";
 import { Key } from "~/.server/interfaces";
 import { ModalExportStatistics } from './ModalExportStatistics';
+import { permissions } from '~/application';
+import { DropdownItemPermission } from "../auth/DropDownItemPermission";
 
 export const ExportDropdown = () => {
 
@@ -35,14 +37,22 @@ export const ExportDropdown = () => {
                 aria-label="Export excel event"
                 onAction={handleAction}
             >
-                <DropdownItem
-                    key="layout"
-                    startContent={<AiFillLayout />}
-                >Plantilla</DropdownItem>
-                <DropdownItem 
-                    key="statistics"
-                    startContent={<FaChartBar />}
-                >Estadisticas</DropdownItem>
+                { 
+                    DropdownItemPermission({
+                        permission: permissions.credits.permissions.layout,
+                        key: 'layout',
+                        label: 'Plantilla',
+                        startContent: <AiFillLayout />
+                    }) 
+                }
+                { 
+                    DropdownItemPermission({
+                        permission: permissions.credits.permissions.statistics,
+                        key: 'statistics',
+                        label: 'Estadisticas',
+                        startContent: <FaChartBar />
+                    }) 
+                }
             </DropdownMenu>
         </Dropdown>
         <ModalExportLayout isOpen={isOpen} onOpenChange={onOpenChange} />

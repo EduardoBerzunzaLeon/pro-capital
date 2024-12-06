@@ -1,5 +1,5 @@
 import { Action } from "../Action/Action";
-import { useFetcherAction } from "~/application";
+import { useFetcherAction, permissions } from '~/application';
 
 interface Props {
     idTown: number,
@@ -24,6 +24,8 @@ export function TownAction({ idTown, onOpenEdit }: Props)  {
             onUpdate={handleUpdateWithModal}
             onDelete={handleDelete}
             isLoading={isDeleting}
+            permissionUpdate={permissions.town.permissions.update}
+            permissionDelete={permissions.town.permissions.delete}
         />
     )
 }
