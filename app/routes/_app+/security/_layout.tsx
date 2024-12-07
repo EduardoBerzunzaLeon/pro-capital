@@ -6,14 +6,15 @@ import { useCallback } from "react";
 import { FaEye } from "react-icons/fa";
 import { getEmptyPagination, handlerSuccess } from "~/.server/reponses";
 import { Service } from "~/.server/services";
-import { useParamsPaginator, useParamsSelect, useRenderCell } from "~/application";
+import { permissions, useParamsPaginator, useParamsSelect, useRenderCell } from "~/application";
 import {  Pagination, RowPerPage, TableDetail } from "~/components/ui";
 import { SelectRoles } from "~/components/ui/role/SelectRoles";
 import { Params } from '../../../application/params';
 import { Key } from '~/.server/interfaces';
+import { Permission } from "~/components/ui/auth/Permission";
 
 export const loader: LoaderFunction = async ({ request }) => {
-  
+  await Service.auth.requirePermission(request, permissions.roles.permissions.view);
   const { params, search } = Params.security.getParams(request);
 
   try {
@@ -71,6 +72,7 @@ export default function  SecurityPage()  {
     if(columnKey === 'actions') {
       return (
       // <div className="relative flex justify-center items-center gap-2">
+      <Permission permission={permissions.roles.permissions.view_detail}>
         <Button 
           size='sm' 
           variant='ghost' 
@@ -78,6 +80,7 @@ export default function  SecurityPage()  {
           startContent={<FaEye />} 
           onPress={() => navigate(`./${role.id}/permissions`)}
         >Ver permisos</Button>
+      </Permission>
       // </div>
       )
     }

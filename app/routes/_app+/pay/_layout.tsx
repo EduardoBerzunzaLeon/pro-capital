@@ -4,9 +4,11 @@ import { useCallback, useMemo, useState } from "react";
 import { Credit } from "~/.server/domain/entity"
 import { SortDirection, Selection, Key } from "~/.server/interfaces"
 import { HandlerSuccess } from "~/.server/reponses";
-import { useParamsPaginator, useRenderCell } from "~/application";
+import { permissions, useParamsPaginator, useRenderCell } from "~/application";
 import { payLoader } from "~/application/pay/pay.loader"
 import { ChipStatusCredit, InputFilter, Pagination, RowPerPage, TableDetail } from "~/components/ui";
+import { MultiplePermissions } from "~/components/ui/auth/MultiplePermissions";
+import { Permission } from "~/components/ui/auth/Permission";
 import { ModalNoPay, ModalPay } from "~/components/ui/pay";
 import { PayAction } from "~/components/ui/pay/PayAction";
 
@@ -97,16 +99,30 @@ export default function PayPage() {
         }
             
         if(columnKey === 'canRenovate' && credit.canRenovate) {
-          return <Button variant='ghost' color='primary' onPress={() => { navigate(`/clients/${credit.client.curp}/renovate/${credit.id}`) }}>Renovar</Button>
+          return (
+            <Permission permission={permissions.credits.permissions.renovate}>
+              <Button variant='ghost' color='primary' onPress={() => { navigate(`/clients/${credit.client.curp}/renovate/${credit.id}`) }}>Renovar</Button>
+            </Permission>
+          )
+
         }
 
         if(columnKey === 'actions') {
             return (
+              <MultiplePermissions
+                permissions={[
+                  permissions.credits.permissions.view_detail,
+                  permissions.pays.permissions.add,
+                  permissions.pays.permissions.add_no_payment,
+                  permissions.pays.permissions.delete,
+                ]}
+              >
                 <PayAction 
                     idCredit={credit.id}
                     onOpen={onOpen}
                     onOpenNoPay={onOpenNoPay}
                 />
+              </MultiplePermissions>
             )
         }
         

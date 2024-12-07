@@ -10,13 +10,17 @@ import { handlerErrorWithToast } from "~/.server/reponses";
 import { ActionFunction } from "@remix-run/node";
 import { Service } from "~/.server/services";
 import { redirectWithSuccess } from "remix-toast";
+import { permissions } from "~/application";
 
 export const action: ActionFunction = async({ request }) => {
+
+  
   const formData = await request.formData();
   const data = Object.fromEntries(formData);
   const url = new URL(request.url);
-
+  
   try {
+    await Service.auth.requirePermission(request, permissions.users.permissions.add);
     const password = await Service.user.createOne(formData);
     return redirectWithSuccess(`/users${url.search}`, { 
       message: `Creación exitosa, La contraseña es: ${password}`

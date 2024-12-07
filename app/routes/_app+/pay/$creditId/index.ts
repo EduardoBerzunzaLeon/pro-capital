@@ -2,6 +2,7 @@ import { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { redirectWithWarning } from "remix-toast";
 import { handlerError, handlerErrorWithToast, handlerSuccess, handlerSuccessWithToast } from "~/.server/reponses";
 import { Service } from "~/.server/services";
+import { permissions } from "~/application";
 
 export const loader: LoaderFunction = async ({ params }) => {
     const { creditId } = params;
@@ -13,27 +14,29 @@ export const loader: LoaderFunction = async ({ params }) => {
     }
 }
 
-
 export const action: ActionFunction = async({ params, request }) => {
   const formData = await request.formData();
   const data = Object.fromEntries(formData);
   const id = params.creditId;
-
+  
   try {
-      
+    
     if(data._action === 'addPayment') {
+      await Service.auth.requirePermission(request, permissions.pays.permissions.add);
       formData.append('agentId', data['agent[id]'] ?? '');
       await Service.payment.createOne(formData, id);
       return handlerSuccessWithToast('create', 'del pago');
     }
     
     if(data._action === 'addNoPayment') {
+      await Service.auth.requirePermission(request, permissions.pays.permissions.add_no_payment);
       formData.append('agentId', data['agent[id]'] ?? '');
       await Service.payment.createNoPayment(formData, id);
       return handlerSuccessWithToast('create', 'del NO pago');
     }
 
     if(data._action === 'deleteFast') {
+      await Service.auth.requirePermission(request, permissions.pays.permissions.delete);
       await Service.payment.deleteFastOne(id);
       return handlerSuccessWithToast('delete', 'del pago');
     }

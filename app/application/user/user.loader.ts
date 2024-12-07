@@ -2,9 +2,11 @@ import { json, LoaderFunction } from "@remix-run/node";
 import { getEmptyPagination, handlerSuccess } from "~/.server/reponses";
 import { Service } from "~/.server/services";
 import { Params } from '../params/index';
+import { permissions } from "../permissions";
 
 export const userLoader: LoaderFunction = async ({ request }) => {
 
+    await Service.auth.requirePermission(request, permissions.users.permissions.view);
     const { params, search } = Params.user.getParams(request);
 
     try {

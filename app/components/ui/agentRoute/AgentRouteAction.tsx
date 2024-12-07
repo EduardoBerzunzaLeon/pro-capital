@@ -1,5 +1,5 @@
 import { Action } from "../Action/Action";
-import { useFetcherAction } from "~/application";
+import { permissions, useFetcherAction } from "~/application";
 
 interface Props {
     idAgentRoute: number,
@@ -18,6 +18,7 @@ export function AgentRouteAction({ idAgentRoute }: Props)  {
             ariaLabel="agent routes actions"
             onDelete={handleDelete}
             isLoading={isDeleting}
+            permissionDelete={permissions.agents.permissions.delete}
         />
     )
 }

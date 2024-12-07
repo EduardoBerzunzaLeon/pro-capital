@@ -1,9 +1,12 @@
 import { ActionFunctionArgs, unstable_parseMultipartFormData, unstable_composeUploadHandlers, unstable_createFileUploadHandler, unstable_createMemoryUploadHandler, NodeOnDiskFile } from "@remix-run/node";
 import { handlerErrorWithToast, handlerSuccessWithToast } from "~/.server/reponses";
 import { Service } from "~/.server/services";
+import { permissions } from "~/application";
 
 export async function action({ request, params }: ActionFunctionArgs) {
 
+    await Service.auth.requirePermission(request, permissions.users.permissions.update);
+    
     const { userId } = params;
 
     try {

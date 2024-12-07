@@ -6,10 +6,14 @@ import { Credit, Status } from "~/.server/domain/entity/credit.entity";
 import { Color , Key, Selection} from "~/.server/interfaces";
 import { handlerSuccess } from "~/.server/reponses";
 import { Service } from "~/.server/services";
-import { useParamsPaginator, useRenderCell } from "~/application";
+import { useParamsPaginator, useRenderCell, permissions } from '~/application';
 import { TableDetail, RowPerPage, Pagination } from "~/components/ui";
+import { Permission } from "~/components/ui/auth/Permission";
+import { ErrorBoundary } from '../../../clients_.$creditId/payments/_layout';
 
 export const loader: LoaderFunction = async ({ params, request }) => {
+
+    await Service.auth.requirePermission(request, permissions.credits.permissions.add);
     const url = new URL(request.url);
 
     const curp = { column: 'client.curp', value: params?.curp ?? '' }
@@ -83,6 +87,7 @@ const statusRef: Record<Status, Color> = {
   FALLECIDO: 'secondary'
 }
 
+export { ErrorBoundary };
 export default function ViewCreditsPage () {
     const navigate = useNavigate();
     const [params] = useSearchParams();
@@ -106,7 +111,13 @@ export default function ViewCreditsPage () {
     const renderCell = useCallback((credit: Credit, columnKey: Key) => {
     
       if(columnKey === 'canRenovate' && credit.canRenovate) {
-        return <Button variant='ghost' color='primary' onPress={() => { navigate(`/clients/${param?.curp}/renovate/${credit.id}`) }}>Renovar</Button>
+        return (
+          <Permission permission={permissions.credits.permissions.renovate}>
+            <Button variant='ghost' color='primary' onPress={() => { navigate(`/clients/${param?.curp}/renovate/${credit.id}`) }}>
+              Renovar
+            </Button>
+          </Permission>
+        )
       }
       
       if(columnKey === 'client.curp') {
@@ -213,9 +224,11 @@ export default function ViewCreditsPage () {
                 <Button color="danger" variant="light" onPress={onClose} type='button'>
                   Close
                 </Button>
-                <Button color="primary" type='button' onPress={handleAdditional}>
-                  Crear nuevo crédito
-                </Button>
+                <Permission permission={permissions.credits.permissions.add_additional}>
+                  <Button color="primary" type='button' onPress={handleAdditional}>
+                    Crear nuevo crédito
+                  </Button>
+                </Permission>
               </ModalFooter>
               </Form>
             </>

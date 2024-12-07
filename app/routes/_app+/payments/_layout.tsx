@@ -4,12 +4,13 @@ import { Payment } from '~/.server/domain/entity';
 import { useLoaderData } from '@remix-run/react';
 import { useCallback, useMemo, useState } from 'react';
 import { HandlerSuccess } from '~/.server/reponses';
-import { useParamsPaginator, useRenderCell } from '~/application';
+import { permissions, useParamsPaginator, useRenderCell } from '~/application';
 import { Select, SelectItem, useDisclosure, } from '@nextui-org/react';
 import { ChipStatusCredit, ChipStatusPayment, InputFilter, ModalPaymentEdit, Pagination, PaymentAction, RangePickerDateFilter, RowPerPage, SliderFilter, TableDetail } from '~/components/ui';
 import { DropdownPaymentStatus } from '~/components/ui/dropdowns/DropDownPaymentStatus';
 import { useDropdown } from '~/application/hook/useDropdown';
 import { ModalPay } from '~/components/ui/pay';
+import { MultiplePermissions } from '~/components/ui/auth/MultiplePermissions';
 
 export {
     paymentLoader as loader
@@ -99,13 +100,22 @@ export default function PaymentPage( ) {
   const renderCell = useCallback((payment: Payment, columnKey: Key) => {
     
     if(columnKey === 'actions') {
-      return <PaymentAction 
-        paymentId={payment.id} 
-        onOpenEdit={onOpen}
-        onOpenCreate={onOpenCreate}
-        currentDebt={payment.credit.currentDebt}
-        creditId={payment.credit.id}
-      />
+      return (
+        <MultiplePermissions permissions={[
+          permissions.payments.permissions.add,
+          permissions.payments.permissions.delete,
+          permissions.payments.permissions.update,
+          permissions.credits.permissions.view_detail,
+        ]}>
+          <PaymentAction 
+            paymentId={payment.id} 
+            onOpenEdit={onOpen}
+            onOpenCreate={onOpenCreate}
+            currentDebt={payment.credit.currentDebt}
+            creditId={payment.credit.id}
+          />
+        </MultiplePermissions>
+      )
     }
 
     if(columnKey === 'credit.status') {

@@ -3,7 +3,7 @@ import { Outlet, useLoaderData, useSearchParams } from "@remix-run/react"
 
 import { userLoader } from "~/application/user/user.loader";
 import { Key, Selection } from "~/.server/interfaces";
-import {  useParamsPaginator, useParamsSelect, useRenderCell } from "~/application";
+import {  permissions, useParamsPaginator, useParamsSelect, useRenderCell } from "~/application";
 import { useDropdown } from "~/application/hook/useDropdown";
 import { UserComplete } from "~/.server/domain/entity";
 import { Button, Link, Select, SelectItem } from "@nextui-org/react";
@@ -11,6 +11,8 @@ import { ChipStatus, InputFilter, Pagination, RowPerPage, StatusFilter, TableDet
 import { DropdownSex } from "~/components/ui/dropdowns/DropdownSex";
 import { SelectRoles } from "~/components/ui/role/SelectRoles";
 import { FaUserPlus } from "react-icons/fa";
+import { Permission } from "~/components/ui/auth/Permission";
+import { MultiplePermissions } from "~/components/ui/auth/MultiplePermissions";
 
 export {
   userLoader as loader
@@ -74,8 +76,17 @@ export default function  UsersPage()  {
     if(columnKey === 'actions') {
       return (
         <div className='flex justify-center items-center gap-1'>
-          <UserToggleActive userId={user.id} isActive={user.isActive} />
-          <UserAction userId={user.id}/>
+          <Permission permission={permissions.users.permissions.active}>
+            <UserToggleActive userId={user.id} isActive={user.isActive} />
+          </Permission>
+          <MultiplePermissions
+            permissions={[
+              permissions.users.permissions.view,
+              permissions.users.permissions.update,
+            ]}
+          >
+            <UserAction userId={user.id}/>
+          </MultiplePermissions>
         </div>
       )
     }
@@ -170,15 +181,17 @@ export default function  UsersPage()  {
         topContent={
           <div className="flex justify-between items-center">
             {topContent}
-            <Button
-              href={`/users/create?${searchParams.toString()}`}
-              as={Link}
-              endContent={<FaUserPlus />}
-              variant="ghost"
-              color="secondary" 
-            >
-              Crear Usuario
-            </Button>
+            <Permission permission={permissions.users.permissions.add} >
+              <Button
+                href={`/users/create?${searchParams.toString()}`}
+                as={Link}
+                endContent={<FaUserPlus />}
+                variant="ghost"
+                color="secondary" 
+              >
+                Crear Usuario
+              </Button>
+            </Permission>
             <span className="text-default-400 text-small">
               Total {loader?.serverData.total || 0} Usuarios
             </span>

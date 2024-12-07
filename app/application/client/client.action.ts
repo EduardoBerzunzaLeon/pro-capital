@@ -15,6 +15,7 @@ export const clientAction: ActionFunction = async ({
 
     try {
         
+        
         if(data._action === 'verify') {
             await Service.auth.requirePermission(request, permissions.credits.permissions.add);
             const { status } = await Service.credit.verifyToCreate(formData);
@@ -25,12 +26,8 @@ export const clientAction: ActionFunction = async ({
                 return redirect(`/clients/${curp}/create`)
             }
 
-            if(status === 'renovate') {
-                await Service.auth.requirePermission(request, permissions.credits.permissions.renovate);
-                return redirect(`./${curp}/credits?${url.searchParams}`)
-            }
-
-            return status;
+            await Service.auth.requirePermission(request, permissions.credits.permissions.renovate);
+            return redirect(`./${curp}/credits?${url.searchParams}`);
         }
 
         if(data._action === 'generate') {
@@ -40,7 +37,7 @@ export const clientAction: ActionFunction = async ({
         }
 
     } catch (error) {
-        console.log({error})
+        console.log({error});
         return handlerErrorWithToast(error, data);
     }
 

@@ -4,7 +4,7 @@ import {  getLocalTimeZone, today } from "@internationalized/date";
 // import { handlerSuccess, handlerError, HandlerSuccess } from "~/.server/reponses";
 // import { Service } from "~/.server/services";
 import { SelectRoutes } from "~/components/ui/route/SelectRoutes";
-import { AutocompleteMultiple } from "~/components/ui";
+import { AutocompleteMultiple, ErrorBoundary } from '~/components/ui';
 import { useState } from "react";
 import { Key } from "~/components/ui/folder/FolderSection";
 import { ActionFunction } from "@remix-run/node";
@@ -13,8 +13,10 @@ import dayjs from 'dayjs';
 import { Service } from "~/.server/services";
 import { handlerErrorWithToast } from "~/.server/reponses/handlerError";
 import { handlerSuccessWithToast } from "~/.server/reponses/handlerSuccess";
+import { permissions } from "~/application";
 
 export const action: ActionFunction = async({ request }) => {
+  await Service.auth.requirePermission(request, permissions.agents.permissions.add);
   const formData = await request.formData();
   const data = Object.fromEntries(formData);
   const {  route, assignAt, ...agents } = data;
@@ -42,12 +44,17 @@ export const action: ActionFunction = async({ request }) => {
     assignAt: dayjs(assignAt+'T00:00:00.000Z').toDate(), 
     agentIds
   });
+
   return handlerSuccessWithToast('create');
 } catch (error) {
   return handlerErrorWithToast(error, data);
 }
 }
 
+
+export {
+  ErrorBoundary
+}
 
 type Selection = 'all' | Set<Key>;
 

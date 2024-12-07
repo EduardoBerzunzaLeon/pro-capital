@@ -6,6 +6,7 @@ import { useState } from "react"
 import { action } from "~/routes/_app+/clients/edit/$clientId/_index";
 import { clientUpdateSchema } from "~/schemas";
 import { InputValidation } from "../forms/Input";
+import { Permission } from '../auth/Permission';
 
 interface Props {
     id: number,
@@ -18,6 +19,7 @@ interface Props {
     reference: string,
     urlAction: string,
     title: string,
+    permission: string,
 }
 
 
@@ -31,7 +33,8 @@ export const PersonFormEdit = ({
     curp,
     reference,
     urlAction,
-    title
+    title,
+    permission
 }: Props) => {
 
     const fetcher = useFetcher<typeof action>();
@@ -119,38 +122,40 @@ export const PersonFormEdit = ({
                 placeholder="Ingresa la referencia"
               /> 
           </CardBody>
-          <CardFooter className='flex gap-2'>
-            {
-              isEditable  
-                    ? (
-                      <>
-                            <Button variant="ghost" color='danger' onPress={handleCancel}>
-                                Cancelar Edición
-                            </Button>
-                            <Button 
-                              variant="ghost" 
-                              color='success'
-                              type='submit'
-                              name='_action'
-                              value='update'
-                              isLoading={fetcher.state !== 'idle'}
-                              isDisabled={fetcher.state !== 'idle'}
-                            >
-                                Editar
-                            </Button>
-                        </>
-                    )
-                    : (
-                      <Button 
-                        variant="ghost" 
-                        color='primary'
-                        onPress={handleEnableEdit}
-                       >
-                            Habilitar Edición
-                        </Button>
-                    )
-                  }
-          </CardFooter>
+          <Permission permission={permission}>
+            <CardFooter className='flex gap-2'>
+              {
+                isEditable  
+                      ? (
+                        <>
+                              <Button variant="ghost" color='danger' onPress={handleCancel}>
+                                  Cancelar Edición
+                              </Button>
+                              <Button 
+                                variant="ghost" 
+                                color='success'
+                                type='submit'
+                                name='_action'
+                                value='update'
+                                isLoading={fetcher.state !== 'idle'}
+                                isDisabled={fetcher.state !== 'idle'}
+                              >
+                                  Editar
+                              </Button>
+                          </>
+                      )
+                      : (
+                        <Button 
+                          variant="ghost" 
+                          color='primary'
+                          onPress={handleEnableEdit}
+                        >
+                              Habilitar Edición
+                          </Button>
+                      )
+                    }
+            </CardFooter>
+          </Permission>
         </Card>
       </fetcher.Form>
   )

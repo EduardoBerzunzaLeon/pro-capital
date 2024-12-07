@@ -187,7 +187,9 @@ export default function ClientsPage() {
     ]}>
       <ExportDropdown />
     </MultiplePermissions>
-    <ButtonSetEstatus />
+    <Permission permission={permissions.utils.permissions.generate_overdue}>
+      <ButtonSetEstatus />
+    </Permission>
     <div className='w-full flex gap-2 mt-5 mb-3 flex-wrap justify-between items-center'>
       <InputFilter 
         param="client" 

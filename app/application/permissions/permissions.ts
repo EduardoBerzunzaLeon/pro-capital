@@ -83,6 +83,7 @@ export const permissions = {
             add: 'pays[add]',
             view_detail: 'pays[view-detail]',
             delete: 'pays[delete]',
+            add_no_payment: 'pays[add-no-payment]'
         }
     },
     payments: {
@@ -119,6 +120,7 @@ export const permissions = {
         module: 'usuarios',
         permissions: {
             report: 'users[report]',
+            active: 'users[active]',
             view: 'users[view]',
             add: 'users[add]',
             update: 'users[update]',
@@ -130,7 +132,8 @@ export const permissions = {
         module: 'roles', 
         permissions: {
             update: 'roles[update]',
-            view: 'roles[view]'
+            view: 'roles[view]',
+            view_detail: 'roles[view-detail]'
         }
     },
     region: {

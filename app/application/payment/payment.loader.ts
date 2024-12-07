@@ -2,6 +2,7 @@ import { json, LoaderFunction } from "@remix-run/node";
 import { Generic } from "~/.server/interfaces";
 import { getEmptyPagination, handlerPaginationParams, handlerSuccess, parseArray, parseNumber, parseRangeDate, parseRangeInt } from "~/.server/reponses";
 import { Service } from "~/.server/services";
+import { permissions } from "../permissions";
 
 const columnsFilter = [
     'credit.client.fullname', 'credit.aval.fullname', 'credit.folder.name',
@@ -28,6 +29,9 @@ const columnsFilter = [
 
   export const paymentLoader: LoaderFunction = async ({ request }) => {
 
+    await Service.auth.requirePermission(request, permissions.payments.permissions.view);
+
+    // TODO: MAKE THIS PARAMS METHOD
     const url = new URL(request.url);
 
     const curp = url.searchParams.get('curp') || '';

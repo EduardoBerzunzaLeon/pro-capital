@@ -1,7 +1,8 @@
-import { useFetcherAction } from "~/application";
+import { permissions, useFetcherAction } from "~/application";
 import { Action } from "../Action/Action";
 import { ButtonAddPayment } from "../pay/ButtonAddPayment";
 import { useNavigate } from "@remix-run/react";
+import { Permission } from "../auth/Permission";
 
 interface Props {
     paymentId: number,
@@ -36,10 +37,12 @@ export function PaymentAction({
         <div className='flex gap-1'>
                 {
                     (currentDebt > 0) && (
-                        <ButtonAddPayment 
-                            creditId={creditId}
-                            onPress={onOpenCreate}
-                        />
+                        <Permission permission={permissions.payments.permissions.add}>
+                            <ButtonAddPayment 
+                                creditId={creditId}
+                                onPress={onOpenCreate}
+                            />
+                        </Permission>
                     )
                 }
                 <Action 
@@ -48,6 +51,9 @@ export function PaymentAction({
                     onDelete={handleDelete}
                     onView={handleView}
                     isLoading={isDeleting}
+                    permissionView={permissions.credits.permissions.view_detail}
+                    permissionDelete={permissions.credits.permissions.delete}
+                    permissionUpdate={permissions.credits.permissions.update}
                 />
         </div>
         // </ButtonGroup>

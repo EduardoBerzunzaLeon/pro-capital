@@ -3,8 +3,11 @@ import { ServerError } from "~/.server/errors";
 import { handlerError, handlerSuccess } from "~/.server/reponses";
 import { Service } from "~/.server/services";
 import { Params } from '../params/index';
+import { permissions } from "../permissions";
 
   export const paymentClientLoader: LoaderFunction = async ({ request, params }) => {
+
+    await Service.auth.requirePermission(request, permissions.payments.permissions.view);
 
     const { 
       params: customParams, 

@@ -1,4 +1,5 @@
 // import { useFetcherAction } from "~/application";
+import { permissions } from "~/application";
 import { Action } from "../Action/Action";
 import { useNavigate } from "@remix-run/react";
 
@@ -9,12 +10,6 @@ interface Props {
 export function UserAction({ userId }: Props)  {
 
     const navigate = useNavigate();
-    // const { handleDelete, isDeleting } = useFetcherAction({ 
-    //     key: 'getUser', 
-    //     route: 'users', 
-    //     id: userId
-    //  });
-
 
     const handleView = () => {
         navigate(`/users/${userId}`);
@@ -29,8 +24,8 @@ export function UserAction({ userId }: Props)  {
             ariaLabel="user actions"
             onView={handleView}
             onUpdate={handleUpdate}
-            // onDelete={handleDelete}
-            // isLoading={isDeleting}
+            permissionUpdate={permissions.users.permissions.update}
+            permissionView={permissions.users.permissions.view}
         />
     )
 }

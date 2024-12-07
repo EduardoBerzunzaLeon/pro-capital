@@ -10,12 +10,14 @@ import { Service } from "~/.server/services";
 import { AgentRouteAction, InputFilter, Pagination, RangePickerDateFilter, RowPerPage, TableDetail } from "~/components/ui";
 import { SelectRoutes } from "~/components/ui/route/SelectRoutes";
 import { MdEditCalendar } from "react-icons/md";
-import { useParamsPaginator, useParamsSelect } from '~/application';
+import { permissions, useParamsPaginator, useParamsSelect } from '~/application';
 import { Params } from '../../../application/params/';
+import { Permission } from "~/components/ui/auth/Permission";
 
 
 export const loader: LoaderFunction = async ({ request }) => {
-  
+
+  await Service.auth.requirePermission(request, permissions.agents.permissions.view);
   const { params, search } = Params.agent.getParams(request);
 
   try {
@@ -90,7 +92,7 @@ export default function  AgentsPage()  {
 
   const renderCell = useCallback((agent: AgentRoute, columnKey: Key) => {
       if(columnKey === 'actions') {
-        return (<AgentRouteAction idAgentRoute={agent.id} />)
+        return (<Permission permission={permissions.agents.permissions.delete}><AgentRouteAction idAgentRoute={agent.id} /></Permission>)
       } 
 
       if(columnKey === 'assignAt') {
@@ -121,7 +123,9 @@ export default function  AgentsPage()  {
 
   return (
     <>
-    { outlet }
+    <Permission permission={permissions.agents.permissions.delete}>
+      { outlet }
+    </Permission>
     <div className='w-full flex gap-2 mt-5 mb-3 flex-wrap justify-between items-center'>
       <SelectRoutes 
         onSelectionChange={handleSelection}
@@ -158,15 +162,17 @@ export default function  AgentsPage()  {
         }
         topContent={
           <div className="flex justify-between items-center">
-            <Button
-              href={`/agents/edit?${searchParams.toString()}`}
-              as={Link}
-              endContent={<MdEditCalendar />}
-              variant="ghost"
-              color="secondary"
-            >
-              Asignar Ruta
-            </Button>
+            <Permission permission={permissions.agents.permissions.add}>
+              <Button
+                href={`/agents/edit?${searchParams.toString()}`}
+                as={Link}
+                endContent={<MdEditCalendar />}
+                variant="ghost"
+                color="secondary"
+              >
+                Asignar Ruta
+              </Button>
+            </Permission>
             <span className="text-default-400 text-small">
               Total {loader?.serverData.total || 0} Agentes - Rutas
             </span>

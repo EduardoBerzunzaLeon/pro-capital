@@ -1,10 +1,13 @@
 import { json, LoaderFunction } from "@remix-run/node";
-import { handlerError, handlerErrorWithToast, parseRangeDate } from "~/.server/reponses";
+import { handlerError, parseRangeDate } from "~/.server/reponses";
 import { Service } from "~/.server/services";
 import { flashSession } from "~/.server/utils/sessions";
+import { permissions } from "~/application";
 
 
 export const loader: LoaderFunction =  async ({ request }) => {
+
+    await Service.auth.requirePermission(request, permissions.credits.permissions.statistics);
     const url = new URL(request.url);
 
     const start = url.searchParams.get('start') || '';
@@ -23,11 +26,11 @@ export const loader: LoaderFunction =  async ({ request }) => {
         return await Service.credit.findOverdueCredits(rangeDate, folderId, folderName);
     } catch (e) {
         const { error, status } = handlerError(e);
+        // TODO: DO THIS IN GENERIC METHOD 
         const session = await flashSession.getSession(request.headers.get('Cookie'));
         const headers = new Headers();
         headers.append('Set-Cookie', await flashSession.commitSession(session));
         return json({ error, status }, { headers });
-        return handlerErrorWithToast(error, { rangeDate, folderName, folderId });
     }
 
 

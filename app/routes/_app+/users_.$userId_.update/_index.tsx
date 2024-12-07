@@ -3,7 +3,9 @@ import {  useLoaderData } from "@remix-run/react";
 import { redirectWithWarning } from "remix-toast";
 import { handlerError, handlerErrorWithToast, handlerSuccess, handlerSuccessWithToast } from "~/.server/reponses";
 import { Service } from "~/.server/services";
+import { permissions } from "~/application";
 import { AvatarForm, PasswordForm, RoleForm, UserEditForm } from "~/components/ui";
+import { Permission } from "~/components/ui/auth/Permission";
 
 export const loader: LoaderFunction = async ({ params }) => {
     const { userId } = params;
@@ -24,16 +26,20 @@ export const action: ActionFunction = async ({ params, request }) => {
     try {
         
         if(data._action === 'updatePersonalData') {
+            await Service.auth.requirePermission(request, permissions.users.permissions.update);
             await Service.user.updatePersonalData(id, formData);
             return handlerSuccessWithToast("update", "Los datos personales");
         }
         
         if(data._action === 'updateRole' ){
+            await Service.auth.requirePermission(request, permissions.users.permissions.update_security);
             await Service.user.updateRole(id, formData);
             return handlerSuccessWithToast("update", "El role");
         }
         
         if(data._action === 'updatePassword' ){
+            // TODO: when is my profile  not is necesary this validation;
+            await Service.auth.requirePermission(request, permissions.users.permissions.update_security);
             await Service.user.updatePassword(id, formData);
             return handlerSuccessWithToast("update", "La contraseña");
         }
@@ -43,24 +49,30 @@ export const action: ActionFunction = async ({ params, request }) => {
     } catch (error) {
         return handlerErrorWithToast(error, data);
     }
-
 }
-
 
 export default function UserEditPage() {
     const user = useLoaderData<typeof loader>();
 
     return (<div className='w-full flex flex-wrap gap-2 items-start'>
-        <UserEditForm 
-            { ...user.serverData }
-        />    
-        <PasswordForm 
-            id={user.serverData.id}
-        />
-        <RoleForm 
-            role={user.serverData.role.id}
-            id={user.serverData.id}
-        />
-        <AvatarForm id={user.serverData.id}/>
+        <Permission permission={permissions.users.permissions.update}>
+            <UserEditForm 
+                { ...user.serverData }
+            />    
+        </Permission>
+        <Permission permission={permissions.users.permissions.update_security}>
+            <PasswordForm 
+                id={user.serverData.id}
+            />
+        </Permission>
+        <Permission permission={permissions.users.permissions.update_security}>
+            <RoleForm 
+                role={user.serverData.role.id}
+                id={user.serverData.id}
+            />
+        </Permission>
+        <Permission permission={permissions.users.permissions.update}>
+            <AvatarForm id={user.serverData.id}/>
+        </Permission>
     </div>)
 }

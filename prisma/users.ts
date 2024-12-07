@@ -404,11 +404,11 @@ export const permissions: PremissionsI[] = [
         roles: capture
     },
     {
-        servername: info.pays.name+'[view-detail]',
-        name: 'ver crédito para pagos',
-        description: 'permite ver el detalle del crédito para pagos',
+        servername: info.pays.name+'[add-no-payment]',
+        name: 'agregar no pago rápido',
+        description: 'permite agregar un no pago rápido',
         module: info.pays.module,
-        roles: allRoles
+        roles: capture
     },
     {
         servername: info.pays.name+'[delete]',
@@ -592,6 +592,13 @@ export const permissions: PremissionsI[] = [
     },
     {
         servername: info.roles.name+'[view]',
+        name: 'ver roles',
+        description: 'permite ver los roles',
+        module: info.roles.module,
+        roles: admins
+    },
+    {
+        servername: info.roles.name+'[view-detail]',
         name: 'ver permisos',
         description: 'permite ver los roles y los permisos asignados a estos',
         module: info.roles.module,

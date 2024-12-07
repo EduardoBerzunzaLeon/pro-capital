@@ -1,15 +1,14 @@
 import { Select, SelectItem, useDisclosure } from "@nextui-org/react";
-import { useLoaderData, useOutletContext, useRouteError, useSearchParams } from "@remix-run/react";
+import { useLoaderData, useOutletContext, useSearchParams } from "@remix-run/react";
 import { useState, useMemo, useCallback } from "react";
 import { Payment } from "~/.server/domain/entity";
-import { Key, SortDirection, Selection, Generic } from "~/.server/interfaces";
+import { Key, SortDirection, Selection } from "~/.server/interfaces";
 import { HandlerSuccess } from "~/.server/reponses";
 import { useParamsPaginator, useRenderCell } from "~/application";
-import { PaymentAction, ChipStatusCredit, ChipStatusPayment, ModalPaymentEdit, TableDetail, Pagination, RowPerPage, SelectFolder, Alert } from "~/components/ui";
+import { PaymentAction, ChipStatusCredit, ChipStatusPayment, ModalPaymentEdit, TableDetail, Pagination, RowPerPage, SelectFolder, Alert, ErrorBoundary } from "~/components/ui";
 import { ModalPay } from "~/components/ui/pay";
 import { SelectGroup } from '../../../../components/ui/payment/SelectGroup';
 import { paymentClientLoader } from "~/application/payment/payment.client.loader";
-import { ErrorCard } from "~/components/utils/ErrorCard";
 
 export {
   paymentClientLoader as loader
@@ -80,14 +79,7 @@ interface OutletContextProps {
   group: number,
 }
 
-export function ErrorBoundary() {
-  const error = useRouteError();
-
-  return (<ErrorCard 
-      error={(error as Generic)?.data ?? 'Ocurrio un error inesperado'}
-      description='Ocurrio un error al momento de traer los datos, favor de verificar la ruta'
-  />)
-}
+export { ErrorBoundary };
 
 export default function ClientPaymentsPage() {
 

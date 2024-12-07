@@ -2,6 +2,7 @@ import { ActionFunction } from "@remix-run/node";
 import { redirectWithWarning } from "remix-toast";
 import { handlerErrorWithToast, handlerSuccessWithToast } from "~/.server/reponses";
 import { Service } from "~/.server/services";
+import { permissions } from '~/application';
 
 
 export const action: ActionFunction = async ({ params, request }) => {
@@ -13,7 +14,7 @@ export const action: ActionFunction = async ({ params, request }) => {
     try {
         
         if(data._action === 'update') {
-
+            await Service.auth.requirePermission(request, permissions.credits.permissions.update_client);
             await Service.client.updateById(id, formData);
             return handlerSuccessWithToast('update', 'del cliente');
 

@@ -7,10 +7,11 @@ import { Autocomplete } from "~/.server/interfaces";
 import { InputValidation } from "../forms/Input";
 import { useEffect, useState} from "react";
 import { useFetcher } from "@remix-run/react";
-import { useCalculateDebt } from "~/application";
+import { permissions, useCalculateDebt } from "~/application";
 import { TextareaValidation } from "../forms/Textarea";
 import { ChipStatusCredit } from "./ChipStatusCredit";
 import { parseDate } from "@internationalized/date";
+import { Permission } from "../auth/Permission";
 
 interface Props {
     id: number,
@@ -240,38 +241,40 @@ export const CreditFormEdit = ({
           }
           
         </CardBody>
-        <CardFooter>
-        {
-              isEditable  
-              ? (
-                <>
-                      <Button variant="ghost" color='danger' onPress={handleCancel}>
-                          Cancelar Edición
-                      </Button>
-                      <Button 
-                        variant="ghost" 
-                        color='success'
-                        type='submit'
-                        name='_action'
-                        value='update'
-                        isLoading={fetcher.state !== 'idle'}
-                        isDisabled={fetcher.state !== 'idle'}
-                      >
-                          Editar
-                      </Button>
-                  </>
-              )
-              : (
-                <Button 
-                  variant="ghost" 
-                  color='primary'
-                  onPress={handleEnableEdit}
-                  >
-                      Habilitar Edición
-                  </Button>
-              )
-          }
-        </CardFooter>
+        <Permission permission={permissions.credits.permissions.update}>
+          <CardFooter>
+          {
+                isEditable  
+                ? (
+                  <>
+                        <Button variant="ghost" color='danger' onPress={handleCancel}>
+                            Cancelar Edición
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          color='success'
+                          type='submit'
+                          name='_action'
+                          value='update'
+                          isLoading={fetcher.state !== 'idle'}
+                          isDisabled={fetcher.state !== 'idle'}
+                        >
+                            Editar
+                        </Button>
+                    </>
+                )
+                : (
+                  <Button 
+                    variant="ghost" 
+                    color='primary'
+                    onPress={handleEnableEdit}
+                    >
+                        Habilitar Edición
+                    </Button>
+                )
+            }
+          </CardFooter>
+        </Permission>
     </Card>
     </fetcherSubmit.Form>
   )

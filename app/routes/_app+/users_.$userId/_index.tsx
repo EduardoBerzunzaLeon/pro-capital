@@ -4,6 +4,7 @@ import { useLoaderData } from "@remix-run/react";
 import { redirectWithWarning } from "remix-toast";
 import { handlerError, handlerErrorWithToast, handlerSuccess } from "~/.server/reponses";
 import { Service } from "~/.server/services";
+import { permissions } from "~/application";
 import { ChipStatus } from "~/components/ui";
 
 export const loader: LoaderFunction = async ({ params }) => {
@@ -25,6 +26,7 @@ export const action: ActionFunction = async ({ params, request }) => {
     try {
         
         if(data._action === 'updateIsActive') {
+            await Service.auth.requirePermission(request, permissions.users.permissions.active);
             const isActive = data?.isActive === 'true';
             return await Service.user.updateIsActive(id, isActive);
         }

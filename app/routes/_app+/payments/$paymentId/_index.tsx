@@ -2,6 +2,7 @@ import { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { redirectWithWarning } from "remix-toast";
 import { handlerSuccessWithToast, handlerErrorWithToast, handlerSuccess, handlerError } from "~/.server/reponses";
 import { Service } from "~/.server/services";
+import { permissions } from "~/application";
 
 export const loader: LoaderFunction = async ({ params }) => {
     const { paymentId } = params;
@@ -21,12 +22,14 @@ export const action: ActionFunction = async({ params, request }) => {
     try {
         
       if(data._action === 'update') {
+        await Service.auth.requirePermission(request, permissions.payments.permissions.update);
         formData.append('agentId', data['agent[id]'] ?? '');
         await Service.payment.updateOne(formData, id);
         return handlerSuccessWithToast('update', 'del pago');
       }
   
       if(data._action === 'delete') {
+        await Service.auth.requirePermission(request, permissions.payments.permissions.delete);
         await Service.payment.deleteOne(id);
         return handlerSuccessWithToast('delete', 'del pago');
       }
