@@ -9,9 +9,9 @@ import { permissions } from "~/application";
 
 export const loader: LoaderFunction = async ({ request }) => {  
   await Service.auth.requirePermission(request, permissions.folder.permissions.view);
-  
   try {
     const { params } = Params.folder.getParams(request);
+    console.log({ paramsFindAll: params.search });
     const data = await Service.folder.findAll(params);
     return handlerSuccess(200, data);
   } catch (error) {

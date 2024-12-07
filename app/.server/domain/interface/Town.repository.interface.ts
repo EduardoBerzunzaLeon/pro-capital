@@ -23,6 +23,7 @@ export interface TownRepositoryI {
     findOne: (id: number) => Promise<Generic | undefined>,
     findIfExists: (name: string) => Promise<Generic | undefined>,
     findIfHasFolders: (id: number) => Promise<Generic | undefined>,
+    findByReport: (paginationData: PaginationWithFilters) => Promise<Generic | undefined>,
     updateOne: (id: number, data: UpdateTownProps) => Promise<Generic | undefined>,
     deleteOne: (id: number) => Promise<Generic | undefined>
     createOne: (name: string, municipalityId: number) => Promise<Generic | undefined>,

@@ -24,6 +24,20 @@ export function TownRepository(base: BaseTownI): TownRepositoryI {
             }
         })
     }
+    
+    async function findByReport(paginationData: PaginationWithFilters) {
+        return await base.findManyByReportExcel({
+            paginatonWithFilter: paginationData,
+            select: {
+                name: true,
+                municipality: {
+                    select: {
+                        name: true,
+                    }
+                }
+            }
+        })
+    }
 
     async function findOne(id: number) {
         return await base.findOne({ id }, {
@@ -75,6 +89,7 @@ export function TownRepository(base: BaseTownI): TownRepositoryI {
         createOne,
         findIfHasFolders,
         findIfExists,
+        findByReport,
         findAutocomplete,
         base
     }

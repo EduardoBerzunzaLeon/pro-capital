@@ -17,6 +17,7 @@ import utilsService from "./utils.service";
 import validationService from "./validation.service";
 import permissionService from "./permission.service";
 import groupService from "./group.service";
+import excelReportService from "./excelReport.service";
 
 
 
@@ -41,6 +42,7 @@ function buildService() {
         role: { ...roleService },
         permission: { ...permissionService },
         group: { ...groupService },       
+        excel: { ...excelReportService }
     }
 }
 

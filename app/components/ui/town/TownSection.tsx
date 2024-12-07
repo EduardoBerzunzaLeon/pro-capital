@@ -10,6 +10,7 @@ import { ModalTownEdit } from "./ModalTownEdit";
 import { useFetcherPaginator, permissions } from '~/application';
 import { MultiplePermissions } from '../auth/MultiplePermissions';
 import { Permission } from "../auth/Permission";
+import { ExcelReport } from "../excelReports/ExcelReport";
 
 type Column = 'name' | 'id';
 
@@ -19,6 +20,12 @@ const columns = [
   { key: 'municipality', label: 'MUNICIPIO', sortable: true },
   { key: 'actions', label: 'ACCIONES'},
 ]
+
+const columnsExcel = [
+    'LOCALIDAD',
+    'MUNICIPIO',
+]
+
 
 export function TownSection() {
     
@@ -34,7 +41,8 @@ export function TownSection() {
         loadingState,
         handlePagination,
         handleRowPerPage,
-        onSubmit
+        onSubmit,
+        url
     } = useFetcherPaginator<Town>({key: 'town', route: 'town'});
 
     useEffect(() => {
@@ -83,6 +91,9 @@ export function TownSection() {
     return (
         <div className='w-full'>
         <div className='w-full flex gap-2 mt-5 mb-3 flex-wrap justify-between'>
+        <Permission permission={permissions.folder.permissions.report}>
+            <ExcelReport url={url} name='carpetas' columns={columnsExcel} />
+        </Permission>
         <Input
             isClearable
             className="w-full sm:max-w-[44%]"

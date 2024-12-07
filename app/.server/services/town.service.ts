@@ -6,6 +6,7 @@ import { Town } from "../domain/entity";
 import { Service } from ".";
 import { PaginationWithFilters } from "../domain/interface";
 import { validationZod } from "./validation.service";
+import { TownProps } from "./excelReport.service";
 
 interface UpdateTownI {
     name: string,
@@ -23,6 +24,12 @@ export const findAll = async (props: PaginationWithFilters) => {
     });
     
 }
+
+export const exportData = async (props:PaginationWithFilters) => {
+    const data = await Repository.town.findByReport(props);
+    return Service.excel.townReport(data as TownProps[]);
+}
+
 
 export const findOne = async (id: RequestId) => {
     const { id: townId } = validationZod({ id }, idSchema);
@@ -101,4 +108,5 @@ export default {
     deleteOne,
     updateOne,
     createOne,
+    exportData,
 }

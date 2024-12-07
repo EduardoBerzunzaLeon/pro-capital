@@ -15,6 +15,14 @@ import { MultiplePermissions } from "../auth/MultiplePermissions";
 
 export type Key = string | number;
 
+const columnsExcel = [
+    'NOMBRE',
+    'LOCALIDAD',
+    'MUNICIPIO',
+    'RUTA',
+    'LIDER',
+    'GRUPO'
+]
 
 const columns = [
   { key: 'id', label: 'ID' },
@@ -46,6 +54,7 @@ export function FolderSection() {
         url
     } = useFetcherPaginator<Folder>({ key: 'folder', route: 'folder' });
 
+    console.log({ url });
 
   useEffect(() => {
       const data = [
@@ -92,7 +101,7 @@ return (
         <div>
             <div className='w-full flex gap-2 mt-5 mb-3 flex-wrap justify-between'>
                 <Permission permission={permissions.folder.permissions.report}>
-                    <ExcelReport url={url} name='carpetas' />
+                    <ExcelReport url={url} name='carpetas' columns={columnsExcel} />
                 </Permission>
                 <Input
                     className="w-full sm:max-w-[30%]"

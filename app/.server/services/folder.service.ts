@@ -7,6 +7,7 @@ import { ServerError } from "../errors";
 import { db } from "../adapter";
 import { Service } from ".";
 import { PaginationWithFilters } from "../domain/interface";
+import { FolderProps } from "./excelReport.service";
 
 export const findAll = async (props: PaginationWithFilters) => {
 
@@ -21,7 +22,9 @@ export const findAll = async (props: PaginationWithFilters) => {
 }
 
 export const exportData = async (props:PaginationWithFilters) => {
-    return await Repository.folder.findByReport(props);
+    const data = await Repository.folder.findByReport(props);
+    
+    return Service.excel.folderReport(data as FolderProps[]);
 }
 
 export const findAutocomplete = async (name: string) => {
