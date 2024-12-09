@@ -14,6 +14,7 @@ export type BasePermissionI = BaseRepositoryI<
 
 export interface PermissionRepositoryI{
     findAll: (paginationData: PaginationWithFilters) => Promise<ResponseWithMetadata>,
+    findByReport: (paginationData: PaginationWithFilters) => Promise<Generic[] | undefined>,
     unassignRole: (roleId: number, permissionId: number) => Promise<Generic | undefined>,
     assignRole: (roleId: number, permissionId: number) => Promise<Generic | undefined>,
     base: BasePermissionI

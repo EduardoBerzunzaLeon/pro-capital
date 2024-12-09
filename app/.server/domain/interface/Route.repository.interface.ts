@@ -16,6 +16,7 @@ export type BaseRouteI = BaseRepositoryI<
 export interface RouteRepositoryI{
     findLastRoute: () => Promise<number>,
     findAll: (paginationData: PaginationWithFilters ) => Promise<ResponseWithMetadata>,
+    findByReport: (paginationData: PaginationWithFilters ) => Promise<Generic[] | undefined>,
     findMany: () => Promise<Generic | undefined>,
     findIsActive: (id: number) => Promise<Generic | undefined>,
     findCountFolders: (id: number) => Promise<Generic | undefined>,

@@ -9,7 +9,7 @@ export const usePermission = ({ permission }: Props) =>  {
     const { user } = useRouteLoaderData('root') as { user: Omit<User, 'password'> };
 
     const hasPermission = useMemo(() =>  {
-       if(!user) {
+       if(!user || !user.permissions) {
          return false;
        }
  

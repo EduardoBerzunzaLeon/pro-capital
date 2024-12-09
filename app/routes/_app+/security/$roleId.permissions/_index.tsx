@@ -5,7 +5,7 @@ import { Permission } from "~/.server/domain/entity/permission.entity";
 import { Generic, Key } from "~/.server/interfaces";
 import { getEmptyPagination, handlerPaginationParams, handlerSuccess } from "~/.server/reponses";
 import { Service } from "~/.server/services";
-import { permissions, useParamsPaginator, useRenderCell } from "~/application";
+import { permissions as permissionsData, useParamsPaginator, useRenderCell } from "~/application";
 import { InputFilter, Pagination, PermissionToggleActive, RowPerPage, TableDetail } from "~/components/ui";
 import { Permission as PermissionUI } from "~/components/ui/auth/Permission";
 
@@ -14,7 +14,7 @@ const columnSortNames: Generic ={ role: 'role', module: 'module.name' };
 
 export const loader: LoaderFunction = async ({ request, params }) => {
     
-    await Service.auth.requirePermission(request, permissions.roles.permissions.view_detail);
+    await Service.auth.requirePermission(request, permissionsData.roles.permissions.view_detail);
     // TODO: implement params method generic
     const { roleId } = params;
     const url = new URL(request.url);
@@ -93,7 +93,7 @@ export default function PermissionDetailPage() {
 
         if(columnKey === 'actions') {
         return (
-            <PermissionUI permission={permissions.roles.permissions.update}>
+            <PermissionUI permission={permissionsData.roles.permissions.update}>
                 <PermissionToggleActive 
                     roleId={Number(roleId)} 
                     permissionId={permission.id} 

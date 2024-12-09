@@ -7,6 +7,7 @@ import { RequestId } from "../interfaces";
 import { validationZod } from "./validation.service";
 import { ServerError } from "../errors";
 import { activeSchema } from "~/schemas/genericSchema";
+import { RouteProps } from "./excelReport.service";
 
 
 export const findAll = async (props: PaginationWithFilters) => {
@@ -18,6 +19,12 @@ export const findAll = async (props: PaginationWithFilters) => {
         mapper: Route.mapper,
         errorMessage: 'No se encontraron rutas'
     });
+}
+
+
+export const exportData = async (props:PaginationWithFilters) => {
+    const data = await Repository.route.findByReport(props);
+    return Service.excel.routeReport(data as RouteProps[]);
 }
 
 export const findLastRoute = async () => {

@@ -26,6 +26,7 @@ export type BasePaymentDetailI = BaseRepositoryI<
 
 export interface PaymentRepositoryI {
     findAll: (paginationData: PaginationWithFilters ) => Promise<ResponseWithMetadata>,
+    findByReport: (paginationData: PaginationWithFilters ) => Promise<Generic[] | undefined>,
     findOne: (id: number) => Promise<Generic | undefined>,
     findByDate: (creditId: number, paymentDate: Date) => Promise<Generic | undefined>,
     findLastPayment: (creditId: number) => Promise<Generic | undefined>,

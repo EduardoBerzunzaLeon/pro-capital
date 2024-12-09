@@ -15,6 +15,7 @@ export type BaseAgentRouteI = BaseRepositoryI<
 
 export interface AgentRouteRepositoryI {
     findAll: (paginationData: PaginationWithFilters ) => Promise<ResponseWithMetadata>,
+    findByReport: (paginationData: PaginationWithFilters ) => Promise<Generic[] | undefined>,
     findAgents: (fullname: string,  assignAt: Date) => Promise<Generic[] | undefined>,
     findMany: (routeId: number, assignAt: Date) => Promise<Generic[] | undefined>,
     deleteOne: (id: number) => Promise<Generic | undefined>,

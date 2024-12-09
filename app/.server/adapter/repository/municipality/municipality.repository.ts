@@ -19,6 +19,16 @@ export function MunicipalityRepository(base: BaseMunicipalityI):  MunicipalityRe
         })
     }
 
+
+    async function findByReport(paginationData: PaginationWithFilters) {
+        return await base.findManyByReportExcel({
+            paginatonWithFilter: paginationData,
+            select: {
+                name: true
+            }
+        })
+    }
+
     async function findOne(id: number) {
         return await base.findOne({ id }, { id: true, name: true }, true);
     }
@@ -52,6 +62,7 @@ export function MunicipalityRepository(base: BaseMunicipalityI):  MunicipalityRe
 
     return { 
         findAll,
+        findByReport,
         findOne,
         findAutocomplete,
         findIfHasTowns,

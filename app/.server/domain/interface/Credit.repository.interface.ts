@@ -60,6 +60,7 @@ export interface CreditRepositoryI{
     deleteOne: (id: number) => Promise<Generic | undefined>
     exportLayout: (folderName: string, groupName: number) => Promise<Generic | undefined>,
     findAll: (paginationData: PaginationWithFilters ) => Promise<ResponseWithMetadata>,
+    findByReport: (paginationData: PaginationWithFilters ) => Promise<Generic[] | undefined>,
     findByCurp: (curp: string) => Promise<Generic | undefined>,
     findByPreviousCreditId: (id: number) => Promise<Generic | undefined>,
     findByRenovate: (id: number, curp: string) => Promise<Generic | undefined>,

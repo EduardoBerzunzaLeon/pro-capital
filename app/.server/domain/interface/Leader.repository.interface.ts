@@ -37,6 +37,7 @@ export type BaseLeaderI = BaseRepositoryI<
 
 export interface LeaderRepositoryI{
     findAll: (paginationData: PaginationWithFilters ) => Promise<ResponseWithMetadata>,
+    findByReport: (paginationData: PaginationWithFilters ) => Promise<Generic[] | undefined>,
     base: BaseLeaderI
     findOne: (id: number) => Promise<Generic | undefined>,
     createOne: (props: CreateLeaderProps) => Promise<Generic | undefined>,
@@ -47,5 +48,5 @@ export interface LeaderRepositoryI{
     deleteOne: (id: number) => Promise<Generic | undefined>,
     updateOne: (id: number, props: UpdateLeaderProps) => Promise<Generic | undefined>,
     unsubscribe: (id: number, date: Date, reason?: string) => Promise<Generic | undefined>,
-    resubscribe: <T>(id: number, folderId: number) => Promise<T>,
+    resubscribe: (id: number, folderId: number) => Promise<Generic | undefined>,
 }

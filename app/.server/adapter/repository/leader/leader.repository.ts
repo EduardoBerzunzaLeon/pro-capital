@@ -25,6 +25,25 @@ export function LeaderRepository(base: BaseLeaderI): LeaderRepositoryI {
         })
     }
 
+    async function findByReport(paginationData: PaginationWithFilters) {
+        return await base.findManyByReportExcel({
+            paginatonWithFilter: paginationData,
+            select: {
+                fullname: true,
+                curp: true,
+                address: true,
+                anniversaryDate: true,
+                birthday: true,
+                folder: {
+                    select: {
+                        name: true,
+                    }
+                },
+                isActive: true
+            }
+        })
+    }
+
     async function findOne(id: number) {
         return await base.findOne(
             { id }, 
@@ -89,7 +108,9 @@ export function LeaderRepository(base: BaseLeaderI): LeaderRepositoryI {
     async function findAllBirthday(month: number, day: number): Promise<Generic[] | undefined> {
     
         return db
-          .$queryRaw`SELECT fullname, address, folderId FROM "Leader" WHERE EXTRACT(MONTH FROM "birthday") = ${month} AND EXTRACT(DAY FROM "birthday") = ${day} AND "isActive" = true`;
+          .$queryRaw`SELECT fullname, address, folderId FROM "Leader" 
+            WHERE EXTRACT(MONTH FROM "birthday") = ${month} AND EXTRACT(DAY FROM "birthday") = ${day} 
+            AND "isActive" = true`;
     }
 
     async function unsubscribe(id: number, date: Date, reason?: string) {
@@ -104,23 +125,16 @@ export function LeaderRepository(base: BaseLeaderI): LeaderRepositoryI {
     }
 
     async function resubscribe(id: number, folderId: number) {        
-        // const data =  await base.updateOne({ id }, {
-        //     folderId,
-        //     isActive: true,
-        //     unsubscribeReason: ''
-        // });
-
-        const test = await base.entity.update({ where: { id }, data: {
+        return await base.updateOne({ id }, {
             folderId,
             isActive: true,
             unsubscribeReason: ''
-        }});
-
-        return test;
+        });
     }
     
     return  {
         findAll,
+        findByReport,
         findOne,
         createOne,
         findIfHasFolder,

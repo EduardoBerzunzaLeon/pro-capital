@@ -24,6 +24,25 @@ export function UserRepository(base: BaseUserI) : UserRepositoryI {
         })
     }
 
+    async function findByReport(paginationData: PaginationWithFilters) {
+        return await base.findManyByReportExcel({
+            paginatonWithFilter: paginationData,
+            select: {
+                username: true,
+                fullName: true,
+                email: true,
+                isActive: true,
+                role: {
+                    select: {
+                        role: true
+                    }
+                },
+                address: true,
+                sex: true,
+            }
+        })
+    }
+
     async function findOne(id: number) {
         return await base.findOne({ id }, { 
             id: true,
@@ -86,6 +105,7 @@ export function UserRepository(base: BaseUserI) : UserRepositoryI {
 
     return {
         findAll,
+        findByReport,
         findAutocomplete,
         findOne,
         findRole,

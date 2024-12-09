@@ -72,6 +72,71 @@ export function PaymentRepository(base: BasePaymentDetailI): PaymentRepositoryI 
         })
     }
 
+
+    async function findByReport(paginationData: PaginationWithFilters) {
+        return await base.findManyByReportExcel({
+            paginatonWithFilter: paginationData,
+            select: {
+                agent: {
+                    select: {
+                        fullName: true,
+                    }
+                },
+                paymentAmount: true,
+                paymentDate: true,
+                captureAt: true,
+                folio: true,
+                notes: true,
+                status: true,
+                credit: {
+                    select: {
+                        currentDebt: true,
+                        nextPayment: true,
+                        lastPayment: true,
+                        status: true,
+                        client: {
+                            select: {
+                                fullname: true,
+                                curp: true
+                            }
+                        },
+                        aval: {
+                            select: {
+                                fullname: true,
+                                curp: true
+                            }
+                        },
+                        group: {
+                            select: {
+                                name: true
+                            }
+                        },
+                        folder: {
+                            select: {
+                                name: true,
+                                town: {
+                                    select: {
+                                        name: true,
+                                        municipality: {
+                                            select: {
+                                                name: true
+                                            }
+                                        }
+                                    }
+                                },
+                                route: {
+                                    select: {
+                                        name: true
+                                    }
+                                },
+                            }
+                        }
+                    }
+                }
+            }
+        })
+    }
+
     async function findByDate(creditId: number, paymentDate: Date) {
         return await base.findOne({ creditId, paymentDate }, { id: true });
     }
@@ -212,6 +277,7 @@ export function PaymentRepository(base: BasePaymentDetailI): PaymentRepositoryI 
         findTotalPayment,
         findByRangeDates,
         findAllPaymentsByFolders,
+        findByReport,
         base
     }
 

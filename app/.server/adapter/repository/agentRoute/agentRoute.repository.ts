@@ -30,6 +30,26 @@ export function AgentRouteRepository(base: BaseAgentRouteI): AgentRouteRepositor
         })
     }
 
+    async function findByReport(paginationData: PaginationWithFilters) {
+        return await base.findManyByReportExcel({
+            paginatonWithFilter: paginationData,
+            select: {
+                assignAt: true,
+                user: {
+                    select: { 
+                        fullName: true
+                    }
+                },
+                route: {
+                    select: {
+                        name: true
+                    }
+                }
+            }
+        })
+    }
+
+
     async function deleteOne(id: number) {
         return await base.deleteOne({ id });
     }
@@ -61,7 +81,7 @@ export function AgentRouteRepository(base: BaseAgentRouteI): AgentRouteRepositor
             where: {
                 role: {
                     role: {
-                        in: ['ADMIN', 'AGENT']
+                        in: ['ADMIN', 'ASESOR', 'SUPERVISOR']
                     }
                 },
                 fullName: {
@@ -119,6 +139,7 @@ export function AgentRouteRepository(base: BaseAgentRouteI): AgentRouteRepositor
     return { 
         findAll,
         findAgents,
+        findByReport,
         findMany,
         deleteOne,
         deleteMany,

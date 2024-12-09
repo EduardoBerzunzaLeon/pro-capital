@@ -15,6 +15,16 @@ export function RouteRepository(base: BaseRouteI): RouteRepositoryI {
         })
     }
 
+    async function findByReport(paginationData: PaginationWithFilters) {
+        return await base.findManyByReportExcel({
+            paginatonWithFilter: paginationData,
+            select: {
+                name: true,
+                isActive: true,
+            }
+        });
+    }
+
     async function findLastRoute() {
         const data = await base.entity.aggregate({
             _max: { name: true }
@@ -70,6 +80,7 @@ export function RouteRepository(base: BaseRouteI): RouteRepositoryI {
         findLastRoute,
         findMany,
         findIsActive,
+        findByReport,
         updateIsActive,
         createOne,
         findCountFolders,

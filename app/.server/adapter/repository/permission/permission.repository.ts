@@ -25,6 +25,29 @@ export function PermissionRepository(base: BasePermissionI): PermissionRepositor
         })
     }
 
+    
+    async function findByReport(paginationData: PaginationWithFilters) {
+        return await base.findManyByReportExcel({
+            paginatonWithFilter: paginationData,
+            select: {
+                name: true,
+                description: true,
+                module:  {
+                    select: {
+                        name: true,
+                    }
+                },
+                roles: {
+                    select: {
+                        id: true,
+                        role: true
+                    }
+                }
+            }
+        })
+    }
+
+
     async function unassignRole(roleId: number, permissionId: number) {
         return await base.entity.update({
             where: {
@@ -53,6 +76,7 @@ export function PermissionRepository(base: BasePermissionI): PermissionRepositor
 
     return {
         findAll,
+        findByReport,
         unassignRole,
         assignRole,
         base

@@ -64,6 +64,65 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
         })
     }
 
+    async function findByReport(paginationData: PaginationWithFilters) {
+        return await base.findManyByReportExcel({
+            paginatonWithFilter: paginationData,
+            select: {
+                aval: {
+                    select: {
+                        fullname: true,
+                        address: true,
+                        reference: true,
+                        curp: true,
+                    }
+                },
+                client: {
+                    select: {
+                        fullname: true,
+                        address: true,
+                        reference: true,
+                        curp: true,
+                    }
+                },
+                group: {
+                    select: {
+                        name: true,
+                    }
+                },
+                folder: {
+                    select: {
+                        name: true,
+                        town: {
+                            select: {
+                                name: true,
+                                municipality: {
+                                    select: {
+                                        name: true
+                                    }
+                                }
+                            }
+                        },
+                        route: {
+                            select: {
+                                name: true
+                            }
+                        }
+                    }
+                },
+                amount: true,
+                paymentAmount: true,
+                captureAt: true,
+                creditAt: true,
+                countPayments: true,
+                canRenovate: true,
+                nextPayment: true,
+                lastPayment: true,
+                currentDebt: true,
+                status: true
+            }
+        })
+    }
+
     async function findByCurp(curp: string) {
         return await base.findOne({ client: {
             curp : {
@@ -542,6 +601,7 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
         deleteOne,
         exportLayout,
         findAll,
+        findByReport,
         findByCurp,
         findByPreviousCreditId,
         findByRenovate,

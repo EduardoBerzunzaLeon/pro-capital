@@ -32,6 +32,7 @@ export type BaseUserI = BaseRepositoryI<
 
 export interface UserRepositoryI {
     findAll: (paginationData: PaginationWithFilters) => Promise<ResponseWithMetadata>,
+    findByReport: (paginationData: PaginationWithFilters) => Promise<Generic[] | undefined>,
     findAutocomplete: (name: string) => Promise<Generic[] | undefined>,
     findOne: (id: number) => Promise<Generic | undefined>,
     findRole: (id: number) => Promise<Generic | undefined>,

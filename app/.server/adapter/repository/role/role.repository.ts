@@ -23,6 +23,16 @@ export function RoleRepository(base: BaseRoleI): RoleRepositoryI {
         })
     }
 
+    
+    async function findByReport(paginationData: PaginationWithFilters) {
+        return await base.findManyByReportExcel({
+            paginatonWithFilter: paginationData,
+            select: {
+                role: true
+            }
+        })
+    }
+
     async function findPermission(roleName: RoleTypes, permission: string) {
         return await base.findOne({
             role: roleName,
@@ -42,6 +52,7 @@ export function RoleRepository(base: BaseRoleI): RoleRepositoryI {
     return {
         findMany,
         findAll,
+        findByReport,
         findPermission,
         base
     }

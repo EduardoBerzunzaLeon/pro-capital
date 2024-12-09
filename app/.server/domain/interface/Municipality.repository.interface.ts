@@ -13,6 +13,7 @@ export type BaseMunicipalityI = BaseRepositoryI<
 
 export interface MunicipalityRepositoryI {
     findAll: (paginationData: PaginationWithFilters ) => Promise<ResponseWithMetadata>,
+    findByReport: (paginationData: PaginationWithFilters ) => Promise<Generic[] | undefined>,
     findAutocomplete: (name: string) => Promise<Generic[] | undefined>,
     findOne: (id: number) => Promise<Generic | undefined>,
     findIfExists: (name: string) => Promise<Generic | undefined>,
