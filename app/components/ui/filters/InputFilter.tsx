@@ -13,15 +13,15 @@ interface Props {
 }
 
 export const InputFilter = ({
-    param,  defaultValue, className, ...rest
+    param, className, ...rest
 }: Props) => {
-    const [ , setSearchParams] = useSearchParams();
+    const [params , setSearchParams] = useSearchParams();
 
     const handleChange  = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchParams(prev => {
             prev.set(param,event.currentTarget.value)
             return prev;
-        })
+        });
     }
 
     const handleClear = () => {
@@ -39,7 +39,7 @@ export const InputFilter = ({
         isClearable
         className={`${className || 'w-full md:max-w-[40%]'}`}
         labelPlacement="outside"
-        defaultValue={defaultValue || ''}
+        defaultValue={params.get(param) || ''}
         onChange={handleChange}
         onClear={handleClear}
         startContent={<FaSearch />}

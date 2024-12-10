@@ -1,5 +1,5 @@
 import { Button, Tooltip } from "@nextui-org/react";
-import { LuRefreshCcw } from "react-icons/lu";
+import { MdFilterAltOff } from "react-icons/md";
 
 interface Props {
     onClear: () => void
@@ -18,7 +18,7 @@ export const ButtonClear = ({ onClear }: Props) => {
             isIconOnly   
             onPress={onClear}
         >
-            <LuRefreshCcw />
+            <MdFilterAltOff />
         </Button>
     </Tooltip>
   )

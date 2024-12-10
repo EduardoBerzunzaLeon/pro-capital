@@ -1,5 +1,5 @@
-import { useCallback, useMemo, useState } from "react";
-import { Outlet, useLoaderData, useSearchParams } from "@remix-run/react"
+import { Fragment, useCallback, useMemo, useState } from "react";
+import { Outlet, useLoaderData, useLocation, useSearchParams } from "@remix-run/react"
 
 import { userLoader } from "~/application/user/user.loader";
 import { Key, Selection } from "~/.server/interfaces";
@@ -49,6 +49,7 @@ export default function  UsersPage()  {
     param: 'roles',
     mapper: (item: number) => String(item)
   });
+  const { key } = useLocation();
   
   const { defaultValue, handleValueChange } = useDropdown({
     param: 'sex',
@@ -135,47 +136,46 @@ export default function  UsersPage()  {
     <ButtonClear 
        onClear={handlerClear}
     />
-    <SelectRoles 
-      onSelectionChange={handleSelection}
-      selectionMode='multiple'
-      className='w-full md:max-w-[25%]'
-      defaultSelectedKeys={defaultItems}
-    />
-    <InputFilter 
-        param="email" 
-        name="email" 
-        label="Correo electronico" 
-        id="email"
-        className='w-full md:max-w-[30%]' 
-        placeholder="Correo electronico"      
-        defaultValue={loader?.serverData?.email}
-    />
-    <InputFilter 
-        param="username" 
-        name="username" 
-        label="Usuario" 
-        id="username"
-        className='w-full md:max-w-[30%]' 
-        placeholder="Nombre de usuario"      
-        defaultValue={loader?.serverData?.username}
-    />
-    <InputFilter 
-        param="fullName" 
-        name="username" 
-        label="Nombre" 
-        id="username"
-        className='w-full md:max-w-[30%]' 
-        placeholder="Nombre completo"      
-        defaultValue={loader?.serverData?.fullName}
-    />
-      <StatusFilter 
-        isActive={loader?.serverData?.isActive}
-        param='isActive'
+    <Fragment key={key}>
+      <SelectRoles 
+        onSelectionChange={handleSelection}
+        selectionMode='multiple'
+        className='w-full md:max-w-[25%]'
+        defaultSelectedKeys={defaultItems}
       />
-      <DropdownSex 
-        onSelectionChange={handleValueChange} 
-        defaultSelectedKeys={defaultValue}
+      <InputFilter 
+          param="email" 
+          name="email" 
+          label="Correo electronico" 
+          id="email"
+          className='w-full md:max-w-[30%]' 
+          placeholder="Correo electronico"      
       />
+      <InputFilter 
+          param="username" 
+          name="username" 
+          label="Usuario" 
+          id="username"
+          className='w-full md:max-w-[30%]' 
+          placeholder="Nombre de usuario"      
+      />
+      <InputFilter 
+          param="fullName" 
+          name="username" 
+          label="Nombre" 
+          id="username"
+          className='w-full md:max-w-[30%]' 
+          placeholder="Nombre completo"      
+      />
+        <StatusFilter 
+          isActive={loader?.serverData?.isActive}
+          param='isActive'
+        />
+        <DropdownSex 
+          onSelectionChange={handleValueChange} 
+          defaultSelectedKeys={defaultValue}
+        />
+    </Fragment>
     </div>
       <TableDetail 
         aria-label="credits table"
