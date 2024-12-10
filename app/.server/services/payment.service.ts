@@ -9,6 +9,7 @@ import { PaginationWithFilters } from "../domain/interface";
 import { Payment } from "../domain/entity";
 import dayjs from 'dayjs';
 import { noPaymentServerSchema } from '../../schemas/paymentSchema';
+import { PaymentProps } from "./excelReport.service";
 
 
 export const findAll = async (props: PaginationWithFilters) => {
@@ -20,6 +21,11 @@ export const findAll = async (props: PaginationWithFilters) => {
         mapper: Payment.mapper,
         errorMessage: 'No se encontraron pagos'
     });
+}
+
+export const exportData = async (props:PaginationWithFilters) => {
+    const data = await Repository.payment.findByReport(props);
+    return Service.excel.paymentReport(data as PaymentProps[]);
 }
 
 const validateAgent = (form: FormData ) => {
@@ -46,7 +52,7 @@ const validateDebt = (currentDebt: number, paymentAmount: number) => {
     }
 }
 
-export const createNoPayment = async (form: FormData, creditId?: RequestId) => {
+export const createNoPayment = async (userId: number, form: FormData, creditId?: RequestId) => {
     const { id } = validationZod({ id: creditId }, idSchema);
     const { 
         agentId, 
@@ -71,7 +77,8 @@ export const createNoPayment = async (form: FormData, creditId?: RequestId) => {
         folio,
         status: 'NO_PAGO',
         notes,
-        creditId: id
+        creditId: id,
+        createdById: userId
     });
 
     if(!paymentCreated) {
@@ -80,7 +87,7 @@ export const createNoPayment = async (form: FormData, creditId?: RequestId) => {
 
 }
 
-export const createOne =  async (form: FormData, creditId?: RequestId) => {
+export const createOne =  async (userId: number, form: FormData, creditId?: RequestId) => {
     const { id } = validationZod({ id: creditId }, idSchema);
     const { 
         agentId, 
@@ -112,7 +119,8 @@ export const createOne =  async (form: FormData, creditId?: RequestId) => {
         folio,
         status,
         notes,
-        creditId: id
+        creditId: id,
+        createdById: userId
     });
 
     if(!paymentCreated) {
@@ -281,5 +289,6 @@ export default {
     updateOne,
     findTotalPayment,
     findOne,
+    exportData,
     findLastPayment
 }

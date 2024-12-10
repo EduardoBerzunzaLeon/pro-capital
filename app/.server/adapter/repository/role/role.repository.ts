@@ -49,11 +49,16 @@ export function RoleRepository(base: BaseRoleI): RoleRepositoryI {
         )
     }
 
+    async function findById(id: number) {
+      return await base.findOne({ id },{ id: true, role: true });
+    }
+
     return {
         findMany,
         findAll,
         findByReport,
         findPermission,
+        findById,
         base
     }
 }

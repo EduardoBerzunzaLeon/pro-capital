@@ -21,7 +21,6 @@ export const findAll = async (props: PaginationWithFilters) => {
     });
 }
 
-
 export const exportData = async (props:PaginationWithFilters) => {
     const data = await Repository.route.findByReport(props);
     return Service.excel.routeReport(data as RouteProps[]);
@@ -55,9 +54,9 @@ export const updateIsActive = async(id: RequestId, isActiveRoute?: boolean) => {
     }
 }
 
-export const createOne = async () => {
+export const createOne = async (userId: number) => {
    const consecutive = await findLastRoute();
-   const routeCreated =  await Repository.route.createOne(consecutive);
+   const routeCreated =  await Repository.route.createOne(consecutive, userId);
    if(!routeCreated) {
     throw ServerError.internalServer(`No se pudo crear la ruta ${consecutive}`)
    }
@@ -79,10 +78,11 @@ export const deleteOne = async (id: RequestId) => {
 }
 
 export default {
+    createOne, 
+    deleteOne, 
+    exportData,
     findAll, 
     findLastRoute,
     findMany,
     updateIsActive, 
-    createOne, 
-    deleteOne, 
 }

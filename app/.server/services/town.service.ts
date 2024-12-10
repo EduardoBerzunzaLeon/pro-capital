@@ -80,7 +80,7 @@ export const updateOne = async (id: RequestId, { name, municipalityId }: UpdateT
     }
 }
 
-export const createOne = async (municipalityId: RequestId, name: string) => {
+export const createOne = async (municipalityId: RequestId, name: string, userId: number) => {
     const { municipalityId: id, name: townName } = validationZod(
         { municipalityId, name }, 
         townCreateSchema
@@ -94,7 +94,7 @@ export const createOne = async (municipalityId: RequestId, name: string) => {
         throw ServerError.badRequest('La localidad ya existe');
     }
 
-    const newTown = await Repository.town.createOne(townName, id);
+    const newTown = await Repository.town.createOne(townName, id, userId);
     if(!newTown) {
         throw ServerError.internalServer(`No se pudo crear la localidad ${name}, intentelo mas tarde`);
     }

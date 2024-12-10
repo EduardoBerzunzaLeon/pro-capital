@@ -490,6 +490,20 @@ export const permissions: PremissionsI[] = [
         roles: capture_chief
     },
     {
+        servername: info.roles.name+'[report]',
+        name: 'descargar roles',
+        description: 'permite descargar en excel los roles',
+        module: info.roles.module,
+        roles: admins
+    },
+    {
+        servername: info.roles.name+'[report-permissions]',
+        name: 'descargar permisos del rol',
+        description: 'permite descargar en excel los permisos de un rol',
+        module: info.roles.module,
+        roles: admins
+    },
+    {
         servername: info.payments.name+'[report]',
         name: 'descargar pagos',
         description: 'permite descargar en excel los pagos',

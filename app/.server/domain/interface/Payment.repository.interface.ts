@@ -9,11 +9,12 @@ export interface CreatePayment {
     status: PaymentStatus,
     paymentDate: Date,
     paymentAmount: number,   
+    createdById: number,
     folio?: number,
     notes?: string,
 }
 
-export type UpdatePayment = Omit<CreatePayment, 'creditId'>;
+export type UpdatePayment = Omit<CreatePayment, 'creditId' | 'createdById'>;
 
 export type BasePaymentDetailI = BaseRepositoryI<
     Prisma.PaymentDetailDelegate, 

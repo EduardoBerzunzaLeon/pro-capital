@@ -2,7 +2,7 @@ import {  Key, useCallback, useEffect, useState } from "react";
 
 import { Input, useDisclosure } from "@nextui-org/react";
 import { Town } from "~/.server/domain/entity";
-import { Pagination, RowPerPage, TableDetail } from "..";
+import { ButtonClear, Pagination, RowPerPage, TableDetail } from "..";
 import { FaSearch } from "react-icons/fa";
 import { TownAction } from "./TownAction";
 import { TownButtonAdd } from "./TownButtonAdd";
@@ -11,6 +11,7 @@ import { useFetcherPaginator, permissions } from '~/application';
 import { MultiplePermissions } from '../auth/MultiplePermissions';
 import { Permission } from "../auth/Permission";
 import { ExcelReport } from "../excelReports/ExcelReport";
+import { TOWN_COLUMNS } from "../excelReports/columns";
 
 type Column = 'name' | 'id';
 
@@ -20,12 +21,6 @@ const columns = [
   { key: 'municipality', label: 'MUNICIPIO', sortable: true },
   { key: 'actions', label: 'ACCIONES'},
 ]
-
-const columnsExcel = [
-    'LOCALIDAD',
-    'MUNICIPIO',
-]
-
 
 export function TownSection() {
     
@@ -65,6 +60,11 @@ export function TownSection() {
         setSearchMunicipality('');
     }
 
+    const handlerClear = () => {
+        setSearch('');
+        setSearchMunicipality('');
+    }
+
     const renderCell = useCallback((town: Town, columnKey: Key) => {
         if(columnKey === 'actions') {
           return (
@@ -91,9 +91,12 @@ export function TownSection() {
     return (
         <div className='w-full'>
         <div className='w-full flex gap-2 mt-5 mb-3 flex-wrap justify-between'>
-        <Permission permission={permissions.folder.permissions.report}>
-            <ExcelReport url={url} name='carpetas' columns={columnsExcel} />
-        </Permission>
+            <Permission permission={permissions.folder.permissions.report}>
+                <ExcelReport url={url} name='localidades' columns={TOWN_COLUMNS} />
+            </Permission>
+            <ButtonClear 
+                onClear={handlerClear}
+            />
         <Input
             isClearable
             className="w-full sm:max-w-[44%]"

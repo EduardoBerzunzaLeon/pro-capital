@@ -6,6 +6,7 @@ import { PaginationWithFilters } from "../domain/interface";
 import { RequestId } from "../interfaces";
 import { validationZod } from "./validation.service";
 import { ServerError } from "../errors";
+import { AgentRouteProps } from './excelReport.service';
 
 interface CreateManyProps {
     routeId: RequestId;
@@ -31,13 +32,19 @@ export const findAll = async (props: PaginationWithFilters) => {
     
 }
 
+export const exportData = async (props:PaginationWithFilters) => {
+    const data = await Repository.agentRoute.findByReport(props);
+    return Service.excel.agentRouteReport(data as AgentRouteProps[]);
+}
+
+
 export const deleteOne = async (id: RequestId) => {
     const { id: agentRouteId } = validationZod({ id }, idSchema);
     const agentRoute = await Repository.agentRoute.deleteOne(agentRouteId);
     if(!agentRoute) throw ServerError.notFound('No se encontro el agente-ruta');
 }
 
-export const createMany = async ({routeId, agentIds, assignAt}: CreateManyProps) => {
+export const createMany = async (userId: number, {routeId, agentIds, assignAt}: CreateManyProps) => {
 
     if(agentIds.length === 0 || !assignAt) {
         // TODO: DO this with zod or conform
@@ -49,10 +56,10 @@ export const createMany = async ({routeId, agentIds, assignAt}: CreateManyProps)
     await deleteMany({
         routeId: id,
         assignAt,
-        agentIds
+        agentIds,
     });
 
-    const data = agentIds.map(agentId => ({ routeId: id, userId: agentId, assignAt}));
+    const data = agentIds.map(agentId => ({ routeId: id, userId: agentId, assignAt, createdById: userId}));
     await Repository.agentRoute.createMany(data);
 }
 
@@ -85,10 +92,11 @@ export const findMany = async (routeId: RequestId, assignAt: Date) => {
 }
 
 export default {
-    findAll, 
-    deleteOne, 
     createMany, 
+    deleteOne, 
+    exportData,
     findAgentsAutocomplete, 
+    findAll, 
     findMany, 
 }
 

@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 import { Button, Select, SelectItem } from "@nextui-org/react";
-import { Outlet, useLoaderData, useNavigate } from "@remix-run/react";
+import { Outlet, useLoaderData, useNavigate, useSearchParams } from "@remix-run/react";
 
 import { clientLoader } from "~/application/client/client.loader";
 import { Credit } from "~/.server/domain/entity";
@@ -8,13 +8,15 @@ import { DropdownCanRenovate } from "~/components/ui/dropdowns/DropdownCanRenova
 import { DropdownCreditStatus } from "~/components/ui/dropdowns/DropdownCreditStatus";
 import { HandlerSuccess } from "~/.server/reponses";
 import { Key, SortDirection, Selection} from "~/.server/interfaces";
-import { TableDetail, RowPerPage, Pagination, InputFilter, RangePickerDateFilter, SliderFilter, CurpForm, ExportDropdown, ChipStatusCredit, ButtonSetEstatus, ErrorBoundary } from "~/components/ui";
+import { TableDetail, RowPerPage, Pagination, InputFilter, RangePickerDateFilter, SliderFilter, CurpForm, ExportDropdown, ChipStatusCredit, ButtonSetEstatus, ErrorBoundary, ButtonClear } from "~/components/ui";
 import { useDropdownBoolean, useParamsPaginator, useRenderCell, permissions } from '~/application';
 import { useDropdown } from "~/application/hook/useDropdown";
 import { clientAction } from '../../../application/client/client.action';
 import { CreditAction } from "~/components/ui/credit/CreditAction";
 import { Permission } from '../../../components/ui/auth/Permission';
 import { MultiplePermissions } from "~/components/ui/auth/MultiplePermissions";
+import { ExcelReport } from "~/components/ui/excelReports/ExcelReport";
+import { CREDIT_COLUMNS } from "~/components/ui/excelReports/columns";
 
 export {
    clientLoader as loader,
@@ -86,6 +88,7 @@ export default function ClientsPage() {
   const loader = useLoaderData<HandlerSuccess<Loader>>();
   const [visibleColumns, setVisibleColumns] = useState<Selection>(new Set(INITIAL_VISIBLE_COLUMNS)); 
   const navigate = useNavigate();
+  const [ searchParams, setSearchParams ] = useSearchParams();
 
   const { 
     defaultStatus: defaultCanRenovate, 
@@ -156,6 +159,10 @@ export default function ClientsPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  const handlerClear = () => {
+    setSearchParams();
+  }
+
   const topContent = useMemo(() => {
     return (<Select
       label="Columnas"
@@ -191,6 +198,12 @@ export default function ClientsPage() {
       <ButtonSetEstatus />
     </Permission>
     <div className='w-full flex gap-2 mt-5 mb-3 flex-wrap justify-between items-center'>
+    <Permission permission={permissions.credits.permissions.report}>
+      <ExcelReport url={`/clients/export/excel?${searchParams.toString()}`} name='creditos' columns={CREDIT_COLUMNS} />
+    </Permission>
+    <ButtonClear 
+       onClear={handlerClear}
+    />
       <InputFilter 
         param="client" 
         name="clientFullname" 

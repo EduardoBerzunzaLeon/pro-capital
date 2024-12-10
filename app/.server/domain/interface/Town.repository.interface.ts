@@ -26,7 +26,7 @@ export interface TownRepositoryI {
     findByReport: (paginationData: PaginationWithFilters) => Promise<Generic | undefined>,
     updateOne: (id: number, data: UpdateTownProps) => Promise<Generic | undefined>,
     deleteOne: (id: number) => Promise<Generic | undefined>
-    createOne: (name: string, municipalityId: number) => Promise<Generic | undefined>,
+    createOne: (name: string, municipalityId: number, createdById: number) => Promise<Generic | undefined>,
     base: BaseTownI
 }
 

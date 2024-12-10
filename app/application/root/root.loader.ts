@@ -8,7 +8,7 @@ export const rootLoader: LoaderFunction = async ({ request }) => {
         Service.auth.authenticator.isAuthenticated(request),
         getToast(request)
     ]);
-    
+   
     return json({ user, toast }, { headers });
 };
   

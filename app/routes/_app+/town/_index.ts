@@ -34,9 +34,9 @@ export const loader: LoaderFunction = async ({ request }) => {
     
     try {
       if(data._action === 'create') {
-        await Service.auth.requirePermission(request, permissions.town.permissions.add); 
-        await Service.town.createOne(municipalityId, name+'');
-          return handlerSuccessWithToast('create', `de la carpeta ${data.name}`);
+        const user = await Service.auth.requirePermission(request, permissions.town.permissions.add); 
+        await Service.town.createOne(municipalityId, name+'', user.id);
+        return handlerSuccessWithToast('create', `de la localidad ${data.name}`);
       }
       
       return redirectWithWarning("/", "Entrada a una ruta de manera invalida");

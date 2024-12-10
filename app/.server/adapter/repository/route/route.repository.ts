@@ -21,6 +21,12 @@ export function RouteRepository(base: BaseRouteI): RouteRepositoryI {
             select: {
                 name: true,
                 isActive: true,
+                createdAt: true,
+                createdBy: {
+                    select: {
+                        fullName: true,
+                    }
+                }
             }
         });
     }
@@ -53,8 +59,8 @@ export function RouteRepository(base: BaseRouteI): RouteRepositoryI {
         return await base.updateOne({id}, { isActive })
     }
 
-    async function createOne(name: number) {
-        return await base.createOne({ name, isActive: true })
+    async function createOne(name: number, createdById: number) {
+        return await base.createOne({ name, createdById, isActive: true })
     }
 
 

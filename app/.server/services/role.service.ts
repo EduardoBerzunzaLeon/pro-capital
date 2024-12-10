@@ -4,6 +4,7 @@ import { Repository } from "../adapter"
 import { Role } from "../domain/entity/role.entity";
 import { PaginationWithFilters } from "../domain/interface";
 import { ServerError } from '../errors/ServerError';
+import { RoleProps } from './excelReport.service';
 
 
 export const findAll = async (props: PaginationWithFilters) => {
@@ -17,6 +18,13 @@ export const findAll = async (props: PaginationWithFilters) => {
         errorMessage: 'No se encontraron roles'
     });
 }
+
+
+export const exportData = async (props:PaginationWithFilters) => {
+    const data = await Repository.role.findByReport(props);
+    return Service.excel.roleReport(data as RoleProps[]);
+}
+
 
 export const findMany = async () => {
     return await Repository.role.findMany()
@@ -33,8 +41,18 @@ export const hasPermission = async (roleName: RoleTypes, permission: string) => 
     return data;
 }
 
+export const findById = async (roleId: number) => {
+    const role = await Repository.role.findById(roleId);
+    if(!role) {
+        throw ServerError.notFound('No se encontro el rol');
+    }
+    return role;
+}
+
 export default {
     findAll,
     findMany,
+    findById,
     hasPermission,
+    exportData,
 }

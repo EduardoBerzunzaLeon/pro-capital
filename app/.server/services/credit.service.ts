@@ -12,6 +12,7 @@ import { creditEditSchema, creditReadmissionSchema, exportLayoutSchema, rangeDat
 import { calculateAmount, convertDebt, findNow } from "~/application";
 import { CreditLayout, Layout } from "../domain/entity/layout.entity";
 import { Status } from "@prisma/client";
+import { CreditProps } from "./excelReport.service";
 
 export const findAll = async (props: PaginationWithFilters) => {
     const { data, metadata } = await Repository.credit.findAll({...props});
@@ -21,6 +22,11 @@ export const findAll = async (props: PaginationWithFilters) => {
         mapper: Credit.mapper,
         errorMessage: 'No se encontraron creditos'
     });
+}
+
+export const exportData = async (props:PaginationWithFilters) => {
+    const data = await Repository.credit.findByReport(props);
+    return Service.excel.creditReport(data as CreditProps[]);
 }
 
 //  =================== VERIFY ==================
@@ -306,7 +312,7 @@ const calculateDebt = (payments: PaymentAmount[], totalAmount: number) : number 
     return totalAmount - totalPaid;
 }
 
-export const renovate = async (form: FormData, curp?: string, creditId?: RequestId) => {
+export const renovate = async (userId: number, form: FormData, curp?: string, creditId?: RequestId) => {
     const { credit: creditDb, curp: curpValidated } =  await validationToRenovate(curp, creditId);
     const { aval, client, credit } =  validationConform(form, creditReadmissionSchema);
 
@@ -368,13 +374,13 @@ export const renovate = async (form: FormData, curp?: string, creditId?: Request
         paymentForgivent: credit?.paymentForgivent ? 1: 0
     }
 
-    const newCredit = await createCredit(preCredit);
+    const newCredit = await createCredit({ ...preCredit, createdById: userId });
     await updatePrevious(creditDb.id, { canRenovate: false, previousStatus: creditDb.status, status: 'LIQUIDADO' });
 
     return newCredit;
 }
 
-export const additional =  async (form: FormData, curp?: string) => {
+export const additional =  async (userId: number, form: FormData, curp?: string) => {
     const { curp: curpValidated } = await validationToAdditional(curp);
     const { aval, client, credit } =  validationConform(form, creditCreateSchema);
 
@@ -441,12 +447,13 @@ export const additional =  async (form: FormData, curp?: string) => {
         nextPayment,
         currentDebt: totalAmount,
         status: 'ACTIVO',
+        createdById: userId
     }
 
     return await createCredit(preCredit);
 }
 
-export const create = async (form: FormData, curp?: string) => {
+export const create = async (userId: number, form: FormData, curp?: string) => {
  
     const curpValidated =  await validationToCreate(curp);
     const { aval, client, credit } =  validationConform(form, creditCreateSchema);
@@ -498,6 +505,7 @@ export const create = async (form: FormData, curp?: string) => {
         nextPayment,
         currentDebt: totalAmount,
         status: 'ACTIVO',
+        createdById: userId
     }
 
     return await createCredit(preCredit);
@@ -1063,6 +1071,7 @@ export default{
     create,
     deleteOne,
     exportLayout,
+    exportData,
     findAll,
     findByPreviousCreditId,
     findCreditToPay,

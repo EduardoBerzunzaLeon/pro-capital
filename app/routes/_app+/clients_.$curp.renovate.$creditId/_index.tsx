@@ -2,17 +2,17 @@ import { getFormProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import { Card, CardHeader, CardBody, Accordion, AccordionItem, Button } from "@nextui-org/react";
 import { ActionFunction, LoaderFunction } from "@remix-run/node"
-import { Form, useLoaderData, useNavigate, useRouteError } from "@remix-run/react";
+import { Form, useLoaderData, useNavigate } from "@remix-run/react";
 import { redirectWithSuccess } from "remix-toast";
-import { Generic } from "~/.server/interfaces";
 import { handlerError } from "~/.server/reponses";
 import { handlerErrorWithToast } from "~/.server/reponses/handlerError";
 import { Service } from "~/.server/services";
-import { AvalFormSection, ClientFormSection, CreditPaymentsTable, CreditRenovateFormSection } from "~/components/ui";
-import { ErrorCard } from "~/components/utils/ErrorCard";
+import { permissions } from "~/application";
+import { AvalFormSection, ClientFormSection, CreditPaymentsTable, CreditRenovateFormSection, ErrorBoundary } from "~/components/ui";
 import { creditReadmissionSchema } from "~/schemas/creditSchema";
 
-export const loader: LoaderFunction = async ({ params }) => {
+export const loader: LoaderFunction = async ({ request, params }) => {
+    await Service.auth.requirePermission(request, permissions.credits.permissions.renovate);
     try {
         return await Service.credit.validationToRenovate(params.curp, params.creditId);
     } catch (err) {
@@ -23,10 +23,11 @@ export const loader: LoaderFunction = async ({ params }) => {
 }
 
 export const action: ActionFunction = async ({ request, params }) => {
+    const user = await Service.auth.requirePermission(request, permissions.credits.permissions.renovate);
     const formData = await request.formData();
     const data = Object.fromEntries(formData);
     try {
-        await Service.credit.renovate(formData, params?.curp, params?.creditId);
+        await Service.credit.renovate(user.id, formData, params?.curp, params?.creditId);
         return redirectWithSuccess('/clients', 'El crédito se ha creado con éxito 🎉');
     } catch (error) {
         console.log({error});
@@ -34,14 +35,7 @@ export const action: ActionFunction = async ({ request, params }) => {
     }
 }
 
-export function ErrorBoundary() {
-    const error = useRouteError();
-
-    return (<ErrorCard 
-        error={(error as Generic)?.data ?? 'Ocurrio un error inesperado'}
-        description='Ocurrio un error al momento de renovar un credito, intentelo de nuevo, verifique el CURP o que exista el cliente'
-    />)
-}
+export { ErrorBoundary }
 
     export default function RenovateFormPage () {
     const loader = useLoaderData<any>();

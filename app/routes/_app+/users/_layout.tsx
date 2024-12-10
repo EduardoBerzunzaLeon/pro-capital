@@ -7,12 +7,14 @@ import {  permissions, useParamsPaginator, useParamsSelect, useRenderCell } from
 import { useDropdown } from "~/application/hook/useDropdown";
 import { UserComplete } from "~/.server/domain/entity";
 import { Button, Link, Select, SelectItem } from "@nextui-org/react";
-import { ChipStatus, InputFilter, Pagination, RowPerPage, StatusFilter, TableDetail, UserAction, UserToggleActive } from "~/components/ui";
+import { ButtonClear, ChipStatus, InputFilter, Pagination, RowPerPage, StatusFilter, TableDetail, UserAction, UserToggleActive } from "~/components/ui";
 import { DropdownSex } from "~/components/ui/dropdowns/DropdownSex";
 import { SelectRoles } from "~/components/ui/role/SelectRoles";
 import { FaUserPlus } from "react-icons/fa";
 import { Permission } from "~/components/ui/auth/Permission";
 import { MultiplePermissions } from "~/components/ui/auth/MultiplePermissions";
+import { ExcelReport } from "~/components/ui/excelReports/ExcelReport";
+import { USER_COLUMNS } from "~/components/ui/excelReports/columns";
 
 export {
   userLoader as loader
@@ -37,7 +39,7 @@ export default function  UsersPage()  {
   const loader = useLoaderData<typeof userLoader>();
 
   const [visibleColumns, setVisibleColumns] = useState<Selection>(new Set(INITIAL_VISIBLE_COLUMNS)); 
-  const [ searchParams ] = useSearchParams();
+  const [ searchParams, setSearchParams ] = useSearchParams();
 
   const {
     defaultItems,
@@ -91,7 +93,6 @@ export default function  UsersPage()  {
       )
     }
 
-
     if(columnKey == 'isActive') {
       return (<ChipStatus isActive={user.isActive} />)
     }
@@ -100,6 +101,10 @@ export default function  UsersPage()  {
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  const handlerClear = () => {
+    setSearchParams();
+  }
 
   const topContent = useMemo(() => {
     return (<Select
@@ -124,6 +129,12 @@ export default function  UsersPage()  {
   return (
     <>
     <div className='w-full flex gap-2 mt-5 mb-3 flex-wrap justify-between items-center'>
+    <Permission permission={permissions.users.permissions.report}>
+      <ExcelReport url={`/users/export?${searchParams.toString()}`} name='usuarios' columns={USER_COLUMNS} />
+    </Permission>
+    <ButtonClear 
+       onClear={handlerClear}
+    />
     <SelectRoles 
       onSelectionChange={handleSelection}
       selectionMode='multiple'

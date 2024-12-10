@@ -5,6 +5,7 @@ import { Permission } from "../domain/entity/permission.entity";
 import { PaginationWithFilters } from "../domain/interface";
 import { validationZod } from "./validation.service";
 import { RequestId } from "../interfaces";
+import { PermissionProps } from "./excelReport.service";
 
 export const findAll = async (roleId: RequestId, props: PaginationWithFilters) => {
 
@@ -19,6 +20,18 @@ export const findAll = async (roleId: RequestId, props: PaginationWithFilters) =
     });
 
 }
+
+export const exportData = async (roleId: RequestId, props:PaginationWithFilters) => {
+    const { id } = validationZod({ id: roleId }, idSchema);
+    
+    const [role, data] = await Promise.all([
+        Service.role.findById(id),
+        Repository.permission.findByReport(props)
+    ]);
+
+    return Service.excel.permissionReport(id, role.role, data as PermissionProps[]);
+}
+
 
 export const updateIsAssigned = async (roleId: RequestId, permissionId: RequestId, isAssigned: boolean) => {
     const { id: roleIdVal }  = validationZod({ id: roleId }, idSchema);   
@@ -35,4 +48,5 @@ export const updateIsAssigned = async (roleId: RequestId, permissionId: RequestI
 export default {
     findAll,
     updateIsAssigned,   
+    exportData,
 }

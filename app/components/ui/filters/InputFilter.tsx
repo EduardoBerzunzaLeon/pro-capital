@@ -17,7 +17,7 @@ export const InputFilter = ({
 }: Props) => {
     const [ , setSearchParams] = useSearchParams();
 
-    const handleAgentChange  = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange  = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchParams(prev => {
             prev.set(param,event.currentTarget.value)
             return prev;
@@ -40,7 +40,7 @@ export const InputFilter = ({
         className={`${className || 'w-full md:max-w-[40%]'}`}
         labelPlacement="outside"
         defaultValue={defaultValue || ''}
-        onChange={handleAgentChange}
+        onChange={handleChange}
         onClear={handleClear}
         startContent={<FaSearch />}
     />

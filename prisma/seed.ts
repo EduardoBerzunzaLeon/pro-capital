@@ -40,8 +40,10 @@ async function seed() {
      prisma.agentRoute.deleteMany()
     ]);
 
+    await insertRoles(prisma),
+    await insertUsers(prisma),
+    
     await Promise.all([
-      insertRoles(prisma),
       insertModules(prisma),
       insertMunicipalities(prisma),
       insertRoutes(prisma),
@@ -53,7 +55,6 @@ async function seed() {
     await Promise.all([
       insertPermissions(prisma),
       insertTowns(prisma),
-      insertUsers(prisma),
     ]);
 
 
@@ -85,22 +86,45 @@ async function insertModules(prisma: PrismaClient) {
 }
 
 async function insertRoutes(prisma: PrismaClient) {
-  return await prisma.route.createMany({
-    data: [...routes]
-  });
+  for (const route of routes) {
+    await prisma.route.createMany({
+      data: {
+        name: route.name,
+        createdById: 1
+      }
+    });
+    
+  }
 }
 
 
 async function insertMunicipalities(prisma: PrismaClient) {
-  return await prisma.municipality.createMany({
-    data: [...municipalities]
-  });
+  
+  for (const municipality of municipalities) {
+    await prisma.municipality.create({
+      data: {
+        name: municipality.name,
+        createdBy: {
+          connect: { id: 1 }
+        },
+      }
+    });
+  }
+
+  
 }
 
 async function insertAgentRoutes(prisma: PrismaClient) {
-  return await prisma.agentRoute.createMany({
-    data: [...agent_routes]
-  });
+  for (const agent of agent_routes) {
+    await prisma.agentRoute.create({
+      data: {
+        userId: agent.userId,
+        routeId: agent.routeId,
+        createdById: 1 
+      }
+    });
+  }
+
 }
 
 async function insertPermissions(prisma: PrismaClient) {
@@ -143,6 +167,9 @@ async function insertTowns(prisma: PrismaClient) {
           name, 
           municipality: {
             connect: { id }
+          },
+          createdBy: {
+            connect: { id: 1 }
           }
         }
       })
@@ -158,12 +185,15 @@ async function insertFolders(prisma: PrismaClient) {
       prisma.route.findFirst({ where: { name: route }}),
       prisma.town.findFirst({ where: { name: town }})
     ]);
-
+    
     if(routeDb && townDb) {
       await prisma.folder.create({
         data: {
           name,
           consecutive,
+          createdBy: {
+            connect: { id: 1}
+          },
           town: {
             connect: { id: townDb.id }
           },
@@ -214,6 +244,9 @@ async function insertLeaders(prisma: PrismaClient) {
           fullname: fullName,
           folder: {
             connect: { id: folderDb.id }
+          },
+          createdBy: {
+            connect: { id: 1 }
           }
         }
       })
@@ -319,6 +352,9 @@ async function insertCredits(prisma: PrismaClient) {
           group: {
             connect: { id: groupDb.id },
           },
+          createdBy: {
+            connect: { id: 1 }
+          }
         }
       })
     }
@@ -357,6 +393,9 @@ async function  insertPaymentDetails(prisma: PrismaClient) {
           },
           agent: {
             connect: { id: agentDb.id}
+          },
+          createdBy: {
+            connect: { id: 1 }
           }
         }
       })

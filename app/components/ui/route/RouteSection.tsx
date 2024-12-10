@@ -1,8 +1,7 @@
 import { Chip } from "@nextui-org/react";
-import { Route } from "@prisma/client";
 import { permissions, useFetcherPaginator, useStatusMemo } from "~/application";
 import { RowPerPage } from "../rowPerPage/RowPerPage";
-import { DropdownStatus, Pagination, TableDetail } from "..";
+import { ButtonClear, DropdownStatus, Pagination, TableDetail } from "..";
 import { useCallback, useEffect,  useState } from "react";
 import { RouteButtonAdd } from "./RouteButtonAdd";
 import { RouteAction } from "./RouteAction";
@@ -10,6 +9,9 @@ import RouteToggleActive from "./RouteToggleActive";
 import { Key, Selection} from "~/.server/interfaces";
 import { MultiplePermissions } from "../auth/MultiplePermissions";
 import { Permission } from "../auth/Permission";
+import { Route } from "~/.server/domain/entity";
+import { ExcelReport } from "../excelReports/ExcelReport";
+import { ROUTE_COLUMNS } from "../excelReports/columns";
 
 type Column = 'name' | 'id';
 
@@ -31,7 +33,8 @@ export function RouteSection() {
         loadingState,
         handlePagination,
         handleRowPerPage,
-        onSubmit
+        onSubmit,
+        url
     } = useFetcherPaginator<Route>({key: 'route', route: 'routePage'});
 
     const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set(['active', 'inactive']));
@@ -43,6 +46,10 @@ export function RouteSection() {
         onSubmit(data);
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [limit, page, sortDescriptor, selectedValue]);
+
+    const handlerClear = () => {
+        setSelectedKeys(new Set(['active', 'inactive']));
+    }
     
     const renderCell = useCallback((route: Route, columnKey: Key) => {
         if(columnKey === 'actions') {
@@ -83,6 +90,12 @@ export function RouteSection() {
 
     return (
         <div className='w-full md:max-w-[48%]'>
+            <Permission permission={permissions.route.permissions.report}>
+                <ExcelReport url={url} name='rutas' columns={ROUTE_COLUMNS} />
+            </Permission>
+            <ButtonClear 
+                onClear={handlerClear}
+            />
         <DropdownStatus 
           selectedKeys={selectedKeys} 
           onSelectionChange={setSelectedKeys} 

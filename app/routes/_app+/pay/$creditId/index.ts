@@ -22,16 +22,16 @@ export const action: ActionFunction = async({ params, request }) => {
   try {
     
     if(data._action === 'addPayment') {
-      await Service.auth.requirePermission(request, permissions.pays.permissions.add);
+      const user = await Service.auth.requirePermission(request, permissions.pays.permissions.add);
       formData.append('agentId', data['agent[id]'] ?? '');
-      await Service.payment.createOne(formData, id);
+      await Service.payment.createOne(user.id, formData, id);
       return handlerSuccessWithToast('create', 'del pago');
     }
     
     if(data._action === 'addNoPayment') {
-      await Service.auth.requirePermission(request, permissions.pays.permissions.add_no_payment);
+      const user = await Service.auth.requirePermission(request, permissions.pays.permissions.add_no_payment);
       formData.append('agentId', data['agent[id]'] ?? '');
-      await Service.payment.createNoPayment(formData, id);
+      await Service.payment.createNoPayment(user.id, formData, id);
       return handlerSuccessWithToast('create', 'del NO pago');
     }
 

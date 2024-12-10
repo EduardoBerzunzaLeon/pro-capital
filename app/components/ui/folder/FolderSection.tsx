@@ -1,7 +1,7 @@
 import {  useCallback, useEffect, useState } from "react";
 
 import { Input, useDisclosure } from "@nextui-org/react";
-import { Pagination, RowPerPage, TableDetail } from "..";
+import { ButtonClear, Pagination, RowPerPage, TableDetail } from "..";
 import { FaSearch } from "react-icons/fa";
 import { Folder } from "~/.server/domain/entity/folder.entity";
 import { FolderAction } from "./FolderAction";
@@ -12,17 +12,9 @@ import { GroupGenerateButton } from "./GroupGenerateButton";
 import { ExcelReport } from "../excelReports/ExcelReport";
 import { Permission } from '../auth/Permission';
 import { MultiplePermissions } from "../auth/MultiplePermissions";
+import { FOLDER_COLUMNS } from "../excelReports/columns";
 
 export type Key = string | number;
-
-const columnsExcel = [
-    'NOMBRE',
-    'LOCALIDAD',
-    'MUNICIPIO',
-    'RUTA',
-    'LIDER',
-    'GRUPO'
-]
 
 const columns = [
   { key: 'id', label: 'ID' },
@@ -54,8 +46,6 @@ export function FolderSection() {
         url
     } = useFetcherPaginator<Folder>({ key: 'folder', route: 'folder' });
 
-    console.log({ url });
-
   useEffect(() => {
       const data = [
           { column: 'name', value: search },
@@ -81,6 +71,12 @@ export function FolderSection() {
         setSearchTown('');
     }
 
+    const handlerClear = () => {
+        handlerClose();
+        handlerCloseMunicipality();
+        handlerCloseTown();
+    }
+
 const renderCell = useCallback((folder: Folder, columnKey: Key) => {
   if(columnKey === 'actions') {
         return (
@@ -101,8 +97,11 @@ return (
         <div>
             <div className='w-full flex gap-2 mt-5 mb-3 flex-wrap justify-between'>
                 <Permission permission={permissions.folder.permissions.report}>
-                    <ExcelReport url={url} name='carpetas' columns={columnsExcel} />
+                    <ExcelReport url={url} name='carpetas' columns={FOLDER_COLUMNS} />
                 </Permission>
+                <ButtonClear 
+                    onClear={handlerClear}
+                />
                 <Input
                     className="w-full sm:max-w-[30%]"
                     isClearable

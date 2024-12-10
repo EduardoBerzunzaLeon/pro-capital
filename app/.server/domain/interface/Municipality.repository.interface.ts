@@ -20,6 +20,6 @@ export interface MunicipalityRepositoryI {
     findIfHasTowns: (id: number) => Promise<Generic | undefined>,
     updateOne: (id: number, name: string) => Promise<Generic | undefined>,
     deleteOne: (id: number) => Promise<Generic | undefined>
-    createOne: (name: string) => Promise<Generic | undefined>
+    createOne: (name: string, createdById: number) => Promise<Generic | undefined>
     base: BaseMunicipalityI
 }

@@ -4,6 +4,7 @@ import { db } from "../../db";
 export interface CreateOne {
     routeId: number,
     userId: number,
+    createdById: number,
     assignAt: Date
 }
 
@@ -43,6 +44,12 @@ export function AgentRouteRepository(base: BaseAgentRouteI): AgentRouteRepositor
                 route: {
                     select: {
                         name: true
+                    }
+                },
+                createdAt: true,
+                createdBy: {
+                    select: {
+                        fullName: true
                     }
                 }
             }

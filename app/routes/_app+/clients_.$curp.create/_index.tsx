@@ -12,9 +12,11 @@ import { parseWithZod } from "@conform-to/zod";
 import { creditCreateSchema } from "~/schemas";
 import { handlerErrorWithToast } from "~/.server/reponses/handlerError";
 import { redirectWithSuccess } from "remix-toast";
+import { permissions } from "~/application";
 
-export const loader: LoaderFunction = async ({ params }) => {
-    
+export const loader: LoaderFunction = async ({ request, params }) => {
+    await Service.auth.requirePermission(request, permissions.credits.permissions.add);
+
     try {
         await Service.credit.validationToCreate(params.curp)
     } catch (err) {
@@ -27,11 +29,12 @@ export const loader: LoaderFunction = async ({ params }) => {
 
 
 export const action: ActionFunction = async ({ request, params }) => {
+    const user = await Service.auth.requirePermission(request, permissions.credits.permissions.add);
     const formData = await request.formData();
     const data = Object.fromEntries(formData);
 
     try {
-        await Service.credit.create(formData, params?.curp)
+        await Service.credit.create(user.id,formData, params?.curp)
         return redirectWithSuccess('/clients', 'El crédito se ha creado con éxito 🎉');
     } catch (error) {
         console.log(error);

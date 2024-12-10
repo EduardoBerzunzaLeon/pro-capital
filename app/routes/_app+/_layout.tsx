@@ -8,9 +8,20 @@ import Navbar from "~/components/ui/navbar/Narbar";
 import SideBar from "~/components/ui/sidebar/SideBar";
 import { User } from "@prisma/client";
 import { ErrorBoundary } from '../../components/ui/error/ErrorBoundary';
+import { ShouldRevalidateFunction } from 'react-router-dom';
 
 export const meta: MetaFunction = () => {
   return [{ title: "Dashboard" }];
+};
+
+export const shouldRevalidate: ShouldRevalidateFunction = ({
+  currentUrl,
+  nextUrl,
+  defaultShouldRevalidate
+}) => {
+
+  if(nextUrl.search !== currentUrl.search) return false;
+  return defaultShouldRevalidate;
 };
 
 export { ErrorBoundary }

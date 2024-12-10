@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useLocation, useOutlet } from 'react-router-dom';
+import { ShouldRevalidateFunction, useLocation, useOutlet } from 'react-router-dom';
 import type { LinksFunction, MetaFunction } from "@remix-run/node";
 import {
   Links,
@@ -29,6 +29,16 @@ export const meta: MetaFunction = () => ([{
   viewport: "width=device-width,initial-scale=1",
 }]);
 
+
+export const shouldRevalidate: ShouldRevalidateFunction = ({
+  currentUrl,
+  nextUrl,
+  defaultShouldRevalidate
+}) => {
+
+  if(nextUrl.search !== currentUrl.search) return false;
+  return defaultShouldRevalidate;
+};
 
 export default function App() {
   const outlet = useOutlet();

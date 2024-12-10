@@ -1,68 +1,42 @@
 import { json, LoaderFunction } from "@remix-run/node"
-import { useLoaderData, useParams } from "@remix-run/react";
+import { useLoaderData, useParams, useSearchParams } from '@remix-run/react';
 import { useCallback } from "react";
 import { Permission } from "~/.server/domain/entity/permission.entity";
-import { Generic, Key } from "~/.server/interfaces";
-import { getEmptyPagination, handlerPaginationParams, handlerSuccess } from "~/.server/reponses";
+import { Key } from "~/.server/interfaces";
+import { getEmptyPagination, handlerSuccess } from "~/.server/reponses";
 import { Service } from "~/.server/services";
 import { permissions as permissionsData, useParamsPaginator, useRenderCell } from "~/application";
-import { InputFilter, Pagination, PermissionToggleActive, RowPerPage, TableDetail } from "~/components/ui";
+import { Params } from "~/application/params";
+import { ButtonClear, InputFilter, Pagination, PermissionToggleActive, RowPerPage, TableDetail } from "~/components/ui";
 import { Permission as PermissionUI } from "~/components/ui/auth/Permission";
+import { ExcelReport } from "~/components/ui/excelReports/ExcelReport";
+import { PERMISSION_COLUMNS } from "~/components/ui/excelReports/columns";
 
-const columnsFilter = ['name', 'description', 'module.name'];
-const columnSortNames: Generic ={ role: 'role', module: 'module.name' };
 
 export const loader: LoaderFunction = async ({ request, params }) => {
     
     await Service.auth.requirePermission(request, permissionsData.roles.permissions.view_detail);
-    // TODO: implement params method generic
     const { roleId } = params;
-    const url = new URL(request.url);
-    const name = url.searchParams.get('name') || '';
-    const description = url.searchParams.get('description') || '';
-    const moduleName = url.searchParams.get('module') || '';
 
-    const nameFormatted = { column: 'name', value: name }; 
-    const descriptionFormatted = { column: 'description', value: description }; 
-    const moduleFormatted = { column: 'module.name', value: moduleName }; 
-
+    const { params: urlParams, search } = Params.permission.getParams(request);
     try {
 
-        const {
-          page, limit, column, direction
-        } = handlerPaginationParams(request.url, 'name', columnsFilter);
-    
-        const data = await Service.permission.findAll(roleId, {
-          page, 
-          limit, 
-          column: columnSortNames[column] ?? 'name', 
-          direction,
-          search: [
-            nameFormatted,
-            descriptionFormatted,
-            moduleFormatted,
-          ],
-        });
-    
+        const data = await Service.permission.findAll(roleId, urlParams);
+        const { page, limit, column, direction } = params;
+
         return handlerSuccess(200, { 
           ...data,
+          ...search,
           p: page,
           l: limit,
           c: column,
           d: direction,
           s: [],
-          name,
-          description,
-          module: moduleName,
          })
     
       } catch (error) {
         console.log({error});
-        return json(getEmptyPagination({ 
-            name,
-            description,
-            module: moduleName 
-        }));
+        return json(getEmptyPagination(search));
       }
 }
 
@@ -78,6 +52,7 @@ export default function PermissionDetailPage() {
 
     const permissions = useLoaderData<typeof loader>();
     const { render } = useRenderCell({ isMoney: false }); 
+    const [ searchParams, setSearchParams ] = useSearchParams();
     const { roleId } = useParams();
     const { 
         loadingState, 
@@ -89,6 +64,10 @@ export default function PermissionDetailPage() {
         columnDefault: 'name'
       });
     
+
+      const handlerClear = () => {
+        setSearchParams();
+      }
     const renderCell = useCallback((permission: Permission, columnKey: Key) => {
 
         if(columnKey === 'actions') {
@@ -109,6 +88,12 @@ export default function PermissionDetailPage() {
     return (
         <>
         <div className='w-full flex gap-2 mt-5 mb-3 flex-wrap justify-between items-center'>
+            <PermissionUI permission={permissionsData.roles.permissions.report_permissions}>
+               <ExcelReport url={`/security/${roleId}/permissions/export?${searchParams.toString()}`} name='permisos' columns={PERMISSION_COLUMNS} />
+            </PermissionUI>
+            <ButtonClear 
+             onClear={handlerClear}
+            />
             <InputFilter 
                 param="name" 
                 name="name" 

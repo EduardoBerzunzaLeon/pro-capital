@@ -4,12 +4,14 @@ import { useLoaderData, useOutlet, useSearchParams } from "@remix-run/react";
 import { HandlerSuccess } from "~/.server/reponses";
 import { useCallback, useState} from "react";
 import { Button, Link, useDisclosure } from "@nextui-org/react";
-import { ChipStatus, InputFilter, LeaderAction, LeaderToggleActive, ModalLeaderEdit, ModalsToggle, Pagination, RangePickerDateFilter, RowPerPage, StatusFilter, TableDetail } from "~/components/ui";
+import { ButtonClear, ChipStatus, InputFilter, LeaderAction, LeaderToggleActive, ModalLeaderEdit, ModalsToggle, Pagination, RangePickerDateFilter, RowPerPage, StatusFilter, TableDetail } from "~/components/ui";
 import { FaUserPlus } from "react-icons/fa";
 import { useParamsPaginator , permissions } from '../../../application';
 import { leaderLoader } from "~/application/leader/leader.loader";
 import { MultiplePermissions } from "~/components/ui/auth/MultiplePermissions";
 import { Permission } from '../../../components/ui/auth/Permission';
+import { ExcelReport } from "~/components/ui/excelReports/ExcelReport";
+import { LEADER_COLUMNS } from "~/components/ui/excelReports/columns";
 
 export {
   leaderLoader as loader
@@ -47,7 +49,7 @@ const columns = [
 export default function LeaderPage () {
   const loader = useLoaderData<HandlerSuccess<Loader>>();
   const outlet = useOutlet();
-  const [ searchParams ] = useSearchParams();
+  const [ searchParams, setSearchParams ] = useSearchParams();
   const [selectedId, setSelectedId] = useState<number>(0);
   const { isOpen, onOpenChange, onOpen } = useDisclosure();
 
@@ -101,6 +103,10 @@ export default function LeaderPage () {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  const handlerClear = () => {
+    setSearchParams();
+  }
+
   return (
     <>
     { outlet }
@@ -109,6 +115,12 @@ export default function LeaderPage () {
       handleSelectedId={setSelectedId}
     />
     <div className='w-full flex gap-2 mt-5 mb-3 flex-wrap justify-between items-center'>
+    <Permission permission={permissions.leaders.permissions.report}>
+      <ExcelReport url={`/leaders/export?${searchParams.toString()}`} name='lideres' columns={LEADER_COLUMNS} />
+    </Permission>
+    <ButtonClear 
+       onClear={handlerClear}
+    />
       <StatusFilter 
         isActive={loader?.serverData?.isActive}
         param='isActive'

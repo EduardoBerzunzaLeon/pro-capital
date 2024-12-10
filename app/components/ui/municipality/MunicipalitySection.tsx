@@ -1,7 +1,7 @@
 import { Key, useCallback, useEffect, useState} from "react";
 import { useDisclosure, Input } from "@nextui-org/react";
 import { Municipality } from "~/.server/domain/entity";
-import { Pagination, TableDetail } from "..";
+import { ButtonClear, Pagination, TableDetail } from "..";
 import { RowPerPage } from '../rowPerPage/RowPerPage';
 import { MunicipalityAction } from "./MunicipalityAction";
 import { ModalMunicipalityEdit } from './ModalMunicipalityEdit';
@@ -10,6 +10,8 @@ import { FaSearch } from "react-icons/fa";
 import { useFetcherPaginator, permissions } from '~/application';
 import { MultiplePermissions } from '../auth/MultiplePermissions';
 import { Permission } from '../auth/Permission';
+import { MUNICIPALITY_COLUMNS } from "../excelReports/columns";
+import { ExcelReport } from "../excelReports/ExcelReport";
 
 type Column = 'name' | 'id';
 
@@ -31,7 +33,8 @@ export  function MunicipalitySection() {
         loadingState,
         handlePagination,
         handleRowPerPage,
-        onSubmit
+        onSubmit,
+        url
     } = useFetcherPaginator<Municipality>({key: 'municipality', route: 'municipality'});
 
     useEffect(() => {
@@ -62,6 +65,12 @@ export  function MunicipalitySection() {
 
     return (
         <div className='w-full md:max-w-[48%]'>
+            <Permission permission={permissions.municipality.permissions.report}>
+                <ExcelReport url={url} name='municipios' columns={MUNICIPALITY_COLUMNS} />
+            </Permission>
+            <ButtonClear 
+                onClear={handlerClose}
+            />
             <Input
                 isClearable
                 className="w-full sm:max-w-[44%] mt-5 mb-3"

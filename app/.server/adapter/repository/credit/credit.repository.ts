@@ -113,6 +113,11 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
                 paymentAmount: true,
                 captureAt: true,
                 creditAt: true,
+                createdBy: {
+                    select: {
+                        fullName: true
+                    }
+                },
                 countPayments: true,
                 canRenovate: true,
                 nextPayment: true,

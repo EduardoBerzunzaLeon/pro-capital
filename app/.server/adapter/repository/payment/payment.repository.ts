@@ -85,6 +85,11 @@ export function PaymentRepository(base: BasePaymentDetailI): PaymentRepositoryI 
                 paymentAmount: true,
                 paymentDate: true,
                 captureAt: true,
+                createdBy: {
+                    select: {
+                        fullName: true
+                    }
+                },
                 folio: true,
                 notes: true,
                 status: true,
@@ -141,7 +146,7 @@ export function PaymentRepository(base: BasePaymentDetailI): PaymentRepositoryI 
         return await base.findOne({ creditId, paymentDate }, { id: true });
     }
 
-    async function createOne( data: CreatePayment) {
+    async function createOne( data: CreatePayment ) {
         return await base.createOne(data);
     }
 

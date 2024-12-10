@@ -39,7 +39,13 @@ export function LeaderRepository(base: BaseLeaderI): LeaderRepositoryI {
                         name: true,
                     }
                 },
-                isActive: true
+                isActive: true,
+                createdAt: true,
+                createdBy: {
+                    select: {
+                        fullName: true
+                    }
+                }
             }
         })
     }

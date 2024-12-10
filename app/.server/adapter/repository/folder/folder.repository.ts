@@ -1,5 +1,5 @@
 import { PaginationWithFilters } from "~/.server/domain/interface/Pagination.interface";
-import { BaseFolderI, FolderRepositoryI } from "~/.server/domain/interface";
+import { BaseFolderI, CreateFolderI, FolderRepositoryI } from "~/.server/domain/interface";
 
 export function FolderRepository(base: BaseFolderI) : FolderRepositoryI {
 
@@ -34,6 +34,12 @@ export function FolderRepository(base: BaseFolderI) : FolderRepositoryI {
             paginatonWithFilter: paginationData,
             select: {
                 name: true,
+                createdAt: true,
+                createdBy: {
+                    select: {
+                        fullName: true
+                    }
+                },
                 town: {
                     select: {
                         name: true,
@@ -171,13 +177,8 @@ export function FolderRepository(base: BaseFolderI) : FolderRepositoryI {
         return await base.deleteOne({ id });
     }
 
-    async function createOne(townId: number, routeId: number, consecutive: number, name: string) {
-        return await base.createOne({
-            townId,
-            routeId,
-            consecutive,
-            name
-        })
+    async function createOne(data: CreateFolderI) {
+        return await base.createOne(data)
     }
 
     return { 

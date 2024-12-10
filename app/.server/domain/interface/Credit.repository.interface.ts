@@ -22,7 +22,7 @@ export type UpdateCreateI = {
     isRenovate: boolean
 }
 
-export type CreditCreateI = Omit<UpdateCreateI, 'paymentForgivent' | 'previousCreditId' | 'isRenovate' >
+export type CreditCreateI = Omit<UpdateCreateI, 'paymentForgivent' | 'previousCreditId' | 'isRenovate' > & { createdById: number }
 
 export interface UpdatePreviousData {
     status: Status,

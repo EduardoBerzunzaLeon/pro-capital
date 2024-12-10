@@ -9,6 +9,7 @@ import { ServerError } from "../errors";
 import { activeSchema } from "~/schemas/genericSchema";
 import { CreateUserSchema, UpdatePasswordSchema, UpdateRoleSchema, UpdateUserSchema } from "~/schemas/userSchema";
 import { hash } from "../adapter/encryptor";
+import { UserProps } from "./excelReport.service";
 
 export const findAll = async (props: PaginationWithFilters) => {
     const { data, metadata } = await Repository.user.findAll({...props});
@@ -18,6 +19,11 @@ export const findAll = async (props: PaginationWithFilters) => {
         mapper: UserComplete.mapper,
         errorMessage: 'No se encontraron usuarios'
     })
+}
+
+export const exportData = async (props:PaginationWithFilters) => {
+    const data = await Repository.user.findByReport(props);
+    return Service.excel.userReport(data as UserProps[]);
 }
 
 export const findAutocomplete = async (name: string) => {
@@ -132,13 +138,14 @@ export const updateAvatar = async (id: RequestId, avatar: string) => {
 }
 
 export default {
-    findAutocomplete,
-    updateIsActive,
-    updatePersonalData,
-    updatePassword,
-    updateRole,
-    updateAvatar,
-    findOne,
-    findAll,
     createOne,
+    exportData,
+    findAll,
+    findAutocomplete,
+    findOne,
+    updateAvatar,
+    updateIsActive,
+    updatePassword,
+    updatePersonalData,
+    updateRole,
 }

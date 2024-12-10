@@ -2,6 +2,14 @@ import { Generic } from '~/.server/interfaces';
 import { Prisma } from '@prisma/client';
 import { BaseRepositoryI, PaginationWithFilters, ResponseWithMetadata } from '.';
 
+export interface CreateFolderI {
+    townId: number,
+    routeId: number,
+    createdById: number,
+    consecutive: number,
+    name: string
+}
+
 
 export type BaseFolderI = BaseRepositoryI<
     Prisma.FolderDelegate, 
@@ -25,7 +33,7 @@ export interface FolderRepositoryI{
     findSampleAll: () => Promise<Generic[] | undefined>,
     updateOne: (id: number, routeId: number) => Promise<Generic | undefined>,
     deleteOne: (id:number) => Promise<Generic | undefined>
-    createOne: (townId: number, routeId: number, consecutive: number, name: string) => Promise<Generic | undefined>,
+    createOne: (data: CreateFolderI) => Promise<Generic | undefined>,
     base: BaseFolderI
 }
 

@@ -7,12 +7,14 @@ import { Key, SortDirection } from "~/.server/interfaces";
 import { HandlerSuccess, handlerSuccess } from "~/.server/reponses";
 import { getEmptyPagination } from "~/.server/reponses/handlerError";
 import { Service } from "~/.server/services";
-import { AgentRouteAction, InputFilter, Pagination, RangePickerDateFilter, RowPerPage, TableDetail } from "~/components/ui";
+import { AgentRouteAction, ButtonClear, InputFilter, Pagination, RangePickerDateFilter, RowPerPage, TableDetail } from "~/components/ui";
 import { SelectRoutes } from "~/components/ui/route/SelectRoutes";
 import { MdEditCalendar } from "react-icons/md";
 import { permissions, useParamsPaginator, useParamsSelect } from '~/application';
 import { Params } from '../../../application/params/';
 import { Permission } from "~/components/ui/auth/Permission";
+import { ExcelReport } from "~/components/ui/excelReports/ExcelReport";
+import { AGENT_COLUMNS } from "~/components/ui/excelReports/columns";
 
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -67,7 +69,7 @@ const columns = [
 export default function  AgentsPage()  {
   
   const loader = useLoaderData<HandlerSuccess<Loader>>();
-  const [ searchParams ] = useSearchParams();
+  const [ searchParams, setSearchParams ] = useSearchParams();
   
   const {
     defaultItems,
@@ -121,12 +123,23 @@ export default function  AgentsPage()  {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
+      
+  const handlerClear = () => {
+    setSearchParams();
+  }
+
   return (
     <>
     <Permission permission={permissions.agents.permissions.delete}>
       { outlet }
     </Permission>
     <div className='w-full flex gap-2 mt-5 mb-3 flex-wrap justify-between items-center'>
+    <Permission permission={permissions.agents.permissions.report}>
+      <ExcelReport url={`/agents/export?${searchParams.toString()}`} name='asesores_asignados' columns={AGENT_COLUMNS} />
+    </Permission>
+    <ButtonClear 
+       onClear={handlerClear}
+    />
       <SelectRoutes 
         onSelectionChange={handleSelection}
         selectionMode='multiple'

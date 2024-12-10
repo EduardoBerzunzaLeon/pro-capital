@@ -1,6 +1,28 @@
+import dayjs from 'dayjs';
 
+const formatDate = (date: Date, withDetail: boolean = true) => {
+    if(withDetail) {
+        return dayjs(date).format('YYYY-MM-DD HH:mm:ss')
+    }
 
-export interface FolderProps {
+    return dayjs(date).format('YYYY-MM-DD')
+};
+
+type CreatedI = {
+    createdAt: Date,
+    createdBy: {
+        fullName: string
+    }
+}
+
+const getCreatedData = <T extends CreatedI>({ createdAt, createdBy }: T) => {
+    return {   
+        createdAt: formatDate(createdAt),
+        createdBy: createdBy.fullName
+    }
+}
+
+export type FolderProps = CreatedI & {
     name: string;
     town: {
         name: string;
@@ -17,7 +39,6 @@ export interface FolderProps {
     }
 }
 
-
 export const folderReport = (props?: FolderProps[]) => {
 
     if(!props) {
@@ -25,7 +46,7 @@ export const folderReport = (props?: FolderProps[]) => {
     }
 
     return props.map(({
-        name, town, route, leaders, _count
+        name, town, route, leaders, _count, ...rest
     }) => {
 
         return {
@@ -34,12 +55,13 @@ export const folderReport = (props?: FolderProps[]) => {
             municipality: town.municipality.name,
             route: route.name,
             leader: leaders.length > 0 ? leaders[0].fullname : '',
-            groups: _count.groups
+            groups: _count.groups,
+            ...getCreatedData(rest)
         };
     })
 }
 
-export interface TownProps {
+export type TownProps = CreatedI & {
     name: string,
     municipality: {
         name: string
@@ -53,17 +75,17 @@ export const townReport = (props?: TownProps[]) => {
     }
 
     return props.map(({
-        name, municipality
+        name, municipality, ...rest
     }) => {
-
         return {
             name,
             municipality: municipality.name,
+            ...getCreatedData(rest),
         };
     })
 }
 
-export interface RouteProps {
+export type RouteProps = CreatedI & {
     name: number,
     isActive: boolean
 }
@@ -73,24 +95,32 @@ export const routeReport = (props?: RouteProps[]) => {
         return [];
     }
 
-    return props.map(({ name, isActive }) => {
+    return props.map(({ name, isActive, ...rest }) => {
         return {
             name: `Ruta ${name}`,
-            isActive: isActive ? 'Activo' : 'inactivo'
+            isActive: isActive ? 'Activo' : 'inactivo',
+            ...getCreatedData(rest),
         }
     })
 }
 
-export interface MunicipalityProps {
+export type MunicipalityProps = CreatedI & {
     name: string;
 }
 
 export const municipalityReport = (props?: MunicipalityProps[]) => {
     if(!props) return [];
-    return props;
+    return props.map(({
+        name, ...rest
+    }) => {
+        return {
+            name,
+            ...getCreatedData(rest),
+        };
+    })
 }
 
-export interface AgentRouteProps {
+export type AgentRouteProps = CreatedI & {
     assignAt: Date,
     user: {
         fullName: string,
@@ -103,11 +133,12 @@ export interface AgentRouteProps {
 export const agentRouteReport = (props?: AgentRouteProps[]) => {
     if(!props) return [];
 
-    return props.map(({ assignAt, user, route }) => {
+    return props.map(({ assignAt, user, route, ...rest }) => {
         return {
             user: user.fullName,
             route: `Ruta ${route.name}`,
-            assignAt,
+            assignAt: formatDate(assignAt),
+            ...getCreatedData(rest),
         }
     })
 }
@@ -174,7 +205,7 @@ export const permissionReport = (roleId: number, roleName: string, props: Permis
 }
 
 
-export interface LeaderProps {
+export type LeaderProps = CreatedI & {
     fullname: string,
     curp: string,
     address: string,
@@ -189,11 +220,27 @@ export interface LeaderProps {
 export const leaderReport = (props?: LeaderProps[]) => {
     if(!props) return [];
 
-    return props.map(({  isActive, folder, ...restLeader }) => {
+    return props.map(({  
+        isActive, 
+        folder, 
+        createdAt, 
+        createdBy, 
+        fullname,
+        curp,
+        birthday,
+        anniversaryDate,
+        address,
+    }) => {
+
         return {
-            ...restLeader,
+            fullname,
+            curp: curp.toUpperCase(),
+            address,
+            anniversaryDate: formatDate(anniversaryDate, false),
+            birthday: formatDate(birthday, false),
             folder: folder.name,
-            isActive: isActive ? 'Activo' : 'inactivo'
+            isActive: isActive ? 'Activo' : 'inactivo',
+            ...getCreatedData({ createdAt, createdBy })
         }
     })
 }
@@ -231,29 +278,44 @@ export interface CreditProps {
     amount: number,
     paymentAmount: number,
     captureAt: Date,
-    creditAt: Date,
     countPayments: number,
     canRenovate: boolean,
+    creditAt: Date,
     nextPayment: Date,
     lastPayment: Date,
     currentDebt: number,
-    status: string
+    status: string,
+    createdBy: {
+        fullName: string
+    },
 }
 
 
 export const creditReport = (props?: CreditProps[]) => {
     if(!props) return [];
 
-    return props.map(({  aval, client, folder, group,  canRenovate, ...restCredit }) => {
+    return props.map(({  
+        aval, 
+        client, 
+        folder, 
+        group, 
+        canRenovate, 
+        captureAt, 
+        createdBy,
+        creditAt,
+        nextPayment,
+        lastPayment,
+        ...restCredit 
+    }) => {
         return {
             clientFullname: client.fullname,
             clientAdress: client.address,
             clientReference: client.reference,
-            clientCurp: client.curp,
+            clientCurp: client.curp.toUpperCase(),
             avalFullname: aval.fullname,
             avalAdress: aval.address,
             avalReference: aval.reference,
-            avalCurp: aval.curp,
+            avalCurp: aval.curp.toUpperCase(),
             folder: folder.name,
             town: folder.town.name,
             municipality: folder.town.municipality.name,
@@ -261,11 +323,15 @@ export const creditReport = (props?: CreditProps[]) => {
             group: `Grupo ${group.name}`,
             canRenovate: canRenovate ? 'Con derecho' : 'Sin derecho',
             ...restCredit,
+            creditAt: formatDate(creditAt), 
+            nextPayment: formatDate(nextPayment, false),
+            lastPayment: formatDate(lastPayment, false),
+            ...getCreatedData({createdAt: captureAt, createdBy }),
         }
     })
 }
 
-interface PaymentProps {
+export interface PaymentProps {
     agent: {
         fullName: string,
     },
@@ -292,28 +358,59 @@ interface PaymentProps {
             curp: string,
         },
         folder: CreditFolder
+    },
+    createdBy: {
+        fullName: string
     }
 }
 
 export const paymentReport = (props?: PaymentProps[]) => {
     if(!props) return [];
 
-    return props.map(({  agent, credit, ...restPayment }) => {
+    return props.map(({  
+        agent, 
+        credit, 
+        captureAt,
+        createdBy, 
+        paymentAmount,
+        paymentDate,
+        folio,
+        notes,
+        status: paymentStatus
+    }) => {
 
-        const { folder, group, client, aval, ...restCredit } = credit;
+        const { 
+            folder, 
+            group, 
+            client, 
+            aval, 
+            currentDebt, 
+            nextPayment, 
+            lastPayment,
+            status  
+        } = credit;
+
         return {
             clientName: client.fullname,
-            clientCurp: client.curp,
+            clientCurp: client.curp.toUpperCase(),
             avalName: aval.fullname,
-            avalCurp: aval.curp,
+            avalCurp: aval.curp.toUpperCase(),
             agent: agent.fullName,
-            ...restCredit,
+            currentDebt,
+            nextPayment: formatDate(nextPayment, false),
+            lastPayment: formatDate(lastPayment, false),
+            creditStatus: status,
             folder: folder.name,
             town: folder.town.name,
             municipality: folder.town.municipality.name,
             route: `Ruta ${folder.route.name}`,
             group: `Grupo ${group.name}`,
-            ...restPayment,
+            paymentAmount,
+            paymentDate: formatDate(paymentDate, false),
+            folio: folio ?? '',
+            notes,
+            status: paymentStatus,
+            ...getCreatedData({createdAt: captureAt, createdBy }),
         }
     })
 }
@@ -327,6 +424,8 @@ export default {
     municipalityReport,
     agentRouteReport,
     userReport,
+    leaderReport,
     roleReport,
     permissionReport,
+    creditReport,
 }

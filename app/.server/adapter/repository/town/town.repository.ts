@@ -34,6 +34,12 @@ export function TownRepository(base: BaseTownI): TownRepositoryI {
                     select: {
                         name: true,
                     }
+                },
+                createdAt: true,
+                createdBy: {
+                    select: {
+                        fullName: true,
+                    }
                 }
             }
         })
@@ -69,8 +75,8 @@ export function TownRepository(base: BaseTownI): TownRepositoryI {
         );
     }
 
-    async function createOne(name: string, municipalityId: number) {
-        return await base.createOne({ municipalityId, name });
+    async function createOne(name: string, municipalityId: number, createdById: number) {
+        return await base.createOne({ municipalityId, name, createdById });
     } 
     
     async function deleteOne(id: number) {

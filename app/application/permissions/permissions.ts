@@ -133,7 +133,9 @@ export const permissions = {
         permissions: {
             update: 'roles[update]',
             view: 'roles[view]',
-            view_detail: 'roles[view-detail]'
+            view_detail: 'roles[view-detail]',
+            report: 'roles[report]',
+            report_permissions: 'roles[report-permissions]',
         }
     },
     region: {

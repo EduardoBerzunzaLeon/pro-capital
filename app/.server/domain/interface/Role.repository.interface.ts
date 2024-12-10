@@ -17,6 +17,7 @@ export interface RoleRepositoryI{
     findAll: (paginationData: PaginationWithFilters ) => Promise<ResponseWithMetadata>,
     findByReport: (paginationData: PaginationWithFilters ) => Promise<Generic[] | undefined>,
     findMany: () => Promise<Generic | undefined>,
+    findById: (id: number) => Promise<Generic | undefined>,
     findPermission: (roleName: RoleTypes, permission: string) => Promise<Generic | undefined>,
     base: BaseRoleI
 }

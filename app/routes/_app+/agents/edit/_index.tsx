@@ -16,7 +16,7 @@ import { handlerSuccessWithToast } from "~/.server/reponses/handlerSuccess";
 import { permissions } from "~/application";
 
 export const action: ActionFunction = async({ request }) => {
-  await Service.auth.requirePermission(request, permissions.agents.permissions.add);
+  const user = await Service.auth.requirePermission(request, permissions.agents.permissions.add);
   const formData = await request.formData();
   const data = Object.fromEntries(formData);
   const {  route, assignAt, ...agents } = data;
@@ -39,10 +39,10 @@ export const action: ActionFunction = async({ request }) => {
       return acc;
     }, [] );
 
-  await Service.agent.createMany({
+  await Service.agent.createMany(user.id,{
     routeId: Number(route), 
     assignAt: dayjs(assignAt+'T00:00:00.000Z').toDate(), 
-    agentIds
+    agentIds,
   });
 
   return handlerSuccessWithToast('create');

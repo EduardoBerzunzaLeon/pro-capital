@@ -19,12 +19,17 @@ export function MunicipalityRepository(base: BaseMunicipalityI):  MunicipalityRe
         })
     }
 
-
     async function findByReport(paginationData: PaginationWithFilters) {
         return await base.findManyByReportExcel({
             paginatonWithFilter: paginationData,
             select: {
-                name: true
+                name: true,
+                createdAt: true,
+                createdBy: {
+                    select: {
+                        fullName: true,
+                    }
+                }
             }
         })
     }
@@ -56,8 +61,8 @@ export function MunicipalityRepository(base: BaseMunicipalityI):  MunicipalityRe
         return await base.updateOne({ id }, { name });
     }
 
-    async function createOne(name: string) {
-        return await base.createOne({ name });
+    async function createOne(name: string, createdById: number) {
+        return await base.createOne({ name, createdById });
     }
 
     return { 

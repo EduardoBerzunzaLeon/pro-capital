@@ -22,7 +22,7 @@ export interface RouteRepositoryI{
     findCountFolders: (id: number) => Promise<Generic | undefined>,
     updateIsActive: (id: number, isActive: boolean) => Promise<Generic | undefined>,
     deleteOne: (id:number) => Promise<Generic | undefined>
-    createOne: (name: number) => Promise<Generic | undefined>,
+    createOne: (name: number, createdById: number) => Promise<Generic | undefined>,
     base: BaseRouteI
 }
 

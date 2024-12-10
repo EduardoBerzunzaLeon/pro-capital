@@ -1,16 +1,19 @@
 import { SortDirection, Selection, Key } from '~/.server/interfaces';
 import { paymentLoader } from '../../../application/payment/payment.loader';
 import { Payment } from '~/.server/domain/entity';
-import { useLoaderData } from '@remix-run/react';
+import { useLoaderData, useSearchParams } from '@remix-run/react';
 import { useCallback, useMemo, useState } from 'react';
 import { HandlerSuccess } from '~/.server/reponses';
 import { permissions, useParamsPaginator, useRenderCell } from '~/application';
 import { Select, SelectItem, useDisclosure, } from '@nextui-org/react';
-import { ChipStatusCredit, ChipStatusPayment, InputFilter, ModalPaymentEdit, Pagination, PaymentAction, RangePickerDateFilter, RowPerPage, SliderFilter, TableDetail } from '~/components/ui';
+import { ButtonClear, ChipStatusCredit, ChipStatusPayment, InputFilter, ModalPaymentEdit, Pagination, PaymentAction, RangePickerDateFilter, RowPerPage, SliderFilter, TableDetail } from '~/components/ui';
 import { DropdownPaymentStatus } from '~/components/ui/dropdowns/DropDownPaymentStatus';
 import { useDropdown } from '~/application/hook/useDropdown';
 import { ModalPay } from '~/components/ui/pay';
 import { MultiplePermissions } from '~/components/ui/auth/MultiplePermissions';
+import { Permission } from '~/components/ui/auth/Permission';
+import { ExcelReport } from '~/components/ui/excelReports/ExcelReport';
+import { PAYMENT_COLUMNS } from '~/components/ui/excelReports/columns';
 
 export {
     paymentLoader as loader
@@ -79,6 +82,7 @@ export default function PaymentPage( ) {
   const [visibleColumns, setVisibleColumns] = useState<Selection>(new Set(INITIAL_VISIBLE_COLUMNS));
   const { isOpen, onOpenChange, onOpen } = useDisclosure();
   const { isOpen: isOpenCreate, onOpenChange: onOpenChangeCreate, onOpen: onOpenCreate } = useDisclosure();
+  const [ searchParams, setSearchParams ] = useSearchParams();
   
   const { 
     loadingState, 
@@ -131,6 +135,10 @@ export default function PaymentPage( ) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   
+  const handlerClear = () => {
+    setSearchParams();
+  }
+
 
   const { defaultValue, handleValueChange } = useDropdown({
     param: 'status',
@@ -163,6 +171,12 @@ export default function PaymentPage( ) {
     <ModalPaymentEdit isOpen={isOpen} onOpenChange={onOpenChange}/>
     <ModalPay isOpen={isOpenCreate} onOpenChange={onOpenChangeCreate} />
    <div className='w-full flex gap-2 mt-5 mb-3 flex-wrap justify-between items-center'>
+   <Permission permission={permissions.payments.permissions.report}>
+      <ExcelReport url={`/payments/export?${searchParams.toString()}`} name='pagos' columns={PAYMENT_COLUMNS} />
+    </Permission>
+    <ButtonClear 
+       onClear={handlerClear}
+    />
       <InputFilter 
         param="client" 
         name="clientFullname" 

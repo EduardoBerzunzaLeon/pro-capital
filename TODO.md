@@ -40,6 +40,9 @@
     -- Agregar schema para telefono (cantidad de caracteres)
     -- Agregar la opcion de Matar usuario (marcarlo como fallecido)
 
+# MEMORY LEAK:
+  - Cuando se escribe en el input, como cambia la url causa navegación ocasionando que rerenderice el root component, (mande a llamar al usuario, con todos los permisos (pesa demasiado)) [Quizas este listo, verificarlo]
+
 # SERVER
     - Agregar flash message para errores con toast en loader (en el momento de descargar un excel).
 
@@ -81,3 +84,7 @@
     Agregar boton de "Generar grupos"
     Agregar el estatus a la carpeta
     Definir todos los permisos 
+    Definir si un pago en 0 cuenta para recalculo de renovacion
+
+# BUG:
+  El monto puede ser 0 al momento de agregar un pago, actualmente no lo permite

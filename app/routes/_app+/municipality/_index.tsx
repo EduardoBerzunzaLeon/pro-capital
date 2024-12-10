@@ -26,8 +26,8 @@ export const loader: LoaderFunction = async ({ request }) => {
 
     try {
       if(data._action === 'create') {
-          await Service.auth.requirePermission(request, permissions.municipality.permissions.add);
-          await Service.municipality.createOne(formData);
+          const user = await Service.auth.requirePermission(request, permissions.municipality.permissions.add);
+          await Service.municipality.createOne(formData, user.id);
           return handlerSuccessWithToast('create', `del municipio ${data.name}`);
       }
 

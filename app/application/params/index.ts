@@ -9,6 +9,8 @@ import { MunicipalityParams } from './municipality.params';
 import { RouteParams } from './route.params';
 import { SecurityParams } from './security.params';
 import { TownParams } from './town.params';
+import { PermissionParams } from './permission.params';
+import { HistoryPaymentParams } from './historyPayments.params';
 
 function buildParams() {
     return  {
@@ -22,7 +24,9 @@ function buildParams() {
         municipality: MunicipalityParams(),
         route: RouteParams(),
         security: SecurityParams(),
-        town: TownParams()
+        town: TownParams(),
+        permission: PermissionParams(),
+        history: HistoryPaymentParams()
     }
 }
 

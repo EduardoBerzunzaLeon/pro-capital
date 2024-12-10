@@ -93,7 +93,7 @@ export const deleteOne = async (id: RequestId) => {
     }
 }
 
-export const createOne = async (townId: RequestId, routeId: RequestId) => {
+export const createOne = async (townId: RequestId, routeId: RequestId, userId: number) => {
     const { id: routeIdVal } = validationZod({ id: routeId }, idSchema);
 
     // TODO: create route repository
@@ -108,7 +108,15 @@ export const createOne = async (townId: RequestId, routeId: RequestId) => {
 
     const nextConsecutive = await findNextConsecutive(town.id);
 
-    const newFolder = await Repository.folder.createOne(town.id, routeIdVal, nextConsecutive, `${town.name} ${nextConsecutive}`);
+    const data = {
+        townId: town.id,
+        routeId: routeIdVal,
+        createdById: userId,
+        consecutive: nextConsecutive,
+        name: `${town.name} ${nextConsecutive}`,
+    }
+
+    const newFolder = await Repository.folder.createOne(data);
 
     if(!newFolder) 
         throw ServerError.internalServer('No se pudo crear la carpeta');

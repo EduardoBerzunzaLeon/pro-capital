@@ -14,13 +14,13 @@ import { CreateLeaderSchema } from "~/schemas/leaderSchema";
 import { permissions } from '~/application';
 
 export const action: ActionFunction = async({ request }) => {
-  await Service.auth.requirePermission(request, permissions.leaders.permissions.add);
+  const user = await Service.auth.requirePermission(request, permissions.leaders.permissions.add);
   const formData = await request.formData();
   const data = Object.fromEntries(formData);
 
   try {
     formData.set('folder', data['folder[id]']);
-     await Service.leader.createOne(formData);
+     await Service.leader.createOne(user.id, formData);
     return handlerSuccessWithToast('create');
   } catch (error) {
     console.log(error);

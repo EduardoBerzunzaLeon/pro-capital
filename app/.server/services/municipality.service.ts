@@ -6,6 +6,7 @@ import { ServerError } from "../errors";
 import { Municipality } from "../domain/entity";
 import { PaginationWithFilters } from "../domain/interface";
 import { Service } from './index';
+import { MunicipalityProps } from "./excelReport.service";
 
 
 export const findAll = async (props: PaginationWithFilters) => {
@@ -24,6 +25,11 @@ export const findOne = async (id: RequestId) => {
     const municipality =  await Repository.municipality.findOne(municipalityId);
     if(!municipality) throw ServerError.notFound('No se encontró el municipio');
     return Municipality.create(municipality);
+}
+
+export const exportData = async (props:PaginationWithFilters) => {
+    const data = await Repository.municipality.findByReport(props);
+    return Service.excel.municipalityReport(data as MunicipalityProps[]);
 }
 
 export const findAutocomplete = async (name: string) => {
@@ -47,7 +53,7 @@ export const deleteOne = async (id: RequestId) => {
     const municipalityDeleted = await Repository.municipality.deleteOne(municipalityId);
     
     if(!municipalityDeleted  || municipalityDeleted?.count === 0) {
-        throw ServerError.internalServer(`No se pudo eliminar la localidad ${municipalityWithTowns.name}`);
+        throw ServerError.internalServer(`No se pudo eliminar el municipio ${municipalityWithTowns.name}`);
     }
 }
 
@@ -60,14 +66,14 @@ export const updateOne = async ({ id, form }: RequestDataGeneric) => {
     }
 }
 
-export const createOne = async (form: FormData) => {
+export const createOne = async (form: FormData, userId: number) => {
     const { name } = validationConform(form, nameSchema);
     const municipalityDb = await Repository.municipality.findIfExists(name);
     if(municipalityDb) {
         throw ServerError.badRequest(`El municipio con nombre: ${name} ya existe`);
     }
 
-    const municipalityCreated = await Repository.municipality.createOne(name);
+    const municipalityCreated = await Repository.municipality.createOne(name, userId);
     if(!municipalityCreated) {
         throw ServerError.internalServer(`No se pudo crear el municipio ${name}, intentelo mas tarde`);
     }
@@ -80,4 +86,5 @@ export default {
     deleteOne,
     updateOne,
     createOne,
+    exportData,
 }

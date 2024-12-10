@@ -12,6 +12,7 @@ export interface CreateLeaderProps{
     birthday: Date,
     anniversaryDate: Date,
     folderId: number,
+    createdById: number,
 }
 
 export interface UpdateLeaderProps{

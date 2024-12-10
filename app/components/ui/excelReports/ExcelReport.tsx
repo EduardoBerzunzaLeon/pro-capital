@@ -5,6 +5,7 @@ import { Generic } from '~/.server/interfaces';
 import saveAS from 'file-saver';
 import ExcelJS from 'exceljs';
 import { useEffect } from 'react';
+import { HandlerSuccess } from '~/.server/reponses';
 
 interface Props {
     url: string,
@@ -61,7 +62,7 @@ const exportToExcel = async (data: Generic[], columns: string[], name: string) =
 
 export const ExcelReport = ({ url, name, columns }: Props) => {
 
-    const { load, state, data } = useFetcher<any>();
+    const { load, state, data } = useFetcher<HandlerSuccess<Generic[]>>();
 
     useEffect(() => {
 

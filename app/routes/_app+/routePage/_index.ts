@@ -13,7 +13,6 @@ export const loader: LoaderFunction = async ({ request }) => {
 
     try {
           const data = await Service.routes.findAll(params);
-          
           return handlerSuccess(200, data);
     } catch (error) {
         console.log(error);
@@ -31,8 +30,8 @@ export const action: ActionFunction = async({ request }) => {
   try {
     
     if(data._action === 'create') {
-      await Service.auth.requirePermission(request, permissions.route.permissions.add);
-      await Service.routes.createOne();
+      const user = await Service.auth.requirePermission(request, permissions.route.permissions.add);
+      await Service.routes.createOne(user.id);
       return handlerSuccessWithToast('create');
     }
 

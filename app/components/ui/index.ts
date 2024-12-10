@@ -1,3 +1,4 @@
+export { ButtonClear } from './buttonClear';
 export { Action } from './Action/Action';
 export { AgentRouteAction } from './agentRoute';
 export { Alert } from './alert';
@@ -7,7 +8,6 @@ export { ErrorBoundary } from './error/ErrorBoundary';
 export { InputValidation } from './forms/Input';
 export { Pagination } from './pagination/Pagination';
 export { RowPerPage } from './rowPerPage/RowPerPage';
-
 export * from './animation';
 export * from './municipality';
 export * from './town';

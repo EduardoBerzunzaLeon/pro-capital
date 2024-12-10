@@ -1,4 +1,4 @@
-import { Card, CardHeader, Divider, CardBody, CardFooter, useDisclosure } from "@nextui-org/react";
+import { Card, CardHeader, Divider, CardBody, useDisclosure } from "@nextui-org/react";
 import { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { Outlet, useLoaderData } from "@remix-run/react";
 import { redirectWithWarning } from "remix-toast";

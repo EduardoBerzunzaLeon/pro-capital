@@ -1,17 +1,19 @@
 import { Button } from "@nextui-org/react";
 import { Role } from "@prisma/client";
 import { json, LoaderFunction } from "@remix-run/node"
-import { Outlet, useLoaderData, useNavigate } from "@remix-run/react";
+import { Outlet, useLoaderData, useNavigate, useSearchParams } from '@remix-run/react';
 import { useCallback } from "react";
 import { FaEye } from "react-icons/fa";
 import { getEmptyPagination, handlerSuccess } from "~/.server/reponses";
 import { Service } from "~/.server/services";
 import { permissions, useParamsPaginator, useParamsSelect, useRenderCell } from "~/application";
-import {  Pagination, RowPerPage, TableDetail } from "~/components/ui";
+import {  ButtonClear, Pagination, RowPerPage, TableDetail } from "~/components/ui";
 import { SelectRoles } from "~/components/ui/role/SelectRoles";
 import { Params } from '../../../application/params';
 import { Key } from '~/.server/interfaces';
 import { Permission } from "~/components/ui/auth/Permission";
+import { ExcelReport } from "~/components/ui/excelReports/ExcelReport";
+import { ROLE_COLUMNS } from "~/components/ui/excelReports/columns";
 
 export const loader: LoaderFunction = async ({ request }) => {
   await Service.auth.requirePermission(request, permissions.roles.permissions.view);
@@ -49,6 +51,7 @@ export default function  SecurityPage()  {
   const roles = useLoaderData<typeof loader>();
   const { render } = useRenderCell({ isMoney: false }); 
   const navigate = useNavigate();
+  const [ searchParams, setSearchParams ] = useSearchParams();
   const { 
     loadingState, 
     handlePagination, 
@@ -88,10 +91,19 @@ export default function  SecurityPage()  {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   
+  const handlerClear = () => {
+    setSearchParams();
+  }
 
   return (
     <div className='w-full flex gap-2 flex.wrap'>
       <div className='w-full flex gap-2 mt-5 mb-3 flex-wrap justify-between items-center'>
+      <Permission permission={permissions.roles.permissions.report}>
+      <ExcelReport url={`/roles/export?${searchParams.toString()}`} name='roles' columns={ROLE_COLUMNS} />
+    </Permission>
+    <ButtonClear 
+       onClear={handlerClear}
+    />
       <SelectRoles 
         onSelectionChange={handleSelection}
         selectionMode='multiple'

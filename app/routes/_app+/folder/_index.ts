@@ -28,8 +28,8 @@ export const loader: LoaderFunction = async ({ request }) => {
 
     try {
       if(data._action === 'create') {
-          await Service.auth.requirePermission(request, permissions.folder.permissions.add);
-          await Service.folder.createOne(townId, route+'');
+          const user = await Service.auth.requirePermission(request, permissions.folder.permissions.add);
+          await Service.folder.createOne(townId, route+'', user.id);
           return handlerSuccessWithToast('create');
       }
       return handlerSuccess(201, { id: Number(data?.id), name: data?.name+'' });

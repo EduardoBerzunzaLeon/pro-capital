@@ -1,8 +1,19 @@
+const CREATED_COLUMNS = [ 'FECHA DE CREACION', 'CREADO POR' ];
 
+export const FOLDER_COLUMNS = [
+    'NOMBRE',
+    'LOCALIDAD',
+    'MUNICIPIO',
+    'RUTA',
+    'LIDER',
+    'GRUPO',
+    ...CREATED_COLUMNS
+]
 
-export const ROUTE_COLUMNS = ['NOMBRE', 'ACTIVO'];
-export const MUNICIPALITY_COLUMNS = ['NOMBRES'];
-export const AGENT_COLUMNS = ['AGENTE', 'RUTA', 'FECHA DE ASIGNACION'];
+export const ROUTE_COLUMNS = ['NOMBRE', 'ACTIVO', ...CREATED_COLUMNS];
+export const TOWN_COLUMNS = ['LOCALIDAD', 'MUNICIPIO', ...CREATED_COLUMNS];
+export const MUNICIPALITY_COLUMNS = ['NOMBRES', ...CREATED_COLUMNS];
+export const AGENT_COLUMNS = ['AGENTE', 'RUTA', 'FECHA DE ASIGNACION', ...CREATED_COLUMNS];
 export const USER_COLUMNS = [
     'USUARIO', 
     'NOMBRE', 
@@ -15,8 +26,8 @@ export const USER_COLUMNS = [
 export const ROLE_COLUMNS = ['ROLE'];
 export const PERMISSION_COLUMNS = [
     'PERMISO', 
-    'ROLE',
     'DESCRIPCION', 
+    'ROLE',
     'ASIGNADO', 
     'MODULO', 
 ];
@@ -27,7 +38,8 @@ export const LEADER_COLUMNS = [
     'FECHA DE ANIVERSARIO', 
     'FECHA DE CUMPLEAÑOS', 
     'CARPETA',
-    'ACTIVO' 
+    'ACTIVO' ,
+    ...CREATED_COLUMNS
 ];
 export const CREDIT_COLUMNS = [
     'NOMBRE CLIENTE',
@@ -46,13 +58,13 @@ export const CREDIT_COLUMNS = [
     'RENOVACION',
     'CANTIDAD',
     'PAGO SEMANAL',
-    'FECHA DE CAPTURA',
-    'FECHA DE ALTA',
     'CANTIDAD DE PAGOS',
-    'SIGUIENTE PAGO',
-    'ULTIMO PAGO',
     'DEUDA ACTUAL',
     'ESTATUS',
+    'FECHA DE ALTA',
+    'SIGUIENTE PAGO',
+    'ULTIMO PAGO',
+    ...CREATED_COLUMNS
 ];
 export const PAYMENT_COLUMNS = [
     'NOMBRE CLIENTE',
@@ -71,10 +83,10 @@ export const PAYMENT_COLUMNS = [
     'GROUP',
     'PAGO',
     'FECHA DE PAGO',
-    'FECHA DE CAPTURA',
     'FOLIO',
     'NOTAS',
     'ESTATUS PAGO',
+    ...CREATED_COLUMNS
 ];
 
 

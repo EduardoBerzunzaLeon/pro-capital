@@ -7,6 +7,7 @@ import { RequestId } from "../interfaces";
 import { validationConform, validationZod } from "./validation.service";
 import { ServerError } from "../errors";
 import { CreateLeaderServerSchema, UnsubscribeLeaderSchema } from "~/schemas/leaderSchema";
+import { LeaderProps } from './excelReport.service';
 
 
 export const findAll = async (props: PaginationWithFilters) => {
@@ -20,6 +21,12 @@ export const findAll = async (props: PaginationWithFilters) => {
         errorMessage: 'No se encontraron líderes'
     });
 }
+
+export const exportData = async (props:PaginationWithFilters) => {
+    const data = await Repository.leader.findByReport(props);
+    return Service.excel.leaderReport(data as LeaderProps[]);
+}
+
 
 export const findOne = async (id: RequestId) => {
     const { id: leaderId } = validationZod({ id }, idSchema);
@@ -71,13 +78,13 @@ const verifyMutation = async (form: FormData) => {
     }
 }
 
-export const createOne = async (form: FormData) => {
+export const createOne = async (userId: number, form: FormData) => {
 
     const data =  await verifyMutation(form);
 
     await verifyIfHasFolder(data.folderId);
 
-    return await Repository.leader.createOne({...data});
+    return await Repository.leader.createOne({...data, createdById: userId});
 }
 
 export const deleteOne = async (id: RequestId) => {
@@ -127,15 +134,16 @@ export const unsubscribe = async (id: RequestId, form: FormData) => {
 }
 
 export default {
+    createOne, 
+    deleteOne, 
+    exportData,
     findAll, 
+    findAllBirthday, 
     findOne, 
+    resubscribe, 
+    unsubscribe, 
+    updateOne, 
     verifyIfHasFolder, 
     verifyIfHasOwnFolder, 
     verifyMutation, 
-    createOne, 
-    deleteOne, 
-    updateOne, 
-    findAllBirthday, 
-    resubscribe, 
-    unsubscribe, 
 }

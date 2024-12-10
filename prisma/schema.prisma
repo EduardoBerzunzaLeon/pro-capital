@@ -70,6 +70,14 @@ model User {
   avatar String?
   agentsRoutes AgentRoute[]
   payment_detail PaymentDetail[]
+  createdFolders Folder[]
+  createdRoutes Route[]
+  createdMunicipalities Municipality[]
+  createdAgentsRoute AgentRoute[] @relation("UserCreator")
+  createdTowns Town[]
+  createdLeaders Leader[]
+  createdCredits Credit[]
+  createdPayments PaymentDetail[] @relation("UserCreator")
 }
 
 model Role {
@@ -100,6 +108,9 @@ model Route {
   id Int @id @default(autoincrement())
   name Int @unique
   isActive Boolean @default(true)
+  createdAt DateTime @default(now())
+  createdById Int
+  createdBy User @relation(fields: [createdById], references: [id])
   agentsRoutes AgentRoute[]
   folders Folder[]
 }
@@ -111,12 +122,18 @@ model AgentRoute {
   route Route @relation(fields: [routeId], references: [id])
   user User @relation(fields: [userId], references: [id])
   assignAt DateTime @default(now()) @db.Date
+  createdAt DateTime @default(now())
+  createdById Int
+  createdBy User @relation("UserCreator",fields: [createdById], references: [id])
   @@unique([userId, assignAt])
 }
 
 model Municipality {
   id Int @id @default(autoincrement())
   name String @unique
+  createdAt DateTime @default(now())
+  createdById Int
+  createdBy User @relation(fields: [createdById], references: [id])
   towns Town[]
 }
 
@@ -126,6 +143,9 @@ model Town {
   municipalityId Int 
   municipality Municipality @relation(fields: [municipalityId], references: [id])
   folders Folder[]
+  createdAt DateTime @default(now())
+  createdById Int
+  createdBy User @relation(fields: [createdById], references: [id])
 }
 
 model Folder {
@@ -137,6 +157,9 @@ model Folder {
  routeId Int
  route Route @relation(fields: [routeId], references: [id])
  isActive Boolean @default(true)
+ createdAt DateTime @default(now())
+ createdById Int
+ createdBy User @relation(fields: [createdById], references: [id])
  groups Group[]
  leaders Leader[]
  credits Credit[]
@@ -185,6 +208,9 @@ model Leader {
   folderId Int @unique
   isActive Boolean @default(true)
   folder Folder @relation(fields: [folderId], references: [id])
+  createdAt DateTime @default(now())
+  createdById Int
+  createdBy User @relation(fields: [createdById], references: [id])
 }
 
 
@@ -232,7 +258,9 @@ model Credit {
   countPayments Int @default(0)
   status Status @default(ACTIVO)
   payment_detail PaymentDetail[]
-  // @@unique([clientId, groupId, folderId])
+  createdById Int
+  createdBy User @relation(fields: [createdById], references: [id])
+  @@unique([clientId, groupId, folderId])
 }
 
 model PaymentDetail {
@@ -247,5 +275,7 @@ model PaymentDetail {
   folio Int?
   notes String?
   status PaymentStatus
+  createdById Int
+  createdBy User @relation("UserCreator",fields: [createdById], references: [id])
 }
 
