@@ -2,11 +2,11 @@ import { Button } from "@nextui-org/react";
 import { Role } from "@prisma/client";
 import { json, LoaderFunction } from "@remix-run/node"
 import { Outlet, useLoaderData, useNavigate, useSearchParams } from '@remix-run/react';
-import { useCallback } from "react";
+import { Fragment, useCallback } from "react";
 import { FaEye } from "react-icons/fa";
 import { getEmptyPagination, handlerSuccess } from "~/.server/reponses";
 import { Service } from "~/.server/services";
-import { permissions, useParamsPaginator, useParamsSelect, useRenderCell } from "~/application";
+import { permissions, useClearFilters, useParamsPaginator, useParamsSelect, useRenderCell } from "~/application";
 import {  ButtonClear, Pagination, RowPerPage, TableDetail } from "~/components/ui";
 import { SelectRoles } from "~/components/ui/role/SelectRoles";
 import { Params } from '../../../application/params';
@@ -51,7 +51,9 @@ export default function  SecurityPage()  {
   const roles = useLoaderData<typeof loader>();
   const { render } = useRenderCell({ isMoney: false }); 
   const navigate = useNavigate();
-  const [ searchParams, setSearchParams ] = useSearchParams();
+  const [ searchParams ] = useSearchParams();
+  // const { key, onClearFilters } = useClearFilters(['role']);
+
   const { 
     loadingState, 
     handlePagination, 
@@ -70,6 +72,14 @@ export default function  SecurityPage()  {
     mapper: (item: number) => String(item)
   });
 
+  const handlePress = (e) => {
+    navigate({
+        pathname: `/security/${e.target.id}/permissions`,
+        search: `?${searchParams.toString()}`
+      })
+  }
+
+  console.log(searchParams.toString());
   const renderCell = useCallback((role: Role, columnKey: Key) => {
 
     if(columnKey === 'actions') {
@@ -81,7 +91,8 @@ export default function  SecurityPage()  {
           variant='ghost' 
           className='self-center'
           startContent={<FaEye />} 
-          onPress={() => navigate(`./${role.id}/permissions`)}
+          id={role.id+''}
+          onPress={handlePress}
         >Ver permisos</Button>
       </Permission>
       // </div>
@@ -90,10 +101,6 @@ export default function  SecurityPage()  {
     return <span className='capitalize'>{render(role, columnKey)}</span>
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-  
-  const handlerClear = () => {
-    setSearchParams();
-  }
 
   return (
     <div className='w-full flex gap-2 flex.wrap'>
@@ -101,15 +108,17 @@ export default function  SecurityPage()  {
       <Permission permission={permissions.roles.permissions.report}>
       <ExcelReport url={`/roles/export?${searchParams.toString()}`} name='roles' columns={ROLE_COLUMNS} />
     </Permission>
-    <ButtonClear 
-       onClear={handlerClear}
-    />
-      <SelectRoles 
-        onSelectionChange={handleSelection}
-        selectionMode='multiple'
-        className='w-full md:max-w-[25%]'
-        defaultSelectedKeys={defaultItems}
-      />
+    {/* <ButtonClear 
+       onClear={onClearFilters}
+    /> */}
+      <Fragment >
+        <SelectRoles 
+          onSelectionChange={handleSelection}
+          selectionMode='multiple'
+          className='w-full md:max-w-[25%]'
+          defaultSelectedKeys={defaultItems}
+        />
+      </Fragment>
       <TableDetail 
           aria-label="roles table"
           onSortChange={handleSort}

@@ -1,9 +1,9 @@
 import { Fragment, useCallback, useMemo, useState } from "react";
-import { Outlet, useLoaderData, useLocation, useSearchParams } from "@remix-run/react"
+import { Outlet, useLoaderData, useSearchParams } from "@remix-run/react"
 
 import { userLoader } from "~/application/user/user.loader";
 import { Key, Selection } from "~/.server/interfaces";
-import {  permissions, useParamsPaginator, useParamsSelect, useRenderCell } from "~/application";
+import {  permissions, useClearFilters, useParamsPaginator, useParamsSelect, useRenderCell } from "~/application";
 import { useDropdown } from "~/application/hook/useDropdown";
 import { UserComplete } from "~/.server/domain/entity";
 import { Button, Link, Select, SelectItem } from "@nextui-org/react";
@@ -39,7 +39,7 @@ export default function  UsersPage()  {
   const loader = useLoaderData<typeof userLoader>();
 
   const [visibleColumns, setVisibleColumns] = useState<Selection>(new Set(INITIAL_VISIBLE_COLUMNS)); 
-  const [ searchParams, setSearchParams ] = useSearchParams();
+  const [ searchParams ] = useSearchParams();
 
   const {
     defaultItems,
@@ -49,7 +49,6 @@ export default function  UsersPage()  {
     param: 'roles',
     mapper: (item: number) => String(item)
   });
-  const { key } = useLocation();
   
   const { defaultValue, handleValueChange } = useDropdown({
     param: 'sex',
@@ -66,6 +65,7 @@ export default function  UsersPage()  {
   } = useParamsPaginator({ columnDefault: 'username' });
 
   const { render } = useRenderCell({ isMoney: false }); 
+  const { key, onClearFilters } = useClearFilters();
    
   const headerColumns = useMemo(() => {
     if (typeof visibleColumns === 'string') return columns;
@@ -103,10 +103,6 @@ export default function  UsersPage()  {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const handlerClear = () => {
-    setSearchParams();
-  }
-
   const topContent = useMemo(() => {
     return (<Select
       label="Columnas"
@@ -134,7 +130,7 @@ export default function  UsersPage()  {
       <ExcelReport url={`/users/export?${searchParams.toString()}`} name='usuarios' columns={USER_COLUMNS} />
     </Permission>
     <ButtonClear 
-       onClear={handlerClear}
+       onClear={onClearFilters}
     />
     <Fragment key={key}>
       <SelectRoles 

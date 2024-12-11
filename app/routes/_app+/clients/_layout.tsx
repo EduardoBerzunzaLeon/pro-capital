@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { Fragment, useCallback, useMemo, useState } from "react";
 import { Button, Select, SelectItem } from "@nextui-org/react";
 import { Outlet, useLoaderData, useNavigate, useSearchParams } from "@remix-run/react";
 
@@ -9,7 +9,7 @@ import { DropdownCreditStatus } from "~/components/ui/dropdowns/DropdownCreditSt
 import { HandlerSuccess } from "~/.server/reponses";
 import { Key, SortDirection, Selection} from "~/.server/interfaces";
 import { TableDetail, RowPerPage, Pagination, InputFilter, RangePickerDateFilter, SliderFilter, CurpForm, ExportDropdown, ChipStatusCredit, ButtonSetEstatus, ErrorBoundary, ButtonClear } from "~/components/ui";
-import { useDropdownBoolean, useParamsPaginator, useRenderCell, permissions } from '~/application';
+import { useDropdownBoolean, useParamsPaginator, useRenderCell, permissions, useClearFilters } from '~/application';
 import { useDropdown } from "~/application/hook/useDropdown";
 import { clientAction } from '../../../application/client/client.action';
 import { CreditAction } from "~/components/ui/credit/CreditAction";
@@ -88,7 +88,7 @@ export default function ClientsPage() {
   const loader = useLoaderData<HandlerSuccess<Loader>>();
   const [visibleColumns, setVisibleColumns] = useState<Selection>(new Set(INITIAL_VISIBLE_COLUMNS)); 
   const navigate = useNavigate();
-  const [ searchParams, setSearchParams ] = useSearchParams();
+  const [ searchParams ] = useSearchParams();
 
   const { 
     defaultStatus: defaultCanRenovate, 
@@ -117,6 +117,7 @@ export default function ClientsPage() {
   });
 
   const { render } = useRenderCell({ isMoney: true }); 
+  const { key, onClearFilters } = useClearFilters();
    
   const headerColumns = useMemo(() => {
     if (typeof visibleColumns === 'string') return columns;
@@ -159,10 +160,6 @@ export default function ClientsPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const handlerClear = () => {
-    setSearchParams();
-  }
-
   const topContent = useMemo(() => {
     return (<Select
       label="Columnas"
@@ -202,8 +199,9 @@ export default function ClientsPage() {
       <ExcelReport url={`/clients/export/excel?${searchParams.toString()}`} name='creditos' columns={CREDIT_COLUMNS} />
     </Permission>
     <ButtonClear 
-       onClear={handlerClear}
+       onClear={onClearFilters}
     />
+    <Fragment key={key}>
       <InputFilter 
         param="client" 
         name="clientFullname" 
@@ -296,6 +294,7 @@ export default function ClientsPage() {
         param='debt'
         value={loader?.serverData?.debt}
       />
+    </Fragment>
     </div>
     <TableDetail 
         aria-label="credits table"

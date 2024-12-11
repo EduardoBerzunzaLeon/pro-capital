@@ -1,7 +1,7 @@
 import { Button, Link } from "@nextui-org/react";
 import { json, LoaderFunction } from "@remix-run/node";
 import { useLoaderData, useOutlet, useSearchParams } from "@remix-run/react";
-import { useCallback  } from "react";
+import { Fragment, useCallback  } from "react";
 import { AgentRoute } from "~/.server/domain/entity/agentRoute.entity";
 import { Key, SortDirection } from "~/.server/interfaces";
 import { HandlerSuccess, handlerSuccess } from "~/.server/reponses";
@@ -10,7 +10,7 @@ import { Service } from "~/.server/services";
 import { AgentRouteAction, ButtonClear, InputFilter, Pagination, RangePickerDateFilter, RowPerPage, TableDetail } from "~/components/ui";
 import { SelectRoutes } from "~/components/ui/route/SelectRoutes";
 import { MdEditCalendar } from "react-icons/md";
-import { permissions, useParamsPaginator, useParamsSelect } from '~/application';
+import { permissions, useParamsPaginator, useParamsSelect, useClearFilters } from '~/application';
 import { Params } from '../../../application/params/';
 import { Permission } from "~/components/ui/auth/Permission";
 import { ExcelReport } from "~/components/ui/excelReports/ExcelReport";
@@ -69,7 +69,8 @@ const columns = [
 export default function  AgentsPage()  {
   
   const loader = useLoaderData<HandlerSuccess<Loader>>();
-  const [ searchParams, setSearchParams ] = useSearchParams();
+  const [ searchParams ] = useSearchParams();
+  const { key, onClearFilters } = useClearFilters();
   
   const {
     defaultItems,
@@ -123,10 +124,6 @@ export default function  AgentsPage()  {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-      
-  const handlerClear = () => {
-    setSearchParams();
-  }
 
   return (
     <>
@@ -138,29 +135,31 @@ export default function  AgentsPage()  {
       <ExcelReport url={`/agents/export?${searchParams.toString()}`} name='asesores_asignados' columns={AGENT_COLUMNS} />
     </Permission>
     <ButtonClear 
-       onClear={handlerClear}
+       onClear={onClearFilters}
     />
-      <SelectRoutes 
-        onSelectionChange={handleSelection}
-        selectionMode='multiple'
-        className='w-full md:max-w-[25%]'
-        defaultSelectedKeys={defaultItems}
-      />
-      <InputFilter 
-        param="agent" 
-        name="agent" 
-        label="Asesor" 
-        id="agent" 
-        placeholder="Nombre del asesor"      
-        defaultValue={loader?.serverData?.agent}
-      />
-      <RangePickerDateFilter 
-        label="Rango de la fecha de asignación" 
-        startName="start" 
-        endName="end"
-        start={loader?.serverData.start} 
-        end={loader?.serverData.end} 
-      />
+      <Fragment key={key}>
+        <SelectRoutes 
+          onSelectionChange={handleSelection}
+          selectionMode='multiple'
+          className='w-full md:max-w-[25%]'
+          defaultSelectedKeys={defaultItems}
+        />
+        <InputFilter 
+          param="agent" 
+          name="agent" 
+          label="Asesor" 
+          id="agent" 
+          placeholder="Nombre del asesor"      
+          defaultValue={loader?.serverData?.agent}
+        />
+        <RangePickerDateFilter 
+          label="Rango de la fecha de asignación" 
+          startName="start" 
+          endName="end"
+          start={loader?.serverData.start} 
+          end={loader?.serverData.end} 
+        />
+      </Fragment>
     </div>
     <TableDetail 
         aria-label="agents table"

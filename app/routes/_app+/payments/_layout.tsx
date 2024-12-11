@@ -2,9 +2,9 @@ import { SortDirection, Selection, Key } from '~/.server/interfaces';
 import { paymentLoader } from '../../../application/payment/payment.loader';
 import { Payment } from '~/.server/domain/entity';
 import { useLoaderData, useSearchParams } from '@remix-run/react';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState, Fragment } from 'react';
 import { HandlerSuccess } from '~/.server/reponses';
-import { permissions, useParamsPaginator, useRenderCell } from '~/application';
+import { permissions, useClearFilters, useParamsPaginator, useRenderCell } from '~/application';
 import { Select, SelectItem, useDisclosure, } from '@nextui-org/react';
 import { ButtonClear, ChipStatusCredit, ChipStatusPayment, InputFilter, ModalPaymentEdit, Pagination, PaymentAction, RangePickerDateFilter, RowPerPage, SliderFilter, TableDetail } from '~/components/ui';
 import { DropdownPaymentStatus } from '~/components/ui/dropdowns/DropDownPaymentStatus';
@@ -82,7 +82,7 @@ export default function PaymentPage( ) {
   const [visibleColumns, setVisibleColumns] = useState<Selection>(new Set(INITIAL_VISIBLE_COLUMNS));
   const { isOpen, onOpenChange, onOpen } = useDisclosure();
   const { isOpen: isOpenCreate, onOpenChange: onOpenChangeCreate, onOpen: onOpenCreate } = useDisclosure();
-  const [ searchParams, setSearchParams ] = useSearchParams();
+  const [ searchParams ] = useSearchParams();
   
   const { 
     loadingState, 
@@ -93,7 +93,8 @@ export default function PaymentPage( ) {
   } = useParamsPaginator({ columnDefault: 'captureAt' });
 
   const { render } = useRenderCell({ isMoney: true }); 
-
+  const { key, onClearFilters } = useClearFilters();
+  
   const headerColumns = useMemo(() => {
     if (typeof visibleColumns === 'string') return columns;
     if (visibleColumns.has('all')) return columns;
@@ -134,11 +135,6 @@ export default function PaymentPage( ) {
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-  
-  const handlerClear = () => {
-    setSearchParams();
-  }
-
 
   const { defaultValue, handleValueChange } = useDropdown({
     param: 'status',
@@ -175,8 +171,9 @@ export default function PaymentPage( ) {
       <ExcelReport url={`/payments/export?${searchParams.toString()}`} name='pagos' columns={PAYMENT_COLUMNS} />
     </Permission>
     <ButtonClear 
-       onClear={handlerClear}
+       onClear={onClearFilters}
     />
+    <Fragment key={key}>
       <InputFilter 
         param="client" 
         name="clientFullname" 
@@ -281,6 +278,7 @@ export default function PaymentPage( ) {
         param='paymentAmount'
         value={loader?.serverData?.paymentAmount}
       />
+    </Fragment>
     </div>
     <TableDetail 
         aria-label="payments table"

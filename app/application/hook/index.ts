@@ -1,7 +1,8 @@
 export { useCalculateDebt } from './useCalculateDebt';
+export { useClearFilters } from './useClearFilters';
 export { useComponentVisible } from "./useComponentVisible";
 export { useDimensions } from "./useDimensions";
-export { useDropdown } from "@nextui-org/react";
+export { useDropdown } from './useDropdown';
 export { useDropdownBoolean } from "./useDropdownBoolean";
 export { useFetcherAction } from "./useFetcherAction";
 export { useFetcherPaginator } from "./useFetcherPaginator";

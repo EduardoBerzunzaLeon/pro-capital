@@ -13,7 +13,10 @@ export const PermissionParams = () => {
         const name = url.searchParams.get('name') || '';
         const description = url.searchParams.get('description') || '';
         const moduleName = url.searchParams.get('module') || '';
+        const roles = url.searchParams.get('roles') || '';
     
+        console.log({roles});
+
         const nameFormatted = { column: 'name', value: name }; 
         const descriptionFormatted = { column: 'description', value: description }; 
         const moduleFormatted = { column: 'module.name', value: moduleName }; 
@@ -37,7 +40,8 @@ export const PermissionParams = () => {
             search: {
                 name,
                 description,
-                module: moduleName 
+                module: moduleName,
+                roles
             },
         }  
 

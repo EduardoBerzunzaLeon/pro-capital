@@ -21,6 +21,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     const { params: urlParams, search } = Params.permission.getParams(request);
     try {
 
+        console.log(search);
         const data = await Service.permission.findAll(roleId, urlParams);
         const { page, limit, column, direction } = params;
 
@@ -34,6 +35,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
           s: [],
          })
     
+
       } catch (error) {
         console.log({error});
         return json(getEmptyPagination(search));
@@ -54,6 +56,7 @@ export default function PermissionDetailPage() {
     const { render } = useRenderCell({ isMoney: false }); 
     const [ searchParams, setSearchParams ] = useSearchParams();
     const { roleId } = useParams();
+    
     const { 
         loadingState, 
         handlePagination, 
@@ -68,6 +71,8 @@ export default function PermissionDetailPage() {
       const handlerClear = () => {
         setSearchParams();
       }
+
+      
     const renderCell = useCallback((permission: Permission, columnKey: Key) => {
 
         if(columnKey === 'actions') {
@@ -93,7 +98,7 @@ export default function PermissionDetailPage() {
             </PermissionUI>
             <ButtonClear 
              onClear={handlerClear}
-            />
+            /> 
             <InputFilter 
                 param="name" 
                 name="name" 

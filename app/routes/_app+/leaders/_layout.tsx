@@ -2,11 +2,11 @@ import { Key, SortDirection } from "~/.server/interfaces";
 import { Leader } from "~/.server/domain/entity";
 import { useLoaderData, useOutlet, useSearchParams } from "@remix-run/react";
 import { HandlerSuccess } from "~/.server/reponses";
-import { useCallback, useState} from "react";
+import { useCallback, useState, Fragment } from 'react';
 import { Button, Link, useDisclosure } from "@nextui-org/react";
 import { ButtonClear, ChipStatus, InputFilter, LeaderAction, LeaderToggleActive, ModalLeaderEdit, ModalsToggle, Pagination, RangePickerDateFilter, RowPerPage, StatusFilter, TableDetail } from "~/components/ui";
 import { FaUserPlus } from "react-icons/fa";
-import { useParamsPaginator , permissions } from '../../../application';
+import { useParamsPaginator , permissions, useClearFilters } from '../../../application';
 import { leaderLoader } from "~/application/leader/leader.loader";
 import { MultiplePermissions } from "~/components/ui/auth/MultiplePermissions";
 import { Permission } from '../../../components/ui/auth/Permission';
@@ -49,9 +49,10 @@ const columns = [
 export default function LeaderPage () {
   const loader = useLoaderData<HandlerSuccess<Loader>>();
   const outlet = useOutlet();
-  const [ searchParams, setSearchParams ] = useSearchParams();
+  const [ searchParams ] = useSearchParams();
   const [selectedId, setSelectedId] = useState<number>(0);
   const { isOpen, onOpenChange, onOpen } = useDisclosure();
+  const { key, onClearFilters } = useClearFilters();
 
   const { 
     loadingState, 
@@ -103,10 +104,6 @@ export default function LeaderPage () {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const handlerClear = () => {
-    setSearchParams();
-  }
-
   return (
     <>
     { outlet }
@@ -119,35 +116,37 @@ export default function LeaderPage () {
       <ExcelReport url={`/leaders/export?${searchParams.toString()}`} name='lideres' columns={LEADER_COLUMNS} />
     </Permission>
     <ButtonClear 
-       onClear={handlerClear}
+       onClear={onClearFilters}
     />
-      <StatusFilter 
-        isActive={loader?.serverData?.isActive}
-        param='isActive'
-      />
-      <InputFilter 
-        param="name" 
-        name="name" 
-        label="Líder" 
-        id="name" 
-        placeholder="Nombre de la líder"      
-        defaultValue={loader?.serverData?.fullname}
-      />
-      <InputFilter 
-        param="folder" 
-        name="folder" 
-        label="Carpeta" 
-        id="folder" 
-        placeholder="Nombre de la carpeta"      
-        defaultValue={loader?.serverData?.folder.name}
-      />
-      <RangePickerDateFilter 
-        label="Rango de la fecha de asignación" 
-        startName="start" 
-        endName="end"
-        start={loader?.serverData.start} 
-        end={loader?.serverData.end} 
-      />
+      <Fragment key={key}>
+        <StatusFilter 
+          isActive={loader?.serverData?.isActive}
+          param='isActive'
+        />
+        <InputFilter 
+          param="name" 
+          name="name" 
+          label="Líder" 
+          id="name" 
+          placeholder="Nombre de la líder"      
+          defaultValue={loader?.serverData?.fullname}
+        />
+        <InputFilter 
+          param="folder" 
+          name="folder" 
+          label="Carpeta" 
+          id="folder" 
+          placeholder="Nombre de la carpeta"      
+          defaultValue={loader?.serverData?.folder.name}
+        />
+        <RangePickerDateFilter 
+          label="Rango de la fecha de asignación" 
+          startName="start" 
+          endName="end"
+          start={loader?.serverData.start} 
+          end={loader?.serverData.end} 
+        />
+      </Fragment>
     </div>
     <ModalLeaderEdit isOpen={isOpen} onOpenChange={onOpenChange} />
     <TableDetail 
