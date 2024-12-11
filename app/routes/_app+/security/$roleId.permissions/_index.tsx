@@ -1,11 +1,11 @@
 import { json, LoaderFunction } from "@remix-run/node"
 import { useLoaderData, useParams, useSearchParams } from '@remix-run/react';
-import { useCallback } from "react";
+import { useCallback, Fragment } from 'react';
 import { Permission } from "~/.server/domain/entity/permission.entity";
 import { Key } from "~/.server/interfaces";
 import { getEmptyPagination, handlerSuccess } from "~/.server/reponses";
 import { Service } from "~/.server/services";
-import { permissions as permissionsData, useParamsPaginator, useRenderCell } from "~/application";
+import { permissions as permissionsData, useClearFilters, useParamsPaginator, useRenderCell } from "~/application";
 import { Params } from "~/application/params";
 import { ButtonClear, InputFilter, Pagination, PermissionToggleActive, RowPerPage, TableDetail } from "~/components/ui";
 import { Permission as PermissionUI } from "~/components/ui/auth/Permission";
@@ -54,8 +54,9 @@ export default function PermissionDetailPage() {
 
     const permissions = useLoaderData<typeof loader>();
     const { render } = useRenderCell({ isMoney: false }); 
-    const [ searchParams, setSearchParams ] = useSearchParams();
+    const [ searchParams ] = useSearchParams();
     const { roleId } = useParams();
+    const { key, onClearFilters } = useClearFilters(['name', 'description', 'module']);
     
     const { 
         loadingState, 
@@ -67,11 +68,6 @@ export default function PermissionDetailPage() {
         columnDefault: 'name'
       });
     
-
-      const handlerClear = () => {
-        setSearchParams();
-      }
-
       
     const renderCell = useCallback((permission: Permission, columnKey: Key) => {
 
@@ -97,8 +93,9 @@ export default function PermissionDetailPage() {
                <ExcelReport url={`/security/${roleId}/permissions/export?${searchParams.toString()}`} name='permisos' columns={PERMISSION_COLUMNS} />
             </PermissionUI>
             <ButtonClear 
-             onClear={handlerClear}
+             onClear={onClearFilters}
             /> 
+            <Fragment key={key}>
             <InputFilter 
                 param="name" 
                 name="name" 
@@ -154,6 +151,7 @@ export default function PermissionDetailPage() {
                 renderCell={renderCell} 
                 data={permissions?.serverData.data ?? []}    
             />
+            </Fragment>
         </div>
         </>
     )

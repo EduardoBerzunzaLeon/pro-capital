@@ -14,6 +14,7 @@ import { Key } from '~/.server/interfaces';
 import { Permission } from "~/components/ui/auth/Permission";
 import { ExcelReport } from "~/components/ui/excelReports/ExcelReport";
 import { ROLE_COLUMNS } from "~/components/ui/excelReports/columns";
+import { ErrorBoundary } from '../../../components/ui/error/ErrorBoundary';
 
 export const loader: LoaderFunction = async ({ request }) => {
   await Service.auth.requirePermission(request, permissions.roles.permissions.view);
@@ -28,10 +29,10 @@ export const loader: LoaderFunction = async ({ request }) => {
     return handlerSuccess(200, { 
       ...data,
       ...search,
-      p: page,
-      l: limit,
-      c: column,
-      d: direction,
+      pp: page,
+      ll: limit,
+      cc: column,
+      dd: direction,
     })
 
   } catch (error) {
@@ -47,12 +48,14 @@ const columns = [
   { key: 'actions', label: 'ACCIONES' },
 ]
 
+export { ErrorBoundary }
+
 export default function  SecurityPage()  {
   const roles = useLoaderData<typeof loader>();
   const { render } = useRenderCell({ isMoney: false }); 
   const navigate = useNavigate();
   const [ searchParams ] = useSearchParams();
-  // const { key, onClearFilters } = useClearFilters(['role']);
+  const { key, onClearFilters } = useClearFilters(['roles'], ['dd', 'll', 'pp', 'cc']);
 
   const { 
     loadingState, 
@@ -61,8 +64,13 @@ export default function  SecurityPage()  {
     handleSort,
     sortDescriptor
   } = useParamsPaginator({
-    columnDefault: 'role'
+    columnDefault: 'role',
+    pageParam:  'pp',
+    rowParam: 'll',
+    directionParam: 'dd',
+    columnParam: 'cc'
   });
+
   const {
     defaultItems,
     handleSelection,
@@ -72,14 +80,6 @@ export default function  SecurityPage()  {
     mapper: (item: number) => String(item)
   });
 
-  const handlePress = (e) => {
-    navigate({
-        pathname: `/security/${e.target.id}/permissions`,
-        search: `?${searchParams.toString()}`
-      })
-  }
-
-  console.log(searchParams.toString());
   const renderCell = useCallback((role: Role, columnKey: Key) => {
 
     if(columnKey === 'actions') {
@@ -92,7 +92,12 @@ export default function  SecurityPage()  {
           className='self-center'
           startContent={<FaEye />} 
           id={role.id+''}
-          onPress={handlePress}
+          onPress={() => {
+            navigate({
+              pathname: `/security/${role.id}/permissions`,
+              search: `?${searchParams.toString()}`
+            })
+          }}
         >Ver permisos</Button>
       </Permission>
       // </div>
@@ -100,7 +105,7 @@ export default function  SecurityPage()  {
     }
     return <span className='capitalize'>{render(role, columnKey)}</span>
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [searchParams])
 
   return (
     <div className='w-full flex gap-2 flex.wrap'>
@@ -108,10 +113,10 @@ export default function  SecurityPage()  {
       <Permission permission={permissions.roles.permissions.report}>
       <ExcelReport url={`/roles/export?${searchParams.toString()}`} name='roles' columns={ROLE_COLUMNS} />
     </Permission>
-    {/* <ButtonClear 
+    <ButtonClear 
        onClear={onClearFilters}
-    /> */}
-      <Fragment >
+    />
+      <Fragment key={key}>
         <SelectRoles 
           onSelectionChange={handleSelection}
           selectionMode='multiple'

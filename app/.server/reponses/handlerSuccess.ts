@@ -39,14 +39,21 @@ export const handlerSuccessWithToast = (type: TypeHandler, info?: string) => {
 
 }
 
-export const handlerPaginationParams = (urlText: string, defaultColumn: string, columns: string[]) => {
+interface Pagination {
+    page?: string,
+    limit?: string,
+    column?: string,
+    search?: string,
+    direction?: string
+}
+export const handlerPaginationParams = (urlText: string, defaultColumn: string, columns: string[], pagination?: Pagination) => {
     const url = new URL(urlText);
 
-    const page = url.searchParams.get('p') || 1;
-    const limit = url.searchParams.get('l') || 5;
-    const column = url.searchParams.get('c') || defaultColumn;
-    const direction = url.searchParams.get('d') || 'ascending';
-    const searchData = url.searchParams.get('s');
+    const page = url.searchParams.get(pagination?.page ?? 'p') || 1;
+    const limit = url.searchParams.get(pagination?.limit ?? 'l') || 5;
+    const column = url.searchParams.get(pagination?.column ?? 'c') || defaultColumn;
+    const direction = url.searchParams.get(pagination?.direction ?? 'd') || 'ascending';
+    const searchData = url.searchParams.get(pagination?.search ?? 's');
     
     const searchParsed = searchData 
     ? convertSearchData(searchData, defaultColumn) 

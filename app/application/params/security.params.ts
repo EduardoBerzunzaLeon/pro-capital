@@ -23,7 +23,12 @@ export const SecurityParams = () => {
 
         const {
             page, limit, column, direction
-          } = handlerPaginationParams(request.url, defaultColumn, columnsFilter);
+          } = handlerPaginationParams(
+            request.url, 
+            defaultColumn, 
+            columnsFilter, 
+            { page: 'pp', limit: 'll', direction: 'dd', column: 'cc' }
+        );
 
 
         return {
