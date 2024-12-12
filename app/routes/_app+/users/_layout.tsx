@@ -6,7 +6,7 @@ import { Key, Selection } from "~/.server/interfaces";
 import {  permissions, useClearFilters, useParamsPaginator, useParamsSelect, useRenderCell } from "~/application";
 import { useDropdown } from "~/application/hook/useDropdown";
 import { UserComplete } from "~/.server/domain/entity";
-import { Button, Link, Select, SelectItem } from "@nextui-org/react";
+import {  Button, Link, Select, SelectItem } from "@nextui-org/react";
 import { ButtonClear, ChipStatus, InputFilter, Pagination, RowPerPage, StatusFilter, TableDetail, UserAction, UserToggleActive } from "~/components/ui";
 import { DropdownSex } from "~/components/ui/dropdowns/DropdownSex";
 import { SelectRoles } from "~/components/ui/role/SelectRoles";
@@ -15,6 +15,7 @@ import { Permission } from "~/components/ui/auth/Permission";
 import { MultiplePermissions } from "~/components/ui/auth/MultiplePermissions";
 import { ExcelReport } from "~/components/ui/excelReports/ExcelReport";
 import { USER_COLUMNS } from "~/components/ui/excelReports/columns";
+import { FaUsersGear } from "react-icons/fa6";
 
 export {
   userLoader as loader
@@ -34,6 +35,15 @@ const columns = [
   { key: 'sex', label: 'SEXO', sortable: true},
   { key: 'actions', label: 'ACCIONES' },
 ]
+
+export const handle = {
+  breadcrumb: () => ({
+    href: '/users',
+    label: 'Usuarios',
+    startContent: <FaUsersGear />,
+  })
+}
+
 
 export default function  UsersPage()  {
   const loader = useLoaderData<typeof userLoader>();

@@ -1,7 +1,7 @@
 import { Breadcrumbs, BreadcrumbItem } from "@nextui-org/react";
-import { Outlet, useLoaderData, useLocation, useNavigationType, useRouteLoaderData} from "@remix-run/react";
+import { Outlet, UIMatch, useLoaderData, useLocation, useMatches, useNavigationType, useRouteLoaderData} from "@remix-run/react";
 import { type MetaFunction } from "@remix-run/node";
-import { FaHome, FaUser, FaUsers } from "react-icons/fa";
+import { FaHome } from "react-icons/fa";
 import { LogginEnd } from "~/components/ui";
 import { dashboardLoader } from "~/application/dashboard/dashboard.loader";
 import Navbar from "~/components/ui/navbar/Narbar";
@@ -26,27 +26,63 @@ export const shouldRevalidate: ShouldRevalidateFunction = ({
 
 export { ErrorBoundary }
 
+export const handle = {
+  breadcrumb: () => ({
+    href:'/',
+    label:'Inicio',
+    startContent: <FaHome />
+  })
+}
+
+interface BreadCrumbI {
+  href: string;
+  startContent: JSX.Element;
+  label: string;
+}
+
+
+type BreadcrumbMatch = UIMatch<
+  Record<string, unknown>,
+  { breadcrumb: (data?: unknown) => BreadCrumbI | BreadCrumbI[] }
+>
+
+
 export default function Dashboard() {
   
   const location = useLocation();
+  const matches = (useMatches() as unknown as BreadcrumbMatch[]).filter(
+    ({ handle }) => handle?.breadcrumb
+  )
   const navigationType = useNavigationType();
   const { user } = useRouteLoaderData('root') as { user: User };
   const data = useLoaderData<typeof dashboardLoader>();
-  
+
+  console.log(matches);
+
   return (
     <>
         <SideBar />
         <Navbar />
-        <Breadcrumbs className="flex w-11/12  justify-end m-auto pt-5">
-          <BreadcrumbItem href='/'
-            startContent={<FaHome />}
-          >Inicio</BreadcrumbItem>
-          <BreadcrumbItem href='/clients'
-            startContent={<FaUsers />}
-          >Clientes</BreadcrumbItem>
-          <BreadcrumbItem href='/clients/1'
-            startContent={<FaUser />}
-          >Cliente A</BreadcrumbItem>
+        <Breadcrumbs className="flex w-11/12  justify-end m-auto pt-5" >
+          { matches.map(({ handle, data }, i) => {
+              const bread = handle.breadcrumb(data); 
+
+              if( !Array.isArray(bread) ) {
+                return (
+                  <BreadcrumbItem startContent={bread.startContent} href={bread.href} key={i}>
+                    { bread.label }
+                  </BreadcrumbItem> 
+                )
+              }
+
+              return bread.map(({startContent, href, label}, j) => {
+                return (
+                  <BreadcrumbItem startContent={startContent} href={href} key={(j+1)*100}>
+                    { label }
+                  </BreadcrumbItem> 
+                )
+              })
+          })}
         </Breadcrumbs>
 
         <section className="w-11/12 flex flex-col items-center justify-start m-auto pt-5 pb-3">

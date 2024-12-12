@@ -1,13 +1,14 @@
 import { json, LoaderFunction } from "@remix-run/node"
 import { useLoaderData, useParams, useSearchParams } from '@remix-run/react';
 import { useCallback, Fragment } from 'react';
+import { FaUserShield } from "react-icons/fa";
 import { Permission } from "~/.server/domain/entity/permission.entity";
 import { Key } from "~/.server/interfaces";
 import { getEmptyPagination, handlerSuccess } from "~/.server/reponses";
 import { Service } from "~/.server/services";
 import { permissions as permissionsData, useClearFilters, useParamsPaginator, useRenderCell } from "~/application";
 import { Params } from "~/application/params";
-import { ButtonClear, InputFilter, Pagination, PermissionToggleActive, RowPerPage, TableDetail } from "~/components/ui";
+import { ButtonClear, ErrorBoundary, InputFilter, Pagination, PermissionToggleActive, RowPerPage, TableDetail } from "~/components/ui";
 import { Permission as PermissionUI } from "~/components/ui/auth/Permission";
 import { ExcelReport } from "~/components/ui/excelReports/ExcelReport";
 import { PERMISSION_COLUMNS } from "~/components/ui/excelReports/columns";
@@ -49,6 +50,17 @@ const columns = [
     { key: 'module', label: 'MODULO', sortable: true},
     { key: 'actions', label: 'ACCIONES' },
   ]
+
+export { ErrorBoundary }
+
+//   export const handle = {
+//     breadcrumb: () => ({
+//       href: '/security/',
+//       label: 'Permisos',
+//       startContent: <FaUserShield />,
+//     })
+//   }
+  
 
 export default function PermissionDetailPage() {
 

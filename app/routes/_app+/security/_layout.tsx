@@ -15,6 +15,7 @@ import { Permission } from "~/components/ui/auth/Permission";
 import { ExcelReport } from "~/components/ui/excelReports/ExcelReport";
 import { ROLE_COLUMNS } from "~/components/ui/excelReports/columns";
 import { ErrorBoundary } from '../../../components/ui/error/ErrorBoundary';
+import { FaShield } from "react-icons/fa6";
 
 export const loader: LoaderFunction = async ({ request }) => {
   await Service.auth.requirePermission(request, permissions.roles.permissions.view);
@@ -49,6 +50,15 @@ const columns = [
 ]
 
 export { ErrorBoundary }
+
+// export const handle = {
+//   breadcrumb: () => ({
+//     href: '/security',
+//     label: 'Seguridad',
+//     startContent: <FaShield />,
+//   })
+// }
+
 
 export default function  SecurityPage()  {
   const roles = useLoaderData<typeof loader>();

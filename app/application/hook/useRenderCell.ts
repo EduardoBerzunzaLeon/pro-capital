@@ -10,6 +10,8 @@ export const useRenderCell = ({ isMoney }: Props) => {
 
     const render = useCallback(<T extends Generic>(row: T, columnKey: Key) => {
         const result = convert(String(columnKey), row);
+
+
         if(result && !isNaN(Number(result)) && isMoney) {
             return `$${result}`;
         }

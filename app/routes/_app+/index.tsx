@@ -1,9 +1,9 @@
 import { DateValue, getLocalTimeZone, now, parseDate } from "@internationalized/date";
-import { DatePicker } from "@nextui-org/react";
+import { BreadcrumbItem, DatePicker } from "@nextui-org/react";
 import { LoaderFunction } from "@remix-run/node";
 import { json, useLoaderData, useRouteError, useSearchParams } from "@remix-run/react"
 import { useCallback, useState } from "react";
-import { FaSearch } from "react-icons/fa";
+import { FaHome, FaSearch } from "react-icons/fa";
 import { Generic, Key } from "~/.server/interfaces";
 import { getEmptyPagination } from "~/.server/reponses";
 import { Service } from "~/.server/services";
@@ -18,6 +18,13 @@ const columns = [
   { key: 'birthday', label: 'CUMPLEAÑOS'},
   { key: 'address', label: 'DIRECCIÓN' },
 ]
+
+interface LeadersBirthday  {
+  id: number,
+  fullname: string,
+  birthday: Date,
+  address: string
+}
 
 export const loader: LoaderFunction = async ({ request }) => {
 
@@ -58,8 +65,10 @@ export function ErrorBoundary() {
 export default function Index() {
 
   const leaders = useLoaderData<typeof loader>();
-  const [date, setDate] = useState<DateValue>(now(getLocalTimeZone()));
   const [searchParams , setSearchParams] = useSearchParams();
+  const [date, setDate] = useState<DateValue>(searchParams?.get('date')
+  ? parseDate(searchParams.get('date') ?? '')  
+  : now(getLocalTimeZone()));
 
   const { 
     loadingState, 
@@ -71,8 +80,13 @@ export default function Index() {
   const { render } = useRenderCell({ isMoney: false }); 
 
 
-  const renderCell = useCallback((leaders: any, columnKey: Key) => {
-    return <span className='capitalize'>{render(leaders, columnKey)}</span>
+  const renderCell = useCallback((leader: LeadersBirthday, columnKey: Key) => {
+
+    if(columnKey === 'birthday') {
+      return <span className='capitalize'>{dayjs(leader.birthday).add(1, 'day').format('YYYY-MM-DD')}</span>
+    }
+
+    return <span className='capitalize'>{render(leader, columnKey)}</span>
     // return <span className='capitalize'>nodata</span>
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -88,6 +102,7 @@ export default function Index() {
     setDate(e);
   }
 
+
   return (
     <>
      <DatePicker 
@@ -97,9 +112,6 @@ export default function Index() {
       startContent={<FaSearch />}
       labelPlacement='outside'
       granularity="day"
-      defaultValue={searchParams?.get('date')
-        ? parseDate(searchParams.get('date') ?? '')  
-        : now(getLocalTimeZone())}
       value={date}
       onChange={handleChange}
     />

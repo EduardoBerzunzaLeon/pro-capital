@@ -4,11 +4,20 @@ import { LoaderFunction } from '@remix-run/node';
 import { Service } from '~/.server/services';
 import { permissions } from '~/application';
 import { Permission } from '../../../components/ui/auth/Permission';
+import { FaRoute } from "react-icons/fa";
 
 export const loader: LoaderFunction = async ({ request }) => {
   await Service.auth.requirePermission(request, permissions.region.permissions.view); 
   return '';
 }
+// export const handle = {
+//   breadcrumb: () => ({
+//     href: '/routePage',
+//     label: 'Rutas',
+//     startContent: <FaRoute />,
+//   })
+// }
+
 
 export { ErrorBoundary }
 export default function RegionPage() {
