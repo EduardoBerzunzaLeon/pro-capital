@@ -4,9 +4,9 @@ import { Repository } from "../adapter";
 import { Leader } from "../domain/entity";
 import { PaginationWithFilters } from "../domain/interface";
 import { RequestId } from "../interfaces";
-import { validationConform, validationZod } from "./validation.service";
+import { validationConform, validationZod } from './validation.service';
 import { ServerError } from "../errors";
-import { CreateLeaderServerSchema, UnsubscribeLeaderSchema } from "~/schemas/leaderSchema";
+import { BirthdaySchema, CreateLeaderServerSchema, UnsubscribeLeaderSchema } from "~/schemas/leaderSchema";
 import { LeaderProps } from './excelReport.service';
 
 
@@ -105,12 +105,41 @@ export const updateOne = async (id: RequestId, form: FormData) => {
     return  await Repository.leader.updateOne(leaderId, data);
 }
 
-export const findAllBirthday = async () => {
-    const date = new Date();
-    const month = date.getMonth() + 1;
-    const day = date.getDate();
+interface FindAllBirthdayProps {
+    limit: number | string,  
+    page: number | string,
+    month: number | string, 
+    day: number | string
+}
 
-    return Repository.leader.findAllBirthday(month, day);
+export const findAllBirthday = async (props: Partial<FindAllBirthdayProps>) => {
+
+    const { limit, page, month, day } = validationZod(props, BirthdaySchema);
+
+    const [{ times }] = await Repository.leader.findCountBirthdays(month, day);
+    const total = Number(times);
+    const pageCount = Math.ceil(total / limit);
+    const nextPage = page < pageCount ? page + 1: null;
+    const offset = (page * limit) - limit; 
+
+    console.log({page, month, day})
+
+    const metadata = { pageCount, nextPage, offset, limit, page, total};
+    if(total === 0) {
+        return {
+            metadata,
+            data: []
+        };
+    }
+    
+    const data = await Repository.leader.findAllBirthday({ 
+        month, 
+        day, 
+        limit, 
+        offset 
+    });
+
+    return  { metadata, data }
 }
 
 export const resubscribe = async (id: RequestId, folderId: RequestId) => {

@@ -1,6 +1,5 @@
-import { BaseLeaderI, CreateLeaderProps, LeaderRepositoryI, PaginationWithFilters, UpdateLeaderProps } from "~/.server/domain/interface";
+import { BaseLeaderI, CreateLeaderProps, FindBirthdayProps, LeaderRepositoryI, PaginationWithFilters, UpdateLeaderProps } from "~/.server/domain/interface";
 import { db } from "../../db";
-import { Generic } from "~/.server/interfaces";
 
 
 export function LeaderRepository(base: BaseLeaderI): LeaderRepositoryI {
@@ -110,13 +109,55 @@ export function LeaderRepository(base: BaseLeaderI): LeaderRepositoryI {
         return await base.updateOne({ id }, {...props});
     }
 
-    // TODO: add folder name in query
-    async function findAllBirthday(month: number, day: number): Promise<Generic[] | undefined> {
-    
-        return db
-          .$queryRaw`SELECT fullname, address, folderId FROM "Leader" 
-            WHERE EXTRACT(MONTH FROM "birthday") = ${month} AND EXTRACT(DAY FROM "birthday") = ${day} 
-            AND "isActive" = true`;
+    async function findAllBirthday({ month, day, limit, offset }: FindBirthdayProps) {    
+        // -- const likeName = 'and "fullname" like '%fat%'';
+        return await db
+          .$queryRaw`SELECT
+          a."id",
+          a."fullname",
+          b."name" as folder,
+          a."birthday",
+          a."address"
+      FROM
+          "Leader" as a
+       LEFT JOIN "Folder" as b on b.id = a."folderId"
+       WHERE
+          EXTRACT(
+              MONTH
+              FROM
+                  "birthday"
+          ) = ${month}
+          AND EXTRACT(
+              DAY
+              FROM
+                  "birthday"
+          ) = ${day}
+          AND a."isActive" = true AND b."isActive" = true
+          order by b."name", a."fullname"
+      LIMIT
+          ${limit} offset ${offset}`;
+
+    }
+
+    async function findCountBirthdays(month: number, day: number) {
+        return await db.$queryRaw<{times: number}[]>`
+        SELECT
+            count(*) as times
+        FROM
+            "Leader" as a
+        LEFT JOIN "Folder" as b on b.id = a."folderId"
+        WHERE
+            EXTRACT(
+                MONTH
+                FROM
+                    "birthday"
+            ) = ${month}
+            AND EXTRACT(
+                DAY
+                FROM
+                    "birthday"
+            ) = ${day}
+            AND a."isActive" = true AND b."isActive" = true`;
     }
 
     async function unsubscribe(id: number, date: Date, reason?: string) {
@@ -147,6 +188,7 @@ export function LeaderRepository(base: BaseLeaderI): LeaderRepositoryI {
         findIfHasOwnFolder,
         findIfHasOtherLeader,
         findAllBirthday,
+        findCountBirthdays,
         deleteOne,
         updateOne,
         unsubscribe,

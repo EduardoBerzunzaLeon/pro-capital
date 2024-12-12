@@ -27,6 +27,13 @@ export interface UpdateLeaderProps{
     folderId: number,
 }
 
+export interface FindBirthdayProps {
+    month: number,
+    day: number,
+    limit: number,
+    offset: number
+}
+
 export type BaseLeaderI = BaseRepositoryI<
     Prisma.LeaderDelegate, 
     Prisma.LeaderWhereInput, 
@@ -37,17 +44,18 @@ export type BaseLeaderI = BaseRepositoryI<
 >;
 
 export interface LeaderRepositoryI{
-    findAll: (paginationData: PaginationWithFilters ) => Promise<ResponseWithMetadata>,
-    findByReport: (paginationData: PaginationWithFilters ) => Promise<Generic[] | undefined>,
     base: BaseLeaderI
-    findOne: (id: number) => Promise<Generic | undefined>,
     createOne: (props: CreateLeaderProps) => Promise<Generic | undefined>,
-    findIfHasFolder: (folderId: number) => Promise<Generic | undefined>,
-    findIfHasOwnFolder: (folderId: number, leaderId: number) => Promise<Generic | undefined>,
-    findIfHasOtherLeader: (folderId: number, leaderId: number) => Promise<Generic | undefined>,
-    findAllBirthday: (month: number, day: number) => Promise<Generic[] | undefined>
     deleteOne: (id: number) => Promise<Generic | undefined>,
-    updateOne: (id: number, props: UpdateLeaderProps) => Promise<Generic | undefined>,
-    unsubscribe: (id: number, date: Date, reason?: string) => Promise<Generic | undefined>,
+    findAll: (paginationData: PaginationWithFilters ) => Promise<ResponseWithMetadata>,
+    findAllBirthday: (props: FindBirthdayProps) => Promise<unknown>
+    findByReport: (paginationData: PaginationWithFilters ) => Promise<Generic[] | undefined>,
+    findCountBirthdays: (month: number, day: number) => Promise<{times: number}[]>,
+    findIfHasFolder: (folderId: number) => Promise<Generic | undefined>,
+    findIfHasOtherLeader: (folderId: number, leaderId: number) => Promise<Generic | undefined>,
+    findIfHasOwnFolder: (folderId: number, leaderId: number) => Promise<Generic | undefined>,
+    findOne: (id: number) => Promise<Generic | undefined>,
     resubscribe: (id: number, folderId: number) => Promise<Generic | undefined>,
+    unsubscribe: (id: number, date: Date, reason?: string) => Promise<Generic | undefined>,
+    updateOne: (id: number, props: UpdateLeaderProps) => Promise<Generic | undefined>,
 }
