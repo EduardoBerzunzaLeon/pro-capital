@@ -13,6 +13,7 @@ import { creditCreateSchema } from "~/schemas";
 import { handlerErrorWithToast } from "~/.server/reponses/handlerError";
 import { redirectWithSuccess } from "remix-toast";
 import { permissions } from "~/application";
+import { FaUserPlus, FaUsers } from "react-icons/fa";
 
 export const loader: LoaderFunction = async ({ request, params }) => {
     await Service.auth.requirePermission(request, permissions.credits.permissions.add);
@@ -49,6 +50,23 @@ export function ErrorBoundary() {
         error={(error as Generic)?.data ?? 'Ocurrio un error inesperado'}
         description='Ocurrio un error al momento de crear un nuevo credito, intentelo de nuevo, verifique el CURP o que no exista el cliente'
     />)
+}
+
+export const handle = {
+    breadcrumb: (data: string) => {
+        return [
+            {
+              href: '/clients',
+              label: 'Créditos',
+              startContent: <FaUsers />,
+            },
+            {
+                href: `/users/${data}/create`,
+                label: `Crear crédito`,
+                startContent: <FaUserPlus />,
+            },
+        ]
+    }
 }
 
 

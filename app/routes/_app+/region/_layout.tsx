@@ -10,13 +10,14 @@ export const loader: LoaderFunction = async ({ request }) => {
   await Service.auth.requirePermission(request, permissions.region.permissions.view); 
   return '';
 }
-// export const handle = {
-//   breadcrumb: () => ({
-//     href: '/routePage',
-//     label: 'Rutas',
-//     startContent: <FaRoute />,
-//   })
-// }
+
+export const handle = {
+  breadcrumb: () => ({
+    href: '/region',
+    label: 'Rutas',
+    startContent: <FaRoute />,
+  })
+}
 
 
 export { ErrorBoundary }

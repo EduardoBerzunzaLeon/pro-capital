@@ -21,8 +21,6 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 
     const { params: urlParams, search } = Params.permission.getParams(request);
     try {
-
-        console.log(search);
         const data = await Service.permission.findAll(roleId, urlParams);
         const { page, limit, column, direction } = params;
 
@@ -53,13 +51,13 @@ const columns = [
 
 export { ErrorBoundary }
 
-//   export const handle = {
-//     breadcrumb: () => ({
-//       href: '/security/',
-//       label: 'Permisos',
-//       startContent: <FaUserShield />,
-//     })
-//   }
+  export const handle = {
+    breadcrumb: (data: { status: string, serverData?: { role: { id: number, role: string} } }) => ({
+      href: `/security/${data?.serverData?.role.id}/permissions`,
+      label: `Permisos de ${data?.serverData?.role.role}`,
+      startContent: <FaUserShield />,
+    })
+  }
   
 
 export default function PermissionDetailPage() {

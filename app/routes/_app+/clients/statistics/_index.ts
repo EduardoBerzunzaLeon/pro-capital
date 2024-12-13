@@ -17,7 +17,6 @@ export const loader: LoaderFunction =  async ({ request }) => {
 
     const rangeDate = parseRangeDate(start, end);
     
-
     if(rangeDate === '') {
         return Service.credit.getDefaultStatistics(folderName);
     }

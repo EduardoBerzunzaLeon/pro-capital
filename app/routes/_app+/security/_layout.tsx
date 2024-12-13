@@ -51,13 +51,13 @@ const columns = [
 
 export { ErrorBoundary }
 
-// export const handle = {
-//   breadcrumb: () => ({
-//     href: '/security',
-//     label: 'Seguridad',
-//     startContent: <FaShield />,
-//   })
-// }
+export const handle = {
+  breadcrumb: () => ({
+    href: '/security',
+    label: 'Seguridad',
+    startContent: <FaShield />,
+  })
+}
 
 
 export default function  SecurityPage()  {

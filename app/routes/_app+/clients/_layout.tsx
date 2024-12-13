@@ -17,6 +17,7 @@ import { Permission } from '../../../components/ui/auth/Permission';
 import { MultiplePermissions } from "~/components/ui/auth/MultiplePermissions";
 import { ExcelReport } from "~/components/ui/excelReports/ExcelReport";
 import { CREDIT_COLUMNS } from "~/components/ui/excelReports/columns";
+import { FaUsers } from "react-icons/fa";
 
 export {
    clientLoader as loader,
@@ -81,6 +82,15 @@ const columns = [
 const INITIAL_VISIBLE_COLUMNS = [
   'client.fullname', 'aval.fullname', 'folder.name', 'creditAt', 'status', 'canRenovate', 'actions'
 ];
+
+
+export const handle = {
+  breadcrumb: () => ({
+    href: '/clients',
+    label: 'Créditos',
+    startContent: <FaUsers />,
+  })
+}
 
 export { ErrorBoundary }
 export default function ClientsPage() {

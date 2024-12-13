@@ -24,28 +24,6 @@ interface ExportProps {
 
 }
 
-// TODO: delete this
-// const fakeDuplicateData = (exportData: ExportProps) => {
-
-//   const { data } = exportData;
-
-//   const values = data[0];
-
-
-//   return  [
-//     values,
-//     values,
-//     values,
-//     values,
-//     values,
-//     values,
-//     values,
-//     values,
-//     values,
-//     values,
-//   ]
-// } 
-
 interface PrintSheetProps {
   header: Omit<ExportProps, 'data'>,
   data: Generic[],
@@ -218,8 +196,10 @@ export const ModalExportLayout = ({ isOpen, onOpenChange }: Props) => {
         },
         shouldValidate: 'onSubmit',
         shouldRevalidate: 'onInput',
+        id: 'modal_generate'
     }); 
     
+
     const folder = useInputControl(fields.folder);
     const group = useInputControl(fields.group);
 

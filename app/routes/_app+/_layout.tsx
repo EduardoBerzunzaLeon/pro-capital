@@ -52,12 +52,10 @@ export default function Dashboard() {
   const location = useLocation();
   const matches = (useMatches() as unknown as BreadcrumbMatch[]).filter(
     ({ handle }) => handle?.breadcrumb
-  )
+  );
   const navigationType = useNavigationType();
   const { user } = useRouteLoaderData('root') as { user: User };
   const data = useLoaderData<typeof dashboardLoader>();
-
-  console.log(matches);
 
   return (
     <>

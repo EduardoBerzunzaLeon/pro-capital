@@ -85,6 +85,15 @@ export const createNoPayment = async (userId: number, form: FormData, creditId?:
         throw ServerError.badRequest('No se pudo crear el pago');
     }
 
+    await Service.credit.updateCreditByPayment(id, {
+        status: creditDb.status,
+        totalAmount: creditDb.totalAmount,
+        paymentAmount: creditDb.paymentAmount,
+        creditAt: creditDb.creditAt,
+        type: creditDb.type,
+        isRenovate: creditDb.isRenovate,
+     });
+
 }
 
 export const createOne =  async (userId: number, form: FormData, creditId?: RequestId) => {

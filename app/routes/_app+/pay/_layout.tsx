@@ -1,6 +1,7 @@
 import { Button, Select, SelectItem,  useDisclosure } from "@nextui-org/react";
 import { useLoaderData, useNavigate } from "@remix-run/react";
 import { useCallback, useMemo, useState } from "react";
+import { FaMoneyBillTransfer } from "react-icons/fa6";
 import { Credit } from "~/.server/domain/entity"
 import { SortDirection, Selection, Key } from "~/.server/interfaces"
 import { HandlerSuccess } from "~/.server/reponses";
@@ -66,6 +67,15 @@ const INITIAL_VISIBLE_COLUMNS = [
 export {
     payLoader as loader,
 }
+
+export const handle = {
+  breadcrumb: () => ({
+    href: '/pay',
+    label: 'Reflejar pagos',
+    startContent: <FaMoneyBillTransfer />,
+  })
+}
+
 
 export default function PayPage() {
     const loader = useLoaderData<HandlerSuccess<Loader>>();

@@ -15,6 +15,7 @@ import { Params } from '../../../application/params/';
 import { Permission } from "~/components/ui/auth/Permission";
 import { ExcelReport } from "~/components/ui/excelReports/ExcelReport";
 import { AGENT_COLUMNS } from "~/components/ui/excelReports/columns";
+import { FaUsersCog } from "react-icons/fa";
 
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -65,6 +66,15 @@ const columns = [
   { key: 'assignAt', label: 'ASIGNACION', sortable: true},
   { key: 'actions', label: 'ACCIONES'},
 ]
+
+export const handle = {
+  breadcrumb: () => ({
+    href: '/agents',
+    label: 'Rutas & Asesores',
+    startContent: <FaUsersCog />,
+  })
+}
+
 
 export default function  AgentsPage()  {
   

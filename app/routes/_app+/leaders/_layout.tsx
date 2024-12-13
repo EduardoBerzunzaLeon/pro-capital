@@ -12,6 +12,7 @@ import { MultiplePermissions } from "~/components/ui/auth/MultiplePermissions";
 import { Permission } from '../../../components/ui/auth/Permission';
 import { ExcelReport } from "~/components/ui/excelReports/ExcelReport";
 import { LEADER_COLUMNS } from "~/components/ui/excelReports/columns";
+import { FaPersonDressBurst } from "react-icons/fa6";
 
 export {
   leaderLoader as loader
@@ -45,6 +46,16 @@ const columns = [
   { key: 'isActive', label: 'ESTATUS', sortable: true},
   { key: 'actions', label: 'ACCIONES'},
 ]
+
+export const handle = {
+  breadcrumb: () => ({
+    href: '/leaders',
+    label: 'Líderes',
+    startContent: <FaPersonDressBurst />,
+  })
+}
+
+
 
 export default function LeaderPage () {
   const loader = useLoaderData<HandlerSuccess<Loader>>();

@@ -16,7 +16,7 @@
     -- Bug en folder ya que lideres es un arreglo, debe traer solo la lider activo
     - Separar la logica de agents Page - falta solo el loader y el rendercell ?
     - separar la logica del autocomplete multiple (Not is required)
-    - añadir el breadcrumb
+    - añadir el breadcrumb - DONE
     - Acomodar la UI de la seccion de lideres
     - verificar el color de los dialogs
     - cambiar el color de todo la app segun el thema sin necesidad de forzarlo con red-dark
@@ -24,13 +24,13 @@
     - Cerrar el navlink cuando cargue la otra pagina
     - bug en el cual no pinta el estilo de navlink active cuando entras a una subruta
     - Cambiar de action a loader al momento de descargar el layout
-    - Agregar el reporte de excel a todos las tablas
-    - Agregar el boton de autogenerar grupos
-    - Agregar boton de actualizar estatus de creditos
-    - Agregar el reporte de creditos nuevos y faltate
+    - Agregar el reporte de excel a todos las tablas - DONE
+    - Agregar el boton de autogenerar grupos -DONE
+    - Agregar boton de actualizar estatus de creditos - DONE
+    - Agregar el reporte de creditos nuevos y faltate - DONE
     - Agregar pagos en credito detalle
     - Agregar tabla dinamica con los pagos en credito detalle.
-    - Agregar opcion de eliminar, actualizar pagos en la tabla de credito detalle.
+    - Agregar opcion de eliminar, actualizar pagos en la tabla de credito detalle. - DONE
     - Agregar paginar de pagos en la tabla de *Renovar credito form*
     - Acomodar interfaz de usuario de todas las secciones, verificar que sea responsive
     -- add prettier
@@ -47,26 +47,9 @@
     - Agregar flash message para errores con toast en loader (en el momento de descargar un excel).
 
 # MODULOS FALTANTES:
-    - Usuarios:
-        - Agregar Usuario (Subir archivos - NEW)
-        - Actualizar Usuario (Incluye el Role)
-        - Desactivar Usuario (soft delete)
-        - Ver Usuarios
-        - Filtros de Usuarios
     - Perfil
         - Ver mi perfil
         - Actualizar mis datos personales
-    - Asignar Permisos a Roles
-        - Ver todos los roles
-        - Ver todos los permisos
-        - Asigar que permisos le pertenece a que rol
-            - Seleccionara el ROl, entonces le apareceran todos los permisos que existen
-                en el sistema, divido por secion / modulo, seran muchos checkboxes, el administrador
-                marcara y desmarcara los permisos segun el rol.
-
-# SERVER:
-    - Agregar el user repository y service
-
 
 # - ERRROR: 
     Cuando le doy escape ocurre un error
@@ -75,9 +58,6 @@
     - Hacer un reporte vacio con los datos, 
 
 # TODO: 
-    Agregar contador de pagos en tablas de credito - DONE
-    Agregar contador de pagos en la actualizacion de datos - DONE
-    Agregar pago en historial de pago y en detalle credito - DONE
     Agregar los pagos y filtro por localidad y grupo en detalle credito 
     Agregar boton "Actualizar estatus de las cuentas" 
     Reporte de excel por fecha de cuentas vencidas, y nuevas cuentas por carpeta
@@ -88,3 +68,14 @@
 
 # BUG:
   El monto puede ser 0 al momento de agregar un pago, actualmente no lo permite
+
+# Funcionalidades faltantes: 
+    Agregar exportar excel cumpleaños de lideres
+    Agregar activar y desactivar folder
+        Aplicar esto en el autocomplete [NO es prioritario]
+    Mi perfil
+    Editar mi perfil
+    Agregar paginacion a renovacion de credito, pagos
+
+# QUESTION
+    Preguntar si el no pago se toma en cuenta como cantidad de pagos

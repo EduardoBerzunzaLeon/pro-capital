@@ -10,14 +10,20 @@ import { PermissionProps } from "./excelReport.service";
 export const findAll = async (roleId: RequestId, props: PaginationWithFilters) => {
 
     const { id } = validationZod({ id: roleId }, idSchema);
+    const role = await Service.role.findById(id);
     const { data, metadata } =  await Repository.permission.findAll({...props});
 
-    return Service.paginator.mapper({
+    const response = Service.paginator.mapper({
         metadata,
-        data, 
+        data,
         mapper: Permission.mapper(id),
         errorMessage: 'No se encontraron permisos'
     });
+
+     return {
+        role,
+        ...response
+     }
 
 }
 

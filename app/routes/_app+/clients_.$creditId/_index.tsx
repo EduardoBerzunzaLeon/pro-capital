@@ -15,6 +15,7 @@ import { CreditFormEdit } from "~/components/ui/credit/CreditFormEdit";
 import { ButtonAddPayment, ModalPay } from "~/components/ui/pay";
 import { Permission } from '~/components/ui/auth/Permission';
 import { ErrorBoundary } from './payments/_layout';
+import { FaUserCog, FaUsers } from "react-icons/fa";
 
 
 export const loader: LoaderFunction = async ({ request, params }) => {
@@ -63,6 +64,25 @@ export const action: ActionFunction = async ({ params, request }) => {
 }
 
 export { ErrorBoundary };
+
+export const handle = {
+  breadcrumb: (data: { status: string, serverData?: { id: number, client: { fullname: string } } }) => {
+      return [
+          {
+            href: '/clients',
+            label: 'Créditos',
+            startContent: <FaUsers />,
+          },
+          {
+              href: `/users/${data?.serverData?.id}`,
+              label: `Ver crédito`,
+              startContent: <FaUserCog />,
+          },
+      ]
+  }
+}
+
+
 export default function CreditDetailPage() {
   const loader = useLoaderData<any>();
 

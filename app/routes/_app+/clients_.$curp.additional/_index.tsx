@@ -3,6 +3,7 @@ import { parseWithZod } from "@conform-to/zod";
 import { Card, CardHeader, CardBody, Accordion, AccordionItem, Button } from "@nextui-org/react";
 import { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { Form, useLoaderData, useNavigate } from "@remix-run/react";
+import { FaUserPlus, FaUsers } from "react-icons/fa";
 import { redirectWithSuccess } from "remix-toast";
 import { handlerError } from "~/.server/reponses";
 import { handlerErrorWithToast } from "~/.server/reponses/handlerError";
@@ -38,6 +39,23 @@ export const action: ActionFunction = async ({ request, params }) => {
 
 
 export { ErrorBoundary };
+
+export const handle = {
+    breadcrumb: (data: string) => {
+        return [
+            {
+              href: '/clients',
+              label: 'Créditos',
+              startContent: <FaUsers />,
+            },
+            {
+                href: `/users/${data}/additional`,
+                label: `Adicionar crédito`,
+                startContent: <FaUserPlus />,
+            },
+        ]
+    }
+}
 
 export default function AdditionalFormPage () {
     const loader = useLoaderData<any>();

@@ -265,6 +265,7 @@ export function PaymentRepository(base: BasePaymentDetailI): PaymentRepositoryI 
                 WHERE
                     a."paymentDate" 
                     BETWEEN ${start} AND ${end}
+                    AND a."paymentAmount" > 0
                 GROUP BY
                 b."folderId"`;
 

@@ -873,6 +873,7 @@ export const getDefaultStatistics = (name?: string) => {
         newCreditsCount: 0,
         newPaymentsCount: 0,
         newPaymentsSum: 0,
+        activeCredits: 0,
     }
 }
 
@@ -922,6 +923,7 @@ const getPayments = (id: number, payments: { folderId: number, counter: number, 
 
 const getOverdueCredits = (id: number, end: Date, credits?: Generic[]) => {
     let overDueCredits = 0;
+    let activeCredits = 0;
     let currentDebtTotal = 0;
     const indexToDelete: number[] = [];
 
@@ -950,14 +952,19 @@ const getOverdueCredits = (id: number, end: Date, credits?: Generic[]) => {
         const currentDebt = Number(credits[index].totalAmount) - Number(credits[index].total);
         const isOverdue = isOverdueCredit(minAmount, currentDebt, credits[index].total);
 
+        if(currentDebt !== 0) {
+            activeCredits += 1;
+        }
+
         if(isOverdue) {
             const debt = minAmount - credits[index].total;
             currentDebtTotal += debt;
             overDueCredits += 1;
 
-            if(index === 0 || index === 1) {
-                console.log({ currentDebtTotal, overDueCredits, debt, minAmount, total: credits[index].total });
-            }
+
+            // if(index === 0 || index === 1) {
+            //     console.log({ currentDebtTotal, overDueCredits, debt, minAmount, total: credits[index].total });
+            // }
         }
 
     }
@@ -968,7 +975,8 @@ const getOverdueCredits = (id: number, end: Date, credits?: Generic[]) => {
     
     return {
         overDueCredits,
-        currentDebtTotal
+        currentDebtTotal,
+        activeCredits
     }
 }
 
@@ -981,6 +989,7 @@ const findAllStatistics = async (start: Date, end: Date) => {
         Repository.credit.findByDates(start, end)
     ]);
 
+    
     if(!folders || folders.length === 0) {
         return getDefaultStatistics();
     }
@@ -1015,6 +1024,7 @@ const findStatisticsByFolder = async (start: Date, end: Date, folderId: number, 
     }
 
     let overDueCredits = 0;
+    let activeCredits = 0;
     let currentDebtTotal = 0;
 
     for (let index = 0; index < data.length; index++) {
@@ -1031,6 +1041,10 @@ const findStatisticsByFolder = async (start: Date, end: Date, folderId: number, 
         const currentDebt = Number(data[index].totalAmount) - data[index].total;
         const isOverdue = isOverdueCredit(minAmount, currentDebt, data[index].total);
 
+        if(currentDebt !== 0) {
+            activeCredits += 1;
+        }
+
         if(isOverdue) {
             const debt = minAmount - data[index].total;
             currentDebtTotal += debt;
@@ -1044,7 +1058,8 @@ const findStatisticsByFolder = async (start: Date, end: Date, folderId: number, 
         currentDebtTotal,  
         newCreditsCount, 
         newPaymentsCount: newPayments._count, 
-        newPaymentsSum: newPayments._sum.paymentAmount ?? 0
+        newPaymentsSum: newPayments._sum.paymentAmount ?? 0,
+        activeCredits,
     }];
 }
 

@@ -33,6 +33,7 @@ const exportToExcel = async (exportData: ExportProps[], fileName: string) => {
     { header: 'NUEVOS CREDITOS', key: 'newCreditsCount', width: 20 },
     { header: 'CANTIDAD DE PAGOS', key: 'newPaymentsCount', width: 21 },
     { header: 'PAGOS DEL PERIODO', key: 'newPaymentsSum', width: 21 },
+    { header: 'CREDITOS NO LIQUIDADOS', key: 'activeCredits', width: 27 },
   ];
 
   const headers = worksheet.getRow(1);
@@ -88,7 +89,7 @@ export const ModalExportStatistics = ({ isOpen, onOpenChange }: Props) => {
         shouldValidate: 'onSubmit',
         shouldRevalidate: 'onInput',
     }); 
-    
+
     useEffect(() => {
 
       if(fetcher.data?.error) {

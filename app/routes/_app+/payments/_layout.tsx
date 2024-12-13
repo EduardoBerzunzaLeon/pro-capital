@@ -14,6 +14,7 @@ import { MultiplePermissions } from '~/components/ui/auth/MultiplePermissions';
 import { Permission } from '~/components/ui/auth/Permission';
 import { ExcelReport } from '~/components/ui/excelReports/ExcelReport';
 import { PAYMENT_COLUMNS } from '~/components/ui/excelReports/columns';
+import { FaMoneyBillTrendUp } from 'react-icons/fa6';
 
 export {
     paymentLoader as loader
@@ -76,6 +77,15 @@ interface Loader {
   const INITIAL_VISIBLE_COLUMNS = [
     'credit.client.fullname', 'credit.folder.name','credit.group.name', 'paymentAmount', 'folio', 'actions'
   ]
+
+  export const handle = {
+    breadcrumb: () => ({
+      href: '/pay',
+      label: 'Historial de pagos',
+      startContent: <FaMoneyBillTrendUp />,
+    })
+  }
+  
 
 export default function PaymentPage( ) {
   const loader = useLoaderData<HandlerSuccess<Loader>>();

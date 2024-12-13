@@ -3,6 +3,7 @@ import { parseWithZod } from "@conform-to/zod";
 import { Card, CardHeader, CardBody, Accordion, AccordionItem, Button } from "@nextui-org/react";
 import { ActionFunction, LoaderFunction } from "@remix-run/node"
 import { Form, useLoaderData, useNavigate } from "@remix-run/react";
+import { FaUserPlus, FaUsers } from "react-icons/fa";
 import { redirectWithSuccess } from "remix-toast";
 import { handlerError } from "~/.server/reponses";
 import { handlerErrorWithToast } from "~/.server/reponses/handlerError";
@@ -36,6 +37,23 @@ export const action: ActionFunction = async ({ request, params }) => {
 }
 
 export { ErrorBoundary }
+
+export const handle = {
+    breadcrumb: (data: { credit: { id: number, client: { curp: string } }}) => {
+        return [
+            {
+              href: '/clients',
+              label: 'Créditos',
+              startContent: <FaUsers />,
+            },
+            {
+                href: `/users/${data.credit.client.curp}/renovate/${data.credit.id}`,
+                label: `Renovar crédito`,
+                startContent: <FaUserPlus />,
+            },
+        ]
+    }
+}
 
     export default function RenovateFormPage () {
     const loader = useLoaderData<any>();
