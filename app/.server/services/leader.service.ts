@@ -6,8 +6,8 @@ import { PaginationWithFilters } from "../domain/interface";
 import { RequestId } from "../interfaces";
 import { validationConform, validationZod } from './validation.service';
 import { ServerError } from "../errors";
-import { BirthdaySchema, CreateLeaderServerSchema, UnsubscribeLeaderSchema } from "~/schemas/leaderSchema";
-import { LeaderProps } from './excelReport.service';
+import { BirthdaySchema, CreateLeaderServerSchema, ExportBirthdaySchema, UnsubscribeLeaderSchema } from "~/schemas/leaderSchema";
+import { LeaderBirthdayProps, LeaderProps } from './excelReport.service';
 
 
 export const findAll = async (props: PaginationWithFilters) => {
@@ -120,9 +120,7 @@ export const findAllBirthday = async (props: Partial<FindAllBirthdayProps>) => {
     const total = Number(times);
     const pageCount = Math.ceil(total / limit);
     const nextPage = page < pageCount ? page + 1: null;
-    const offset = (page * limit) - limit; 
-
-    console.log({page, month, day})
+    const offset = (page * limit) - limit;
 
     const metadata = { pageCount, nextPage, offset, limit, page, total};
     if(total === 0) {
@@ -140,6 +138,12 @@ export const findAllBirthday = async (props: Partial<FindAllBirthdayProps>) => {
     });
 
     return  { metadata, data }
+}
+
+export const exportBirthdays = async (props: Partial<Pick<FindAllBirthdayProps, 'month' | 'day'>>) => {
+    const { month, day } = validationZod(props, ExportBirthdaySchema);
+    const data = await Repository.leader.findReportAllBirthday({ month, day });
+    return Service.excel.leaderBirthdayReport(data as LeaderBirthdayProps[]);
 }
 
 export const resubscribe = async (id: RequestId, folderId: RequestId) => {
@@ -166,6 +170,7 @@ export default {
     createOne, 
     deleteOne, 
     exportData,
+    exportBirthdays,
     findAll, 
     findAllBirthday, 
     findOne, 

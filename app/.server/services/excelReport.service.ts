@@ -104,6 +104,26 @@ export const routeReport = (props?: RouteProps[]) => {
     })
 }
 
+export type LeaderBirthdayProps =  {
+    fullname: string,
+    folder: string,
+    address: string,
+    birthday: Date,
+}
+
+export const leaderBirthdayReport = (props?: LeaderBirthdayProps[]) => {
+    if(!props) {
+        return [];
+    }
+
+    return props.map(({ birthday, ...rest }) => {
+        return {
+            ...rest,
+            birthday: formatDate(birthday, false)
+        }
+    })
+}
+
 export type MunicipalityProps = CreatedI & {
     name: string;
 }
@@ -428,4 +448,5 @@ export default {
     roleReport,
     permissionReport,
     creditReport,
+    leaderBirthdayReport,
 }

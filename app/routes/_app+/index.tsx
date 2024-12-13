@@ -1,16 +1,19 @@
 import { DateValue, getLocalTimeZone, now, parseDate } from "@internationalized/date";
-import { BreadcrumbItem, DatePicker } from "@nextui-org/react";
+import {  DatePicker } from "@nextui-org/react";
 import { LoaderFunction } from "@remix-run/node";
 import { json, useLoaderData, useRouteError, useSearchParams } from "@remix-run/react"
 import { useCallback, useState } from "react";
-import { FaHome, FaSearch } from "react-icons/fa";
+import { FaSearch } from "react-icons/fa";
 import { Generic, Key } from "~/.server/interfaces";
 import { getEmptyPagination } from "~/.server/reponses";
 import { Service } from "~/.server/services";
-import { useParamsPaginator, useRenderCell } from "~/application";
+import { permissions, useParamsPaginator, useRenderCell } from "~/application";
 import { Pagination, RowPerPage, TableDetail } from "~/components/ui";
 import { ErrorCard } from "~/components/utils/ErrorCard";
 import dayjs from 'dayjs'
+import { ExcelReport } from "~/components/ui/excelReports/ExcelReport";
+import { LEADER_BIRTHDAY_COLUMNS } from "~/components/ui/excelReports/columns";
+import { Permission } from "~/components/ui/auth/Permission";
 
 const columns = [
   { key: 'fullname', label: 'LÍDER'},
@@ -105,6 +108,9 @@ export default function Index() {
 
   return (
     <>
+    <Permission permission={permissions.leaders.permissions.report_birthday}>
+      <ExcelReport url={`/leaders/exportBirthday?${searchParams.toString()}`} name='lideres_cumpleaños' columns={LEADER_BIRTHDAY_COLUMNS} />
+    </Permission>
      <DatePicker 
       className="max-w-[284px]" 
       label="Fecha de cumpleaños" 

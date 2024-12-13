@@ -1,4 +1,4 @@
-import { BaseLeaderI, CreateLeaderProps, FindBirthdayProps, LeaderRepositoryI, PaginationWithFilters, UpdateLeaderProps } from "~/.server/domain/interface";
+import { BaseLeaderI, CreateLeaderProps, FindBirthdayProps, FindReportBirthdayProps, LeaderRepositoryI, PaginationWithFilters, UpdateLeaderProps } from "~/.server/domain/interface";
 import { db } from "../../db";
 
 
@@ -136,8 +136,34 @@ export function LeaderRepository(base: BaseLeaderI): LeaderRepositoryI {
           order by b."name", a."fullname"
       LIMIT
           ${limit} offset ${offset}`;
-
     }
+
+    async function findReportAllBirthday({ month, day }: FindReportBirthdayProps) {    
+        // -- const likeName = 'and "fullname" like '%fat%'';
+        return await db
+          .$queryRaw`SELECT
+          a."fullname",
+          b."name" as folder,
+          a."birthday",
+          a."address"
+      FROM
+          "Leader" as a
+       LEFT JOIN "Folder" as b on b.id = a."folderId"
+       WHERE
+          EXTRACT(
+              MONTH
+              FROM
+                  "birthday"
+          ) = ${month}
+          AND EXTRACT(
+              DAY
+              FROM
+                  "birthday"
+          ) = ${day}
+          AND a."isActive" = true AND b."isActive" = true
+          order by b."name", a."fullname"`;
+    }
+
 
     async function findCountBirthdays(month: number, day: number) {
         return await db.$queryRaw<{times: number}[]>`
@@ -186,6 +212,7 @@ export function LeaderRepository(base: BaseLeaderI): LeaderRepositoryI {
         createOne,
         findIfHasFolder,
         findIfHasOwnFolder,
+        findReportAllBirthday,
         findIfHasOtherLeader,
         findAllBirthday,
         findCountBirthdays,

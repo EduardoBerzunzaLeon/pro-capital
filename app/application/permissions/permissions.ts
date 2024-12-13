@@ -55,6 +55,7 @@ export const permissions = {
             active: 'leaders[active]',
             delete: 'leaders[delete]',
             report: 'leaders[report]',
+            report_birthday: 'leaders[report-birthday]',
         }
     },
     credits: {

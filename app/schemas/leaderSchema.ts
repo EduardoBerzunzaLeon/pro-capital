@@ -34,3 +34,5 @@ export const BirthdaySchema = z.object({
     limit: integerBuilder('limit'),
     page: integerBuilder('page'),
 })
+
+export const ExportBirthdaySchema = BirthdaySchema.omit({ limit: true, page: true });

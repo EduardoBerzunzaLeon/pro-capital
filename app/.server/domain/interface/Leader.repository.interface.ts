@@ -34,6 +34,8 @@ export interface FindBirthdayProps {
     offset: number
 }
 
+export type FindReportBirthdayProps = Pick<FindBirthdayProps, 'month' | 'day'>;
+
 export type BaseLeaderI = BaseRepositoryI<
     Prisma.LeaderDelegate, 
     Prisma.LeaderWhereInput, 
@@ -53,6 +55,7 @@ export interface LeaderRepositoryI{
     findCountBirthdays: (month: number, day: number) => Promise<{times: number}[]>,
     findIfHasFolder: (folderId: number) => Promise<Generic | undefined>,
     findIfHasOtherLeader: (folderId: number, leaderId: number) => Promise<Generic | undefined>,
+    findReportAllBirthday: (props: FindReportBirthdayProps) => Promise<unknown>,
     findIfHasOwnFolder: (folderId: number, leaderId: number) => Promise<Generic | undefined>,
     findOne: (id: number) => Promise<Generic | undefined>,
     resubscribe: (id: number, folderId: number) => Promise<Generic | undefined>,

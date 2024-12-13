@@ -483,6 +483,13 @@ export const permissions: PremissionsI[] = [
         roles: capture_chief
     },
     {
+        servername: info.leaders.name+'[report-birthday]',
+        name: 'descargar cumpleaños de lideres',
+        description: 'permite descargar en excel los cumpleaños de líderes por día',
+        module: info.leaders.module,
+        roles: capture_chief
+    },
+    {
         servername: info.credits.name+'[report]',
         name: 'descargar creditos',
         description: 'permite descargar en excel los creditos',

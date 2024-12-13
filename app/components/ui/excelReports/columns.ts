@@ -41,6 +41,12 @@ export const LEADER_COLUMNS = [
     'ACTIVO' ,
     ...CREATED_COLUMNS
 ];
+export const LEADER_BIRTHDAY_COLUMNS = [
+    'LÍDER',
+    'CARPETA',
+    'DIRECCIÓN',
+    'CUMPLEAÑOS'
+]
 export const CREDIT_COLUMNS = [
     'NOMBRE CLIENTE',
     'DIRECCION CLIENTE',
