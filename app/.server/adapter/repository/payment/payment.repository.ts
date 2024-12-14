@@ -224,7 +224,17 @@ export function PaymentRepository(base: BasePaymentDetailI): PaymentRepositoryI 
     async function findTotalPayment(creditId: number) {
         return await base.entity.groupBy({
             by: ['creditId'],
-            where: { creditId },
+            where: { 
+                creditId,
+                OR: [
+                    {
+                        paymentAmount: { gt: 0 } 
+                    },
+                    {
+                        status: { equals: 'GARANTIA' }
+                    }
+                ] 
+            },
             _sum: {
                 paymentAmount: true
             },

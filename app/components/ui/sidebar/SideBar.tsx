@@ -3,6 +3,8 @@ import "./styles.css";
 import { Navigation } from "./Navigation";
 import { MenuToggle } from "./MenuToggle";
 import { useComponentVisible, useDimensions } from "~/application";
+import { useLocation } from "@remix-run/react";
+import { useEffect } from "react";
 
 const sidebar = {
   open: (height = 1000) => ({
@@ -27,15 +29,21 @@ const sidebar = {
 };
 
 export default function SideBar() {
-  const { ref, isComponentVisible, setIsComponentVisible } =
-  useComponentVisible(false);
+  const { ref, isComponentVisible, setIsComponentVisible } = useComponentVisible(false);
   const { height } = useDimensions(ref);
+  const { pathname } = useLocation();
+
+  
+
+  useEffect(() => {
+    setIsComponentVisible(false);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname])
 
   const handlerToggle = ( ) => {
     setIsComponentVisible(!isComponentVisible)
   }
 
-  // TODO: verificar la salida del sidebar, cuando den click fuera del foco
   return (
       <motion.nav
         initial={false}

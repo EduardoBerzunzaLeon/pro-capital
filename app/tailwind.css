@@ -59,6 +59,28 @@
   
 @layer components {
 
+  .scale-menu {
+    animation: scale .7s ease-in infinite
+  }
+
+  @keyframes scale {
+    0% {
+      transform: scale(1.0);
+      background-color: #1E3378;
+    }
+    
+    50% {
+      background-color: #2A4288;
+      transform: scale(1.1);
+    }
+  
+    100% {
+      transform: scale(1);
+      background-color: #1E3378;
+    }
+  }
+  
+
     .flip-card {
         background-color: transparent;
         perspective: 1000px; 

@@ -24,7 +24,7 @@ export const action: ActionFunction = async({ params, request }) => {
     if(data._action === 'addPayment') {
       const user = await Service.auth.requirePermission(request, permissions.pays.permissions.add);
       formData.append('agentId', data['agent[id]'] ?? '');
-      await Service.payment.createOne(user.id, formData, id);
+      await Service.payment.createOne({ userId: user.id, role: user.role }, formData, id);
       return handlerSuccessWithToast('create', 'del pago');
     }
     

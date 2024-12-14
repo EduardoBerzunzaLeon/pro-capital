@@ -15,7 +15,6 @@ interface Props {
     onOpenChange: (isOpen: boolean) => void;
 }
 
-
 export const ModalPay = ({ isOpen, onOpenChange }: Props) => {
 
     const fetcherGet = useFetcher<typeof loader>({ key:  'getSinglePayment' });

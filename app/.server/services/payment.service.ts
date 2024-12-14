@@ -4,12 +4,13 @@ import { RequestId } from "../interfaces";
 import { ServerError } from "../errors";
 import { Repository } from "../adapter";
 import { Service } from ".";
-import { findNow } from "~/application";
+import { findNow, permissions } from "~/application";
 import { PaginationWithFilters } from "../domain/interface";
 import { Payment } from "../domain/entity";
 import dayjs from 'dayjs';
 import { noPaymentServerSchema } from '../../schemas/paymentSchema';
 import { PaymentProps } from "./excelReport.service";
+import { RoleTypes } from "@prisma/client";
 
 
 export const findAll = async (props: PaginationWithFilters) => {
@@ -96,7 +97,7 @@ export const createNoPayment = async (userId: number, form: FormData, creditId?:
 
 }
 
-export const createOne =  async (userId: number, form: FormData, creditId?: RequestId) => {
+export const createOne =  async (user: { userId: number, role: RoleTypes }, form: FormData, creditId?: RequestId) => {
     const { id } = validationZod({ id: creditId }, idSchema);
     const { 
         agentId, 
@@ -116,8 +117,9 @@ export const createOne =  async (userId: number, form: FormData, creditId?: Requ
     validatePaymentDate(paymentDate, creditDb.creditAt);
     validateDebt(currentDebt, paymentAmount);
 
-    // TODO: Si tiene los roles requeridos puede saltarse esta validación
-    if(creditDb.lastPayment && paymentDate <= creditDb.lastPayment) {
+    const hasPermission = await Service.role.hasPermission(user.role,  permissions.payments.permissions.add);
+
+    if(!hasPermission && creditDb.lastPayment && paymentDate <= creditDb.lastPayment) {
         throw ServerError.badRequest(`Ya existe un pago con la fecha igual o inferior a ${paymentDate}`);
     }
 
@@ -129,14 +131,13 @@ export const createOne =  async (userId: number, form: FormData, creditId?: Requ
         status,
         notes,
         creditId: id,
-        createdById: userId
+        createdById: user.userId
     });
 
     if(!paymentCreated) {
         throw ServerError.badRequest('No se pudo crear el pago');
     }
-
-    //  RECALCULAR SI TIENE DERECHO A RENOVACION
+    
      await Service.credit.updateCreditByPayment(id, {
         status: creditDb.status,
         totalAmount: creditDb.totalAmount,

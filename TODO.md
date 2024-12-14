@@ -19,9 +19,6 @@
     - Acomodar la UI de la seccion de lideres
     - verificar el color de los dialogs
     - cambiar el color de todo la app segun el thema sin necesidad de forzarlo con red-dark
-    - ponerle un estilo de loader en el navlink mientras cambia de pagina
-    - Cerrar el navlink cuando cargue la otra pagina
-    - bug en el cual no pinta el estilo de navlink active cuando entras a una subruta
     - Cambiar de action a loader al momento de descargar el layout
     - Agregar pagos en credito detalle
     - Agregar tabla dinamica con los pagos en credito detalle.
@@ -30,7 +27,7 @@
     -- add prettier
     -- Agregar titulo en cada pagina
     -- Agregar folder active autocomplete
-    -- Agregar filter input solo numeros
+    -- Agregar filter input solo numeros [no urgente]
     -- Agregar schema para telefono (cantidad de caracteres)
     -- Agregar la opcion de Matar usuario (marcarlo como fallecido)
 
@@ -54,14 +51,7 @@
 # TODO: 
     Agregar los pagos y filtro por localidad y grupo en detalle credito 
     Agregar boton "Actualizar estatus de las cuentas" 
-    Reporte de excel por fecha de cuentas vencidas, y nuevas cuentas por carpeta
-    Agregar boton de "Generar grupos"
     Agregar el estatus a la carpeta
-    Definir todos los permisos 
-    Definir si un pago en 0 cuenta para recalculo de renovacion
-
-# BUG:
-  El monto puede ser 0 al momento de agregar un pago, actualmente no lo permite
 
 # Funcionalidades faltantes: 
     Agregar activar y desactivar folder
@@ -69,6 +59,8 @@
     Mi perfil
     Editar mi perfil
     Agregar paginacion a renovacion de credito, pagos
+    Agregar la opcion de Matar cliente / aval   
+    cuando se use el autocomplete, verificar si trae el isActive si lo trae pintar el chipo de activo / inactivo (Carpeta, Asesor)
 
 # QUESTION
     Preguntar si el no pago se toma en cuenta como cantidad de pagos

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { dateSchema, decimalBuilder, integerBuilder, stringSchema } from "./genericSchema";
+import { amountBuilder, dateSchema, integerBuilder, stringSchema } from "./genericSchema";
 
 export const paymentStatus: string[] = ['PAGO', 'PAGO_INCOMPLETO', 'NO_PAGO', 'ADELANTO', 'GARANTIA'];
 
@@ -11,7 +11,7 @@ const folioSchema = z.coerce.number({
 
 export const paymentSchema = z.object({
     agent: stringSchema('Agente'),
-    paymentAmount: decimalBuilder('Monto Abonado'),
+    paymentAmount: amountBuilder('Monto Abonado'),
     paymentDate: dateSchema('Fecha del abono'),
     folio: folioSchema,
     status: z.enum(paymentStatus as [string]),
@@ -22,7 +22,7 @@ export const noPaymentSchema = paymentSchema.omit({ paymentAmount: true, status:
 
 export const paymentServerSchema = z.object({
     agentId: integerBuilder('ID del agente'),
-    paymentAmount: decimalBuilder('Monto Abonado'),
+    paymentAmount: amountBuilder('Monto Abonado'),
     paymentDate: dateSchema('Fecha del abono'),
     folio: folioSchema,
     status: z.enum(paymentStatus as [string]),
