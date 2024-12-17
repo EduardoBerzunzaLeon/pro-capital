@@ -58,6 +58,7 @@ console.log(data);
 
 export function ErrorBoundary() {
   const error = useRouteError();
+  console.log({ errorcito: error }); 
   return (<ErrorCard 
       error={(error as Generic)?.message ?? 'Ocurrio un error inesperado'}
       description='Ocurrio un error, favor de contactar con el administrador'

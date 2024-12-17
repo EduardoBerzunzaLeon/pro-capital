@@ -4,6 +4,8 @@ import { ClientCreateI, ClientUpdateI } from "../domain/interface";
 import { RequestId } from "../interfaces";
 import { validationConform, validationZod } from "./validation.service";
 import { Service } from ".";
+import { activeSchema } from "~/schemas/genericSchema";
+import { ServerError } from "../errors";
 
 
 export const createOne = async (client: ClientCreateI) => {
@@ -34,9 +36,22 @@ export const updateById = async (id: RequestId, form: FormData) => {
     });
 }
 
+export const updateDeceased = async (id: RequestId, isDeceased: boolean) => {
+
+    const { isActive: isDeceasedValidated } = validationZod({ isActive: isDeceased }, activeSchema);
+    const { id: idValidated } = validationZod({ id }, idSchema);
+
+    const clientUpdated = await Repository.client.updateDeceased(idValidated, isDeceasedValidated);
+
+    if(!clientUpdated) {
+        throw ServerError.badRequest('No se pudo cambiar el estatus de vida del cliente');
+    }
+}
+
 export default {
     createOne,
     deleteOne,
     updateOne,
-    updateById
+    updateById,
+    updateDeceased
 }

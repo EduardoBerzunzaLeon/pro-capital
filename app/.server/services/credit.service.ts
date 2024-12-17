@@ -89,10 +89,6 @@ export const validationToRenovate = async (curp?: string, creditId?: RequestId) 
         throw ServerError.badRequest('No se encontro el crédito solicitado, favor de verificarlo');
     }
     
-    if(creditDb.status === 'FALLECIDO') {
-        throw ServerError.badRequest('El cliente ya fallecio.');
-    }
-    
     if(creditDb.client.curp.toUpperCase() !== curpValidated.toUpperCase()) {
         throw ServerError.badRequest('El CURP del cliente no coincide con el crédito.');
     }

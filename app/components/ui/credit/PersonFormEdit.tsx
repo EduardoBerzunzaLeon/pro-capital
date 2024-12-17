@@ -7,6 +7,7 @@ import { action } from "~/routes/_app+/clients/edit/$clientId/_index";
 import { clientUpdateSchema } from "~/schemas";
 import { InputValidation } from "../forms/Input";
 import { Permission } from '../auth/Permission';
+import { DeceasedButton } from "./DeceasedButton";
 
 interface Props {
     id: number,
@@ -20,6 +21,7 @@ interface Props {
     urlAction: string,
     title: string,
     permission: string,
+    isDeceased: boolean
 }
 
 
@@ -34,7 +36,8 @@ export const PersonFormEdit = ({
     reference,
     urlAction,
     title,
-    permission
+    permission,
+    isDeceased
 }: Props) => {
 
     const fetcher = useFetcher<typeof action>();
@@ -77,6 +80,8 @@ export const PersonFormEdit = ({
             {title}
 
             { isEditable && (<Chip variant='bordered' color='warning'>En edición</Chip>)}
+
+            <DeceasedButton isEditable={isEditable} id={id} isDeceased={isDeceased} urlAction={urlAction}/>
           </CardHeader>
           <CardBody>
               <InputValidation

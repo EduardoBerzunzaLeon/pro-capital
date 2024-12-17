@@ -25,7 +25,18 @@ export function AvalRepository(base: BaseAvalI): AvalRepositoryI {
                     status: true,
                     client: {
                         select: { fullname: true }
-                    }
+                    },
+                    folder: {
+                        select: { 
+                            name: true, 
+                        }
+                    },
+                    group: {
+                        select: {
+                            name: true
+                        }
+                    },
+                    currentDebt: true
                 }
             }
         }, true);
@@ -62,6 +73,10 @@ export function AvalRepository(base: BaseAvalI): AvalRepositoryI {
         return await base.updateOne({ id }, data);
     }
 
+    async function updateDeceased(id: number, isDeceased: boolean) {
+        return await base.updateOne({ id }, { isDeceased });
+   }
+
     return {
         findAutocomplete,
         findOne,
@@ -69,5 +84,6 @@ export function AvalRepository(base: BaseAvalI): AvalRepositoryI {
         updateById,
         hasCredits,
         deleteOne,
+        updateDeceased
     }
 }

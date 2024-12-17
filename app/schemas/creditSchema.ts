@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { active, curp, dateSchema, id, integerBuilder, lastNameFirst, lastNameLast, name, stringSchema } from "./genericSchema";
+import { active, curp, dateSchema, id, integerBuilder, lastNameFirst, lastNameLast, name, phoneNumber, stringSchema } from "./genericSchema";
 
 export const avalSchema = z.object({
     name,
@@ -9,7 +9,7 @@ export const avalSchema = z.object({
     reference: stringSchema('Referencia'),
     curp: curp,
     guarantee: stringSchema('Garantía'),
-    phoneNumber: stringSchema('Numero de telefono')
+    phoneNumber
 });
 
 export const renovateSchema = z.object({
@@ -25,7 +25,7 @@ export const clientSchema =  z.object({
     reference: stringSchema('Referencia'),
     // curp: curp,
     guarantee: stringSchema('Garantía'),
-    phoneNumber: stringSchema('Numero de telefono')
+    phoneNumber
 });
 
 const group = integerBuilder('grupo');

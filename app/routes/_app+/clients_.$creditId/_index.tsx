@@ -24,12 +24,12 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   const { creditId } = params;
 
   try {
-  
     const credit = await Service.credit.findDetailsCredit(creditId);
     return handlerSuccess(200, credit);
-  } catch (error) {
+  } catch (e) {
+    const { error, status } = handlerError(e);
     console.log({error});
-    return handlerError(error);
+    throw new Response(error, { status });
   }
 
 }

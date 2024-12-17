@@ -7,7 +7,7 @@ export type Params<Key extends string = string> = {
 
 export const PaymentClientParams = () => {
 
-    const defaultColumn = 'assignAt';
+    const defaultColumn = 'captureAt';
 
     const columnsFilter = [
         'credit.client.fullname', 'credit.aval.fullname', 'credit.folder.name',

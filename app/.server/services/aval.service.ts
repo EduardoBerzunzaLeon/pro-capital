@@ -5,6 +5,7 @@ import { RequestId } from "../interfaces";
 import { validationConform, validationZod } from "./validation.service";
 import { ServerError } from "../errors";
 import { AvalCreateI } from "../domain/interface";
+import { activeSchema } from "~/schemas/genericSchema";
 
 export const findAutocomplete = async (curp: string) => {
     const aval = await Repository.aval.findAutocomplete(curp.toLowerCase());
@@ -41,9 +42,22 @@ export const updateById = async (id: RequestId, form: FormData) => {
     });
 }
 
+export const updateDeceased = async (id: RequestId, isDeceased: boolean) => {
+
+    const { isActive: isDeceasedValidated } = validationZod({ isActive: isDeceased }, activeSchema);
+    const { id: idValidated } = validationZod({ id }, idSchema);
+
+    const avalUpdated = await Repository.aval.updateDeceased(idValidated, isDeceasedValidated);
+
+    if(!avalUpdated) {
+        throw ServerError.badRequest('No se pudo cambiar el estatus de vida del aval');
+    }
+}
+
 export default {
     findAutocomplete, 
     findOne,
     updateById,
-    upsertOne
+    upsertOne,
+    updateDeceased
 }

@@ -225,6 +225,7 @@ model Aval {
   curp String @unique
   phoneNumber String?
   credits Credit[]
+  isDeceased Boolean @default(false)
 }
 
 model Credit {
