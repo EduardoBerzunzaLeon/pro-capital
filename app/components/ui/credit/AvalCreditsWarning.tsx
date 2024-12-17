@@ -4,7 +4,14 @@ interface Credit {
     status: string,
     client: {
         fullname: string
-    }
+    },
+    folder: {
+        name: string
+    },
+    group: {
+        name: string,
+    },
+    currentDebt: number
 }
 
 interface Props {
@@ -24,8 +31,11 @@ export const AvalCreditsWarning = ({ credits }: Props) => {
         <CardBody>
             {
                 credits.map((credit) => (
-                    <div className='flex flex-row w-full items-center justify-between' key={credit.client.fullname}>
+                    <div className='flex flex-row w-full items-center justify-between flex-wrap' key={credit.client.fullname}>
                         <h4>Cliente: {credit.client.fullname.toUpperCase()}</h4>
+                        <span>Carpeta: {credit.folder.name }</span>
+                        <span>Grupo: {credit.group.name }</span>
+                        <span>Deuda: ${credit.currentDebt }</span>
                         <Chip color="warning" variant="bordered">{credit.status}</Chip>
                     </div>
                 ))

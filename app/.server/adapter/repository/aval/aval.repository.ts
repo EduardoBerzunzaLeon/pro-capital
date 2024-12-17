@@ -25,7 +25,18 @@ export function AvalRepository(base: BaseAvalI): AvalRepositoryI {
                     status: true,
                     client: {
                         select: { fullname: true }
-                    }
+                    },
+                    folder: {
+                        select: { 
+                            name: true, 
+                        }
+                    },
+                    group: {
+                        select: {
+                            name: true
+                        }
+                    },
+                    currentDebt: true
                 }
             }
         }, true);

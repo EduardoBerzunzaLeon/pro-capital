@@ -4,32 +4,18 @@
 - Agregar Transicion de logout mientras hace el loading
 
 # datos credito formulario
-    el telefono no es obligatorio si lo dejan vacio el sistema
-    pondra 0
-    al momento de buscar el aval te diga si es cliente no liquidado
-    en los creditos pendientes del aval
-    traer carpeta grupo y total de la deuda
-    No aceptar decimal
 
 
 # UI:
-    - Agregar el isActive en carpeta y en su tabla crud
     -- Bug en folder ya que lideres es un arreglo, debe traer solo la lider activo
-    - separar la logica del autocomplete multiple (Not is required) *
     - Acomodar la UI de la seccion de lideres
     - verificar el color de los dialogs
     - cambiar el color de todo la app segun el thema sin necesidad de forzarlo con red-dark
     - Cambiar de action a loader al momento de descargar el layout
-    - Agregar pagos en credito detalle
-    - Agregar tabla dinamica con los pagos en credito detalle.
-    - Agregar paginar de pagos en la tabla de *Renovar credito form*
     - Acomodar interfaz de usuario de todas las secciones, verificar que sea responsive
     -- add prettier
-    -- Agregar titulo en cada pagina
     -- Agregar folder active autocomplete
     -- Agregar filter input solo numeros [no urgente]
-    -- Agregar schema para telefono (cantidad de caracteres)
-    -- Agregar la opcion de Matar usuario (marcarlo como fallecido)
 
 # MEMORY LEAK:
   - Cuando se escribe en el input, como cambia la url causa navegación ocasionando que rerenderice el root component, (mande a llamar al usuario, con todos los permisos (pesa demasiado)) [Quizas este listo, verificarlo]
@@ -48,17 +34,10 @@
     - Controlar Ataque CSRF: https://github.com/sergiodxa/remix-utils#csrf
     - Hacer un reporte vacio con los datos, 
 
-# TODO: 
-    Agregar los pagos y filtro por localidad y grupo en detalle credito 
-    Agregar boton "Actualizar estatus de las cuentas" 
-    Agregar el estatus a la carpeta
-
 # Funcionalidades faltantes: 
-    Agregar activar y desactivar folder
         Aplicar esto en el autocomplete [NO es prioritario]
     Mi perfil
     Editar mi perfil
-    Agregar paginacion a renovacion de credito, pagos
     Agregar la opcion de Matar cliente / aval   
     cuando se use el autocomplete, verificar si trae el isActive si lo trae pintar el chipo de activo / inactivo (Carpeta, Asesor)
     - cuando sea crear si aparezcan solo personas activas o carpetas activas
