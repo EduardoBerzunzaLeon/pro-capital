@@ -1,5 +1,6 @@
-import { Avatar, Card, CardBody, CardHeader } from "@nextui-org/react"
+import { Avatar,  Card, CardBody, CardFooter, CardHeader } from "@nextui-org/react"
 import { ChipStatus } from "../common"
+import { ReactNode } from "react"
 
 interface Props {
     user: {
@@ -11,10 +12,11 @@ interface Props {
         address: string,
         sex: string
         isActive: boolean
-    }
+    },
+    footerContent?: ReactNode
 }
 
-export const Profile = ({ user }: Props) => {
+export const Profile = ({ user, footerContent }: Props) => {
   return (
     <div>
         <Card className="py-4">
@@ -35,6 +37,9 @@ export const Profile = ({ user }: Props) => {
                 <p>Dirección: <span className='font-bold capitalize'>{ user.address }</span></p>
                 <ChipStatus isActive={ user.isActive }/>
             </CardBody>
+            <CardFooter>
+                { footerContent } 
+            </CardFooter>
         </Card>
     </div>
   )
