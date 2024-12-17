@@ -37,6 +37,8 @@ import { permissions } from "../permissions";
         });
 
     } catch (e) {
+      
+      console.log(e);
       const { error, status } = handlerError(e);
       throw new Response(error, { status });
     }

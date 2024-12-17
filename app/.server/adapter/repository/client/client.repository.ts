@@ -32,12 +32,17 @@ export function ClientRepository(base: BaseClientI): ClientRepositoryI{
    async function updateById(id: number, data: ClientUpdateByID) {
         return await base.updateOne({ id }, data);
    }
+   
+   async function updateDeceased(id: number, isDeceased: boolean) {
+        return await base.updateOne({ id }, { isDeceased });
+   }
 
     return {
         createOne,
         deleteOne,
         hasCredits,
+        updateById,
+        updateDeceased,
         updateOne,
-        updateById
     }
 }

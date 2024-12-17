@@ -4,7 +4,7 @@ import { Card, CardHeader, CardBody, Accordion, AccordionItem, Button } from "@n
 import { ActionFunction, LoaderFunction } from "@remix-run/node"
 import { Form, useLoaderData, useNavigate } from "@remix-run/react";
 import { FaUserPlus, FaUsers } from "react-icons/fa";
-import { redirectWithSuccess } from "remix-toast";
+import { redirectWithError, redirectWithSuccess } from "remix-toast";
 import { handlerError } from "~/.server/reponses";
 import { handlerErrorWithToast } from "~/.server/reponses/handlerError";
 import { Service } from "~/.server/services";
@@ -17,9 +17,8 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     try {
         return await Service.credit.validationToRenovate(params.curp, params.creditId);
     } catch (err) {
-        console.log({err});
-        const { error, status } = handlerError(err);
-        throw new Response(error, { status });
+        const { error } = handlerError(err);
+        return redirectWithError('/clients', error);
     }
 }
 

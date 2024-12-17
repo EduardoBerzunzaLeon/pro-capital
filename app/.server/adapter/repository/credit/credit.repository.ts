@@ -294,6 +294,7 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
                     curp: true,
                     reference: true,
                     fullname: true,
+                    isDeceased: true,
                 }
             },
             aval: {
@@ -307,6 +308,7 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
                     curp: true,
                     reference: true,
                     fullname: true,
+                    isDeceased: true,
                 }
             },
         })

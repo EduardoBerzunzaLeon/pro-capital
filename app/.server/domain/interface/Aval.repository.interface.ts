@@ -31,6 +31,7 @@ export interface AvalRepositoryI{
     upsertOne: (aval: AvalCreateI) => Promise<Generic | undefined>,
     hasCredits: (id: number) => Promise<Generic | undefined>,
     deleteOne: (id: number) => Promise<Generic | undefined>,
-    updateById: (id: number, data: ClientUpdateByID) => Promise<Generic | undefined>
+    updateById: (id: number, data: ClientUpdateByID) => Promise<Generic | undefined>,
+    updateDeceased: (id: number, isDeceased: boolean) => Promise<Generic | undefined>,
 }
 

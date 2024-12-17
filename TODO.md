@@ -61,6 +61,8 @@
     Agregar paginacion a renovacion de credito, pagos
     Agregar la opcion de Matar cliente / aval   
     cuando se use el autocomplete, verificar si trae el isActive si lo trae pintar el chipo de activo / inactivo (Carpeta, Asesor)
+    - cuando sea crear si aparezcan solo personas activas o carpetas activas
+    - en editar aparezcan todos pero con el estatus
 
 # QUESTION
     Preguntar si el no pago se toma en cuenta como cantidad de pagos

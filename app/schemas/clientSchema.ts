@@ -5,7 +5,8 @@ import {
     name, 
     lastNameFirst, 
     lastNameLast, 
-    stringSchema 
+    stringSchema, 
+    phoneNumber
 } from "./genericSchema";
 
 export const clientUpdateSchema = z.object({
@@ -15,7 +16,7 @@ export const clientUpdateSchema = z.object({
     address: stringSchema('Dirección'),
     reference: stringSchema('Referencia'),
     curp: curp,
-    phoneNumber: stringSchema('Numero de telefono')
+    phoneNumber: phoneNumber
 });
 
 

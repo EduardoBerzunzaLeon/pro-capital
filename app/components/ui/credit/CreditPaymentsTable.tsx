@@ -1,9 +1,10 @@
-import { useCallback } from "react";
+import { useCallback, useMemo, useState } from "react";
 
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Chip } from "@nextui-org/react"
+import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Chip, Pagination } from "@nextui-org/react"
 import { PaymentI, Key, Color, PaymentStatus } from "~/.server/interfaces";
 import { useRenderCell } from "~/application";
 import dayjs from 'dayjs';
+import { RowPerPage } from "../rowPerPage/RowPerPage";
 
 interface Props {
     payments: PaymentI[]
@@ -41,7 +42,24 @@ export const CreditPaymentsTable = ({ payments }: Props) => {
 
     const { render } = useRenderCell({ isMoney: true }); 
 
-    console.log(payments);
+    const [page, setPage] = useState(1);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+  
+    const pages = Math.ceil(payments.length / rowsPerPage);
+  
+    const items = useMemo(() => {
+      const start = (page - 1) * rowsPerPage;
+      const end = start + rowsPerPage;
+  
+      return payments.slice(start, end);
+    }, [page, payments, rowsPerPage]);
+
+    const onRowsPerPageChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+      setRowsPerPage(Number(e.target.value));
+      setPage(1);
+    }, []);
+
+
 
     const renderCell = useCallback((payment: PaymentI, columnKey: Key) => {
              
@@ -62,11 +80,25 @@ export const CreditPaymentsTable = ({ payments }: Props) => {
   return (
     <Table 
         aria-label="Example table with dynamic content"
+        topContent={<RowPerPage onChange={onRowsPerPageChange}/>}
+        bottomContent={
+          <div className="flex w-full justify-center">
+            <Pagination
+              isCompact
+              showControls
+              showShadow
+              color="secondary"
+              page={page}
+              total={pages}
+              onChange={(page) => setPage(page)}
+            />
+          </div>
+        }
     >
     <TableHeader columns={columns}>
       {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
     </TableHeader>
-    <TableBody items={payments}>
+    <TableBody items={items}>
       {(item) => (
         <TableRow key={item.id}>
           {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}

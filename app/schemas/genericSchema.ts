@@ -1,4 +1,5 @@
 import { z } from "zod";
+import validator from "validator";
 
 export const id = z.coerce.number({
     required_error: "ID es requerido",
@@ -106,6 +107,8 @@ export const stringSchema = (requiredText: string) =>  z.string({
     required_error: "Requerido",
 }).trim()
 .toLowerCase();
+
+export const phoneNumber = z.string().refine(validator.isMobilePhone, { message: 'Teléfono incorrecto' }).optional();
 
 export const dateSchema = (requiredText: string) => z.coerce.date({
     invalid_type_error: `${requiredText} invalido`,

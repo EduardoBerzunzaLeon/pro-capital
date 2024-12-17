@@ -62,6 +62,10 @@ export function AvalRepository(base: BaseAvalI): AvalRepositoryI {
         return await base.updateOne({ id }, data);
     }
 
+    async function updateDeceased(id: number, isDeceased: boolean) {
+        return await base.updateOne({ id }, { isDeceased });
+   }
+
     return {
         findAutocomplete,
         findOne,
@@ -69,5 +73,6 @@ export function AvalRepository(base: BaseAvalI): AvalRepositoryI {
         updateById,
         hasCredits,
         deleteOne,
+        updateDeceased
     }
 }

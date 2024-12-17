@@ -17,7 +17,13 @@ export const action: ActionFunction = async ({ params, request }) => {
             await Service.auth.requirePermission(request, permissions.credits.permissions.update_client);
             await Service.client.updateById(id, formData);
             return handlerSuccessWithToast('update', 'del cliente');
-
+        }
+        
+        if(data._action === 'deceased') {
+            await Service.auth.requirePermission(request, permissions.credits.permissions.update_client);
+            const isDeceased = data?.isDeceased === 'true';
+            await Service.client.updateDeceased(id, isDeceased);
+            return handlerSuccessWithToast('update', 'del cliente');
         }
 
         return redirectWithWarning("/", "Entrada a una ruta de manera invalida");

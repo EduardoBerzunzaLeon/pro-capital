@@ -1,9 +1,7 @@
 import { ActionFunction, LoaderFunction } from "@remix-run/node"
-import { Form, useLoaderData, useRouteError, useNavigate } from '@remix-run/react';
-import { Generic } from "~/.server/interfaces";
+import { Form, useLoaderData, useNavigate } from '@remix-run/react';
 import { handlerError } from "~/.server/reponses";
 import { Service } from "~/.server/services";
-import { ErrorCard } from "~/components/utils/ErrorCard";
 import { ClientFormSection } from '../../../components/ui/credit/ClientFormSection';
 import { AvalFormSection, CreditFormSection } from "~/components/ui";
 import { Accordion, AccordionItem, Button, Card, CardBody, CardHeader } from "@nextui-org/react";
@@ -11,7 +9,7 @@ import { getFormProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import { creditCreateSchema } from "~/schemas";
 import { handlerErrorWithToast } from "~/.server/reponses/handlerError";
-import { redirectWithSuccess } from "remix-toast";
+import { redirectWithError, redirectWithSuccess } from "remix-toast";
 import { permissions } from "~/application";
 import { FaUserPlus, FaUsers } from "react-icons/fa";
 
@@ -21,8 +19,8 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     try {
         await Service.credit.validationToCreate(params.curp)
     } catch (err) {
-     const  { error, status } = handlerError(err);
-     throw new Response(error, { status });
+     const  { error } = handlerError(err);
+     return redirectWithError('/clients', error);
     }
 
     return params.curp!.toUpperCase();
@@ -42,14 +40,6 @@ export const action: ActionFunction = async ({ request, params }) => {
         return handlerErrorWithToast(error, { data });
     }
 
-}
-
-export function ErrorBoundary() {
-    const error = useRouteError();
-    return (<ErrorCard 
-        error={(error as Generic)?.data ?? 'Ocurrio un error inesperado'}
-        description='Ocurrio un error al momento de crear un nuevo credito, intentelo de nuevo, verifique el CURP o que no exista el cliente'
-    />)
 }
 
 export const handle = {
