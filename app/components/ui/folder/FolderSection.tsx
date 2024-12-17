@@ -1,7 +1,7 @@
 import {  useCallback, useEffect, useState } from "react";
 
 import { Input, useDisclosure } from "@nextui-org/react";
-import { ButtonClear, Pagination, RowPerPage, TableDetail } from "..";
+import { ButtonClear, Pagination, RowPerPage, TableDetail , ChipStatus } from "..";
 import { FaSearch } from "react-icons/fa";
 import { Folder } from "~/.server/domain/entity/folder.entity";
 import { FolderAction } from "./FolderAction";
@@ -13,6 +13,7 @@ import { ExcelReport } from "../excelReports/ExcelReport";
 import { Permission } from '../auth/Permission';
 import { MultiplePermissions } from "../auth/MultiplePermissions";
 import { FOLDER_COLUMNS } from "../excelReports/columns";
+import FolderToggleActive from "./FolderToggleActive";
 
 export type Key = string | number;
 
@@ -24,6 +25,7 @@ const columns = [
   { key: 'municipality', label: 'MUNICIPIO', sortable: true },
   { key: 'town', label: 'LOCALIDAD',  sortable: true },
   { key: 'count', label: 'GRUPOS',  },
+  { key: 'isActive', label: 'ESTATUS' },
   { key: 'actions', label: 'ACCIONES'},
 ]
 
@@ -80,14 +82,25 @@ export function FolderSection() {
 const renderCell = useCallback((folder: Folder, columnKey: Key) => {
   if(columnKey === 'actions') {
         return (
-            <MultiplePermissions permissions={[
-                permissions.folder.permissions.delete,
-                permissions.folder.permissions.update,
-            ]}>
-                <FolderAction onOpenEdit={onOpen} idFolder={folder.id}/>
-            </MultiplePermissions>
+            <div className='flex justify-center items-center gap-1'>
+                <Permission permission={permissions.folder.permissions.active}>
+                    <FolderToggleActive 
+                        folderId={folder.id}
+                        isActive={folder.isActive}
+                    />
+                </Permission>
+                <MultiplePermissions permissions={[
+                    permissions.folder.permissions.delete,
+                    permissions.folder.permissions.update,
+                ]}>
+                        <FolderAction onOpenEdit={onOpen} idFolder={folder.id}/>
+                </MultiplePermissions>
+            </div>
         )
   } 
+    if(columnKey == 'isActive') {
+        return <ChipStatus isActive={folder.isActive}/>
+    }
 
     return <span className="capitalize">{folder[columnKey as keyof typeof folder]}</span>;
 // eslint-disable-next-line react-hooks/exhaustive-deps

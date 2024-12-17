@@ -10,6 +10,7 @@ export const permissions = {
             view: 'folders[view]',
             delete: 'folders[delete]',
             report: 'folders[report]',
+            active: 'folders[active]',
         }
     },
     town: {

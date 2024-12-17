@@ -32,6 +32,7 @@ export interface FolderRepositoryI{
     findByNameAndGroup: (name: string, group: number) => Promise<Generic | undefined>,
     findSampleAll: () => Promise<Generic[] | undefined>,
     updateOne: (id: number, routeId: number) => Promise<Generic | undefined>,
+    updateIsActive: (id: number, isActive: boolean) =>  Promise<Generic | undefined>,
     deleteOne: (id:number) => Promise<Generic | undefined>
     createOne: (data: CreateFolderI) => Promise<Generic | undefined>,
     base: BaseFolderI

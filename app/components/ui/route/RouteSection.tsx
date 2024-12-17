@@ -1,7 +1,6 @@
-import { Chip } from "@nextui-org/react";
 import { permissions, useFetcherPaginator, useStatusMemo } from "~/application";
 import { RowPerPage } from "../rowPerPage/RowPerPage";
-import { ButtonClear, DropdownStatus, Pagination, TableDetail } from "..";
+import { ButtonClear, DropdownStatus, Pagination, TableDetail , ChipStatus } from "..";
 import { useCallback, useEffect,  useState } from "react";
 import { RouteButtonAdd } from "./RouteButtonAdd";
 import { RouteAction } from "./RouteAction";
@@ -74,9 +73,7 @@ export function RouteSection() {
         } 
 
         if(columnKey == 'isActive') {
-            const status = route.isActive ? 'Activo' : 'Inactivo';
-            const color = route.isActive ? 'success' : 'danger' 
-            return ( <Chip color={color} variant="bordered" >{status}</Chip>)
+            return <ChipStatus isActive={route.isActive}/>
         }
 
         if(columnKey === 'name') {

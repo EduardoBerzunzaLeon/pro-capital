@@ -8,6 +8,7 @@ import { db } from "../adapter";
 import { Service } from ".";
 import { PaginationWithFilters } from "../domain/interface";
 import { FolderProps } from "./excelReport.service";
+import { activeSchema } from "~/schemas/genericSchema";
 
 export const findAll = async (props: PaginationWithFilters) => {
 
@@ -49,6 +50,18 @@ export const updateOne = async (id: RequestId, routeId: RequestId) => {
         throw ServerError.badRequest(`No se pudo actualizar la carpeta`);
     }
 }
+
+export const updateIsActive = async(id: RequestId, isActiveFolder?: boolean) => {
+    
+    const { isActive: isActiveValidated } = validationZod({ isActive: isActiveFolder }, activeSchema);
+    const { id: idVal } = validationZod({ id }, idSchema);
+
+    const folderUpdated =  await Repository.folder.updateIsActive(idVal, isActiveValidated);
+    if(!folderUpdated) {
+        throw ServerError.internalServer('No se pudo actualizar la carpeta');
+    }
+}
+
 
 const deleteGroupsInFolder = async ( groups: {id: number}[] ) => {
     const groupsId = groups.map(({id}: { id: number }) => id);
@@ -153,6 +166,7 @@ export default {
     findNextConsecutive,
     findAutocomplete,
     findLastGroup,
+    updateIsActive,
     exportData,
     findSampleAll
 }

@@ -174,6 +174,13 @@ export const permissions: PremissionsI[] = [
         roles: capture_chief
     },
     {
+        servername: info.folder.name+'[active]',
+        name: 'activar/desactivar carpeta',
+        description: 'permite activar/desactivar una carpeta',
+        module: info.folder.module,
+        roles: admins
+    },
+    {
         servername: info.folder.name+'[add]',
         name: 'agregar carpeta',
         description: 'permite agregar una carpeta',

@@ -17,6 +17,7 @@ import { rootLoader } from "./application/root/root.loader";
 
 import  "react-toastify/dist/ReactToastify.css";
 import stylesheet from "~/tailwind.css?url";
+import { ErrorBoundary } from './components/ui';
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
@@ -40,6 +41,8 @@ export const shouldRevalidate: ShouldRevalidateFunction = ({
   return defaultShouldRevalidate;
 };
 
+
+export { ErrorBoundary }
 export default function App() {
   const outlet = useOutlet();
   const navigate = useNavigate();

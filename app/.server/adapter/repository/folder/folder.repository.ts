@@ -73,6 +73,7 @@ export function FolderRepository(base: BaseFolderI) : FolderRepositoryI {
                 select: {
                     id: true,
                     name: true,
+                    isActive: true,
                     town: {
                         select: {
                             name: true,
@@ -140,6 +141,10 @@ export function FolderRepository(base: BaseFolderI) : FolderRepositoryI {
         return await base.updateOne({ id }, { routeId });
     }
 
+    async function updateIsActive(id: number, isActive: boolean) {
+        return await base.updateOne({ id }, { isActive });
+    }
+
     async function findCountGroups(id: number) {
         const select = { 
             name: true,
@@ -191,6 +196,7 @@ export function FolderRepository(base: BaseFolderI) : FolderRepositoryI {
         findByNameAndGroup,
         findByReport,
         findLastGroup,
+        updateIsActive,
         findSampleAll,
         updateOne,
         deleteOne,

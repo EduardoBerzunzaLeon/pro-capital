@@ -30,7 +30,7 @@ export default function Navbar() {
     }
 
     if(key === 'profile') {
-      navigate(`/users/${user.id}`); 
+      navigate('/profile'); 
     }
 
     console.log({key: 'SETTINGS NOT IMPLEMENTATED'}); 

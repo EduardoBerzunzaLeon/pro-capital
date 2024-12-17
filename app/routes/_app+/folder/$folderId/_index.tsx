@@ -32,6 +32,13 @@ export const action: ActionFunction = async({params, request}) => {
         return handlerSuccessWithToast('update');
       }
 
+      if(data._action === 'updateIsActive') {
+        await Service.auth.requirePermission(request, permissions.folder.permissions.active);
+        const isActive = data?.isActiveFolder === 'true';
+        await Service.folder.updateIsActive(id, isActive);
+        return handlerSuccessWithToast('update');
+      }
+
       if(data._action === 'delete') {
         await Service.auth.requirePermission(request, permissions.folder.permissions.delete);
         await Service.folder.deleteOne(id);

@@ -23,6 +23,7 @@ export interface FolderI {
     id: number;
     name: string;
     consecutive: number;
+    isActive: boolean;
     town: Pick<TownI, 'name' | 'municipality'>;
     route: RouteI;
     groups?: string[] //TODO: add group interface
@@ -37,6 +38,7 @@ export class Folder {
     public readonly id: number;
     public readonly name: string;
     public readonly town: string;
+    public readonly isActive: boolean;
     public readonly municipality: string;
     public readonly route: string;
     public readonly count: number;
@@ -54,8 +56,10 @@ export class Folder {
         leader,
         credits,
         count,
+        isActive,
     }: Folder) {
         this.id = id;
+        this.isActive = isActive;
         this.name = name;
         this.count = count;
         this.town = town;
@@ -80,6 +84,7 @@ export class Folder {
             leaders,
             credits,
             _count,
+            isActive
         } =  folder;
 
         if(!name || typeof name !== 'string' ) throw ServerError.badRequest('El nombre es requerido');
@@ -95,6 +100,10 @@ export class Folder {
         
         const countGroup = _count?.groups || 0; 
 
+        if(typeof isActive === 'undefined') {
+            throw ServerError.badRequest('El estatus es requerido');
+        }
+
 
         return new Folder({
             id, 
@@ -106,6 +115,7 @@ export class Folder {
             count: countGroup,
             credits, 
             groups, 
+            isActive
         });
     }
 
