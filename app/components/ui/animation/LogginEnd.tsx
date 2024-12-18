@@ -21,7 +21,7 @@ export const LogginEnd: FC<Props> = ({ text }) => {
         >
         </motion.div> 
         <motion.h2
-            className='text-lg text-center privacy-text'
+            className='text-lg text-center privacy-text capitalize'
             initial={{ opacity: 0 }}
             animate={{ 
                 opacity: [ 0, 0, 1, 1, 0],

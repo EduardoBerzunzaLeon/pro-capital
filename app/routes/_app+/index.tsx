@@ -41,7 +41,6 @@ export const loader: LoaderFunction = async ({ request }) => {
   try {
     const { metadata, data }=  await Service.leader.findAllBirthday({ limit, page, month, day });
 
-console.log(data);
     return {
       serverData: { 
         data, 
@@ -91,7 +90,6 @@ export default function Index() {
     }
 
     return <span className='capitalize'>{render(leader, columnKey)}</span>
-    // return <span className='capitalize'>nodata</span>
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

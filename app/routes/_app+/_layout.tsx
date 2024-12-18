@@ -92,10 +92,10 @@ export default function Dashboard() {
          && (
           data.message === 'welcome to app' && 
           navigationType === 'PUSH' && 
-          location?.state?._isRedirect
+          location?.state?._isRedirect 
         )
         ) && 
-          ( <LogginEnd text={`Bienvenido de nuevo, ${user?.name.toUpperCase()}`} /> )
+          ( <LogginEnd text={`Bienvenido, ${user?.name} ${user?.lastNameFirst} ${user?.lastNameSecond}`} /> )
       }
     </>
   )

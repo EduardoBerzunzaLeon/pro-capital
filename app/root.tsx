@@ -15,7 +15,7 @@ import { Bounce, ToastContainer, toast as notify } from 'react-toastify';
 
 import { rootLoader } from "./application/root/root.loader";
 
-import  "react-toastify/dist/ReactToastify.css";
+import toastStyles from "react-toastify/ReactToastify.css?url";
 import stylesheet from "~/tailwind.css?url";
 import { ErrorCard } from './components/utils/ErrorCard';
 import { Generic } from './.server/interfaces';
@@ -23,6 +23,7 @@ import { FaHome } from 'react-icons/fa';
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
+  { rel: "stylesheet", href: toastStyles },
 ];
 
 export const meta: MetaFunction = () => ([{
