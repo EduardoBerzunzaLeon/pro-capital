@@ -77,7 +77,7 @@ export const findById = async (userId: RequestId) => {
   return await Repository.auth.findById(id); 
 }
 
-export const requirePermission = async (request: Request, permission: string) => {
+export const requirePermission = async (request: Request, permission: string, idOwner?: number | string) => {
       
     const user = await authenticator.isAuthenticated(request, {
       failureRedirect: "/login",
@@ -89,6 +89,10 @@ export const requirePermission = async (request: Request, permission: string) =>
 
     if(user instanceof Error) {
       throw user;
+    }
+
+    if(idOwner && idOwner === user.id ) {
+      return user;
     }
 
     const hasPermission = await Service.role.hasPermission(user.role, permission);

@@ -1,6 +1,5 @@
 import { Card, CardHeader, CardBody, Button } from "@nextui-org/react";
 import { useFetcher } from "@remix-run/react";
-import { useCallback } from "react";
 import { useDropzone } from 'react-dropzone-esm';
 
 interface Props {
@@ -8,16 +7,15 @@ interface Props {
 }
 export const AvatarForm = ({ id }: Props) => {
 
-  // TODO: improve upload files
-  const onDrop = useCallback(acceptedFiles => {
-    // Do something with the files
-    console.log({acceptedFiles});
-  }, [])
+  // // TODO: improve upload files
+  // const onDrop = useCallback((acceptedFiles: any) => {
+  //   // Do something with the files
+  //   console.log({acceptedFiles});
+  // }, [])
 
   const { Form, state } = useFetcher();
 
   const {getRootProps, getInputProps, isDragActive, acceptedFiles} = useDropzone({
-    onDrop, 
     // accept: { "image": ["png", "jpeg"] },
     accept: {
       'image/png': [],

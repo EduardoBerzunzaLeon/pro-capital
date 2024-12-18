@@ -28,7 +28,7 @@ export const action: ActionFunction = async ({ params, request }) => {
     try {
         
         if(data._action === 'updatePersonalData') {
-            await Service.auth.requirePermission(request, permissions.users.permissions.update);
+            await Service.auth.requirePermission(request, permissions.users.permissions.update, id);
             await Service.user.updatePersonalData(id, formData);
             return handlerSuccessWithToast("update", "Los datos personales");
         }
@@ -41,7 +41,7 @@ export const action: ActionFunction = async ({ params, request }) => {
         
         if(data._action === 'updatePassword' ){
             // TODO: when is my profile  not is necesary this validation;
-            await Service.auth.requirePermission(request, permissions.users.permissions.update_security);
+            await Service.auth.requirePermission(request, permissions.users.permissions.update_security, id);
             await Service.user.updatePassword(id, formData);
             return handlerSuccessWithToast("update", "La contraseña");
         }

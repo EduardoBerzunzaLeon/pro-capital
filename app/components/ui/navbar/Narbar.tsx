@@ -92,7 +92,7 @@ export default function Navbar() {
               textValue='logout'
               className="text-danger"
             >
-              Log Out
+              Cerrar sesión
             </DropdownItem>
           </DropdownMenu>
         </Dropdown>

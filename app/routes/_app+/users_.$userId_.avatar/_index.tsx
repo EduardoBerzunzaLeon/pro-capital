@@ -5,10 +5,9 @@ import { permissions } from "~/application";
 
 export async function action({ request, params }: ActionFunctionArgs) {
 
-    await Service.auth.requirePermission(request, permissions.users.permissions.update);
-    
-    const { userId } = params;
-
+    const { userId } = params;  
+    await Service.auth.requirePermission(request, permissions.users.permissions.update, userId);
+  
     try {
       
       const formData = await unstable_parseMultipartFormData(
@@ -31,7 +30,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
         ),
       );
     
-      const files = formData.getAll("file") as NodeOnDiskFile[];
+      const files = formData.getAll("file") as unknown as NodeOnDiskFile[];
       
       await Service.user.updateAvatar(userId, files[0].name);
       return handlerSuccessWithToast('update', 'El avatar');

@@ -23,11 +23,6 @@
 # SERVER
     - Agregar flash message para errores con toast en loader (en el momento de descargar un excel).
 
-# MODULOS FALTANTES:
-    - Perfil
-        - Ver mi perfil
-        - Actualizar mis datos personales
-
 # - ERRROR: 
     Cuando le doy escape ocurre un error
 # Opciones de ampliacion
@@ -36,9 +31,6 @@
 
 # Funcionalidades faltantes: 
         Aplicar esto en el autocomplete [NO es prioritario]
-    Mi perfil
-    Editar mi perfil
-    Agregar la opcion de Matar cliente / aval   
     cuando se use el autocomplete, verificar si trae el isActive si lo trae pintar el chipo de activo / inactivo (Carpeta, Asesor)
     - cuando sea crear si aparezcan solo personas activas o carpetas activas
     - en editar aparezcan todos pero con el estatus
