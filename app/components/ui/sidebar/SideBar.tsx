@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import "./styles.css";
 import { Navigation } from "./Navigation";
 import { MenuToggle } from "./MenuToggle";
 import { useComponentVisible, useDimensions } from "~/application";

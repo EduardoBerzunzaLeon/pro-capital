@@ -37,3 +37,11 @@
 
 # QUESTION
     Preguntar si el no pago se toma en cuenta como cantidad de pagos
+
+# TODOS: 
+    - Verify handler errors
+    - fix bugs 
+    - upgrade UI
+    - Test Deploy
+    - Migrate
+    - Real deploy
