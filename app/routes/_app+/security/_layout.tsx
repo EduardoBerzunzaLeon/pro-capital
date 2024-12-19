@@ -120,40 +120,48 @@ export default function  SecurityPage()  {
   return (
     <div className='w-full flex gap-2 flex.wrap'>
       <div className='w-full flex gap-2 mt-5 mb-3 flex-wrap justify-between items-center'>
-      <Permission permission={permissions.roles.permissions.report}>
-      <ExcelReport url={`/roles/export?${searchParams.toString()}`} name='roles' columns={ROLE_COLUMNS} />
-    </Permission>
-    <ButtonClear 
-       onClear={onClearFilters}
-    />
-      <Fragment key={key}>
-        <SelectRoles 
-          onSelectionChange={handleSelection}
-          selectionMode='multiple'
-          className='w-full md:max-w-[25%]'
-          defaultSelectedKeys={defaultItems}
-        />
-      </Fragment>
       <TableDetail 
           aria-label="roles table"
           onSortChange={handleSort}
           sortDescriptor={sortDescriptor}
           bottomContent={
             <Pagination
-            pageCount={roles?.serverData?.pageCount}
-            currentPage={roles?.serverData?.currentPage}
-            onChange={handlePagination} 
+              pageCount={roles?.serverData?.pageCount}
+              currentPage={roles?.serverData?.currentPage}
+              onChange={handlePagination} 
             />
           }
           topContent={
-            <div className="flex justify-between items-center">
-              <span className="text-default-400 text-small">
-                Total {roles?.serverData.total || 0} Roles
-              </span>
-              <RowPerPage
-                onChange={handleRowPerPage} 
-                checkParams
-                />
+            <div className="flex flex-col gap-4">
+              <div className="flex justify-between gap-3 items-end flex-wrap">
+                <Fragment key={key}>
+                  <SelectRoles 
+                    onSelectionChange={handleSelection}
+                    selectionMode='multiple'
+                    className='max-w-[200px] sm:max-w-[300px]'
+                    defaultSelectedKeys={defaultItems}
+                  />
+                </Fragment>
+                <div>
+                  <Permission permission={permissions.roles.permissions.report}>
+                    <ExcelReport 
+                      url={`/roles/export?${searchParams.toString()}`} 
+                      name='roles' columns={ROLE_COLUMNS} />
+                  </Permission>
+                  <ButtonClear 
+                    onClear={onClearFilters}
+                  />
+                </div>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-default-400 text-small">
+                  Total {roles?.serverData.total || 0} Roles
+                </span>
+                <RowPerPage
+                  onChange={handleRowPerPage} 
+                  checkParams
+                  />
+              </div>
             </div>
           } 
           columns={columns} 

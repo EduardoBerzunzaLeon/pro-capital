@@ -28,7 +28,7 @@ export const PasswordForm = ({ id }: Props) => {
   const toggleVisibilityConfirm = () => setIsVisibleConfirm(!isVisibleConfirm);
 
   return (
-    <Card className="max-w-[600px] min-w-[300px]">
+    <Card className='sm:max-w-[100%] 2xl:max-w-[800px] min-w-[270px] grow'>
         <Form 
           method='post'
           { ...getFormProps(form) }
@@ -37,7 +37,7 @@ export const PasswordForm = ({ id }: Props) => {
           <CardHeader>
               <h2>Actualizar contraseña</h2>
           </CardHeader>
-          <CardBody>
+          <CardBody className='flex flex-col gap-3'>
               <InputValidation 
                 label="Contraseña" 
                 placeholder="Ingresa tu nueva contraseña" 

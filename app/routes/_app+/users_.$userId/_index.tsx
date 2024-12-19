@@ -1,6 +1,5 @@
-import { Button } from "@nextui-org/react";
 import { ActionFunction, LoaderFunction } from "@remix-run/node";
-import { useLoaderData, useNavigate, useParams } from "@remix-run/react";
+import { useLoaderData,useParams } from "@remix-run/react";
 import { FaUserCog } from "react-icons/fa";
 import { FaUsersGear } from "react-icons/fa6";
 import { redirectWithWarning } from "remix-toast";
@@ -61,21 +60,11 @@ export const handle = {
   
 export default function UserPage() {
     const user = useLoaderData<typeof loader>();
-    const navigate = useNavigate();
     const { userId } = useParams();
-    
-    const handlePress= () => {
-        navigate(`/users/${userId}/update`)
-    }
     
     return (<Profile 
         user={user.serverData} 
-        footerContent={<Button 
-                variant='ghost' 
-                color='primary' 
-                className='w-full' 
-                onPress={handlePress}
-            > Actualizar datos del usuario </Button>}
+        url={`/users/${userId}/update`}
     />)
 
 }

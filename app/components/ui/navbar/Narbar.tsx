@@ -13,6 +13,7 @@ import {
 import logo from '../../../../img/icon_logo.png';
 import { useNavigate, useRouteLoaderData, useSubmit } from "@remix-run/react";
 import { User } from "~/.server/domain/entity";
+import { FaUser } from "react-icons/fa";
 
 
 export default function Navbar() {
@@ -30,7 +31,7 @@ export default function Navbar() {
     }
 
     if(key === 'profile') {
-      navigate('/profile'); 
+      return navigate('/profile'); 
     }
 
     console.log({key: 'SETTINGS NOT IMPLEMENTATED'}); 
@@ -70,7 +71,11 @@ export default function Navbar() {
               color="secondary"
               name={user?.username}
               size="sm"
-              src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
+              src={`/img/${user.avatar}`}
+              showFallback
+              fallback={
+                <FaUser size={15}/>
+              }
             />
           </DropdownTrigger>
           <DropdownMenu 

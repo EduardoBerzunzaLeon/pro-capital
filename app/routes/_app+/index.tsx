@@ -1,7 +1,7 @@
 import { DateValue, getLocalTimeZone, now, parseDate } from "@internationalized/date";
 import {  DatePicker } from "@nextui-org/react";
 import { LoaderFunction } from "@remix-run/node";
-import { json, useLoaderData, useRouteError, useSearchParams } from "@remix-run/react"
+import { json, useLoaderData, useRouteError, useRouteLoaderData, useSearchParams } from "@remix-run/react"
 import { useCallback, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { Generic, Key } from "~/.server/interfaces";
@@ -14,12 +14,13 @@ import dayjs from 'dayjs'
 import { ExcelReport } from "~/components/ui/excelReports/ExcelReport";
 import { LEADER_BIRTHDAY_COLUMNS } from "~/components/ui/excelReports/columns";
 import { Permission } from "~/components/ui/auth/Permission";
+import { User } from "@prisma/client";
 
 const columns = [
   { key: 'fullname', label: 'LÍDER'},
   { key: 'folder', label: 'CARPETA'},
   { key: 'birthday', label: 'CUMPLEAÑOS'},
-  { key: 'address', label: 'DIRECCIÓN' },
+  // { key: 'address', label: 'DIRECCIÓN' },
 ]
 
 interface LeadersBirthday  {
@@ -73,6 +74,8 @@ export default function Index() {
   ? parseDate(searchParams.get('date') ?? '')  
   : now(getLocalTimeZone()));
 
+  const { user } = useRouteLoaderData('root') as { user: Omit<User, 'password'> };
+
   const { 
     loadingState, 
     handlePagination, 
@@ -81,7 +84,6 @@ export default function Index() {
     sortDescriptor
   } = useParamsPaginator({ columnDefault: 'name' });
   const { render } = useRenderCell({ isMoney: false }); 
-
 
   const renderCell = useCallback((leader: LeadersBirthday, columnKey: Key) => {
 
@@ -106,49 +108,62 @@ export default function Index() {
 
 
   return (
-    <>
-    <Permission permission={permissions.leaders.permissions.report_birthday}>
-      <ExcelReport url={`/leaders/exportBirthday?${searchParams.toString()}`} name='lideres_cumpleaños' columns={LEADER_BIRTHDAY_COLUMNS} />
-    </Permission>
-     <DatePicker 
-      className="max-w-[284px]" 
-      label="Fecha de cumpleaños" 
-      variant='bordered'
-      startContent={<FaSearch />}
-      labelPlacement='outside'
-      granularity="day"
-      value={date}
-      onChange={handleChange}
-    />
-      <TableDetail 
-          aria-label="roles table"
-          onSortChange={handleSort}
-          sortDescriptor={sortDescriptor}
-          bottomContent={
-              <Pagination
-              pageCount={leaders?.serverData?.pageCount}
-              currentPage={leaders?.serverData?.currentPage}
-              onChange={handlePagination} 
-              />
-          }
-          topContent={
-              <div className="flex justify-between items-center">
-                  <span className="text-default-400 text-small">
-                      Total {leaders?.serverData.total || 0} lideres
-                  </span>
-                  <RowPerPage
-                      onChange={handleRowPerPage} 
-                      checkParams
-                  />
+    <div className='w-full flex flex-col gap-10'>
+      <div className="w-full">
+        <h2 className='text-5xl sm:text-6xl md:text-7xl'>Bienvenido de nuevo</h2>
+        <span className='text-xl sm:text-2xl md:text-3xl text-blue-600 capitalize'>{ user.fullName }</span>
+      </div>
+
+        <TableDetail 
+            aria-label="birthday leader table"
+            onSortChange={handleSort}
+            sortDescriptor={sortDescriptor}
+            bottomContent={
+                <Pagination
+                pageCount={leaders?.serverData?.pageCount}
+                currentPage={leaders?.serverData?.currentPage}
+                onChange={handlePagination} 
+                />
+            }
+            topContent={
+              <div className="flex flex-col gap-4">
+                <div className="flex justify-between gap-3 items-end flex-wrap">
+                    <DatePicker 
+                      className="max-w-[200px] sm:max-w-[300px]" 
+                      label="Fecha de cumpleaños" 
+                      variant='bordered'
+                      startContent={<FaSearch />}
+                      labelPlacement='outside'
+                      granularity="day"
+                      value={date}
+                      onChange={handleChange}
+                    />
+                    <Permission permission={permissions.leaders.permissions.report_birthday}>
+                      <ExcelReport 
+                        url={`/leaders/exportBirthday?${searchParams.toString()}`} 
+                        name='lideres_cumpleaños' 
+                        columns={LEADER_BIRTHDAY_COLUMNS} 
+                      />
+                    </Permission>
+                </div>
+                <div className="flex justify-between items-center">
+                    <span className="text-default-400 text-small">
+                        Total {leaders?.serverData.total || 0} lideres
+                    </span>
+                      <RowPerPage
+                          onChange={handleRowPerPage} 
+                          checkParams
+                      />
+                </div>
               </div>
-          } 
-          columns={columns} 
-          loadingState={loadingState} 
-          emptyContent="No se encontraron lideres que cumplen en la fecha" 
-          renderCell={renderCell} 
-          data={leaders?.serverData.data ?? []}    
-      />
-    </>
+            } 
+            columns={columns} 
+            loadingState={loadingState} 
+            emptyContent="No se encontraron líderes que cumplen en la fecha" 
+            renderCell={renderCell} 
+            data={leaders?.serverData.data ?? []}    
+        />
+    </div>
   )
 } 
   

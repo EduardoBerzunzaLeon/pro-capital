@@ -74,15 +74,8 @@ export default function UserEditPage() {
     const user = useLoaderData<typeof loader>();
 
     return (<div className='w-full flex flex-wrap gap-2 items-start'>
-        <Permission permission={permissions.users.permissions.update}>
-            <UserEditForm 
-                { ...user.serverData }
-            />    
-        </Permission>
         <Permission permission={permissions.users.permissions.update_security}>
-            <PasswordForm 
-                id={user.serverData.id}
-            />
+            <PasswordForm id={user.serverData.id} />
         </Permission>
         <Permission permission={permissions.users.permissions.update_security}>
             <RoleForm 
@@ -92,6 +85,9 @@ export default function UserEditPage() {
         </Permission>
         <Permission permission={permissions.users.permissions.update}>
             <AvatarForm id={user.serverData.id}/>
+        </Permission>
+        <Permission permission={permissions.users.permissions.update}>
+            <UserEditForm { ...user.serverData } />    
         </Permission>
     </div>)
 }

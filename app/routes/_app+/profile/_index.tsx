@@ -1,6 +1,5 @@
-import { Button } from "@nextui-org/react";
 import { LoaderFunction } from "@remix-run/node";
-import { useLoaderData, useNavigate } from "@remix-run/react";
+import { useLoaderData } from "@remix-run/react";
 import { FaUser } from "react-icons/fa6";
 import { handlerError, handlerSuccess } from "~/.server/reponses";
 import { Service } from "~/.server/services";
@@ -31,15 +30,10 @@ export const handle = {
 export default function ProfilePage() {
 
     const user = useLoaderData<typeof loader>();
-    const navigate = useNavigate()
 
-    const handlePress= () => {
-        navigate('/profile/edit')
-    }
-    
     return (<Profile 
         user={user.serverData} 
-        footerContent={<Button variant='ghost' color='primary' className='w-full' onPress={handlePress}> Actualizar mis datos </Button>}
+        url='/profile/edit'
     />)
 
 }

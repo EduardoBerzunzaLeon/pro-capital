@@ -15,6 +15,7 @@ interface Props {
     startContent?: React.ReactNode,
     endContent?: React.ReactNode,
     isReadOnly?: boolean,
+    className?: string
 }
 
 export const InputValidation = ({ inputType, metadata, ...restProps}: Props) => {

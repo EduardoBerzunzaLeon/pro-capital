@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 export const useClearFilters = (params?: string[], paramsNotDeleted?: string[]) => {
     const { key: keyLocation } = useLocation();
     const [ key, setKey ] = useState(keyLocation);
-    const [clicked, setClicked ] = useState(false);
+    const [ clicked, setClicked ] = useState(false);
     const [ searchParams, setSearchParams ] = useSearchParams();
 
     const paramsCantDeleted =  useMemo(() => {
@@ -14,6 +14,11 @@ export const useClearFilters = (params?: string[], paramsNotDeleted?: string[]) 
     const canRenovateKey = () => {
         if(params) {
             const paramsDeleted = params.every((param) => !searchParams.get(param));
+            
+            if(paramsDeleted) {
+                setKey(keyLocation);
+            }
+
             return paramsDeleted;
         }
         

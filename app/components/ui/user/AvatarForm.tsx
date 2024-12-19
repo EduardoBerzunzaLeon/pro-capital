@@ -25,7 +25,7 @@ export const AvatarForm = ({ id }: Props) => {
   })
 
   return (
-    <Card className="max-w-[600px] min-w-[300px]">
+    <Card className="md:max-w-[100%] 2xl:max-w-[800px] min-w-[270px] grow">
       <Form 
         method='post'
         action={`/users/${id}/avatar`}

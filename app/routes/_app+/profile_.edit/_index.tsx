@@ -38,10 +38,10 @@ export default function EditProfilePage() {
     const user = useLoaderData<typeof loader>();
 
     return(
-        <div className='w-full flex flex-wrap gap-2 items-start'>
-            <UserEditForm { ...user.serverData }/>    
+        <div className='w-full flex flex-wrap gap-4 items-start justify-between'>
             <PasswordForm id={user.serverData.id} />
             <AvatarForm id={user.serverData.id}/>
+            <UserEditForm { ...user.serverData }/>  
         </div>
     )
 

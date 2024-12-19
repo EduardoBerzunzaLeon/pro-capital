@@ -1,6 +1,7 @@
-import { Avatar,  Card, CardBody, CardFooter, CardHeader } from "@nextui-org/react"
+import { Avatar,  Button,  Card, CardBody, CardFooter, CardHeader } from "@nextui-org/react"
 import { ChipStatus } from "../common"
-import { ReactNode } from "react"
+import { FaUser } from "react-icons/fa"
+import { useNavigate, useNavigation } from "@remix-run/react"
 
 interface Props {
     user: {
@@ -13,19 +14,31 @@ interface Props {
         sex: string
         isActive: boolean
     },
-    footerContent?: ReactNode
+    url: string
 }
 
-export const Profile = ({ user, footerContent }: Props) => {
+export const Profile = ({ user, url }: Props) => {
+
+    const navigate = useNavigate();
+    const navigation = useNavigation();
+
+    const handlePress = () => {
+        navigate(url)
+    }
+    
   return (
     <div>
         <Card className="py-4">
             <CardHeader className="pb-0 pt-2 px-4 flex-col items-center gap-2">
                 <Avatar 
                     isBordered 
-                    radius="full"
-                    className="w-20 h-20 text-large" 
+                    className="w-20 h-20" 
+                    color="secondary"
                     src={`/img/${user.avatar}`} 
+                    showFallback
+                    fallback={
+                        <FaUser size={40}/>
+                    }
                 />
                 <h4 className="font-bold text-large capitalize">{ user.fullName }</h4>
                 <small className="text-default-500"> { user.role.role  } </small>
@@ -38,7 +51,14 @@ export const Profile = ({ user, footerContent }: Props) => {
                 <ChipStatus isActive={ user.isActive }/>
             </CardBody>
             <CardFooter>
-                { footerContent } 
+                <Button 
+                    variant='ghost' 
+                    color='primary' 
+                    className='w-full' 
+                    onPress={handlePress}
+                    isLoading={navigation.state === 'loading'}
+                    isDisabled={navigation.state === 'loading'}
+                > Actualizar información</Button>
             </CardFooter>
         </Card>
     </div>

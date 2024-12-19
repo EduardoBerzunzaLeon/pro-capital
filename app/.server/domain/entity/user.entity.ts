@@ -7,6 +7,7 @@ export interface UserI {
     lastNameFirst: string,
     username: string,
     password: string,
+    fullName: string,
     role: {
         id: number,
         role: RoleTypes,
@@ -24,6 +25,7 @@ export class User {
     readonly email: string;
     readonly name: string;
     readonly lastNameFirst: string;
+    readonly fullName: string;
     readonly username: string;
     readonly password: string;
     readonly role: RoleTypes;
@@ -41,6 +43,7 @@ export class User {
         role,
         avatar,
         lastNameSecond,
+        fullName
     }: UserI){
         this.id = id;
         this.email = email;
@@ -51,6 +54,7 @@ export class User {
         this.role = role.role;
         this.permissions = role.permissions,
         this.avatar = avatar;
+        this.fullName = fullName;
         this.lastNameSecond = this.validateLastNameLast(lastNameSecond);
     }
 
