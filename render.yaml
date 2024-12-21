@@ -15,7 +15,7 @@ services:
         fromDatabase:
           name: remixdb
           property: connectionString
-      - key: SESSION_SECRET
+      - key: POSTGRES_URL
         generateValue: true
       - key: NODE_ENV #required so NODE_ENV is set in build env
         value: production
