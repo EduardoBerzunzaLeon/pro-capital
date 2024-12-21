@@ -18,7 +18,7 @@ import { encriptor } from "~/.server/adapter";
 // import { encriptor } from "~/.server/adapter";
 const prisma = new PrismaClient();
 
-async function seed() {
+export async function seed() {
 
     // await Promise.all([
     //  prisma.role.deleteMany(),
