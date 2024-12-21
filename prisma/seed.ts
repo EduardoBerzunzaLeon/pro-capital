@@ -16,11 +16,10 @@ leaders,
 agent_routes} from './users';
 import { encriptor } from "~/.server/adapter";
 // import { encriptor } from "~/.server/adapter";
+const prisma = new PrismaClient();
 
 async function seed() {
-    const prisma = new PrismaClient();
 
-    try {
     await Promise.all([
      prisma.role.deleteMany(),
      prisma.module.deleteMany(),
@@ -67,9 +66,7 @@ async function seed() {
     // await insertPaymentDetails(prisma);
     // await insertAgentRoutes(prisma);
 
-  } catch (error) {
-    console.log({error});   
-  }
+    console.log(`Database has been seeded. 🌱`);
 }
 
 
@@ -403,4 +400,11 @@ async function  insertPaymentDetails(prisma: PrismaClient) {
   }
 }
 
-seed();
+seed()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
