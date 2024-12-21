@@ -18,10 +18,12 @@ export const action: ActionFunction = async({ params, request }) => {
   const formData = await request.formData();
   const data = Object.fromEntries(formData);
   const id = params.creditId;
-  
+
   try {
     
     if(data._action === 'addPayment') {
+      console.log({data});
+
       const user = await Service.auth.requirePermission(request, permissions.pays.permissions.add);
       formData.append('agentId', data['agent[id]'] ?? '');
       await Service.payment.createOne({ userId: user.id, role: user.role }, formData, id);

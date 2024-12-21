@@ -82,12 +82,14 @@ export function ModalLeaderEdit({
                               placeholder="Ingresa el/los nombre(s)"
                               metadata={fields.name}
                               defaultValue={fetcherGet.data?.serverData?.name}
+                              isRequired
                           />
                           <InputValidation
                               label="Primer Apellido"
                               placeholder="Ingresa el primer apellido"
                               metadata={fields.lastNameFirst}
                               defaultValue={fetcherGet.data?.serverData?.lastNameFirst}
+                              isRequired
                           />
                           <InputValidation
                               label="Segundo Apellido"
@@ -100,12 +102,14 @@ export function ModalLeaderEdit({
                               placeholder="Ingresa la dirección"
                               metadata={fields.address}
                               defaultValue={fetcherGet.data?.serverData?.address}
+                              isRequired
                           />
                           <InputValidation
                               label="CURP"
                               placeholder="Ingresa la CURP"
                               metadata={fields.curp}
                               defaultValue={fetcherGet.data?.serverData?.curp}
+                              isRequired
                           />
                           <DatePicker 
                               label="Fecha de nacimiento" 
@@ -117,6 +121,7 @@ export function ModalLeaderEdit({
                               errorMessage={fields.birthday.errors}
                               defaultValue={parseDate(fetcherGet.data?.serverData?.birthday.substring(0,10))}
                               granularity="day"
+                              isRequired
                           />
                             <DatePicker 
                                 label="Fecha de asignación" 
@@ -128,6 +133,7 @@ export function ModalLeaderEdit({
                                 errorMessage={fields.anniversaryDate.errors}
                                 defaultValue={parseDate(fetcherGet.data?.serverData?.anniversaryDate.substring(0,10))}
                                 granularity="day"
+                                isRequired
                             />
                             <AutocompleteCombobox 
                               keyFetcher='findFolderAutocomplete' 
@@ -137,6 +143,7 @@ export function ModalLeaderEdit({
                               placeholder='Ingresa la carpeta'
                               onSelected={setSelected}           
                               selectedItem={selected}       
+                              isRequired
                             />
                         </ModalBody>
                         <ModalFooter>

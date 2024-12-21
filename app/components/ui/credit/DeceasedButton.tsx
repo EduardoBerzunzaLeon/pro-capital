@@ -32,7 +32,6 @@ export function DeceasedButton({ id, isDeceased, isEditable, urlAction }: Props)
         defaultSelected
         color="success"
         endContent={<FaSkull />}
-        size="lg"
         isSelected={!isSelected}
         onChange={handleClick}
         isReadOnly={!isEditable}

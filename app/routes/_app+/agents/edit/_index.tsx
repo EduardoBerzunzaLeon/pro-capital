@@ -107,9 +107,11 @@ export default function EditAgentRoute () {
                   value={assignAt}
                   onChange={setAssignAt}
                   granularity="day"
+                  isRequired
                 />
                 <SelectRoutes 
                   onSelectionChange={handleRouteChange}
+                  isRequired
                 />
                 <AutocompleteMultiple 
                   routeId={route}
@@ -118,7 +120,7 @@ export default function EditAgentRoute () {
               </ModalBody>
               <ModalFooter>
                 <Button color="danger" variant="light" onPress={onClose} type='button'>
-                  Close
+                  Cerrar
                 </Button>
                 <Button color="primary" type='submit'>
                   Asignar

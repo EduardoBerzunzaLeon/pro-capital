@@ -100,6 +100,8 @@ export function AutocompleteMultiple({ routeId, assignAt }: Props) {
                 isDisabled={routeId === 0}
                 onChange={(e) => setQuery(e.target.value)}
                 value={query}
+                isRequired
+                description='Autocompleta las palabras'
                 startContent={
                     selectedPeople.length > 0 && (
                     <div className="flex gap-1 flex-wrap">

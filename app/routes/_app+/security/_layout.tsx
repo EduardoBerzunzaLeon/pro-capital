@@ -44,7 +44,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 }
 
 const columns = [
-  { key: 'id', label: 'ID' },
+  // { key: 'id', label: 'ID' },
   { key: 'role', label: 'ROL',  sortable: true },
   { key: 'actions', label: 'ACCIONES' },
 ]
@@ -65,6 +65,7 @@ export default function  SecurityPage()  {
   const { render } = useRenderCell({ isMoney: false }); 
   const navigate = useNavigate();
   const [ searchParams ] = useSearchParams();
+
   const { key, onClearFilters } = useClearFilters(['roles'], ['dd', 'll', 'pp', 'cc']);
 
   const { 
@@ -118,7 +119,7 @@ export default function  SecurityPage()  {
   }, [searchParams])
 
   return (
-    <div className='w-full flex gap-2 flex.wrap'>
+    <div className='w-full flex flex-col gap-2'>
       <div className='w-full flex gap-2 mt-5 mb-3 flex-wrap justify-between items-center'>
       <TableDetail 
           aria-label="roles table"

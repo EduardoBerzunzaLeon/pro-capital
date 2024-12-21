@@ -55,6 +55,7 @@ export function ModalFolderEdit({
                         <ModalBody>
                           <SelectRoutes 
                             defaultSelectedKeys={[isUpdating ? fetcher.formData?.get('route')+'' : fetcherGet.data?.serverData.route.id+'']}
+                            isRequired
                           />
                         </ModalBody>
                         <ModalFooter>

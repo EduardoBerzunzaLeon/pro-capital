@@ -1,4 +1,4 @@
-import { BaseCreditI, CreditCreateI, CreditRepositoryI, PaginationWithFilters, UpdateAddPayment, UpdateOne, UpdatePreviousData } from "~/.server/domain/interface";
+import { BaseCreditI, CreditCreateI, CreditRepositoryI, PaginationWithFilters, UpdateAddPayment, UpdateOne, UpdatePreviousData, VerifyIfExitsprops } from "~/.server/domain/interface";
 
 export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
 
@@ -602,6 +602,18 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
             }
         });
     }
+
+    async function verifyIfExits({ clientId, folderId, groupId }: VerifyIfExitsprops) {
+        return await base.findOne(
+            {
+                client: { id: clientId},
+                folder: { id: folderId },
+                group: { id: groupId}
+            }, {
+               id: true 
+            }
+        );
+    }
     
     return {
         createOne,
@@ -621,6 +633,7 @@ export function CreditRepository(base: BaseCreditI): CreditRepositoryI {
         findFoldersByClient,
         findGroupsByFolder,
         findInProcessCredits,
+        verifyIfExits,
         findByDates,
         findNewCredits,
         findNewCreditsByFolders,

@@ -8,6 +8,7 @@ import { clientUpdateSchema } from "~/schemas";
 import { InputValidation } from "../forms/Input";
 import { Permission } from '../auth/Permission';
 import { DeceasedButton } from "./DeceasedButton";
+import { TextareaValidation } from "../forms/Textarea";
 
 interface Props {
     id: number,
@@ -76,55 +77,66 @@ export const PersonFormEdit = ({
           { ...getFormProps(form) }
         >
         <Card>
-          <CardHeader className='flex gap-2'>
+          <CardHeader className='flex justify-between gap-2'>
             {title}
 
             { isEditable && (<Chip variant='bordered' color='warning'>En edición</Chip>)}
 
             <DeceasedButton isEditable={isEditable} id={id} isDeceased={isDeceased} urlAction={urlAction}/>
           </CardHeader>
-          <CardBody>
+          <CardBody className="flex flex-row flex-wrap justify-between gap-2">
+              <InputValidation
+                label='CURP'
+                metadata={fields.curp} 
+                isReadOnly={!isEditable}
+                placeholder="Ingresa la CURP"
+                isRequired
+              /> 
               <InputValidation
                   label="Nombre"
                   placeholder="Ingresa el nombre"
                   metadata={fields.name}
                   isReadOnly={!isEditable}
-                  />
+                  isRequired
+                  className='w-full md:max-w-[32%]' 
+                />
               <InputValidation
                 label='Primer Apellido'
                 metadata={fields.lastNameFirst} 
                 isReadOnly={!isEditable}
                 placeholder="Ingresa el primer apellido"
+                className='w-full sm:max-w-[48%] md:max-w-[32%]' 
+                isRequired
               /> 
               <InputValidation
                 label='Segundo Apellido'
                 metadata={fields.lastNameSecond} 
                 isReadOnly={!isEditable}
                 placeholder="Ingresa el segundo apellido"
-              /> 
-              <InputValidation
-                label='Dirección'
-                metadata={fields.address} 
-                isReadOnly={!isEditable}
-                placeholder="Ingresa la dirección"
+                className='w-full sm:max-w-[48%] md:max-w-[32%]' 
+                isRequired
               /> 
               <InputValidation
                 label='Telefono'
                 metadata={fields.phoneNumber} 
                 isReadOnly={!isEditable}
                 placeholder="Ingresa el telefono"
+                className='w-full sm:max-w-[30%]' 
               /> 
               <InputValidation
-                label='CURP'
-                metadata={fields.curp} 
+                label='Dirección'
+                metadata={fields.address} 
                 isReadOnly={!isEditable}
-                placeholder="Ingresa la CURP"
+                placeholder="Ingresa la dirección"
+                className='w-full sm:max-w-[66%]' 
+                isRequired
               /> 
-              <InputValidation
+              <TextareaValidation
                 label='referencia'
                 metadata={fields.reference} 
                 isReadOnly={!isEditable}
                 placeholder="Ingresa la referencia"
+                isRequired
               /> 
           </CardBody>
           <Permission permission={permission}>

@@ -80,7 +80,7 @@ const columns = [
 ]
 
 const INITIAL_VISIBLE_COLUMNS = [
-  'client.fullname', 'aval.fullname', 'folder.name', 'creditAt', 'status', 'canRenovate', 'actions'
+  'client.fullname', 'aval.fullname', 'folder.name','client.curp', 'status', 'canRenovate', 'actions'
 ];
 
 
@@ -140,7 +140,7 @@ export default function ClientsPage() {
     
     if(columnKey === 'canRenovate' && credit.canRenovate) {
       return <Permission permission={permissions.credits.permissions.renovate}>
-        <Button variant='ghost' color='primary' onPress={() => { navigate(`/clients/${credit.client.curp}/renovate/${credit.id}`) }}>Renovar</Button>
+        <Button variant='ghost' size='sm' color='primary' onPress={() => { navigate(`/clients/${credit.client.curp}/renovate/${credit.id}`) }}>Renovar</Button>
       </Permission>
     }
 
@@ -163,6 +163,14 @@ export default function ClientsPage() {
 
     if(columnKey === 'status') {
       return ( <ChipStatusCredit status={credit.status} /> )
+    }
+
+    if(columnKey === 'client.curp') {
+      return <span>{credit.client.curp.toUpperCase()}</span>
+    }
+   
+    if(columnKey === 'aval.curp') {
+      return <span>{credit.aval.curp.toUpperCase()}</span>
     }
 
     return <span className='capitalize'>{render(credit, columnKey)}</span>
@@ -195,117 +203,6 @@ export default function ClientsPage() {
     <Permission permission={permissions.credits.permissions.add}>
       <CurpForm />
     </Permission>
-    <MultiplePermissions permissions={[
-      permissions.credits.permissions.statistics,
-      permissions.credits.permissions.layout,
-    ]}>
-      <ExportDropdown />
-    </MultiplePermissions>
-    <Permission permission={permissions.utils.permissions.generate_overdue}>
-      <ButtonSetEstatus />
-    </Permission>
-    <div className='w-full flex gap-2 mt-5 mb-3 flex-wrap justify-between items-center'>
-    <Permission permission={permissions.credits.permissions.report}>
-      <ExcelReport url={`/clients/export/excel?${searchParams.toString()}`} name='creditos' columns={CREDIT_COLUMNS} />
-    </Permission>
-    <ButtonClear 
-       onClear={onClearFilters}
-    />
-    <Fragment key={key}>
-      <InputFilter 
-        param="client" 
-        name="clientFullname" 
-        label="Cliente" 
-        id="clientFullname"
-        className='w-full md:max-w-[30%]' 
-        placeholder="Nombre del cliente"      
-        defaultValue={loader?.serverData?.client}
-      />
-      <InputFilter 
-        param="aval" 
-        name="avalFullname" 
-        label="Aval" 
-        id="avalFullname" 
-        className='w-full md:max-w-[30%]'
-        placeholder="Nombre del Aval"      
-        defaultValue={loader?.serverData?.aval}
-      />
-      <InputFilter 
-        param="curp" 
-        name="curp" 
-        label="CURP" 
-        id="curp" 
-        className='w-full md:max-w-[30%]'
-        placeholder="CURP del cliente"      
-        defaultValue={loader?.serverData?.curp}
-      />
-      <InputFilter 
-        param="municipality" 
-        name="municipality" 
-        label="Municipio" 
-        id="municipality" 
-        className='w-full md:max-w-[30%]'
-        placeholder="Nombre del municipio"      
-        defaultValue={loader?.serverData?.municipality}
-      />
-      <InputFilter 
-        param="town" 
-        name="town" 
-        label="Localidad" 
-        id="town" 
-        className='w-full md:max-w-[30%]'
-        placeholder="Nombre de la localidad"      
-        defaultValue={loader?.serverData?.town}
-      />
-      <InputFilter 
-        param="folder" 
-        name="folder" 
-        label="Carpeta" 
-        id="folder" 
-        className='w-full md:max-w-[30%]'
-        placeholder="Nombre de la carpeta"      
-        defaultValue={loader?.serverData?.folder?.name}
-      />
-      <InputFilter 
-        param="group" 
-        name="group" 
-        label="Grupo" 
-        id="group" 
-        className='w-full md:max-w-[30%]'
-        placeholder="Número del grupo"      
-        defaultValue={loader?.serverData?.group}
-      />
-      <RangePickerDateFilter 
-        label="Rango de la fecha de captura" 
-        startName="captureStart" 
-        endName="captureEnd"
-        start={loader?.serverData.captureStart} 
-        end={loader?.serverData.captureEnd} 
-      />
-      <RangePickerDateFilter 
-        label="Rango de la fecha de asignación" 
-        startName="creditStart" 
-        endName="creditEnd"
-        start={loader?.serverData.creditStart} 
-        end={loader?.serverData.creditEnd} 
-      />
-      <DropdownCanRenovate 
-        onSelectionChange={handleCanRenovate} 
-        defaultSelectedKeys={defaultCanRenovate}
-      />
-      <DropdownCreditStatus 
-        onSelectionChange={handleValueChange} 
-        defaultSelectedKeys={defaultValue}
-      />
-      {/* TODO: traer de la base de datos el credito mas grande */}
-      <SliderFilter 
-        label='deuda'
-        maxValue={10000}
-        param='debt'
-        value={loader?.serverData?.debt}
-      />
-    </Fragment>
-    </div>
     <TableDetail 
         aria-label="credits table"
         onSortChange={handleSort}
@@ -319,15 +216,132 @@ export default function ClientsPage() {
           />
         }
         topContent={
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col gap-4">
+            <div className="flex justify-between gap-3 items-end flex-wrap">
+            <Fragment key={key}>
+              <InputFilter 
+                param="client" 
+                name="clientFullname" 
+                label="Cliente" 
+                id="clientFullname"
+                className='w-full sm:max-w-[30%] lg:max-w-[23%]' 
+                placeholder="Nombre del cliente"      
+                defaultValue={loader?.serverData?.client}
+              />
+              <InputFilter 
+                param="aval" 
+                name="avalFullname" 
+                label="Aval" 
+                id="avalFullname" 
+                className='w-full sm:max-w-[30%] lg:max-w-[23%]'
+                placeholder="Nombre del Aval"      
+                defaultValue={loader?.serverData?.aval}
+              />
+              <InputFilter 
+                param="curp" 
+                name="curp" 
+                label="CURP" 
+                id="curp" 
+                className='w-full sm:max-w-[30%] lg:max-w-[23%]'
+                placeholder="CURP del cliente"      
+                defaultValue={loader?.serverData?.curp}
+              />
+              <InputFilter 
+                param="municipality" 
+                name="municipality" 
+                label="Municipio" 
+                id="municipality" 
+                className='w-full sm:max-w-[30%] lg:max-w-[23%]'
+                placeholder="Nombre del municipio"      
+                defaultValue={loader?.serverData?.municipality}
+              />
+              <InputFilter 
+                param="town" 
+                name="town" 
+                label="Localidad" 
+                id="town" 
+                className='w-full sm:max-w-[30%] lg:max-w-[23%]'
+                placeholder="Nombre de la localidad"      
+                defaultValue={loader?.serverData?.town}
+              />
+              <InputFilter 
+                param="folder" 
+                name="folder" 
+                label="Carpeta" 
+                id="folder" 
+                className='w-full sm:max-w-[30%] lg:max-w-[23%]'
+                placeholder="Nombre de la carpeta"      
+                defaultValue={loader?.serverData?.folder?.name}
+              />
+              <InputFilter 
+                param="group" 
+                name="group" 
+                label="Grupo" 
+                id="group" 
+                className='w-full sm:max-w-[30%] lg:max-w-[23%]'
+                placeholder="Número del grupo"      
+                defaultValue={loader?.serverData?.group}
+              />
+              <RangePickerDateFilter 
+                label="Rango de la fecha de captura" 
+                startName="captureStart" 
+                endName="captureEnd"
+                start={loader?.serverData.captureStart} 
+                end={loader?.serverData.captureEnd} 
+                className='w-full sm:max-w-[60%] lg:max-w-[44%]'
+              />
+              <RangePickerDateFilter 
+                label="Rango de la fecha de asignación" 
+                startName="creditStart" 
+                endName="creditEnd"
+                className='w-full lg:max-w-[44%]'
+                start={loader?.serverData.creditStart} 
+                end={loader?.serverData.creditEnd} 
+              />
+              <DropdownCanRenovate 
+                onSelectionChange={handleCanRenovate} 
+                defaultSelectedKeys={defaultCanRenovate}
+              />
+              <DropdownCreditStatus 
+                onSelectionChange={handleValueChange} 
+                defaultSelectedKeys={defaultValue}
+              />
+              {/* TODO: traer de la base de datos el credito mas grande */}
+              <SliderFilter 
+                label='deuda'
+                maxValue={10000}
+                param='debt'
+                value={loader?.serverData?.debt}
+              />
+            </Fragment>
+            <div className="flex flex-wrap gap-1">
+              <MultiplePermissions permissions={[
+                permissions.credits.permissions.statistics,
+                permissions.credits.permissions.layout,
+              ]}>
+                <ExportDropdown />
+              </MultiplePermissions>
+              <Permission permission={permissions.utils.permissions.generate_overdue}>
+                <ButtonSetEstatus />
+              </Permission>
+              <Permission permission={permissions.credits.permissions.report}>
+                <ExcelReport url={`/clients/export/excel?${searchParams.toString()}`} name='creditos' columns={CREDIT_COLUMNS} />
+              </Permission>
+              <ButtonClear 
+                onClear={onClearFilters}
+              />
+            </div>
+            </div>
             {topContent}
-            <span className="text-default-400 text-small">
-              Total {loader?.serverData.total || 0} Creditos
-            </span>
-            <RowPerPage
-              onChange={handleRowPerPage} 
-              checkParams
-            />
+            <div className="flex justify-between items-center">
+              <span className="text-default-400 text-small">
+                Total {loader?.serverData.total || 0} Creditos
+              </span>
+              <RowPerPage
+                onChange={handleRowPerPage} 
+                checkParams
+                />
+            </div>
           </div>
         } 
         columns={columns} 

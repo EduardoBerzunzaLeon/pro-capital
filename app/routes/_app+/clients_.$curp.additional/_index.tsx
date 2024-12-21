@@ -1,8 +1,8 @@
 import { getFormProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
-import { Card, CardHeader, CardBody, Accordion, AccordionItem, Button } from "@nextui-org/react";
+import { Card, CardHeader, CardBody, Accordion, AccordionItem, Button, CardFooter } from "@nextui-org/react";
 import { ActionFunction, LoaderFunction } from "@remix-run/node";
-import { Form, useLoaderData, useNavigate } from "@remix-run/react";
+import { Form, useLoaderData, useNavigate, useNavigation } from "@remix-run/react";
 import { FaUserPlus, FaUsers } from "react-icons/fa";
 import { redirectWithError, redirectWithSuccess } from "remix-toast";
 import { handlerError } from "~/.server/reponses";
@@ -57,6 +57,7 @@ export const handle = {
 export default function AdditionalFormPage () {
     const loader = useLoaderData<any>();
     const navigate = useNavigate();
+    const navigation = useNavigation();
 
     const [form, fields] = useForm({
         onValidate({ formData }) {
@@ -74,68 +75,73 @@ export default function AdditionalFormPage () {
     }
 
 
-    return ( <Card className="w-full">
-        <CardHeader>
-            <h2>Adicional crédito al cliente {loader.fullname}</h2>
-        </CardHeader>
-        <CardBody>
-            <Form
-                method="post" 
-                { ...getFormProps(form) }
-                className="w-full"
-            >
+    return ( 
+    <Card className="w-full">
+        <Form
+            method="post" 
+            { ...getFormProps(form) }
+            className="w-full"
+        >
+            <CardHeader>
+                <h2>Adicional crédito al cliente {loader.fullname}</h2>
+            </CardHeader>
+            <CardBody>
+                
                 <Accordion 
                     variant="splitted" 
                     selectionMode="multiple"
                     // defaultExpandedKeys='all'
                     keepContentMounted
                 >
-                        <AccordionItem 
-                            key="1" 
-                            aria-label="Formulario del cliente" 
-                            title="Formulario del Cliente"
-                        >
-                            <ClientFormSection 
-                                fields={fields.client}
-                            />
-                        </AccordionItem>
-                        <AccordionItem 
-                            key="2" 
-                            aria-label="Formulario del Aval" 
-                            title="Formulario del Aval"
-                        >
-                            <AvalFormSection 
-                                fields={fields.aval}
-                            />
-                        </AccordionItem>
-                        <AccordionItem 
-                            key="3" 
-                            aria-label="Formulario del credito" 
-                            title="Formulario del Crédito"
-                        >
-                            <CreditFormSection 
-                                fields={fields.credit}
-                            />
-                        </AccordionItem>
+                    <AccordionItem 
+                        key="1" 
+                        aria-label="Formulario del cliente" 
+                        title="Formulario del Cliente"
+                    >
+                        <ClientFormSection 
+                            fields={fields.client}
+                        />
+                    </AccordionItem>
+                    <AccordionItem 
+                        key="2" 
+                        aria-label="Formulario del Aval" 
+                        title="Formulario del Aval"
+                    >
+                        <AvalFormSection 
+                            fields={fields.aval}
+                        />
+                    </AccordionItem>
+                    <AccordionItem 
+                        key="3" 
+                        aria-label="Formulario del credito" 
+                        title="Formulario del Crédito"
+                    >
+                        <CreditFormSection 
+                            fields={fields.credit}
+                        />
+                    </AccordionItem>
                 </Accordion>
+                    
+            </CardBody>
+            <CardFooter>
                 <Button 
                     color="danger" 
                     variant="light" 
                     onPress={handleCancel} 
                     type='button'
-                >
+                    >
                     Cancelar
                 </Button>
                 <Button 
                     color="primary" 
                     type='submit'
-                    // isLoading={navigation.state === 'submitting'}
-                    // isDisabled={navigation.state !== 'idle'}
+                    isLoading={navigation.state === 'submitting'}
+                    isDisabled={navigation.state !== 'idle'}
                     name='_action'
-                >
+                    >
                     Crear Crédito
                 </Button>
-            </Form>
-        </CardBody>
+            </CardFooter>
+        </Form>
     </Card>)
 }

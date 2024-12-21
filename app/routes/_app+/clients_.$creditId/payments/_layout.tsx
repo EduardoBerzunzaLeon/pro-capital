@@ -88,7 +88,7 @@ export default function ClientPaymentsPage() {
   const [visibleColumns, setVisibleColumns] = useState<Selection>(new Set(INITIAL_VISIBLE_COLUMNS));
   const { isOpen, onOpenChange, onOpen } = useDisclosure();
   const { isOpen: isOpenCreate, onOpenChange: onOpenChangeCreate, onOpen: onOpenCreate } = useDisclosure();
-  const [params] = useSearchParams()
+  const [params] = useSearchParams();
 
   const { 
     loadingState, 
@@ -156,8 +156,6 @@ export default function ClientPaymentsPage() {
       { (params.get('f') && params.get('f') !== folder.toString()  )
         && (<Alert title="ADVERTENCIA" notes="La carpeta no es la carpeta del crédito actual, tenga cuidado al realizar un pago por este medio" />)
       }
-      <SelectFolder  clientId={client} folderId={folder} />
-      <SelectGroup clientId={client} folderId={folder} groupId={group}/>
       <ModalPaymentEdit isOpen={isOpen} onOpenChange={onOpenChange}/>
       <ModalPay isOpen={isOpenCreate} onOpenChange={onOpenChangeCreate} />
       <TableDetail 
@@ -173,15 +171,21 @@ export default function ClientPaymentsPage() {
           />
         }
         topContent={
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col gap-4 mt-2">
+            <div className="flex justify-between gap-3 items-end flex-wrap">
+              <SelectFolder  clientId={client} folderId={folder} />
+              <SelectGroup clientId={client} folderId={folder} groupId={group}/>
             {topContent}
-            <span className="text-default-400 text-small">
-              Total {loader?.serverData.total || 0} Pagos
-            </span>
-            <RowPerPage
-              onChange={handleRowPerPage} 
-              checkParams
-            />
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-default-400 text-small">
+                Total {loader?.serverData.total || 0} Pagos
+              </span>
+              <RowPerPage
+                onChange={handleRowPerPage} 
+                checkParams
+              />
+            </div>
           </div>
         } 
         columns={columns} 

@@ -157,16 +157,31 @@ export const findSampleAll = async () => {
     return await Repository.folder.findSampleAll()
 }
 
+export const findByNameAndGroup = async (folder: string, group: number) => {
+    const folderDb = await Repository.folder.findByNameAndGroup(folder, group);
+
+    if(!folderDb) {
+        throw ServerError.badRequest('No se encontro la carpeta');
+    }
+
+    if(!folderDb.groups || folderDb.groups.length != 1) {
+        throw ServerError.badRequest('La carpeta no tiene grupos asignados');
+    }
+
+    return folderDb;
+}
+
 export default {
-    findAll,
-    findOne,
-    updateOne,
-    deleteOne,
     createOne,
-    findNextConsecutive,
-    findAutocomplete,
-    findLastGroup,
-    updateIsActive,
+    deleteOne,
     exportData,
-    findSampleAll
+    findAll,
+    findAutocomplete,
+    findByNameAndGroup,
+    findLastGroup,
+    findNextConsecutive,
+    findOne,
+    findSampleAll,
+    updateIsActive,
+    updateOne,
 }

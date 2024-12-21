@@ -1,6 +1,6 @@
 import { getFormProps, getSelectProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, DatePicker, Select, SelectItem } from "@nextui-org/react"
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, DatePicker, Select, SelectItem, Input } from "@nextui-org/react"
 import { useFetcher } from "@remix-run/react";
 import { ModalBodyHandler } from "~/components/utils/ModalBodyHandler";
 import { loader } from "~/routes/_app+/pay/$creditId";
@@ -9,6 +9,7 @@ import { InputValidation } from "../forms/Input";
 import { TextareaValidation } from "../forms/Textarea";
 import { getLocalTimeZone, today } from "@internationalized/date";
 import { AutocompleteValidation } from "../forms/AutocompleteValidation";
+import { useEffect } from "react";
 
 interface Props {
     isOpen: boolean;
@@ -24,24 +25,39 @@ export const ModalPay = ({ isOpen, onOpenChange }: Props) => {
 
     const [form, fields] = useForm({
         onValidate({ formData }) {
-          return parseWithZod(formData, { schema: paymentSchema });
+        return parseWithZod(formData, { schema: paymentSchema });
         },
         shouldValidate: 'onSubmit',
         shouldRevalidate: 'onInput',
         defaultValue: {
             folio: 0
         }
-      }); 
+    }); 
+
+    useEffect(() => {
+        // TODO: this show the error message when finish the credit
+        if(isOpen && fetcher.data?.status === 'success' && fetcher.state === 'idle') {
+            onOpenChange(isOpen)
+
+        }
+    }, [fetcher.data])
+
+    useEffect(() => {
+        if(!isOpen && form?.status === 'error') {
+            form?.reset()        
+        }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isOpen]);
   
-      const calculatePaymentAmount = (paymentAmount: number, currentDebt: number) => {
+    const calculatePaymentAmount = (paymentAmount: number, currentDebt: number) => {
         return (paymentAmount > currentDebt) 
             ?  currentDebt 
             : paymentAmount;
-      }
+    }
 
   return (
     <Modal 
-        isOpen={isOpen} 
+        isOpen={isOpen}  
         onOpenChange={onOpenChange}
         placement="top-center"
         className='red-dark text-foreground bg-content1'
@@ -80,6 +96,7 @@ export const ModalPay = ({ isOpen, onOpenChange }: Props) => {
                                 comboBoxName='agent' 
                                 placeholder='Ingresa el agente' 
                                 metadata={fields.agent}      
+                                isRequired
                             />
                             <InputValidation
                                 label="Pago"
@@ -91,6 +108,7 @@ export const ModalPay = ({ isOpen, onOpenChange }: Props) => {
                                       <span className="text-default-400 text-small">$</span>
                                     </div>
                                 }
+                                isRequired
                                 defaultValue={calculatePaymentAmount(
                                     fetcherGet.data?.serverData?.paymentAmount,
                                     fetcherGet.data?.serverData?.currentDebt,
@@ -102,6 +120,7 @@ export const ModalPay = ({ isOpen, onOpenChange }: Props) => {
                                 label='Tipo de credito'
                                 disallowEmptySelection
                                 defaultSelectedKeys={['PAGO']}
+                                isRequired
                                 {...getSelectProps(fields.status)}
                             >
                                 {
@@ -120,6 +139,7 @@ export const ModalPay = ({ isOpen, onOpenChange }: Props) => {
                                 errorMessage={fields.paymentDate.errors}
                                 defaultValue={today(getLocalTimeZone())}
                                 granularity="day"
+                                isRequired
                             />
                             <InputValidation
                                 label="Folio"

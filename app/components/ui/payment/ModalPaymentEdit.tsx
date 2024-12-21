@@ -9,6 +9,7 @@ import { action, loader } from "~/routes/_app+/payments/$paymentId/_index";
 import { AutocompleteValidation } from "../forms/AutocompleteValidation";
 import { parseDate } from "@internationalized/date";
 import { TextareaValidation } from "../forms/Textarea";
+import { useEffect } from "react";
 
 interface Props {
     isOpen: boolean;
@@ -35,6 +36,13 @@ export function ModalPaymentEdit({
       shouldValidate: 'onSubmit',
       shouldRevalidate: 'onInput',
     }); 
+
+    useEffect(() => {
+        if(!isOpen && form?.status === 'error') {
+            form?.reset()        
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isOpen]);
 
     return (
       <Modal 
@@ -82,12 +90,14 @@ export function ModalPaymentEdit({
                                 placeholder='Ingresa el agente' 
                                 metadata={fields.agent}      
                                 defaultValue={{ id: fetcherGet.data?.serverData.agent.id, value: fetcherGet.data?.serverData.agent.fullName ?? '' }}
+                                isRequired
                             />
                             <InputValidation
                                 label="Pago"
                                 placeholder="Ingresa el monto a pagar"
                                 metadata={fields.paymentAmount}
                                 inputType='number'
+                                isRequired
                                 startContent={
                                     <div className="pointer-events-none flex items-center">
                                       <span className="text-default-400 text-small">$</span>
@@ -100,7 +110,7 @@ export function ModalPaymentEdit({
                                 labelPlacement="outside"
                                 label='Tipo de pago'
                                 disallowEmptySelection
-                                // defaultSelectedKeys={['PAGO']}
+                                isRequired
                                 selectedKeys={[fetcherGet.data?.serverData?.status || 'PAGO']}
                                 {...getSelectProps(fields.status)}
                             >
@@ -120,6 +130,7 @@ export function ModalPaymentEdit({
                                 errorMessage={fields.paymentDate.errors}
                                 defaultValue={parseDate(fetcherGet.data?.serverData?.paymentDate.substring(0,10))}
                                 granularity="day"
+                                isRequired
                             />
                             <InputValidation
                                 label="Folio"

@@ -38,7 +38,6 @@ interface Loader {
 }
 
 const columns = [
-  { key: 'id', label: 'ID' },
   { key: 'fullname', label: 'Nombre',  sortable: true },
   { key: 'address', label: 'DIRECCION'},
   { key: 'anniversaryDate', label: 'FECHA DE ASIGNACIÓN', sortable: true},
@@ -122,43 +121,6 @@ export default function LeaderPage () {
       leaderId={selectedId}
       handleSelectedId={setSelectedId}
     />
-    <div className='w-full flex gap-2 mt-5 mb-3 flex-wrap justify-between items-center'>
-    <Permission permission={permissions.leaders.permissions.report}>
-      <ExcelReport url={`/leaders/export?${searchParams.toString()}`} name='lideres' columns={LEADER_COLUMNS} />
-    </Permission>
-    <ButtonClear 
-       onClear={onClearFilters}
-    />
-      <Fragment key={key}>
-        <StatusFilter 
-          isActive={loader?.serverData?.isActive}
-          param='isActive'
-        />
-        <InputFilter 
-          param="name" 
-          name="name" 
-          label="Líder" 
-          id="name" 
-          placeholder="Nombre de la líder"      
-          defaultValue={loader?.serverData?.fullname}
-        />
-        <InputFilter 
-          param="folder" 
-          name="folder" 
-          label="Carpeta" 
-          id="folder" 
-          placeholder="Nombre de la carpeta"      
-          defaultValue={loader?.serverData?.folder.name}
-        />
-        <RangePickerDateFilter 
-          label="Rango de la fecha de asignación" 
-          startName="start" 
-          endName="end"
-          start={loader?.serverData.start} 
-          end={loader?.serverData.end} 
-        />
-      </Fragment>
-    </div>
     <ModalLeaderEdit isOpen={isOpen} onOpenChange={onOpenChange} />
     <TableDetail 
       aria-label="Leaders table"
@@ -172,23 +134,67 @@ export default function LeaderPage () {
         />    
       }
       topContent={
+        <div className="flex flex-col gap-4">
+          <div className="flex justify-between gap-3 items-end flex-wrap">
+            <Fragment key={key}>
+              <StatusFilter 
+                isActive={loader?.serverData?.isActive}
+                param='isActive'
+              />
+              <InputFilter 
+                param="folder" 
+                name="folder" 
+                label="Carpeta" 
+                id="folder" 
+                className='w-full sm:max-w-[30%] lg:max-w-[23%]'
+                placeholder="Nombre de la carpeta"      
+                defaultValue={loader?.serverData?.folder.name}
+              />
+              <InputFilter 
+                param="name" 
+                name="name" 
+                label="Líder" 
+                id="name" 
+                className='w-full sm:max-w-[30%] lg:max-w-[23%]'
+                placeholder="Nombre de la líder"      
+                defaultValue={loader?.serverData?.fullname}
+              />
+              <RangePickerDateFilter 
+                label="Rango de la fecha de asignación" 
+                startName="start" 
+                endName="end"
+                className='w-full sm:max-w-[45%] lg:max-w-[27%]'
+                start={loader?.serverData.start} 
+                end={loader?.serverData.end} 
+              />
+            </Fragment>
+            <div>
+              <Permission permission={permissions.leaders.permissions.report}>
+                <ExcelReport url={`/leaders/export?${searchParams.toString()}`} name='lideres' columns={LEADER_COLUMNS} />
+              </Permission>
+              <ButtonClear 
+                onClear={onClearFilters}
+              />
+              <Permission permission={permissions.leaders.permissions.add}>
+                <Button
+                  href={`/leaders/create?${searchParams.toString()}`}
+                  as={Link}
+                  endContent={<FaUserPlus />}
+                  variant="ghost"
+                  color="secondary" 
+                >
+                  Crear Líder
+                </Button>
+              </Permission>
+            </div>
+          </div>
           <div className="flex justify-between items-center">
-            <Permission permission={permissions.leaders.permissions.add}>
-              <Button
-                href={`/leaders/create?${searchParams.toString()}`}
-                as={Link}
-                endContent={<FaUserPlus />}
-                variant="ghost"
-                color="secondary" 
-              >
-                Crear Líder
-              </Button>
-            </Permission>
               <span className="text-default-400 text-small">
                   Total {loader?.serverData.total || 0 } Líderes
               </span>
               <RowPerPage onChange={handleRowPerPage} checkParams/>
           </div>
+        </div>
       }
       columns={columns} 
       loadingState={loadingState} 

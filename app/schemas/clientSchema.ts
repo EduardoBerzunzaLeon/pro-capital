@@ -16,7 +16,7 @@ export const clientUpdateSchema = z.object({
     address: stringSchema('Dirección'),
     reference: stringSchema('Referencia'),
     curp: curp,
-    phoneNumber: phoneNumber
+    phoneNumber
 });
 
 

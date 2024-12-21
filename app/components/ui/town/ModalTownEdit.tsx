@@ -83,12 +83,14 @@ export function ModalTownEdit({
                             placeholder='Ingresa el municipio'
                             onSelected={setSelected}           
                             selectedItem={selected}       
+                            isRequired
                           />
                           <InputValidation
                              label="Localidad"
                              placeholder="Ingresa la localidad"
                              defaultValue={fetcherGet.data?.serverData?.name}
                              metadata={fields.name}
+                             isRequired
                           />
                         </ModalBody>
                         <ModalFooter>

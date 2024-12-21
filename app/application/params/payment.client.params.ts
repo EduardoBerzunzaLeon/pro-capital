@@ -40,9 +40,11 @@ export const PaymentClientParams = () => {
         
         const groupParsed = parseNumber(group);
         const clientParsed = parseNumber(client);
+        const folderParsed = parseNumber(folder);
 
         const groupFormatted = { column: 'credit.group.id', value: groupParsed };
         const clientFormatted = { column: 'credit.client.id', value: clientParsed };
+        const folderFormatted = { column: 'credit.folder.id', value: folderParsed };
 
         let creditValue: number | string = Number(creditId);
 
@@ -66,7 +68,8 @@ export const PaymentClientParams = () => {
                 search: [
                   idParsed,
                   groupFormatted,
-                  clientFormatted
+                  clientFormatted,
+                  folderFormatted
                 ]
             },
             search: {
@@ -76,7 +79,10 @@ export const PaymentClientParams = () => {
             },
             validation: {
                 creditValue,
-                areEmpty
+                areEmpty,
+                folderParsed,
+                groupParsed, 
+                clientParsed,
             }
         }
       }

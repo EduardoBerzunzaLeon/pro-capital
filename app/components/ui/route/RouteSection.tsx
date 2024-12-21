@@ -15,7 +15,6 @@ import { ROUTE_COLUMNS } from "../excelReports/columns";
 type Column = 'name' | 'id';
 
 const columns = [
-    { key: 'id', label: 'ID' },
     { key: 'name', label: 'NOMBRE', sortable: true },
     { key: 'isActive', label: 'ESTATUS', sortable: true },
     { key: 'actions', label: 'ACCIONES'},
@@ -87,16 +86,6 @@ export function RouteSection() {
 
     return (
         <div className='w-full md:max-w-[48%]'>
-            <Permission permission={permissions.route.permissions.report}>
-                <ExcelReport url={url} name='rutas' columns={ROUTE_COLUMNS} />
-            </Permission>
-            <ButtonClear 
-                onClear={handlerClear}
-            />
-        <DropdownStatus 
-          selectedKeys={selectedKeys} 
-          onSelectionChange={setSelectedKeys} 
-        />
         <TableDetail 
             aria-label="Routes table"
             onSortChange={setSortDescriptor}
@@ -109,14 +98,30 @@ export function RouteSection() {
                 />
             }
             topContent={
-                <div className="flex justify-between items-center">
-                    <Permission permission={permissions.route.permissions.add}>
-                        <RouteButtonAdd />
-                    </Permission>
-                    <span className="text-default-400 text-small">Total {data?.serverData.total || 0 } rutas </span>
-                    <RowPerPage 
-                        onChange={handleRowPerPage}
-                    />
+                <div className="flex flex-col gap-4">
+                    <div className="flex justify-between gap-3 items-end flex-wrap">
+                       <DropdownStatus 
+                            selectedKeys={selectedKeys} 
+                            onSelectionChange={setSelectedKeys} 
+                        />
+                        <div>
+                            <Permission permission={permissions.route.permissions.report}>
+                                <ExcelReport url={url} name='rutas' columns={ROUTE_COLUMNS} />
+                            </Permission>
+                            <ButtonClear 
+                                onClear={handlerClear}
+                            />
+                            <Permission permission={permissions.route.permissions.add}>
+                                <RouteButtonAdd />
+                            </Permission>
+                        </div>
+                    </div>
+                    <div className="flex justify-between items-center">
+                        <span className="text-default-400 text-small">Total {data?.serverData.total || 0 } rutas </span>
+                        <RowPerPage 
+                            onChange={handleRowPerPage}
+                        />
+                    </div>
                 </div>
             }
             columns={columns} 

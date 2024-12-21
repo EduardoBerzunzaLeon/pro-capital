@@ -63,7 +63,7 @@ export const SelectGroup = ({ clientId, folderId, groupId }: Props) => {
   return (
         <Select
             items={fetcher.data?.serverData ?? []}
-            label="Ruta"
+            label="Grupo"
             placeholder="Seleccione una carpeta"
             className={`red-dark text-foreground bg-content1`}
             labelPlacement="outside"

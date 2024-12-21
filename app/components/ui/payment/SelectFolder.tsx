@@ -44,7 +44,7 @@ export const SelectFolder = ({ clientId, folderId }: Props) => {
   return (
         <Select
             items={fetcher.data ?? []}
-            label="Ruta"
+            label="Carpeta"
             placeholder="Seleccione una carpeta"
             className={`red-dark text-foreground bg-content1`}
             labelPlacement="outside"

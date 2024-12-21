@@ -114,7 +114,7 @@ export const CreditFormEdit = ({
             <ChipStatusCredit status={status} />
             { isEditable && (<Chip variant='bordered' color='warning'>En edición</Chip>)}
         </CardHeader>
-        <CardBody>
+        <CardBody className="flex flex-row flex-wrap justify-between gap-x-2 gap-y-4">
         <AutocompleteValidation 
             keyFetcher='findFolderAutocomplete' 
             actionRoute='/folder/search' 
@@ -127,6 +127,8 @@ export const CreditFormEdit = ({
             onValueChange={folderInput.change}
             defaultValue={{ id: folder.id, value: folderInput.value ?? '' }}
             selectedItem={{ id: folder.id, value: folderInput.value ?? '' }}
+            className='w-full sm:max-w-[32%]' 
+            isRequired
         />
         <InputValidation
           label="Grupo"
@@ -135,6 +137,24 @@ export const CreditFormEdit = ({
           value={groupInput.value ?? ''}
           onValueChange={groupInput.change}
           isReadOnly={!isEditable}
+          isRequired
+          className='w-full sm:max-w-[32%]' 
+        />
+        <InputValidation
+          label="Cantidad prestada"
+          inputType='number'
+          placeholder="Ingresa la cantidad prestada"
+          metadata={fields.amount}
+          value={amountInput.value ?? ''}
+          onValueChange={amountInput.change}
+          isReadOnly={!isEditable}
+          isRequired
+          className='w-full sm:max-w-[32%]' 
+          startContent={
+            <div className="pointer-events-none flex items-center">
+              <span className="text-default-400 text-small">$</span>
+            </div>
+          }
         />
        <Select 
           variant='bordered'
@@ -144,32 +164,21 @@ export const CreditFormEdit = ({
           selectedKeys={[typeInput.value || 'NORMAL']}
           isDisabled={!isEditable}
           disallowEmptySelection
+          isRequired
+          className='w-full sm:max-w-[32%]' 
           {...getSelectProps(fields.types)}
       >
         <SelectItem key='NORMAL'>Normal</SelectItem>
         <SelectItem key='EMPLEADO'>Empleado</SelectItem>
         <SelectItem key='LIDER'>Lider</SelectItem>
       </Select>
-      <InputValidation
-          label="Cantidad prestada"
-          inputType='number'
-          placeholder="Ingresa la cantidad prestada"
-          metadata={fields.amount}
-          value={amountInput.value ?? ''}
-          onValueChange={amountInput.change}
-          isReadOnly={!isEditable}
-          startContent={
-            <div className="pointer-events-none flex items-center">
-              <span className="text-default-400 text-small">$</span>
-            </div>
-          }
-        />
        <Input
           label="Pagos Semanal"
           placeholder="0.00"
           labelPlacement="outside"
           variant='bordered'
           isDisabled
+          className='w-full sm:max-w-[32%]' 
           value={payment+''}
           startContent={
             <div className="pointer-events-none flex items-center">
@@ -184,6 +193,7 @@ export const CreditFormEdit = ({
             isDisabled
             value={total+''}
             variant='bordered'
+            className='w-full sm:max-w-[32%]' 
             startContent={
               <div className="pointer-events-none flex items-center">
                 <span className="text-default-400 text-small">$</span>
@@ -197,6 +207,7 @@ export const CreditFormEdit = ({
             isDisabled
             value={currentDebt+''}
             variant='bordered'
+            className='w-full sm:max-w-[32%]' 
             startContent={
               <div className="pointer-events-none flex items-center">
                 <span className="text-default-400 text-small">$</span>
@@ -208,37 +219,47 @@ export const CreditFormEdit = ({
             placeholder="Ingresa las garantías"
             metadata={fields.clientGuarantee}
             isReadOnly={!isEditable}
+            isRequired
           />
           <TextareaValidation 
             label='Garantías del aval'
             placeholder="Ingresa las garantías"
             metadata={fields.avalGuarantee}
             isReadOnly={!isEditable}
+            isRequired
           />
-
-          <Calendar 
-            aria-label="Credit At Date" 
-            topContent={<span>Fecha del crédito</span>}
-            isReadOnly
-            defaultValue={parseDate(creditAt.substring(0,10))} 
+          <div className='flex gap-4 flex-wrap justify-evenly w-full'>
+            <Calendar 
+              aria-label="Credit At Date" 
+              topContent={<p className='font-semibold text-center'>Fecha del crédito</p>}
+              isReadOnly
+              defaultValue={parseDate(creditAt.substring(0,10))} 
+              // className='w-full sm:max-w-[32%] md:max-w-[50%]' 
             />
-          <Calendar 
-            aria-label="NextPayment Date" 
-            isReadOnly
-            topContent={<span>Fecha del siguiente pago</span>}
-            defaultValue={parseDate(nextPayment.substring(0,10))} 
-          />
-
-          {
-            (lastPayment) ? (
-              <Calendar 
+            <Calendar 
+              aria-label="NextPayment Date" 
+              isReadOnly
+              topContent={<p className='font-semibold text-center'>Fecha del siguiente pago</p>}
+              defaultValue={parseDate(nextPayment.substring(0,10))} 
+              // className='w-full sm:max-w-[32%]' 
+            />
+            {
+              (lastPayment) ? (
+                <Calendar 
+                  aria-label="LastPayment Date" 
+                  defaultValue={parseDate(lastPayment.substring(0,10))}
+                  topContent={<p className='font-semibold text-center'>Fecha del ultimo pago</p>}
+                  // className='w-full sm:max-w-[32%]' 
+                  isReadOnly
+                />
+              ) : (<Calendar 
                 aria-label="LastPayment Date" 
-                defaultValue={parseDate(lastPayment.substring(0,10))}
-                topContent={<span>Fecha del ultimo pago</span>}
+                topContent={<p className='font-semibold text-center'>Último pago: sin pagos</p>}
+                // className='w-full sm:max-w-[32%]' 
                 isReadOnly
-              />
-            ) : (<span>No se le ha asignado ningun pago</span>)
-          }
+              />)
+            }
+          </div>
           
         </CardBody>
         <Permission permission={permissions.credits.permissions.update}>

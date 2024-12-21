@@ -59,6 +59,7 @@ export const AvalFormSection = ({ fields, avalId }: Props) => {
   }
 
   useEffect(() => {
+    // TODO: Make this as CURP request
     if(idAval !== fetcher.data?.id) {
       fetcher.load(`/aval/${idAval}`);
     }
@@ -93,7 +94,7 @@ export const AvalFormSection = ({ fields, avalId }: Props) => {
 
   // console.log(name);
   return (
-    <div>
+    <div className='flex flex-wrap justify-between gap-2'>
       {(fetcher.data?.credits) && (
         <AvalCreditsWarning 
           credits={fetcher.data.credits}
@@ -107,10 +108,11 @@ export const AvalFormSection = ({ fields, avalId }: Props) => {
         placeholder='Ingresa la CURP'
         onSelected={handleSelected} 
         metadata={aval.curp}      
-        // value={curp.value ?? ''}
         onValueChange={curp.change}
         selectedItem={{ id: idAval, value: curp.value ?? '' }}
         onChange={handleChange}
+        isRequired
+        className='w-full' 
       />
       <InputValidation
           label="Nombre(s) del aval"
@@ -118,6 +120,8 @@ export const AvalFormSection = ({ fields, avalId }: Props) => {
           metadata={aval.name}
           value={name.value ?? ''}
           onValueChange={name.change}
+          isRequired
+          className='w-full md:max-w-[32%]' 
       />
       <InputValidation
           label='Primer Apellido del aval'
@@ -125,6 +129,8 @@ export const AvalFormSection = ({ fields, avalId }: Props) => {
           metadata={aval.lastNameFirst}
           value={lastNameFirst.value ?? ''}
           onValueChange={lastNameFirst.change}
+          isRequired
+          className='w-full sm:max-w-[48%] md:max-w-[32%]' 
       />
       <InputValidation
           label='Segundo Apellido del aval'
@@ -132,12 +138,14 @@ export const AvalFormSection = ({ fields, avalId }: Props) => {
           metadata={aval.lastNameSecond}
           value={lastNameSecond.value ?? ''}
           onValueChange={lastNameSecond.change}
+          className='w-full sm:max-w-[48%] md:max-w-[32%]' 
       />
       <InputValidation
         label='Telefono del aval'
         placeholder="Ingresa el telefono"
         metadata={aval.phoneNumber}
         value={phoneNumber.value ?? ''}
+        className='w-full sm:max-w-[30%]'
         onValueChange={phoneNumber.change}
       />
       <InputValidation
@@ -145,7 +153,9 @@ export const AvalFormSection = ({ fields, avalId }: Props) => {
           placeholder="Ingresa la dirección"
           metadata={aval.address}
           value={address.value ?? ''}
+          className='w-full sm:max-w-[66%]' 
           onValueChange={address.change}
+          isRequired
       />
       <TextareaValidation 
           label='Referencia del aval'
@@ -153,11 +163,13 @@ export const AvalFormSection = ({ fields, avalId }: Props) => {
           metadata={aval.reference}
           value={reference.value ?? ''}
           onValueChange={reference.change}
+          isRequired
       />
       <TextareaValidation 
           label='Garantías del aval'
           placeholder="Ingresa las garantías"
           metadata={aval.guarantee}
+          isRequired
       />
   </div>
   )

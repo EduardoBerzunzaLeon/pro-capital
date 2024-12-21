@@ -66,6 +66,7 @@ export function ModalMunicipalityEdit({
                              placeholder="Ingresa el Municipio"
                              defaultValue={fetcherGet.data?.serverData?.name}
                              metadata={fields.name}
+                             isRequired
                         />
                     </ModalBody>
                     <ModalFooter>

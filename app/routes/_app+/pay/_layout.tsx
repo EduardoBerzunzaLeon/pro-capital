@@ -201,15 +201,17 @@ export default function PayPage() {
           />
         }
         topContent={
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col gap-4">
             {topContent}
-            <span className="text-default-400 text-small">
-              Total {loader?.serverData.total || 0} Creditos
-            </span>
-            <RowPerPage
-              onChange={handleRowPerPage} 
-              checkParams
-            />
+            <div className="flex justify-between items-center">
+              <span className="text-default-400 text-small">
+                Total {loader?.serverData.total || 0} Creditos
+              </span>
+              <RowPerPage
+                onChange={handleRowPerPage} 
+                checkParams
+              />
+            </div>
           </div>
         } 
         columns={columns} 

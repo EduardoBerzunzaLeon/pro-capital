@@ -16,7 +16,7 @@ export function CreditAction({ creditId }: Props)  {
      });
 
      const handleView = () => {
-        navigate(`/clients/${creditId}`);
+        navigate(`/clients/${creditId}/payments`);
     }
        
     return (

@@ -74,13 +74,15 @@ export function TownButtonAdd() {
                     label='Municipio' 
                     comboBoxName='municipality' 
                     placeholder='Ingresa el municipio'
-                    onSelected={setSelected}                  
+                    onSelected={setSelected}          
+                    isRequired        
                   />
 
                 { (selected && selected.id > 0) && 
                   (<InputValidation
                     label="Localidad"
                     placeholder="Ingresa la localidad"
+                    isRequired
                     metadata={fields.name}
                   />)}
                 </ModalBody>

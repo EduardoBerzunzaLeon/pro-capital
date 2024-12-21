@@ -60,7 +60,6 @@ interface Loader {
 }
 
 const columns = [
-  { key: 'id', label: 'ID' },
   { key: 'route', label: 'RUTA',  sortable: true },
   { key: 'user', label: 'ASESOR', sortable: true },
   { key: 'assignAt', label: 'ASIGNACION', sortable: true},
@@ -140,37 +139,6 @@ export default function  AgentsPage()  {
     <Permission permission={permissions.agents.permissions.delete}>
       { outlet }
     </Permission>
-    <div className='w-full flex gap-2 mt-5 mb-3 flex-wrap justify-between items-center'>
-    <Permission permission={permissions.agents.permissions.report}>
-      <ExcelReport url={`/agents/export?${searchParams.toString()}`} name='asesores_asignados' columns={AGENT_COLUMNS} />
-    </Permission>
-    <ButtonClear 
-       onClear={onClearFilters}
-    />
-      <Fragment key={key}>
-        <SelectRoutes 
-          onSelectionChange={handleSelection}
-          selectionMode='multiple'
-          className='w-full md:max-w-[25%]'
-          defaultSelectedKeys={defaultItems}
-        />
-        <InputFilter 
-          param="agent" 
-          name="agent" 
-          label="Asesor" 
-          id="agent" 
-          placeholder="Nombre del asesor"      
-          defaultValue={loader?.serverData?.agent}
-        />
-        <RangePickerDateFilter 
-          label="Rango de la fecha de asignación" 
-          startName="start" 
-          endName="end"
-          start={loader?.serverData.start} 
-          end={loader?.serverData.end} 
-        />
-      </Fragment>
-    </div>
     <TableDetail 
         aria-label="agents table"
         onSortChange={handleSort}
@@ -183,25 +151,62 @@ export default function  AgentsPage()  {
           />
         }
         topContent={
-          <div className="flex justify-between items-center">
-            <Permission permission={permissions.agents.permissions.add}>
-              <Button
-                href={`/agents/edit?${searchParams.toString()}`}
-                as={Link}
-                endContent={<MdEditCalendar />}
-                variant="ghost"
-                color="secondary"
-              >
-                Asignar Ruta
-              </Button>
-            </Permission>
-            <span className="text-default-400 text-small">
-              Total {loader?.serverData.total || 0} Agentes - Rutas
-            </span>
-            <RowPerPage
-              onChange={handleRowPerPage} 
-              checkParams
-            />
+          <div className="flex flex-col gap-4">
+            <div className="flex justify-between gap-3 items-end flex-wrap">
+              <Fragment key={key}>
+                <SelectRoutes 
+                  onSelectionChange={handleSelection}
+                  selectionMode='multiple'
+                  className='w-full sm:max-w-[25%] lg:max-w-[20%]'
+                  defaultSelectedKeys={defaultItems}
+                />
+                <InputFilter 
+                  param="agent" 
+                  name="agent" 
+                  label="Asesor" 
+                  id="agent" 
+                  placeholder="Nombre del asesor"      
+                  className='w-full sm:max-w-[30%] lg:max-w-[25%]' 
+                  defaultValue={loader?.serverData?.agent}
+                />
+                <RangePickerDateFilter 
+                  label="Rango de la fecha de asignación" 
+                  startName="start" 
+                  endName="end"
+                  className='w-full  sm:max-w-[45%] md:max-w-[40%] lg:max-w-[30%]' 
+                  start={loader?.serverData.start} 
+                  end={loader?.serverData.end} 
+                />
+              </Fragment>
+              <div>
+                <Permission permission={permissions.agents.permissions.report}>
+                  <ExcelReport url={`/agents/export?${searchParams.toString()}`} name='asesores_asignados' columns={AGENT_COLUMNS} />
+                </Permission>
+                <ButtonClear 
+                  onClear={onClearFilters}
+                />
+                <Permission permission={permissions.agents.permissions.add}>
+                  <Button
+                    href={`/agents/edit?${searchParams.toString()}`}
+                    as={Link}
+                    endContent={<MdEditCalendar />}
+                    variant="ghost"
+                    color="secondary"
+                  >
+                    Asignar Ruta
+                  </Button>
+                </Permission>
+              </div>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-default-400 text-small">
+                Total {loader?.serverData.total || 0} Agentes - Rutas
+              </span>
+              <RowPerPage
+                onChange={handleRowPerPage} 
+                checkParams
+                />
+            </div>
           </div>
         } 
         columns={columns} 

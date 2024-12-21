@@ -20,7 +20,8 @@ interface Props {
     placeholder: string,
     selectedItem?: Autocomplete, 
     onSelected?: (value: Autocomplete) =>  void,
-    onChange?: (value: string)  => void
+    onChange?: (value: string)  => void,
+    isRequired?: boolean,
 }
 
 export const AutocompleteCombobox = ({ 
@@ -31,7 +32,8 @@ export const AutocompleteCombobox = ({
     placeholder, 
     selectedItem,
     onSelected, 
-    onChange 
+    onChange,
+    isRequired
 }: Props) => {
 
     const [query, setQuery] = useState('');
@@ -97,9 +99,11 @@ export const AutocompleteCombobox = ({
                         placeholder={placeholder}
                         onChange={(e) => setDisplayValue(e.target.value)}
                         value={displayValue}
+                        description='Autocompleta las palabras'
                         endContent={
                             (state !== 'idle' && (<Spinner size='sm' />))
                         }
+                        isRequired={isRequired}
                     />
                 </ComboboxInput>
                 </div>

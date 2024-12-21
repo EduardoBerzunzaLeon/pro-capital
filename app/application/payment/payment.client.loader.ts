@@ -1,6 +1,6 @@
 import { LoaderFunction } from "@remix-run/node";
 import { ServerError } from "~/.server/errors";
-import { handlerError, handlerSuccess } from "~/.server/reponses";
+import { getEmptyPagination, handlerError, handlerSuccess } from "~/.server/reponses";
 import { Service } from "~/.server/services";
 import { Params } from '../params/index';
 import { permissions } from "../permissions";
@@ -17,14 +17,28 @@ import { permissions } from "../permissions";
 
     try {
         
-        const { areEmpty, creditValue } = validation;
+        const { 
+          areEmpty, 
+          creditValue, 
+          clientParsed, 
+          folderParsed, 
+          groupParsed 
+        } = validation;
  
         if(!areEmpty && creditValue !== '') {
           throw ServerError.badRequest('La solicitud a la URL es incorrecta, favor de verificar la ruta de acceso');
         }
-          
-        const data = await Service.payment.findAll(customParams);
 
+        if(clientParsed || folderParsed || groupParsed) {
+          await Service.credit.verifyIfExists({
+            clientId: Number(clientParsed),
+            folderId: Number(folderParsed),
+            groupId: Number(groupParsed)
+          })
+        }
+
+        const data = await Service.payment.findAll(customParams);
+        
         const { page, limit, column, direction } = customParams;
 
         return handlerSuccess(200, { 
@@ -38,8 +52,12 @@ import { permissions } from "../permissions";
 
     } catch (e) {
       
-      console.log(e);
       const { error, status } = handlerError(e);
+      console.log({error});
+      if(error === 'No se encontraron pagos') {
+        return getEmptyPagination();
+      }
+
       throw new Response(error, { status });
     }
   }

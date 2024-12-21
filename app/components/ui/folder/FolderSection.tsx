@@ -18,7 +18,6 @@ import FolderToggleActive from "./FolderToggleActive";
 export type Key = string | number;
 
 const columns = [
-  { key: 'id', label: 'ID' },
   { key: 'route', label: 'RUTA' },
   { key: 'name', label: 'CARPETA',  sortable: true },
   { key: 'leader', label: 'LIDER', },
@@ -108,44 +107,6 @@ const renderCell = useCallback((folder: Folder, columnKey: Key) => {
 
 return (
         <div>
-            <div className='w-full flex gap-2 mt-5 mb-3 flex-wrap justify-between'>
-                <Permission permission={permissions.folder.permissions.report}>
-                    <ExcelReport url={url} name='carpetas' columns={FOLDER_COLUMNS} />
-                </Permission>
-                <ButtonClear 
-                    onClear={handlerClear}
-                />
-                <Input
-                    className="w-full sm:max-w-[30%]"
-                    isClearable
-                    onClear={handlerClose}
-                    onValueChange={setSearch}
-                    placeholder="Buscar por Carpeta"
-                    startContent={<FaSearch />}
-                    value={search}
-                    variant='bordered'
-                />
-                <Input
-                    className="w-full sm:max-w-[30%]"
-                    isClearable
-                    onClear={handlerCloseTown}
-                    onValueChange={setSearchTown}
-                    placeholder="Buscar por Localidad"
-                    startContent={<FaSearch />}
-                    value={searchTown}
-                    variant='bordered'
-                />
-                <Input
-                    className="w-full sm:max-w-[30%]"
-                    isClearable
-                    onClear={handlerCloseMunicipality}
-                    onValueChange={setSearchMunicipality}
-                    placeholder="Buscar por Municipio"
-                    startContent={<FaSearch />}
-                    value={searchMunicipality}
-                    variant='bordered'
-                />
-            </div>
         
             <ModalFolderEdit 
                 isOpen={isOpen}
@@ -163,17 +124,59 @@ return (
                     />
                 }
                 topContent={
-                    <div className="flex justify-between items-center">
-                        <Permission permission={permissions.folder.permissions.add}>
-                            <FolderButtonAdd />
-                        </Permission>
-                        <Permission permission={permissions.utils.permissions.generate_groups}>
-                            <GroupGenerateButton />
-                        </Permission>
-                        <span className="text-default-400 text-small">Total {data?.serverData.total || 0 } Carpetas </span>
-                        <RowPerPage 
-                            onChange={handleRowPerPage}
-                        />
+                    <div className='flex flex-col gap-4'>
+                        <div className="flex justify-between gap-3 items-end flex-wrap">
+                           <Input
+                                className="w-full sm:max-w-[30%]"
+                                isClearable
+                                onClear={handlerClose}
+                                onValueChange={setSearch}
+                                placeholder="Buscar por Carpeta"
+                                startContent={<FaSearch />}
+                                value={search}
+                                variant='bordered'
+                            />
+                            <Input
+                                className="w-full sm:max-w-[30%]"
+                                isClearable
+                                onClear={handlerCloseTown}
+                                onValueChange={setSearchTown}
+                                placeholder="Buscar por Localidad"
+                                startContent={<FaSearch />}
+                                value={searchTown}
+                                variant='bordered'
+                            />
+                            <Input
+                                className="w-full sm:max-w-[30%]"
+                                isClearable
+                                onClear={handlerCloseMunicipality}
+                                onValueChange={setSearchMunicipality}
+                                placeholder="Buscar por Municipio"
+                                startContent={<FaSearch />}
+                                value={searchMunicipality}
+                                variant='bordered'
+                            />
+                            <div className='w-full flex gap-2 flex-wrap'>
+                                <Permission permission={permissions.folder.permissions.report}>
+                                    <ExcelReport url={url} name='carpetas' columns={FOLDER_COLUMNS} />
+                                </Permission>
+                                <ButtonClear 
+                                    onClear={handlerClear}
+                                />
+                                <Permission permission={permissions.folder.permissions.add}>
+                                    <FolderButtonAdd />
+                                </Permission>
+                                <Permission permission={permissions.utils.permissions.generate_groups}>
+                                    <GroupGenerateButton />
+                                </Permission>
+                            </div>
+                        </div>
+                        <div className="flex justify-between items-center">
+                            <span className="text-default-400 text-small">Total {data?.serverData.total || 0 } Carpetas </span>
+                            <RowPerPage 
+                                onChange={handleRowPerPage}
+                            />
+                        </div>
                     </div>
                 }
                 columns={columns} 

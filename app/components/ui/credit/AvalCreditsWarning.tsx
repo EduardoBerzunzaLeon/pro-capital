@@ -24,7 +24,7 @@ export const AvalCreditsWarning = ({ credits }: Props) => {
     if(credits.length === 0) return (<></>);
 
   return (
-    <Card className='border-warning-100 border-2'>
+    <Card className='border-warning-100 border-2 w-full'>
         <CardHeader>
             <h3 className='font-bold'>Créditos <span className='text-danger-300'>NO LIQUIDADOS</span> del Aval</h3> 
         </CardHeader>

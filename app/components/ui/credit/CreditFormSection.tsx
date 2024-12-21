@@ -50,7 +50,7 @@ export const CreditFormSection = ({ fields }: Props) => {
 
 
   return (
-    <div>
+    <div className='w-[98%] flex flex-wrap justify-between gap-2'>
       <AutocompleteValidation 
         keyFetcher='findFolderAutocomplete' 
         actionRoute='/folder/search' 
@@ -60,6 +60,8 @@ export const CreditFormSection = ({ fields }: Props) => {
         onSelected={handleSelected}
         metadata={credit.folder}      
         onValueChange={folder.change}
+        className='w-full sm:max-w-[32%]' 
+        isRequired
       />
         <InputValidation
           label="Grupo"
@@ -67,6 +69,22 @@ export const CreditFormSection = ({ fields }: Props) => {
           metadata={credit.group}
           value={group.value ?? ''}
           onValueChange={group.change}
+          isRequired
+          className='w-full sm:max-w-[32%]' 
+        />
+        <DatePicker 
+            label="Fecha de asignación" 
+            variant='bordered' 
+            id='creditAt'
+            key={credit.creditAt.key}
+            name={credit.creditAt.name}
+            isInvalid={!!credit.creditAt.errors}
+            errorMessage={credit.creditAt.errors}
+            defaultValue={today(getLocalTimeZone())}
+            granularity="day"
+            labelPlacement="outside"
+            isRequired
+            className='w-full sm:max-w-[32%]' 
         />
       <Select 
           variant='bordered'
@@ -75,6 +93,8 @@ export const CreditFormSection = ({ fields }: Props) => {
           onChange={handleSelectedType}
           selectedKeys={[type.value || 'NORMAL']}
           disallowEmptySelection
+          className='w-full sm:max-w-[32%]' 
+          isRequired
           {...getSelectProps(credit.types)}
       >
         <SelectItem key='NORMAL'>Normal</SelectItem>
@@ -88,6 +108,8 @@ export const CreditFormSection = ({ fields }: Props) => {
           metadata={credit.amount}
           value={amount.value ?? ''}
           onValueChange={amount.change}
+          className='w-full sm:max-w-[32%]' 
+          isRequired
           startContent={
             <div className="pointer-events-none flex items-center">
               <span className="text-default-400 text-small">$</span>
@@ -100,7 +122,9 @@ export const CreditFormSection = ({ fields }: Props) => {
           labelPlacement="outside"
           variant='bordered'
           isDisabled
+          className='w-full sm:max-w-[32%]' 
           value={payment+''}
+          
           startContent={
             <div className="pointer-events-none flex items-center">
               <span className="text-default-400 text-small">$</span>
@@ -114,23 +138,14 @@ export const CreditFormSection = ({ fields }: Props) => {
           isDisabled
           value={total+''}
           variant='bordered'
+          className='w-full sm:max-w-[32%]' 
           startContent={
             <div className="pointer-events-none flex items-center">
               <span className="text-default-400 text-small">$</span>
             </div>
           }
         />
-        <DatePicker 
-            label="Fecha de asignación del crédito" 
-            variant='bordered' 
-            id='creditAt'
-            key={credit.creditAt.key}
-            name={credit.creditAt.name}
-            isInvalid={!!credit.creditAt.errors}
-            errorMessage={credit.creditAt.errors}
-            defaultValue={today(getLocalTimeZone())}
-            granularity="day"
-        />
+        
     </div>
   )
 }

@@ -16,7 +16,6 @@ import { TOWN_COLUMNS } from "../excelReports/columns";
 type Column = 'name' | 'id';
 
 const columns = [
-  { key: 'id', label: 'ID' },
   { key: 'name', label: 'NOMBRE',  sortable: true }, 
   { key: 'municipality', label: 'MUNICIPIO', sortable: true },
   { key: 'actions', label: 'ACCIONES'},
@@ -90,34 +89,6 @@ export function TownSection() {
 
     return (
         <div className='w-full'>
-        <div className='w-full flex gap-2 mt-5 mb-3 flex-wrap justify-between'>
-            <Permission permission={permissions.folder.permissions.report}>
-                <ExcelReport url={url} name='localidades' columns={TOWN_COLUMNS} />
-            </Permission>
-            <ButtonClear 
-                onClear={handlerClear}
-            />
-        <Input
-            isClearable
-            className="w-full sm:max-w-[44%]"
-            placeholder="Buscar por localidad"
-            startContent={<FaSearch />}
-            variant='bordered'
-            value={search}
-            onClear={handlerClose}
-            onValueChange={setSearch}
-        />
-        <Input
-            isClearable
-            className="w-full sm:max-w-[44%]"
-            placeholder="Buscar por municipio"
-            startContent={<FaSearch />}
-            variant='bordered'
-            value={searchMunicipality}
-            onClear={handlerCloseMunicipality}
-            onValueChange={setSearchMunicipality}
-        />
-        </div>
         <ModalTownEdit 
             isOpen={isOpen}
             onOpenChange={onOpenChange}
@@ -134,16 +105,48 @@ export function TownSection() {
             />
         }
         topContent={
-            <div className="flex justify-between items-center">
-                <Permission permission={permissions.town.permissions.add}>
-                    <TownButtonAdd />
-                </Permission>
-                <span className="text-default-400 text-small">
-                    Total {data?.serverData.total || 0 } localidades
-                </span>
-                <RowPerPage 
-                    onChange={handleRowPerPage}
-                />
+            <div className="flex flex-col gap-4">
+                <div className="flex justify-between gap-3 items-end flex-wrap">
+                    <Input
+                        isClearable
+                        className="w-full sm:max-w-[44%] md:max-w-[25%] lg:max-w-[33%]"
+                        placeholder="Buscar por localidad"
+                        startContent={<FaSearch />}
+                        variant='bordered'
+                        value={search}
+                        onClear={handlerClose}
+                        onValueChange={setSearch}
+                    />
+                    <Input
+                        isClearable
+                        className="w-full sm:max-w-[44%] md:max-w-[33%]"
+                        placeholder="Buscar por municipio"
+                        startContent={<FaSearch />}
+                        variant='bordered'
+                        value={searchMunicipality}
+                        onClear={handlerCloseMunicipality}
+                        onValueChange={setSearchMunicipality}
+                    />
+                    <div className='flex flex-wrap gap-1'>
+                        <Permission permission={permissions.folder.permissions.report}>
+                            <ExcelReport url={url} name='localidades' columns={TOWN_COLUMNS} />
+                        </Permission>
+                        <ButtonClear 
+                            onClear={handlerClear}
+                        />
+                        <Permission permission={permissions.town.permissions.add}>
+                            <TownButtonAdd />
+                        </Permission>
+                    </div>
+                </div>
+                <div className="flex justify-between items-center">
+                    <span className="text-default-400 text-small">
+                        Total {data?.serverData.total || 0 } localidades
+                    </span>
+                    <RowPerPage 
+                        onChange={handleRowPerPage}
+                        />
+                </div>
             </div>
         }
         columns={columns} 

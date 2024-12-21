@@ -30,8 +30,10 @@ interface Props {
     selectedItem?: Autocomplete, 
     startContent?: React.ReactNode
     isReadOnly?: boolean,
+    isRequired?: boolean,
     onSelected?: (value: Autocomplete) =>  void,
     onChange?: (value: string)  => void
+    className?: string
 }
 
 export const AutocompleteValidation = ({ 
@@ -46,6 +48,7 @@ export const AutocompleteValidation = ({
     selectedItem,
     onSelected, 
     onChange,
+    className,
     ...restProps
 }: Props) => {
 
@@ -99,7 +102,7 @@ export const AutocompleteValidation = ({
                     setQuery('')
                 }}
             >
-                <div className="relative">
+                <div className={`relative ${className ?? ''}`}>
                 
                 <ComboboxInput
                     displayValue={(data) => {
@@ -119,6 +122,7 @@ export const AutocompleteValidation = ({
                         errorMessage={metadata.errors}
                         value={displayValue}
                         key={key}
+                        description='Autocompleta las palabras'
                         {...restInputProps}
                         {...restProps}
                         endContent={

@@ -92,7 +92,7 @@ export function FolderButtonAdd() {
             Agregar Carpeta
             </ModalHeader>
               <ModalBody> 
-              <SelectRoutes />
+              <SelectRoutes isRequired />
                 
               <AutocompleteCombobox 
                     keyFetcher='findTownAutocomplete' 
@@ -101,6 +101,7 @@ export function FolderButtonAdd() {
                     comboBoxName='town' 
                     placeholder='Ingresa la localidad'
                     onSelected={setSelected}                  
+                    isRequired
                 />
 
                 { ( selected?.value ) && (<Input

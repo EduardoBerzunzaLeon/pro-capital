@@ -135,54 +135,6 @@ export default function  UsersPage()  {
 
   return (
     <>
-    <div className='w-full flex gap-2 mt-5 mb-3 flex-wrap justify-between items-center'>
-    <Permission permission={permissions.users.permissions.report}>
-      <ExcelReport url={`/users/export?${searchParams.toString()}`} name='usuarios' columns={USER_COLUMNS} />
-    </Permission>
-    <ButtonClear 
-       onClear={onClearFilters}
-    />
-    <Fragment key={key}>
-      <SelectRoles 
-        onSelectionChange={handleSelection}
-        selectionMode='multiple'
-        className='w-full md:max-w-[25%]'
-        defaultSelectedKeys={defaultItems}
-      />
-      <InputFilter 
-          param="email" 
-          name="email" 
-          label="Correo electronico" 
-          id="email"
-          className='w-full md:max-w-[30%]' 
-          placeholder="Correo electronico"      
-      />
-      <InputFilter 
-          param="username" 
-          name="username" 
-          label="Usuario" 
-          id="username"
-          className='w-full md:max-w-[30%]' 
-          placeholder="Nombre de usuario"      
-      />
-      <InputFilter 
-          param="fullName" 
-          name="username" 
-          label="Nombre" 
-          id="username"
-          className='w-full md:max-w-[30%]' 
-          placeholder="Nombre completo"      
-      />
-        <StatusFilter 
-          isActive={loader?.serverData?.isActive}
-          param='isActive'
-        />
-        <DropdownSex 
-          onSelectionChange={handleValueChange} 
-          defaultSelectedKeys={defaultValue}
-        />
-    </Fragment>
-    </div>
       <TableDetail 
         aria-label="credits table"
         onSortChange={handleSort}
@@ -196,26 +148,78 @@ export default function  UsersPage()  {
           />
         }
         topContent={
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col gap-4">
+            <div className="flex justify-between gap-3 items-end flex-wrap">
+              <Fragment key={key}>
+                  <SelectRoles 
+                    onSelectionChange={handleSelection}
+                    selectionMode='multiple'
+                    className='w-full sm:max-w-[30%]'
+                    defaultSelectedKeys={defaultItems}
+                  />
+                  <InputFilter 
+                      param="email" 
+                      name="email" 
+                      label="Correo electronico" 
+                      id="email"
+                      className='w-full sm:max-w-[30%]' 
+                      placeholder="Correo electronico"      
+                  />
+                  <InputFilter 
+                      param="username" 
+                      name="username" 
+                      label="Usuario" 
+                      id="username"
+                      className='w-full sm:max-w-[30%]' 
+                      placeholder="Nombre de usuario"      
+                  />
+                  <InputFilter 
+                      param="fullName" 
+                      name="username" 
+                      label="Nombre" 
+                      id="username"
+                      className='w-full sm:max-w-[30%]' 
+                      placeholder="Nombre completo"      
+                  />
+                  <StatusFilter 
+                    isActive={loader?.serverData?.isActive}
+                    param='isActive'
+                  />
+                  <DropdownSex 
+                    onSelectionChange={handleValueChange} 
+                    defaultSelectedKeys={defaultValue}
+                  />
+              </Fragment>
+              <div>
+                <Permission permission={permissions.users.permissions.report}>
+                  <ExcelReport url={`/users/export?${searchParams.toString()}`} name='usuarios' columns={USER_COLUMNS} />
+                </Permission>
+                <ButtonClear 
+                  onClear={onClearFilters}
+                />
+                <Permission permission={permissions.users.permissions.add} >
+                  <Button
+                    href={`/users/create?${searchParams.toString()}`}
+                    as={Link}
+                    endContent={<FaUserPlus />}
+                    variant="ghost"
+                    color="secondary" 
+                  >
+                    Crear Usuario
+                  </Button>
+                </Permission>
+              </div>
+            </div>
             {topContent}
-            <Permission permission={permissions.users.permissions.add} >
-              <Button
-                href={`/users/create?${searchParams.toString()}`}
-                as={Link}
-                endContent={<FaUserPlus />}
-                variant="ghost"
-                color="secondary" 
-              >
-                Crear Usuario
-              </Button>
-            </Permission>
-            <span className="text-default-400 text-small">
-              Total {loader?.serverData.total || 0} Usuarios
-            </span>
-            <RowPerPage
-              onChange={handleRowPerPage} 
-              checkParams
-            />
+            <div className="flex justify-between items-center">
+              <span className="text-default-400 text-small">
+                Total {loader?.serverData.total || 0} Usuarios
+              </span>
+              <RowPerPage
+                onChange={handleRowPerPage} 
+                checkParams
+              />
+            </div>
           </div>
         } 
         columns={columns} 

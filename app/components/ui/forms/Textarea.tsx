@@ -10,6 +10,7 @@ interface Props {
     isReadOnly?: boolean,
     onValueChange?: (value: string) => void,
     defaultValue?: string,
+    isRequired?: boolean,
 }
 
 export const TextareaValidation = ({ metadata, ...restProps}: Props) => {

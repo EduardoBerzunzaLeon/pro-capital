@@ -15,9 +15,16 @@ interface Props {
     onSelectionChange?: (keys: Selection) => void,
     selectionMode?: SelectionMode,
     className?: string,
+    isRequired?: boolean,
 }
 
-export const SelectRoutes = ({ defaultSelectedKeys, onSelectionChange, selectionMode, className }: Props) => {
+export const SelectRoutes = ({ 
+  defaultSelectedKeys, 
+  onSelectionChange, 
+  selectionMode, 
+  className,
+  isRequired 
+}: Props) => {
   
   const { load, data, state } = useFetcher<HandlerSuccess<RouteData[]>>({ key: 'getSelectRoutes' });
   const [selected, setSelected] = useState<"all" | Iterable<Key>>([]);
@@ -58,6 +65,7 @@ export const SelectRoutes = ({ defaultSelectedKeys, onSelectionChange, selection
             onSelectionChange={handleChange}
             selectedKeys={selected}
             selectionMode={selectionMode}
+            isRequired={isRequired}
         >
             {(route) => <SelectItem  key={route.id} textValue={`Ruta ${route.name}`}>
                 <div className="flex items-center justify-between">

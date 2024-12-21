@@ -9,6 +9,7 @@ import { TextareaValidation } from "../forms/Textarea";
 import { getLocalTimeZone, today } from "@internationalized/date";
 import { AutocompleteValidation } from "../forms/AutocompleteValidation";
 import { noPaymentSchema } from '../../../schemas/paymentSchema';
+import { useEffect } from "react";
 
 interface Props {
     isOpen: boolean;
@@ -32,8 +33,21 @@ export const ModalNoPay = ({ isOpen, onOpenChange }: Props) => {
         defaultValue: {
             folio: 0
         }
-      }); 
+      });
+      
+    useEffect(() => {
+        if(isOpen && fetcher.data?.status === 'success' && fetcher.state === 'idle') {
+            onOpenChange(isOpen)
   
+        }
+    }, [fetcher.data])
+      
+    useEffect(() => {
+        if(!isOpen && form?.status === 'error') {
+            form?.reset()        
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isOpen]);
   return (
     <Modal 
         isOpen={isOpen} 
@@ -75,6 +89,7 @@ export const ModalNoPay = ({ isOpen, onOpenChange }: Props) => {
                                 comboBoxName='agent' 
                                 placeholder='Ingresa el agente' 
                                 metadata={fields.agent}      
+                                isRequired
                             />
                             <DatePicker 
                                 label="Fecha de asignación del pago" 
@@ -86,6 +101,7 @@ export const ModalNoPay = ({ isOpen, onOpenChange }: Props) => {
                                 errorMessage={fields.paymentDate.errors}
                                 defaultValue={today(getLocalTimeZone())}
                                 granularity="day"
+                                isRequired
                             />
                             <InputValidation
                                 label="Folio"

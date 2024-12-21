@@ -18,9 +18,9 @@ export const CurpForm = () => {
     }); 
 // credit[create]
   return (
-    <Card className='w-full'>
+    <Card className='w-full mb-2'>
         <CardHeader>
-            Verificación para crear un credito
+            Verificación para crear un crédito
         </CardHeader>
         <Divider/>
       <CardBody>

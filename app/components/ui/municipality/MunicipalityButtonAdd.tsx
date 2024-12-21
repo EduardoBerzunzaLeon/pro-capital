@@ -60,6 +60,7 @@ export function MunicipalityButtonAdd() {
                                     label="Nombre"
                                     placeholder="Ingresa el Municipio"
                                     metadata={fields.name}
+                                    isRequired
                                 />
                             </ModalBody>
                             <ModalFooter>

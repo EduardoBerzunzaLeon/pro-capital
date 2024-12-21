@@ -26,7 +26,7 @@ export const DropdownGeneric = ({
             <DropdownTrigger>
             <Button 
                 variant="bordered" 
-                className="capitalize mt-5 mb-3"
+                className="w-full sm:max-w-[30%] capitalize lg:max-w-[20%] min-w-[150px]"
             >
                 {textButton}
             </Button>

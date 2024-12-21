@@ -81,6 +81,7 @@ export function RouteButtonAdd() {
                                      name='route'
                                      label='Ruta'
                                      isDisabled
+                                     isRequired
                                      description='El sistema calcula automáticamente el nombre de la ruta.'
                                      value={`Ruta ${String(fetcherNextConsecutive.data?.serverData.consecutive)}`}
                                 />

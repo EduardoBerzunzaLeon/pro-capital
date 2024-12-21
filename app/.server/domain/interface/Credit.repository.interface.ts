@@ -44,6 +44,12 @@ export interface UpdateOne {
     type: Type,
 }
 
+export interface VerifyIfExitsprops {
+    clientId: number,
+    folderId: number,
+    groupId: number
+}
+
 export type UpdateAddPayment = Pick<UpdateOne, 'currentDebt' | 'status' | 'canRenovate'> & { nextPayment: Date, lastPayment?: Date, countPayments: number }
 
 export type BaseCreditI = BaseRepositoryI<
@@ -83,5 +89,6 @@ export interface CreditRepositoryI{
     verifyClientCurp: (idClient: number, curp: string) => Promise<Generic[] | undefined>,
     verifyCredit: (id: number, folderId: number) => Promise<Generic | undefined>,
     verifyFolderInCredit: (curp: string, folderId: number) => Promise<Generic | undefined>,
+    verifyIfExits: (props: VerifyIfExitsprops) => Promise<Generic | undefined>
     base: BaseCreditI
 }

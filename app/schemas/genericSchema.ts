@@ -125,7 +125,7 @@ export const lastNameLast = alphabetBuilder({
     requiredText: 'Segundo Apellido',
     minText: 'El segundo apellido',
     extraText: 'El segundo apellido'
-});
+}).optional();
 
 export const userName = z.string({
     invalid_type_error: "Usuario invalido",

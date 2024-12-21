@@ -38,6 +38,7 @@ export const RoleForm = ({ id, role }: Props) => {
                 isInvalid={!!fields.role.errors}
                 color={fields.role.errors ? "danger" : "default"}
                 errorMessage={fields.role.errors}
+                isRequired
             />
           </CardBody>
           <CardHeader>

@@ -41,7 +41,8 @@ export const PasswordForm = ({ id }: Props) => {
               <InputValidation 
                 label="Contraseña" 
                 placeholder="Ingresa tu nueva contraseña" 
-                metadata={fields.password}          
+                metadata={fields.password}     
+                isRequired     
                 endContent={
                   <button className="focus:outline-none" type="button" onClick={toggleVisibility}>
                     {isVisible ? (
@@ -56,7 +57,8 @@ export const PasswordForm = ({ id }: Props) => {
               <InputValidation 
                 label="Confirmar contraseña" 
                 placeholder="Ingresa la confirmación de la contraseña" 
-                metadata={fields.confirmPassword}         
+                metadata={fields.confirmPassword}        
+                isRequired 
                 endContent={
                   <button className="focus:outline-none" type="button" onClick={toggleVisibilityConfirm}>
                     {isVisibleConfirm ? (

@@ -23,7 +23,7 @@ export const action: ActionFunction = async({ request }) => {
     await Service.auth.requirePermission(request, permissions.users.permissions.add);
     const password = await Service.user.createOne(formData);
     return redirectWithSuccess(`/users${url.search}`, { 
-      message: `Creación exitosa, La contraseña es: ${password}`
+      message: `¡Creación exitosa, La contraseña es: ${password} 🎉!`
     });
   } catch (error) {
     return handlerErrorWithToast(error, data);
@@ -70,11 +70,13 @@ export default function CreateUser() {
                     label="Nombre(s)"
                     placeholder="Ingresa el/los nombre(s)"
                     metadata={fields.name}
+                    isRequired
                 />
                 <InputValidation
                     label="Primer Apellido"
                     placeholder="Ingresa el primer apellido"
                     metadata={fields.lastNameFirst}
+                    isRequired
                 />
                 <InputValidation
                     label="Segundo Apellido"
@@ -85,23 +87,27 @@ export default function CreateUser() {
                     label="Nombre de usuario"
                     placeholder="Ingresa el nombre de usuario"
                     metadata={fields.username}
+                    isRequired
                 />
                 <InputValidation
                     label="Correo electronico"
                     placeholder="Ingresa el correo electronico"
                     inputType='email'
                     metadata={fields.email}
+                    isRequired
                 />
                 <InputValidation
                     label="Dirección"
                     placeholder="Ingresa la dirección"
                     metadata={fields.address}
+                    isRequired
                 />
                 <SelectRoles 
                   {...getSelectProps(fields.role)}
                   isInvalid={!!fields.role.errors}
                   color={fields.role.errors ? "danger" : "default"}
                   errorMessage={fields.role.errors}
+                  isRequired
                 />
                 <Select
                     items={[{key: 'masculino', value:'MASCULINO'}, {key: 'femenino', value:'FEMENINO'}]}
@@ -112,6 +118,7 @@ export default function CreateUser() {
                     errorMessage={fields.sex.errors}
                     placeholder="Seleccione un genero"
                     labelPlacement="outside"
+                    isRequired
                     variant="bordered"
                 >
                     {

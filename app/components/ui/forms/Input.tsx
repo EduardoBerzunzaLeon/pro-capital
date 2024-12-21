@@ -15,6 +15,7 @@ interface Props {
     startContent?: React.ReactNode,
     endContent?: React.ReactNode,
     isReadOnly?: boolean,
+    isRequired?: boolean,
     className?: string
 }
 

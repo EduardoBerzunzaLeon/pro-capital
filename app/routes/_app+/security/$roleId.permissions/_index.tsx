@@ -54,7 +54,7 @@ export { ErrorBoundary }
   export const handle = {
     breadcrumb: (data: { status: string, serverData?: { role: { id: number, role: string} } }) => ({
       href: `/security/${data?.serverData?.role.id}/permissions`,
-      label: `Permisos de ${data?.serverData?.role.role}`,
+      label: `Permisos de ${data?.serverData?.role.role.replace('_', ' ')}`,
       startContent: <FaUserShield />,
     })
   }
@@ -99,40 +99,7 @@ export default function PermissionDetailPage() {
     return (
         <>
         <div className='w-full flex gap-2 mt-5 mb-3 flex-wrap justify-between items-center'>
-            <PermissionUI permission={permissionsData.roles.permissions.report_permissions}>
-               <ExcelReport url={`/security/${roleId}/permissions/export?${searchParams.toString()}`} name='permisos' columns={PERMISSION_COLUMNS} />
-            </PermissionUI>
-            <ButtonClear 
-             onClear={onClearFilters}
-            /> 
-            <Fragment key={key}>
-            <InputFilter 
-                param="name" 
-                name="name" 
-                label="Permiso" 
-                id="name"
-                className='w-full md:max-w-[30%]' 
-                placeholder="Nombre del permiso"      
-                defaultValue={permissions?.serverData?.name}
-            />
-            <InputFilter 
-                param="description" 
-                name="description" 
-                label="Descripción" 
-                id="description"
-                className='w-full md:max-w-[30%]' 
-                placeholder="Descripción"      
-                defaultValue={permissions?.serverData?.description}
-            />
-            <InputFilter 
-                param="module" 
-                name="module" 
-                label="Módulo" 
-                id="module"
-                className='w-full md:max-w-[30%]' 
-                placeholder="Módulo"      
-                defaultValue={permissions?.serverData?.module}
-            />
+            
             <TableDetail 
                 aria-label="roles table"
                 onSortChange={handleSort}
@@ -145,14 +112,60 @@ export default function PermissionDetailPage() {
                     />
                 }
                 topContent={
-                    <div className="flex justify-between items-center">
-                        <span className="text-default-400 text-small">
-                            Total {permissions?.serverData.total || 0} permisos
-                        </span>
-                        <RowPerPage
-                            onChange={handleRowPerPage} 
-                            checkParams
-                        />
+                    <div className="flex flex-col gap-4">
+                        <div className="flex justify-between gap-3 items-end flex-wrap">
+                            <Fragment key={key}>
+                                <InputFilter 
+                                    param="name" 
+                                    name="name" 
+                                    label="Permiso" 
+                                    id="name"
+                                    className='w-full sm:max-w-[25%]' 
+                                    placeholder="Nombre del permiso"      
+                                    defaultValue={permissions?.serverData?.name}
+                                />
+                                <InputFilter 
+                                    param="description" 
+                                    name="description" 
+                                    label="Descripción" 
+                                    id="description"
+                                    className='w-full sm:max-w-[25%]' 
+                                    placeholder="Descripción"      
+                                    defaultValue={permissions?.serverData?.description}
+                                />
+                                <InputFilter 
+                                    param="module" 
+                                    name="module" 
+                                    label="Módulo" 
+                                    id="module"
+                                    className='w-full sm:max-w-[25%]' 
+                                    placeholder="Módulo"      
+                                
+                                    defaultValue={permissions?.serverData?.module}
+                                />
+                            </Fragment>
+                            <div>
+                                <PermissionUI permission={permissionsData.roles.permissions.report_permissions}>
+                                    <ExcelReport 
+                                        url={`/security/${roleId}/permissions/export?${searchParams.toString()}`} 
+                                        name='permisos' 
+                                        columns={PERMISSION_COLUMNS} 
+                                    />
+                                </PermissionUI>
+                                <ButtonClear 
+                                    onClear={onClearFilters}
+                                /> 
+                            </div>
+                        </div>
+                        <div className="flex justify-between items-center">
+                            <span className="text-default-400 text-small">
+                                Total {permissions?.serverData.total || 0} permisos
+                            </span>
+                            <RowPerPage
+                                onChange={handleRowPerPage} 
+                                checkParams
+                                />
+                        </div>
                     </div>
                 } 
                 columns={columns} 
@@ -161,7 +174,6 @@ export default function PermissionDetailPage() {
                 renderCell={renderCell} 
                 data={permissions?.serverData.data ?? []}    
             />
-            </Fragment>
         </div>
         </>
     )

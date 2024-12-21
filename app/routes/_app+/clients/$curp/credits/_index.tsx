@@ -76,7 +76,7 @@ const columns = [
 ]
 
 const INITIAL_VISIBLE_COLUMNS = [
-  'client.curp', 'folder.name','group.name','creditAt', 'status', 'canRenovate'
+  'client.curp', 'folder.name','group.name', 'status', 'canRenovate'
 ];
 
 const statusRef: Record<Status, Color> = {
@@ -113,7 +113,7 @@ export default function ViewCreditsPage () {
       if(columnKey === 'canRenovate' && credit.canRenovate) {
         return (
           <Permission permission={permissions.credits.permissions.renovate}>
-            <Button variant='ghost' color='primary' onPress={() => { navigate(`/clients/${param?.curp}/renovate/${credit.id}`) }}>
+            <Button variant='ghost' color='primary' size='sm' onPress={() => { navigate(`/clients/${param?.curp}/renovate/${credit.id}`) }}>
               Renovar
             </Button>
           </Permission>
@@ -202,15 +202,17 @@ export default function ViewCreditsPage () {
                         />
                       }
                       topContent={
-                        <div className="flex justify-between items-center">
-                          {topContent}
-                          <span className="text-default-400 text-small">
-                            Total {loader?.serverData.total || 0} Creditos
-                          </span>
-                          <RowPerPage
-                            onChange={handleRowPerPage} 
-                            checkParams
-                          />
+                        <div>
+                            {topContent}
+                          <div className="flex justify-between items-center">
+                            <span className="text-default-400 text-small">
+                              Total {loader?.serverData.total || 0} Creditos
+                            </span>
+                            <RowPerPage
+                              onChange={handleRowPerPage} 
+                              checkParams
+                              />
+                          </div>
                         </div>
                       } 
                       columns={columns} 

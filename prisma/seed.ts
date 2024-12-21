@@ -45,27 +45,27 @@ async function seed() {
     
     await Promise.all([
       insertModules(prisma),
-      insertMunicipalities(prisma),
+      // insertMunicipalities(prisma),
       insertRoutes(prisma),
-      insertAvals(prisma),
+      // insertAvals(prisma),
       // insertStressClients(prisma, 20000)
-      insertClients(prisma)
+      // insertClients(prisma)
     ]);
 
     await Promise.all([
       insertPermissions(prisma),
-      insertTowns(prisma),
+      // insertTowns(prisma),
     ]);
 
 
-    await insertFolders(prisma);
-    await insertGroups(prisma);
+    // await insertFolders(prisma);
+    // await insertGroups(prisma);
 
-    await insertLeaders(prisma);
+    // await insertLeaders(prisma);
     // await insertStressCredits(prisma, 20000);
-    await insertCredits(prisma);
-    await insertPaymentDetails(prisma);
-    await insertAgentRoutes(prisma);
+    // await insertCredits(prisma);
+    // await insertPaymentDetails(prisma);
+    // await insertAgentRoutes(prisma);
 
   } catch (error) {
     console.log({error});   

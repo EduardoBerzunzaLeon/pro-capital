@@ -8,14 +8,12 @@ interface Props {
 // TODO: Mejorar el diseño de las alertas
 export const Alert = ({ title, notes }: Props) => {
   return (
-    <Card className="w-full bg-yellow-600">
-        <CardHeader className="flex gap-3">
-        <div className="flex flex-col">
-            <p className="text-md">{title}</p>
-        </div>
+    <Card className="border-warning-100 border-2 w-full">
+        <CardHeader>
+            <p className="text-md font-bold text-danger-300">{title}</p>
         </CardHeader>
         <CardBody>
-        <p>{notes}</p>
+          <p>{notes}</p>
         </CardBody>
   </Card>
   )

@@ -59,12 +59,14 @@ export const UserEditForm = ({
                         label="Nombre(s)"
                         placeholder="Ingresa el/los nombre(s)"
                         metadata={fields.name}
+                        isRequired
                         className='sx:max-w[100%] md:max-w-[49%] 2xl:max-w-[23%] mb-2'
                     />
                     <InputValidation
                         label="Primer Apellido"
                         placeholder="Ingresa el primer apellido"
                         metadata={fields.lastNameFirst}
+                        isRequired
                         className='sx:max-w[100%] md:max-w-[49%] 2xl:max-w-[23%] mb-2'
                     />
                     <InputValidation
@@ -77,12 +79,14 @@ export const UserEditForm = ({
                         label="Nombre de usuario"
                         placeholder="Ingresa el nombre de usuario"
                         metadata={fields.username}
+                        isRequired
                         className='sx:max-w[100%] md:max-w-[49%] 2xl:max-w-[23%] mb-2'
                     />
                     <InputValidation
                         label="Correo electronico"
                         placeholder="Ingresa el correo electronico"
                         inputType='email'
+                        isRequired
                         metadata={fields.email}
                         className='sx:max-w[100%] md:max-w-[49%] 2xl:max-w-[23%] mb-2'
                     />
@@ -90,6 +94,7 @@ export const UserEditForm = ({
                         label="Dirección"
                         placeholder="Ingresa la dirección"
                         metadata={fields.address}
+                        isRequired
                         className='sx:max-w[100%] md:max-w-[49%] 2xl:max-w-[23%] mb-2'
                     />
                     <Select
@@ -103,6 +108,7 @@ export const UserEditForm = ({
                         className='sx:max-w[100%] md:max-w-[49%] 2xl:max-w-[23%] mb-2'
                         labelPlacement="outside"
                         variant="bordered"
+                        isRequired
                         defaultSelectedKeys={[sex]}
                     >
                         {

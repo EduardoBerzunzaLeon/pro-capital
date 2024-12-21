@@ -6,22 +6,25 @@ import { ActionFunction } from "@remix-run/node";
 import { Form, useActionData, useNavigate, useNavigation } from "@remix-run/react";
 import { useEffect } from "react";
 import { handlerErrorWithToast } from "~/.server/reponses/handlerError";
-import { handlerSuccessWithToast } from "~/.server/reponses/handlerSuccess";
 import { Service } from "~/.server/services";
 import { InputValidation, ErrorBoundary } from '~/components/ui';
 import { AutocompleteCombobox } from "~/components/ui/forms/Autocomplete";
 import { CreateLeaderSchema } from "~/schemas/leaderSchema";
 import { permissions } from '~/application';
+import { redirectWithSuccess } from "remix-toast";
 
 export const action: ActionFunction = async({ request }) => {
   const user = await Service.auth.requirePermission(request, permissions.leaders.permissions.add);
   const formData = await request.formData();
   const data = Object.fromEntries(formData);
+  const url = new URL(request.url);
 
   try {
     formData.set('folder', data['folder[id]']);
-     await Service.leader.createOne(user.id, formData);
-    return handlerSuccessWithToast('create');
+    await Service.leader.createOne(user.id, formData);
+    return redirectWithSuccess(`/leaders${url.search}`, { 
+      message: `¡Creación exitosa de la líder 🎉!`
+    });
   } catch (error) {
     console.log(error);
     return handlerErrorWithToast(error, data);
@@ -76,11 +79,13 @@ export default function CreateLeader() {
                     label="Nombre(s)"
                     placeholder="Ingresa el/los nombre(s)"
                     metadata={fields.name}
+                    isRequired
                 />
                 <InputValidation
                     label="Primer Apellido"
                     placeholder="Ingresa el primer apellido"
                     metadata={fields.lastNameFirst}
+                    isRequired
                 />
                 <InputValidation
                     label="Segundo Apellido"
@@ -91,11 +96,13 @@ export default function CreateLeader() {
                     label="Dirección"
                     placeholder="Ingresa la dirección"
                     metadata={fields.address}
+                    isRequired
                 />
                 <InputValidation
                     label="CURP"
                     placeholder="Ingresa la CURP"
                     metadata={fields.curp}
+                    isRequired
                 />
                 <DatePicker 
                     label="Fecha de nacimiento" 
@@ -106,6 +113,7 @@ export default function CreateLeader() {
                     isInvalid={!!fields.birthday.errors}
                     errorMessage={fields.birthday.errors}
                     granularity="day"
+                    isRequired
                 />
                   <DatePicker 
                       label="Fecha de asignación" 
@@ -117,6 +125,7 @@ export default function CreateLeader() {
                       errorMessage={fields.anniversaryDate.errors}
                       defaultValue={today(getLocalTimeZone()).subtract({ days: 1 })}
                       granularity="day"
+                      isRequired
                   />
                   <AutocompleteCombobox 
                     keyFetcher='findFolderAutocomplete' 
@@ -124,6 +133,7 @@ export default function CreateLeader() {
                     label='Carpeta' 
                     comboBoxName='folder' 
                     placeholder='Ingresa la carpeta'       
+                    isRequired
                   />
                   
               </ModalBody>

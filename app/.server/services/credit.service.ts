@@ -2,7 +2,7 @@ import { curpSchema, idSchema } from "~/schemas/genericSchema";
 import { Service } from ".";
 import { Repository } from "../adapter";
 import { Credit } from "../domain/entity";
-import { AvalCreateI, ClientCreateI, ClientUpdateI, CreditCreateI, PaginationWithFilters, UpdateCreateI, UpdatePreviousData } from "../domain/interface";
+import { AvalCreateI, ClientCreateI, ClientUpdateI, CreditCreateI, PaginationWithFilters, UpdateCreateI, UpdatePreviousData, VerifyIfExitsprops } from "../domain/interface";
 import { validationConform, validationZod } from "./validation.service";
 import { ServerError } from "../errors";
 import { creditCreateSchema } from "~/schemas";
@@ -237,11 +237,7 @@ export const updateOne = async (form: FormData, creditId?: RequestId) => {
         }
     }
 
-    const folderDb = await Repository.folder.findByNameAndGroup(folder, group);
-  
-    if(!folderDb || !folderDb.groups || folderDb.groups.length != 1) {
-        throw ServerError.badRequest('La carpeta y el grupo no son validos');
-    }
+    const folderDb = await Service.folder.findByNameAndGroup(folder, group);
 
     const otherCreditInFolder = await Repository.credit.verifyCredit(id, folderDb.id);
 
@@ -329,12 +325,7 @@ export const renovate = async (userId: number, form: FormData, curp?: string, cr
 
     const nextPayment = dayjs(creditAt).add(7, 'day').toDate();
 
-    const folderDb = await Repository.folder.findByNameAndGroup(credit.folder, credit.group);
-  
-    if(!folderDb || !folderDb.groups || folderDb.groups.length != 1) {
-        throw ServerError.badRequest('La carpeta y el grupo no son validos');
-    }
-
+    const folderDb = await Service.folder.findByNameAndGroup(credit.folder, credit.group);
     const otherCreditInFolder = await Repository.credit.verifyCredit(creditDb.id, folderDb.id);
 
     if(otherCreditInFolder) {
@@ -405,12 +396,7 @@ export const additional =  async (userId: number, form: FormData, curp?: string)
     const weeks = type in types ? types[type as keyof typeof types] : 15;
     const totalAmount = paymentAmount * weeks;
     
-    const folderDb = await Repository.folder.findByNameAndGroup(credit.folder, credit.group);
-  
-    if(!folderDb || !folderDb.groups || folderDb.groups.length != 1) {
-        throw ServerError.badRequest('La carpeta y el grupo no son validos');
-    }
-
+    const folderDb = await Service.folder.findByNameAndGroup(credit.folder, credit.group);
     const creditInFolder = await Repository.credit.verifyFolderInCredit(curpValidated, folderDb.id);
 
     if(creditInFolder) {
@@ -474,11 +460,7 @@ export const create = async (userId: number, form: FormData, curp?: string) => {
     const weeks = type in types ? types[type as keyof typeof types] : 15;
     const totalAmount = paymentAmount * weeks;
     
-    const folderDb = await Repository.folder.findByNameAndGroup(credit.folder, credit.group);
-  
-    if(!folderDb || !folderDb.groups || folderDb.groups.length != 1) {
-        throw ServerError.badRequest('La carpeta y el grupo no son validos');
-    }
+    const folderDb = await Service.folder.findByNameAndGroup(credit.folder, credit.group);
 
     const { guarantee: clientGuarantee , ...restClient } = client;
     const { guarantee: avalGuarantee , ...restAval } = aval;
@@ -1074,6 +1056,15 @@ export const findOverdueCredits = async (rangeDate: { start: Date, end: Date }, 
     return await findAllStatistics(start, end);
 }
 
+export const verifyIfExists =  async(props: VerifyIfExitsprops) => {
+
+    const creditDb = await Repository.credit.verifyIfExits(props);
+
+    if(!creditDb) {
+        throw ServerError.badRequest('No existe el crédito');
+    }
+}
+
 
 export default{ 
     additional,
@@ -1102,4 +1093,5 @@ export default{
     verifyAvalCurp,
     verifyClientCurp,
     verifyToCreate,
+    verifyIfExists
 }

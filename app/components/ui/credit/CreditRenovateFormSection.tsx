@@ -92,7 +92,7 @@ export const CreditRenovateFormSection = ({ fields, paymentForgivent, paymentAmo
   }
 
   return (
-    <div>
+    <div className='w-[98%] flex flex-wrap justify-between gap-2'>
       <AutocompleteValidation 
         keyFetcher='findFolderAutocomplete' 
         actionRoute='/folder/search' 
@@ -104,6 +104,8 @@ export const CreditRenovateFormSection = ({ fields, paymentForgivent, paymentAmo
         onValueChange={folder.change}
         defaultValue={{ id: idFolder, value: folder.value ?? '' }}
         selectedItem={{ id: idFolder, value: folder.value ?? '' }}
+        className='w-full sm:max-w-[32%]' 
+        isRequired
       />
         <InputValidation
           label="Grupo"
@@ -111,15 +113,31 @@ export const CreditRenovateFormSection = ({ fields, paymentForgivent, paymentAmo
           metadata={credit.group}
           value={group.value ?? ''}
           onValueChange={group.change}
+          isRequired
+          className='w-full sm:max-w-[32%]' 
         />
         <Checkbox 
           defaultSelected={paymentForgivent}
           name={credit.paymentForgivent.name}
           value={isForgivent.value}
-          // onChange={e => console.log(e.target.value)}
           isSelected={isForgivent.value === 'true'}
           onValueChange={handlePaymentForgivent}
+          className='w-full sm:max-w-[32%]' 
         >Perdonar último pago</Checkbox>
+        <DatePicker 
+            label="Fecha de asignación" 
+            variant='bordered' 
+            id='creditAt'
+            key={credit.creditAt.key}
+            name={credit.creditAt.name}
+            isInvalid={!!credit.creditAt.errors}
+            errorMessage={credit.creditAt.errors}
+            defaultValue={today(getLocalTimeZone())}
+            granularity="day"
+            labelPlacement="outside"
+            isRequired
+            className='w-full sm:max-w-[32%]' 
+        />
       <Select 
           variant='bordered'
           labelPlacement="outside"
@@ -127,6 +145,8 @@ export const CreditRenovateFormSection = ({ fields, paymentForgivent, paymentAmo
           onChange={handleSelectedType}
           selectedKeys={[type.value || 'NORMAL']}
           disallowEmptySelection
+          isRequired
+          className='w-full sm:max-w-[32%]' 
           {...getSelectProps(credit.types)}
       >
         <SelectItem key='NORMAL'>Normal</SelectItem>
@@ -140,6 +160,8 @@ export const CreditRenovateFormSection = ({ fields, paymentForgivent, paymentAmo
           metadata={credit.amount}
           value={amount.value ?? ''}
           onValueChange={amount.change}
+          className='w-full sm:max-w-[32%]' 
+          isRequired
           startContent={
             <div className="pointer-events-none flex items-center">
               <span className="text-default-400 text-small">$</span>
@@ -153,6 +175,7 @@ export const CreditRenovateFormSection = ({ fields, paymentForgivent, paymentAmo
           variant='bordered'
           isDisabled
           value={payment+''}
+          className='w-full sm:max-w-[32%]' 
           startContent={
             <div className="pointer-events-none flex items-center">
               <span className="text-default-400 text-small">$</span>
@@ -166,6 +189,7 @@ export const CreditRenovateFormSection = ({ fields, paymentForgivent, paymentAmo
           isDisabled
           value={debt+''}
           variant='bordered'
+          className='w-full sm:max-w-[32%]' 
           startContent={
             <div className="pointer-events-none flex items-center">
               <span className="text-default-400 text-small">$</span>
@@ -179,22 +203,12 @@ export const CreditRenovateFormSection = ({ fields, paymentForgivent, paymentAmo
           isDisabled
           value={total+''}
           variant='bordered'
+          className='w-full sm:max-w-[32%]' 
           startContent={
             <div className="pointer-events-none flex items-center">
               <span className="text-default-400 text-small">$</span>
             </div>
           }
-        />
-        <DatePicker 
-            label="Fecha de asignación del crédito" 
-            variant='bordered' 
-            id='creditAt'
-            key={credit.creditAt.key}
-            name={credit.creditAt.name}
-            isInvalid={!!credit.creditAt.errors}
-            errorMessage={credit.creditAt.errors}
-            defaultValue={today(getLocalTimeZone())}
-            granularity="day"
         />
     </div>
   )

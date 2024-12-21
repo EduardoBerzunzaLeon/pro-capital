@@ -65,22 +65,6 @@ export  function MunicipalitySection() {
 
     return (
         <div className='w-full md:max-w-[48%]'>
-            <Permission permission={permissions.municipality.permissions.report}>
-                <ExcelReport url={url} name='municipios' columns={MUNICIPALITY_COLUMNS} />
-            </Permission>
-            <ButtonClear 
-                onClear={handlerClose}
-            />
-            <Input
-                isClearable
-                className="w-full sm:max-w-[44%] mt-5 mb-3"
-                placeholder="Buscar por municipio"
-                variant='bordered'
-                startContent={<FaSearch />}
-                value={search}
-                onClear={handlerClose}
-                onValueChange={setSearch}
-            />
             <ModalMunicipalityEdit 
                 isOpen={isOpen}
                 onOpenChange={onOpenChange}
@@ -97,14 +81,34 @@ export  function MunicipalitySection() {
                 />
             }
             topContent={
-                <div className="flex justify-between items-center">
-                    <Permission permission={permissions.municipality.permissions.add}>
-                        <MunicipalityButtonAdd />
-                    </Permission>
-                    <span className="text-default-400 text-small">Total {data?.serverData.total || 0 } municipios </span>
-                    <RowPerPage 
-                        onChange={handleRowPerPage}
-                    />
+                <div className="flex flex-col gap-4">
+                    <div className="flex justify-between gap-3 items-end flex-wrap">
+                        <Input
+                            isClearable
+                            className="w-full sm:max-w-[50%]"
+                            placeholder="Buscar por municipio"
+                            variant='bordered'
+                            startContent={<FaSearch />}
+                            value={search}
+                            onClear={handlerClose}
+                            onValueChange={setSearch}
+                        />
+                        <div className='flex flex-wrap gap-1'>
+                            <Permission permission={permissions.municipality.permissions.report}>
+                                <ExcelReport url={url} name='municipios' columns={MUNICIPALITY_COLUMNS} />
+                            </Permission>
+                            <ButtonClear onClear={handlerClose}/>
+                            <Permission permission={permissions.municipality.permissions.add}>
+                                <MunicipalityButtonAdd />
+                            </Permission>
+                        </div>
+                    </div>
+                    <div className="flex justify-between items-center">
+                        <span className="text-default-400 text-small">Total {data?.serverData.total || 0 } municipios </span>
+                        <RowPerPage 
+                            onChange={handleRowPerPage}
+                            />
+                    </div>
                 </div>
             }
             columns={columns} 
