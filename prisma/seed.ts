@@ -20,24 +20,24 @@ const prisma = new PrismaClient();
 
 async function seed() {
 
-    await Promise.all([
-     prisma.role.deleteMany(),
-     prisma.module.deleteMany(),
-     prisma.municipality.deleteMany(),
-     prisma.route.deleteMany(),
-     prisma.aval.deleteMany(),
-     prisma.client.deleteMany(),
-     prisma.permission.deleteMany(),
-     prisma.town.deleteMany(),
-     prisma.user.deleteMany(),
-     prisma.folder.deleteMany(),
-     prisma.folder.deleteMany(),
-     prisma.group.deleteMany(),
-     prisma.leader.deleteMany(),
-     prisma.credit.deleteMany(),
-     prisma.paymentDetail.deleteMany(),
-     prisma.agentRoute.deleteMany()
-    ]);
+    // await Promise.all([
+    //  prisma.role.deleteMany(),
+    //  prisma.module.deleteMany(),
+    //  prisma.municipality.deleteMany(),
+    //  prisma.route.deleteMany(),
+    //  prisma.aval.deleteMany(),
+    //  prisma.client.deleteMany(),
+    //  prisma.permission.deleteMany(),
+    //  prisma.town.deleteMany(),
+    //  prisma.user.deleteMany(),
+    //  prisma.folder.deleteMany(),
+    //  prisma.folder.deleteMany(),
+    //  prisma.group.deleteMany(),
+    //  prisma.leader.deleteMany(),
+    //  prisma.credit.deleteMany(),
+    //  prisma.paymentDetail.deleteMany(),
+    //  prisma.agentRoute.deleteMany()
+    // ]);
 
     await insertRoles(prisma),
     await insertUsers(prisma),
