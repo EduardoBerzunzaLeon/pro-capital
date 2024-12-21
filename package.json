@@ -11,6 +11,7 @@
     "typecheck": "tsc",
     "prisma_push": "npx prisma db push",
     "prisma_migrate": "npx prisma migrate dev",
+    "setup": "prisma migrate dev && prisma db seed",
     "prisma_help": "npx prisma migrate dev"
   },
   "dependencies": {
